@@ -3,9 +3,9 @@ from contextlib import contextmanager
 from fastapi import FastAPI
 from starlette.testclient import TestClient
 
-from mysingle_quant.audit.middleware import AuditLoggingMiddleware
-from mysingle_quant.audit.models import AuditLog
-from mysingle_quant.core.config import settings
+from mysingle.audit.middleware import AuditLoggingMiddleware
+from mysingle.audit.models import AuditLog
+from mysingle.core.config import settings
 
 
 @contextmanager

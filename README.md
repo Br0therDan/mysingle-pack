@@ -47,8 +47,8 @@ pip install mysingle-quant[full,dev]
 
 ### Basic Usage
 ```python
-from mysingle_quant.core import create_fastapi_app
-from mysingle_quant.core.config import settings
+from mysingle.core import create_fastapi_app
+from mysingle.core.config import settings
 
 # Create FastAPI app with common configurations
 app = create_fastapi_app()
@@ -60,9 +60,9 @@ if __name__ == "__main__":
 
 ### With Authentication
 ```python
-from mysingle_quant.core import create_fastapi_app
-from mysingle_quant.auth import get_user_manager
-from mysingle_quant.auth.router import auth_router
+from mysingle.core import create_fastapi_app
+from mysingle.auth import get_user_manager
+from mysingle.auth.router import auth_router
 
 app = create_fastapi_app()
 app.include_router(auth_router, prefix="/auth")
@@ -70,8 +70,8 @@ app.include_router(auth_router, prefix="/auth")
 
 ### With Database
 ```python
-from mysingle_quant.core import create_fastapi_app
-from mysingle_quant.core.db import init_db
+from mysingle.core import create_fastapi_app
+from mysingle.core.db import init_db
 
 app = create_fastapi_app()
 
@@ -136,7 +136,7 @@ black src/
 ruff check src/ --fix
 
 # Type checking
-mypy src/mysingle_quant/
+mypy src/mysingle/
 ```
 
 ## �️ Roadmap

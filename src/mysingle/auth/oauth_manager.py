@@ -9,7 +9,7 @@ from httpx_oauth.clients.google import GoogleOAuth2
 from httpx_oauth.clients.kakao import KakaoOAuth2
 from httpx_oauth.clients.naver import NaverOAuth2
 
-from app.core.config import settings
+from ..core.config import settings
 
 from .schemas.oauth2 import (
     BaseOAuthToken,

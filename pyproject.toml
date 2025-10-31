@@ -1,8 +1,8 @@
 
 [project]
-name = "mysingle-quant"
-version = "0.1.0"
-description = "Common utilities and configurations for Quant Platform microservices"
+name = "mysingle"
+version = "1.1.0"
+description = "Common utilities and configurations for MySingle Platform microservices"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -44,7 +44,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/mysingle_quant"]
+packages = ["src/mysingle"]
 
 [tool.uv]
 dev-dependencies = [
@@ -89,11 +89,11 @@ ignore = [
     "B006",   # mutable-argument-default (리스트 기본값, 의도적 사용)
     "B904",   # raise ... from err (not always necessary for HTTP exceptions)
     "SIM105", # suppressible-exception (try-except-pass 패턴, 일부 허용)
-    "SIM117"
+    "SIM117",
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["mysingle_quant"]
+known-first-party = ["mysingle"]
 
 [tool.bandit]
 exclude_dirs = ["tests", "venv", ".venv", "__pycache__"]

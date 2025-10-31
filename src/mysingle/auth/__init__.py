@@ -1,5 +1,5 @@
 """
-mysingle_quant.auth - Authentication & Authorization Module
+mysingle.auth - Authentication & Authorization Module
 
 Public API for microservices authentication with Kong Gateway support.
 """

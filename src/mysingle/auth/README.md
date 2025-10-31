@@ -7,7 +7,7 @@ Auth Middleware 사용 예제 및 테스트 가이드
 
 ```python
 from fastapi import APIRouter, Depends
-from mysingle_quant.auth import (
+from mysingle.auth import (
     get_current_user,
     get_current_active_user_middleware,
     get_current_active_superuser_middleware,
@@ -144,7 +144,7 @@ INFO - 🔓 Authentication middleware disabled in development for market-data-se
 
 ### Before (레거시)
 ```python
-from mysingle_quant.auth import get_current_active_user
+from mysingle.auth import get_current_active_user
 
 @router.get("/")
 async def get_data(user: User = Depends(get_current_active_user)):
@@ -153,7 +153,7 @@ async def get_data(user: User = Depends(get_current_active_user)):
 
 ### After (미들웨어)
 ```python
-from mysingle_quant.auth import get_current_active_user_middleware
+from mysingle.auth import get_current_active_user_middleware
 
 @router.get("/")
 async def get_data(user: User = Depends(get_current_active_user_middleware)):
@@ -163,7 +163,7 @@ async def get_data(user: User = Depends(get_current_active_user_middleware)):
 또는 간단히:
 
 ```python
-from mysingle_quant.auth import get_current_user
+from mysingle.auth import get_current_user
 
 @router.get("/")
 async def get_data(user: User = Depends(get_current_user)):

@@ -6,7 +6,7 @@ Structured Logging 시스템 테스트 예제
 """
 
 import asyncio
-from mysingle_quant.logging import (
+from mysingle.logging import (
     configure_structured_logging,
     get_structured_logger,
     set_correlation_id,

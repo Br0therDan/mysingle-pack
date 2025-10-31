@@ -8,7 +8,7 @@ Kong Gateway와 통합된 JWT 토큰 관리 시스템입니다.
 - 서비스 간 통신용 토큰 생성
 
 Usage Example:
-    from mysingle_quant.auth.security.jwt import get_jwt_manager
+    from mysingle.auth.security.jwt import get_jwt_manager
 
     # 사용자 로그인 토큰 생성
     jwt_manager = get_jwt_manager()

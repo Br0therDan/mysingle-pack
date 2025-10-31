@@ -1,7 +1,7 @@
 from beanie import PydanticObjectId
 from fastapi import APIRouter, Depends, Request, Response, status
 
-from mysingle_quant.auth.models import User
+from mysingle.auth.models import User
 
 from ..deps import get_current_active_superuser, get_current_active_verified_user
 from ..exceptions import (

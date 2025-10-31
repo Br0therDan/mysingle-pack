@@ -14,7 +14,7 @@ Cache Strategy:
 - Invalidation: 명시적 호출 또는 TTL 만료
 
 Usage:
-    from mysingle_quant.auth.cache import get_user_cache
+    from mysingle.auth.cache import get_user_cache
 
     cache = get_user_cache()
 

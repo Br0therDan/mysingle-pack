@@ -11,7 +11,7 @@ from typing import Any
 
 import duckdb
 
-from mysingle_quant import get_logger
+from mysingle import get_logger
 
 logger = get_logger(__name__)
 

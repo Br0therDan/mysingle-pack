@@ -1,4 +1,5 @@
-# MySingle-Quant Package 활용 가이드
+# MySingle Package 활용 가이드
+**최근업데이트 : 2025-10-31**
 
 ## 개요
 
@@ -9,8 +10,9 @@ MySingle-Quant Package는 마이크로서비스 아키텍처를 위한 통합 �
 1. [인증 시스템 (Authentication)](#1-인증-시스템-authentication)
 2. [Kong Gateway 헤더 표준화](#2-kong-gateway-헤더-표준화)
 3. [통합 로깅 시스템](#3-통합-로깅-시스템)
-4. [모니터링 메트릭](#4-모니터링-메트릭)
-5. [감사 로깅 (Audit Logging)](#5-감사-로깅-audit-logging)
+4. [HTTP Client](#4-http-client)
+5. [모니터링 메트릭](#5-모니터링-메트릭)
+6. [감사 로깅 (Audit Logging)](#6-감사-로깅-audit-logging)
 
 ---
 
@@ -18,7 +20,7 @@ MySingle-Quant Package는 마이크로서비스 아키텍처를 위한 통합 �
 
 ### 1.1 개요
 
-MySingle-Quant의 인증 시스템은 Kong Gateway와 완전히 통합된 Request 기반 인증 의존성 시스템을 제공합니다.
+MySingle 패키지의 의 인증 시스템은 Kong Gateway와 완전히 통합된 Request 기반 인증 의존성 시스템을 제공합니다.
 
 ### 1.2 주요 특징
 
@@ -34,7 +36,7 @@ MySingle-Quant의 인증 시스템은 Kong Gateway와 완전히 통합된 Reques
 
 ```python
 from fastapi import Request, APIRouter
-from mysingle_quant.auth.deps import (
+from mysingle.auth.deps import (
     get_current_user,
     get_current_active_user,
     get_current_active_verified_user,
@@ -70,12 +72,12 @@ async def flexible_endpoint(request: Request):
 
 ```python
 from fastapi import Depends, APIRouter
-from mysingle_quant.auth.deps import (
+from mysingle.auth.deps import (
     get_current_active_user_deps,
     get_current_active_verified_user_deps,
     get_current_active_superuser_deps,
 )
-from mysingle_quant.auth.models import User
+from mysingle.auth.models import User
 
 router = APIRouter()
 
@@ -105,7 +107,7 @@ async def verified_users_only(
 ### 1.5 유틸리티 함수들
 
 ```python
-from mysingle_quant.auth.deps import (
+from mysingle.auth.deps import (
     get_user_id,
     get_user_email,
     is_user_authenticated,
@@ -117,16 +119,16 @@ from mysingle_quant.auth.deps import (
 async def sensitive_action(request: Request):
     """보안 컨텍스트를 포함한 액션"""
     user = get_current_active_verified_user(request)
-    
+
     # 보안 컨텍스트 정보 수집
     security_context = get_request_security_context(request)
-    
+
     # 감사 로그를 위한 정보
     logger.info(
         f"Sensitive action performed by {get_user_display_name(user)}",
         extra=security_context
     )
-    
+
     return {"success": True}
 ```
 
@@ -162,7 +164,7 @@ Kong Gateway와의 완벽한 통합을 위한 표준화된 헤더 처리 시스�
 
 ```python
 from fastapi import Request
-from mysingle_quant.auth.deps import (
+from mysingle.auth.deps import (
     get_kong_user_id,
     get_kong_consumer_id,
     get_kong_consumer_username,
@@ -179,13 +181,13 @@ from mysingle_quant.auth.deps import (
 @router.get("/debug/headers")
 async def debug_kong_headers(request: Request):
     """Kong 헤더 디버깅 엔드포인트"""
-    
+
     # 기본 인증 헤더
     basic_headers = get_kong_headers_dict(request)
-    
+
     # 확장된 모든 헤더
     extended_headers = get_extended_kong_headers_dict(request)
-    
+
     return {
         "basic": basic_headers,
         "extended": extended_headers,
@@ -254,7 +256,7 @@ plugins:
 ### 3.3 기본 설정
 
 ```python
-from mysingle_quant.logging import setup_logging
+from mysingle.logging import setup_logging
 
 # 통합 로깅 설정 (권장)
 setup_logging(
@@ -270,7 +272,7 @@ setup_logging(
 ### 3.4 구조화된 로깅 사용법
 
 ```python
-from mysingle_quant.logging import (
+from mysingle.logging import (
     get_structured_logger,
     set_correlation_id,
     set_user_id,
@@ -286,7 +288,7 @@ async def create_strategy(request: Request, strategy_data: dict):
     set_correlation_id(request.headers.get("correlation-id", ""))
     set_user_id(get_user_id(request))
     set_request_id(str(uuid.uuid4()))
-    
+
     logger.info(
         "Strategy creation started",
         extra={
@@ -294,11 +296,11 @@ async def create_strategy(request: Request, strategy_data: dict):
             "user_action": "create",
         }
     )
-    
+
     try:
         # 비즈니스 로직
         strategy = create_strategy_logic(strategy_data)
-        
+
         logger.info(
             "Strategy created successfully",
             extra={
@@ -306,9 +308,9 @@ async def create_strategy(request: Request, strategy_data: dict):
                 "execution_time_ms": 123.45,
             }
         )
-        
+
         return {"strategy_id": str(strategy.id)}
-        
+
     except Exception as e:
         logger.error(
             "Strategy creation failed",
@@ -326,7 +328,7 @@ async def create_strategy(request: Request, strategy_data: dict):
 ### 3.5 편의 함수들
 
 ```python
-from mysingle_quant.logging import (
+from mysingle.logging import (
     log_user_action,
     log_service_call,
     log_database_operation,
@@ -362,7 +364,7 @@ log_database_operation(
 ### 3.6 미들웨어 통합
 
 ```python
-from mysingle_quant.core import (
+from mysingle.core import (
     create_fastapi_app,
     create_service_config,
     ServiceType,
@@ -376,28 +378,452 @@ def create_app():
         service_type=ServiceType.NON_IAM_SERVICE,
         enable_auth=True,
     )
-    
+
     app = create_fastapi_app(service_config)
-    
+
     # 로깅 미들웨어 추가
     add_logging_middleware(
-        app, 
+        app,
         service_name="my-service",
         enable_timing_logs=True  # 느린 요청 감지
     )
-    
+
     return app
 ```
 
 ---
+## 4. HTTP Client
 
-## 4. 모니터링 메트릭
+### 4.1 주요 특징
 
-### 4.1 개요
+- **연결 풀링**: httpx 기반 비동기 연결 풀 관리
+- **자동 URL 구성**: 서비스명으로부터 Gateway/Direct URL 자동 생성
+- **싱글톤 패턴**: 서비스별 클라이언트 재사용으로 리소스 효율성
+- **생명주기 관리**: App Factory와 통합된 자동 정리
+- **환경 설정**: 환경 변수로 타임아웃, 연결 수 등 제어 가능
+
+### 4.2 기본사용법
+#### 1) 서비스 클라이언트 생성 (일회성)
+
+```python
+from mysingle.core import create_service_http_client
+
+# 기본 생성 (URL 자동 구성)
+client = create_service_http_client("strategy-service")
+
+# 커스텀 설정
+client = create_service_http_client(
+    service_name="strategy-service",
+    base_url="http://custom-host:8003",
+    timeout=60.0,
+    max_connections=50,
+    headers={"X-Custom-Header": "value"}
+)
+
+# 사용
+async with client:
+    response = await client.get("/strategies")
+    data = response.json()
+```
+
+#### 2) 싱글톤 클라이언트 사용 (권장)
+
+```python
+from mysingle.core import get_service_http_client
+
+# 서비스별 클라이언트 재사용
+strategy_client = get_service_http_client("strategy-service")
+backtest_client = get_service_http_client("backtest-service")
+
+# HTTP 메서드 사용
+strategies = await strategy_client.get("/strategies")
+result = await backtest_client.post("/backtests", json={"strategy_id": "123"})
+```
+
+#### 3) 편의 함수 사용
+
+```python
+from mysingle.core import make_service_request
+
+# 한 줄로 요청
+response = await make_service_request(
+    service_name="strategy-service",
+    method="GET",
+    endpoint="/strategies",
+    headers={"Authorization": "Bearer token"}
+)
+```
+
+### 4.3 서비스별 클라이언트 예시
+
+#### 1) Strategy Service 연동
+
+```python
+from mysingle.core import get_service_http_client
+
+class StrategyServiceClient:
+    def __init__(self):
+        self.client = get_service_http_client("strategy-service")
+
+    async def get_strategies(self, user_id: str) -> list[dict]:
+        """사용자 전략 목록 조회"""
+        response = await self.client.get(
+            "/strategies",
+            headers={"X-User-Id": user_id}
+        )
+        response.raise_for_status()
+        return response.json()
+
+    async def create_strategy(self, strategy_data: dict, user_id: str) -> dict:
+        """전략 생성"""
+        response = await self.client.post(
+            "/strategies",
+            json=strategy_data,
+            headers={"X-User-Id": user_id}
+        )
+        response.raise_for_status()
+        return response.json()
+
+    async def update_strategy(self, strategy_id: str, data: dict, user_id: str) -> dict:
+        """전략 수정"""
+        response = await self.client.put(
+            f"/strategies/{strategy_id}",
+            json=data,
+            headers={"X-User-Id": user_id}
+        )
+        response.raise_for_status()
+        return response.json()
+```
+
+#### 2) Backtest Service 연동
+
+```python
+from mysingle.core import get_service_http_client
+
+class BacktestServiceClient:
+    def __init__(self):
+        self.client = get_service_http_client("backtest-service")
+
+    async def start_backtest(self, config: dict, user_id: str) -> dict:
+        """백테스트 시작"""
+        response = await self.client.post(
+            "/backtests/start",
+            json=config,
+            headers={"X-User-Id": user_id}
+        )
+        response.raise_for_status()
+        return response.json()
+
+    async def get_backtest_status(self, backtest_id: str, user_id: str) -> dict:
+        """백테스트 상태 조회"""
+        response = await self.client.get(
+            f"/backtests/{backtest_id}/status",
+            headers={"X-User-Id": user_id}
+        )
+        response.raise_for_status()
+        return response.json()
+```
+
+### 4.4 환경 설정
+
+#### 1) .env 파일 설정
+
+```bash
+# HTTP 클라이언트 설정
+HTTP_CLIENT_TIMEOUT=30.0
+HTTP_CLIENT_MAX_CONNECTIONS=100
+HTTP_CLIENT_MAX_KEEPALIVE=20
+HTTP_CLIENT_MAX_RETRIES=3
+HTTP_CLIENT_RETRY_DELAY=1.0
+
+# API Gateway 설정
+USE_API_GATEWAY=true
+API_GATEWAY_URL=http://localhost:8000
+```
+
+#### 2) 서비스별 설정 확장
+
+```python
+# app/core/config.py
+from mysingle.core.config import CommonSettings
+
+class MyServiceSettings(CommonSettings):
+    SERVICE_NAME: str = "my-service"
+
+    # 서비스별 HTTP 클라이언트 설정
+    STRATEGY_SERVICE_URL: str = "http://kong-gateway:8000/strategy"
+    BACKTEST_SERVICE_URL: str = "http://kong-gateway:8000/backtest"
+
+    # 커스텀 타임아웃
+    STRATEGY_CLIENT_TIMEOUT: float = 60.0
+    BACKTEST_CLIENT_TIMEOUT: float = 300.0  # 백테스트는 오래 걸림
+
+settings = MyServiceSettings()
+```
+
+### 4.5 FastAPI 서비스에서 사용
+
+#### 1) 의존성 주입 패턴
+
+```python
+from fastapi import FastAPI, Depends
+from mysingle.core import get_service_http_client, ServiceHttpClient
+
+# 의존성 함수
+def get_strategy_client() -> ServiceHttpClient:
+    return get_service_http_client("strategy-service")
+
+def get_backtest_client() -> ServiceHttpClient:
+    return get_service_http_client("backtest-service")
+
+# 라우터에서 사용
+@app.post("/journeys")
+async def create_journey(
+    journey_data: dict,
+    strategy_client: ServiceHttpClient = Depends(get_strategy_client),
+    backtest_client: ServiceHttpClient = Depends(get_backtest_client)
+):
+    # 전략 검증
+    strategy = await strategy_client.get(f"/strategies/{journey_data['strategy_id']}")
+
+    # 백테스트 시작
+    backtest = await backtest_client.post("/backtests/start", json=journey_data)
+
+    return {"journey_id": "123", "backtest_id": backtest.json()["id"]}
+```
+
+#### 2) 서비스 클래스 패턴
+
+```python
+from mysingle.core import get_service_http_client
+
+class JourneyOrchestrator:
+    def __init__(self):
+        self.strategy_client = get_service_http_client("strategy-service")
+        self.backtest_client = get_service_http_client("backtest-service")
+        self.notification_client = get_service_http_client("notification-service")
+
+    async def execute_journey(self, journey_config: dict, user_id: str) -> dict:
+        """여정 실행"""
+        headers = {"X-User-Id": user_id}
+
+        try:
+            # 1. 전략 검증
+            strategy_response = await self.strategy_client.get(
+                f"/strategies/{journey_config['strategy_id']}",
+                headers=headers
+            )
+            strategy = strategy_response.json()
+
+            # 2. 백테스트 시작
+            backtest_response = await self.backtest_client.post(
+                "/backtests/start",
+                json={
+                    "strategy_id": strategy["id"],
+                    "config": journey_config["backtest_config"]
+                },
+                headers=headers
+            )
+            backtest = backtest_response.json()
+
+            # 3. 알림 발송
+            await self.notification_client.post(
+                "/notifications/send",
+                json={
+                    "user_id": user_id,
+                    "type": "journey_started",
+                    "data": {"journey_id": journey_config["id"]}
+                },
+                headers=headers
+            )
+
+            return {
+                "status": "started",
+                "strategy": strategy,
+                "backtest": backtest
+            }
+
+        except Exception as e:
+            # 에러 알림
+            await self.notification_client.post(
+                "/notifications/send",
+                json={
+                    "user_id": user_id,
+                    "type": "journey_error",
+                    "data": {"error": str(e)}
+                },
+                headers=headers
+            )
+            raise
+```
+
+### 4.6 에러 처리 및 재시도
+
+#### 1) httpx 예외 처리
+
+```python
+import httpx
+from mysingle.core import get_service_http_client
+
+async def robust_service_call():
+    client = get_service_http_client("strategy-service")
+
+    try:
+        response = await client.get("/strategies", timeout=30.0)
+        response.raise_for_status()  # HTTP 에러 발생 시 예외
+        return response.json()
+
+    except httpx.TimeoutException:
+        # 타임아웃 처리
+        logger.error("Strategy service timeout")
+        raise
+
+    except httpx.HTTPStatusError as e:
+        # HTTP 에러 처리
+        if e.response.status_code == 404:
+            logger.warning("Strategy not found")
+            return None
+        elif e.response.status_code >= 500:
+            logger.error(f"Strategy service error: {e}")
+            raise
+        else:
+            logger.warning(f"Client error: {e}")
+            raise
+
+    except httpx.RequestError as e:
+        # 연결 에러 처리
+        logger.error(f"Connection error to strategy service: {e}")
+        raise
+```
+
+#### 2) 재시도 패턴
+
+```python
+import asyncio
+from typing import TypeVar, Callable
+from mysingle.core import get_service_http_client, HttpClientConfig
+
+T = TypeVar('T')
+
+async def retry_service_call(
+    func: Callable[[], T],
+    max_retries: int = HttpClientConfig.DEFAULT_MAX_RETRIES,
+    delay: float = HttpClientConfig.DEFAULT_RETRY_DELAY
+) -> T:
+    """서비스 호출 재시도"""
+    last_exception = None
+
+    for attempt in range(max_retries + 1):
+        try:
+            return await func()
+        except (httpx.TimeoutException, httpx.ConnectError) as e:
+            last_exception = e
+            if attempt < max_retries:
+                await asyncio.sleep(delay * (2 ** attempt))  # 지수 백오프
+                continue
+            break
+        except httpx.HTTPStatusError as e:
+            # 5xx 에러만 재시도
+            if e.response.status_code >= 500 and attempt < max_retries:
+                last_exception = e
+                await asyncio.sleep(delay * (2 ** attempt))
+                continue
+            raise
+
+    raise last_exception
+
+# 사용 예시
+async def get_strategy_with_retry(strategy_id: str):
+    client = get_service_http_client("strategy-service")
+
+    async def call():
+        response = await client.get(f"/strategies/{strategy_id}")
+        response.raise_for_status()
+        return response.json()
+
+    return await retry_service_call(call)
+```
+
+### 4.7 성능 모니터링
+
+#### 1) 요청 로깅
+
+```python
+import time
+from mysingle.core import get_service_http_client, get_logger
+
+logger = get_logger(__name__)
+
+async def logged_service_call(service_name: str, method: str, endpoint: str, **kwargs):
+    """로깅이 포함된 서비스 호출"""
+    client = get_service_http_client(service_name)
+
+    start_time = time.time()
+    try:
+        response = await client.request(method, endpoint, **kwargs)
+        duration = time.time() - start_time
+
+        logger.info(
+            f"Service call: {service_name} {method} {endpoint} "
+            f"-> {response.status_code} ({duration:.3f}s)"
+        )
+
+        return response
+
+    except Exception as e:
+        duration = time.time() - start_time
+        logger.error(
+            f"Service call failed: {service_name} {method} {endpoint} "
+            f"-> {type(e).__name__}: {e} ({duration:.3f}s)"
+        )
+        raise
+```
+
+### 4.8 테스트 지원
+
+#### 1) 모킹
+
+```python
+import pytest
+from unittest.mock import AsyncMock, patch
+from mysingle.core import ServiceHttpClientManager
+
+@pytest.fixture
+async def mock_strategy_service():
+    """Strategy Service 모킹"""
+    mock_client = AsyncMock()
+    mock_client.get.return_value.json.return_value = {
+        "id": "strategy-123",
+        "name": "Test Strategy"
+    }
+
+    with patch.object(ServiceHttpClientManager, 'get_client', return_value=mock_client):
+        yield mock_client
+
+async def test_journey_creation(mock_strategy_service):
+    """여정 생성 테스트"""
+    orchestrator = JourneyOrchestrator()
+
+    result = await orchestrator.execute_journey({
+        "strategy_id": "strategy-123",
+        "backtest_config": {}
+    }, "user-456")
+
+    assert result["status"] == "started"
+    mock_strategy_service.get.assert_called_once()
+```
+
+이제 표준화된 HTTP 클라이언트가 완성되었습니다! 🎉
+
+---
+
+## 5. 모니터링 메트릭
+
+### 5.1 개요
 
 고성능 메트릭 수집 및 모니터링 시스템으로 Prometheus 형식 지원과 성능 최적화가 특징입니다.
 
-### 4.2 주요 특징
+### 5.2 주요 특징
 
 - **비동기 메트릭 수집**: 요청 처리 지연 최소화
 - **메모리 효율적**: 순환 버퍼로 메모리 사용량 제한
@@ -405,11 +831,11 @@ def create_app():
 - **풍부한 메트릭**: 기본 메트릭, 백분위수, 히스토그램
 - **Prometheus 지원**: 완전한 Prometheus 형식 내보내기
 
-### 4.3 기본 설정
+### 5.3 기본 설정
 
 ```python
-from mysingle_quant.core import create_fastapi_app, create_service_config
-from mysingle_quant.metrics import MetricsConfig
+from mysingle.core import create_fastapi_app, create_service_config
+from mysingle.metrics import MetricsConfig
 
 # 메트릭이 활성화된 서비스 설정
 service_config = create_service_config(
@@ -421,7 +847,7 @@ service_config = create_service_config(
 app = create_fastapi_app(service_config)
 
 # 커스텀 메트릭 설정 (선택적)
-from mysingle_quant.metrics import create_metrics_middleware, MetricsConfig
+from mysingle.metrics import create_metrics_middleware, MetricsConfig
 
 metrics_config = MetricsConfig(
     max_duration_samples=2000,      # 응답 시간 샘플 수
@@ -433,10 +859,10 @@ metrics_config = MetricsConfig(
 create_metrics_middleware("my-service", config=metrics_config)
 ```
 
-### 4.4 메트릭 엔드포인트
+### 5.4 메트릭 엔드포인트
 
 ```python
-from mysingle_quant.metrics import create_metrics_router
+from mysingle.metrics import create_metrics_router
 
 # 메트릭 라우터 추가
 metrics_router = create_metrics_router()
@@ -450,7 +876,7 @@ app.include_router(metrics_router)
 # GET /metrics/routes     - 라우트별 통계
 ```
 
-### 4.5 수집되는 메트릭
+### 5.5 수집되는 메트릭
 
 #### 기본 메트릭
 
@@ -471,22 +897,22 @@ app.include_router(metrics_router)
 - **라우트별 에러 수**: `{service}_route_errors_total`
 - **라우트별 응답시간**: 백분위수 포함
 
-### 4.6 메트릭 조회 예시
+### 5.6 메트릭 조회 예시
 
 ```python
-from mysingle_quant.metrics import get_metrics_collector
+from mysingle.metrics import get_metrics_collector
 
 @router.get("/custom-metrics")
 async def get_custom_metrics():
     """커스텀 메트릭 조회"""
     collector = get_metrics_collector()
-    
+
     # JSON 형식 메트릭
     json_metrics = collector.get_metrics()
-    
+
     # Prometheus 형식 메트릭
     prometheus_metrics = collector.get_prometheus_metrics()
-    
+
     return {
         "summary": {
             "total_requests": json_metrics["total_requests"],
@@ -497,7 +923,7 @@ async def get_custom_metrics():
     }
 ```
 
-### 4.7 성능 최적화 설정
+### 5.7 성능 최적화 설정
 
 ```python
 # 제외 경로 설정 (성능 최적화)
@@ -516,13 +942,13 @@ create_metrics_middleware(
 
 ---
 
-## 5. 감사 로깅 (Audit Logging)
+## 6. 감사 로깅 (Audit Logging)
 
-### 5.1 개요
+### 6.1 개요
 
 HTTP 요청/응답에 대한 감사 로그를 자동으로 수집하고 저장하는 시스템입니다.
 
-### 5.2 주요 특징
+### 6.2 주요 특징
 
 - **자동 로깅**: 모든 HTTP 요청/응답 자동 기록
 - **최소한의 성능 영향**: 비동기 처리로 응답 지연 최소화
@@ -530,10 +956,10 @@ HTTP 요청/응답에 대한 감사 로그를 자동으로 수집하고 저장�
 - **MongoDB 저장**: Beanie를 통한 효율적인 문서 저장
 - **환경별 제어**: 테스트 환경에서 자동 비활성화
 
-### 5.3 감사 로그 데이터 모델
+### 6.3 감사 로그 데이터 모델
 
 ```python
-from mysingle_quant.audit.models import AuditLog
+from mysingle.audit.models import AuditLog
 
 # AuditLog 필드들:
 class AuditLog(BaseTimeDoc):
@@ -542,28 +968,28 @@ class AuditLog(BaseTimeDoc):
     service: str                        # 서비스명
     request_id: str | None              # 요청 ID
     trace_id: str | None                # 추적 ID
-    
+
     # 요청 정보
     method: str                         # HTTP 메서드
     path: str                           # 요청 경로
     ip: str | None                      # 클라이언트 IP
     user_agent: str | None              # User-Agent
     req_bytes: int                      # 요청 크기
-    
+
     # 응답 정보
     status_code: int                    # HTTP 상태 코드
     resp_bytes: int                     # 응답 크기
-    
+
     # 성능 정보
     latency_ms: int                     # 응답 시간 (밀리초)
     occurred_at: datetime               # 발생 시간
 ```
 
-### 5.4 기본 설정
+### 6.4 기본 설정
 
 ```python
-from mysingle_quant.core import create_fastapi_app, create_service_config
-from mysingle_quant.audit import AuditLoggingMiddleware
+from mysingle.core import create_fastapi_app, create_service_config
+from mysingle.audit import AuditLoggingMiddleware
 
 def create_app():
     service_config = create_service_config(
@@ -571,23 +997,23 @@ def create_app():
         service_type=ServiceType.NON_IAM_SERVICE,
         enable_audit_logging=True,  # 감사 로깅 활성화
     )
-    
+
     app = create_fastapi_app(service_config)
-    
+
     # 수동으로 감사 미들웨어 추가 (필요시)
     app.add_middleware(
         AuditLoggingMiddleware,
         service_name="my-service",
         enabled=True
     )
-    
+
     return app
 ```
 
-### 5.5 감사 로그 조회
+### 6.5 감사 로그 조회
 
 ```python
-from mysingle_quant.audit.models import AuditLog
+from mysingle.audit.models import AuditLog
 from datetime import datetime, timedelta
 
 @router.get("/admin/audit-logs")
@@ -598,14 +1024,14 @@ async def get_audit_logs(
     limit: int = 100
 ):
     """감사 로그 조회 (관리자 전용)"""
-    
+
     # 기본 쿼리
     query = {}
-    
+
     # 사용자 필터
     if user_id:
         query["user_id"] = ObjectId(user_id)
-    
+
     # 날짜 범위 필터
     if start_date or end_date:
         date_filter = {}
@@ -614,10 +1040,10 @@ async def get_audit_logs(
         if end_date:
             date_filter["$lte"] = end_date
         query["occurred_at"] = date_filter
-    
+
     # 감사 로그 조회
     logs = await AuditLog.find(query).limit(limit).to_list()
-    
+
     return {
         "total": len(logs),
         "logs": [
@@ -638,23 +1064,23 @@ async def get_audit_logs(
 @router.get("/admin/audit-stats")
 async def get_audit_statistics():
     """감사 로그 통계"""
-    
+
     # 최근 24시간 통계
     since = datetime.utcnow() - timedelta(hours=24)
-    
+
     total_requests = await AuditLog.find(
         {"occurred_at": {"$gte": since}}
     ).count()
-    
+
     error_requests = await AuditLog.find({
         "occurred_at": {"$gte": since},
         "status_code": {"$gte": 400}
     }).count()
-    
+
     unique_users = await AuditLog.find(
         {"occurred_at": {"$gte": since}}
     ).distinct("user_id")
-    
+
     return {
         "period": "last_24_hours",
         "total_requests": total_requests,
@@ -664,7 +1090,7 @@ async def get_audit_statistics():
     }
 ```
 
-### 5.6 보안 및 컴플라이언스
+### 6.6 보안 및 컴플라이언스
 
 ```python
 # 민감한 경로 제외 설정
@@ -676,50 +1102,50 @@ SENSITIVE_PATHS = [
 
 class CustomAuditMiddleware(AuditLoggingMiddleware):
     """커스텀 감사 미들웨어"""
-    
+
     def should_log_request(self, request: Request) -> bool:
         """감사 로그 기록 여부 결정"""
         path = request.url.path
-        
+
         # 민감한 경로 제외
         if path in SENSITIVE_PATHS:
             return False
-            
+
         # 헬스체크 제외
         if path.startswith(("/health", "/metrics")):
             return False
-            
+
         return True
-    
+
     async def get_user_id(self, request: Request) -> str | None:
         """요청에서 사용자 ID 추출"""
         # Kong 헤더에서 사용자 ID 추출
         user_id = request.headers.get("x-consumer-custom-id")
-        
+
         # 또는 JWT에서 추출
         if not user_id:
             # JWT 파싱 로직
             pass
-            
+
         return user_id
 ```
 
 ---
 
-## 6. 종합 활용 예시
+## 7. 종합 활용 예시
 
-### 6.1 완전한 서비스 설정
+### 7.1 완전한 서비스 설정
 
 ```python
 from fastapi import FastAPI, Request, APIRouter
-from mysingle_quant.core import (
+from mysingle.core import (
     create_fastapi_app,
     create_service_config,
     ServiceType,
 )
-from mysingle_quant.auth.deps import get_current_active_user
-from mysingle_quant.logging import setup_logging, get_structured_logger, log_user_action
-from mysingle_quant.metrics import create_metrics_router
+from mysingle.auth.deps import get_current_active_user
+from mysingle.logging import setup_logging, get_structured_logger, log_user_action
+from mysingle.metrics import create_metrics_router
 
 # 로깅 설정
 setup_logging(
@@ -731,7 +1157,7 @@ logger = get_structured_logger(__name__)
 
 def create_app() -> FastAPI:
     """완전한 서비스 앱 생성"""
-    
+
     # 서비스 설정
     service_config = create_service_config(
         service_name="strategy-service",
@@ -741,39 +1167,39 @@ def create_app() -> FastAPI:
         enable_metrics=True,        # 메트릭 활성화
         enable_audit_logging=True,  # 감사 로그 활성화
     )
-    
+
     # 앱 생성
     app = create_fastapi_app(service_config)
-    
+
     # 메트릭 라우터 추가
     app.include_router(create_metrics_router())
-    
+
     # 비즈니스 라우터 추가
     app.include_router(create_strategy_router(), prefix="/strategies")
-    
+
     return app
 
 def create_strategy_router() -> APIRouter:
     """전략 관리 라우터"""
     router = APIRouter()
-    
+
     @router.post("/")
     async def create_strategy(request: Request, strategy_data: dict):
         """전략 생성 - 모든 기능 통합 예시"""
-        
+
         # 1. 인증
         user = get_current_active_user(request)
         logger.info(f"Strategy creation request from user {user.id}")
-        
+
         # 2. 입력 검증
         if not strategy_data.get("name"):
             logger.warning("Strategy creation failed: missing name")
             raise HTTPException(400, "Strategy name is required")
-        
+
         try:
             # 3. 비즈니스 로직
             strategy = await create_strategy_logic(user.id, strategy_data)
-            
+
             # 4. 사용자 액션 로깅
             log_user_action(
                 action="create_strategy",
@@ -782,7 +1208,7 @@ def create_strategy_router() -> APIRouter:
                 details={"name": strategy_data["name"]},
                 success=True
             )
-            
+
             logger.info(
                 "Strategy created successfully",
                 extra={
@@ -791,13 +1217,13 @@ def create_strategy_router() -> APIRouter:
                     "strategy_name": strategy_data["name"],
                 }
             )
-            
+
             return {
                 "strategy_id": str(strategy.id),
                 "name": strategy.name,
                 "created_at": strategy.created_at.isoformat(),
             }
-            
+
         except Exception as e:
             # 5. 에러 로깅
             log_user_action(
@@ -807,7 +1233,7 @@ def create_strategy_router() -> APIRouter:
                 success=False,
                 error=str(e)
             )
-            
+
             logger.error(
                 "Strategy creation failed",
                 extra={
@@ -816,43 +1242,43 @@ def create_strategy_router() -> APIRouter:
                     "strategy_data": strategy_data,
                 }
             )
-            
+
             raise HTTPException(500, "Strategy creation failed")
-    
+
     return router
 
 if __name__ == "__main__":
     import uvicorn
-    
+
     app = create_app()
     uvicorn.run(app, host="0.0.0.0", port=8000)
 ```
 
-### 6.2 모니터링 대시보드 구성
+### 7.2 모니터링 대시보드 구성
 
 ```python
 @router.get("/admin/system-status")
 async def get_system_status(request: Request):
     """시스템 전체 상태 조회"""
-    
+
     # 관리자 권한 확인
     admin_user = get_current_active_superuser(request)
-    
+
     # 메트릭 수집
-    from mysingle_quant.metrics import get_metrics_collector
+    from mysingle.metrics import get_metrics_collector
     collector = get_metrics_collector()
     metrics = collector.get_metrics()
-    
+
     # 감사 로그 통계
-    from mysingle_quant.audit.models import AuditLog
+    from mysingle.audit.models import AuditLog
     recent_requests = await AuditLog.find(
         {"occurred_at": {"$gte": datetime.utcnow() - timedelta(hours=1)}}
     ).count()
-    
+
     # Kong 헤더 정보
-    from mysingle_quant.auth.deps import get_extended_kong_headers_dict
+    from mysingle.auth.deps import get_extended_kong_headers_dict
     kong_info = get_extended_kong_headers_dict(request)
-    
+
     return {
         "service": metrics["service"],
         "uptime_seconds": metrics["uptime_seconds"],
@@ -876,23 +1302,23 @@ async def get_system_status(request: Request):
 
 ---
 
-## 7. 베스트 프랙티스
+## 8. 베스트 프랙티스
 
-### 7.1 성능 최적화
+### 8.1 성능 최적화
 
 1. **메트릭 제외 경로 설정**: 헬스체크, 정적 파일 제외
 2. **로그 레벨 조정**: Production에서는 INFO 이상만
 3. **감사 로그 선택적 기록**: 민감한 정보 제외
 4. **Kong 헤더 캐싱**: 자주 사용하는 헤더값 캐시
 
-### 7.2 보안 고려사항
+### 8.2 보안 고려사항
 
 1. **민감한 정보 로그 제외**: 비밀번호, 토큰 등
 2. **감사 로그 접근 제한**: 관리자만 접근 가능
 3. **헤더 검증**: Kong 헤더 위조 방지
 4. **로그 보존 정책**: 개인정보 보호 규정 준수
 
-### 7.3 운영 가이드라인
+### 8.3 운영 가이드라인
 
 1. **로그 모니터링**: 에러 로그 실시간 모니터링
 2. **메트릭 알림**: 성능 임계값 기반 알림
@@ -901,17 +1327,17 @@ async def get_system_status(request: Request):
 
 ---
 
-## 8. 트러블슈팅
+## 9. 트러블슈팅
 
-### 8.1 인증 문제
+### 9.1 인증 문제
 
 **문제**: `UserNotExists` 예외 발생
 **해결**: Kong 헤더 확인, AuthMiddleware 설정 검토
 
-**문제**: `UserInactive` 예외 발생  
+**문제**: `UserInactive` 예외 발생
 **해결**: 사용자 활성화 상태 확인
 
-### 8.2 로깅 문제
+### 9.2 로깅 문제
 
 **문제**: 로그가 기록되지 않음
 **해결**: 로깅 설정, 로그 레벨 확인
@@ -919,7 +1345,7 @@ async def get_system_status(request: Request):
 **문제**: Correlation ID가 전파되지 않음
 **해결**: 미들웨어 순서, 헤더 설정 확인
 
-### 8.3 메트릭 문제
+### 9.3 메트릭 문제
 
 **문제**: 메트릭이 수집되지 않음
 **해결**: MetricsMiddleware 활성화 확인

@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any, Dict
 
 import httpx
 
-from mysingle_quant.logging import get_logger
+from mysingle.logging import get_logger
 
 if TYPE_CHECKING:
     from fastapi import Request

@@ -241,7 +241,7 @@ app = create_fastapi_app(service_config)
 
 ```python
 # 고급 설정 (선택사항)
-from mysingle_quant.metrics import MetricsConfig
+from mysingle.metrics import MetricsConfig
 
 service_config = ServiceConfig(
     service_name="my-service",

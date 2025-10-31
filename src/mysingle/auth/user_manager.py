@@ -7,7 +7,7 @@ from beanie import PydanticObjectId
 from fastapi import Request, Response
 from pydantic import BaseModel
 
-from mysingle_quant.auth.schemas.oauth2 import BaseOAuthToken
+from mysingle.auth.schemas.oauth2 import BaseOAuthToken
 
 from ..auth.models import OAuthAccount, User
 from ..auth.schemas.user import UserCreate, UserUpdate

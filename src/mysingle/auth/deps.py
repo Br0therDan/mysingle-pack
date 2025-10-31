@@ -15,7 +15,7 @@ Key Features:
 
 Usage Example:
     from fastapi import Request
-    from mysingle_quant.auth.deps_new import get_current_active_verified_user
+    from mysingle.auth.deps_new import get_current_active_verified_user
 
     @router.get("/protected")
     async def protected_endpoint(request: Request):

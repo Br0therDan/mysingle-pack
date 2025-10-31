@@ -26,8 +26,8 @@
 ### 기본 설정
 
 ```python
-from mysingle_quant.core.app_factory import create_fastapi_app
-from mysingle_quant.core.service_types import ServiceConfig
+from mysingle.core.app_factory import create_fastapi_app
+from mysingle.core.service_types import ServiceConfig
 
 # 메트릭이 활성화된 서비스 설정
 service_config = ServiceConfig(
@@ -42,7 +42,7 @@ app = create_fastapi_app(service_config)
 ### 고급 설정
 
 ```python
-from mysingle_quant.metrics import MetricsConfig, create_metrics_middleware
+from mysingle.metrics import MetricsConfig, create_metrics_middleware
 
 # 커스텀 메트릭 설정
 metrics_config = MetricsConfig(
@@ -306,7 +306,7 @@ exclude_paths = {
 ### 커스텀 메트릭 추가
 
 ```python
-from mysingle_quant.metrics import get_metrics_collector
+from mysingle.metrics import get_metrics_collector
 
 # 현재 컬렉터 가져오기
 collector = get_metrics_collector()
@@ -324,7 +324,7 @@ collector.record_request_sync(
 
 ```python
 from fastapi import APIRouter, Depends
-from mysingle_quant.metrics import get_metrics_collector
+from mysingle.metrics import get_metrics_collector
 
 router = APIRouter()
 
