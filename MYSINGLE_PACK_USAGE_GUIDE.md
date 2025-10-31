@@ -16,6 +16,28 @@ MySingle-Quant Package는 마이크로서비스 아키텍처를 위한 통합 �
 
 ---
 
+## 권장 임포트 경로
+
+루트(`mysingle`)에서도 주요 심볼을 그대로 사용할 수 있지만, 가능한 서브패키지 경로를 권장합니다. 이렇게 하면 순환참조를 피하고, 필요한 모듈만 지연 로딩하여 초기화 비용을 줄일 수 있습니다.
+
+- Core (루트에서도 노출 유지)
+    - 권장: `from mysingle.core import create_fastapi_app, CommonSettings, settings, get_settings, init_mongo, get_mongodb_url, get_database_name`
+    - 루트도 가능: `from mysingle import create_fastapi_app, CommonSettings, settings, get_settings, init_mongo, get_mongodb_url, get_database_name`
+
+- Logging
+    - 권장: `from mysingle.logging import get_logger, setup_logging, configure_structured_logging`
+    - 루트도 가능: `from mysingle import get_logger`
+
+- Database
+    - 권장: `from mysingle.database import BaseDuckDBManager`
+    - 루트도 가능: `from mysingle import BaseDuckDBManager`
+
+- Clients
+    - 권장: `from mysingle.clients import BaseServiceClient`
+    - 루트도 가능: `from mysingle import BaseServiceClient`
+
+루트 패키지는 지연 로딩(lazy export) 구조입니다. 심볼 접근 시점에만 해당 서브패키지를 가져오므로, 불필요한 의존성 로딩을 줄일 수 있습니다.
+
 ## 1. 인증 시스템 (Authentication)
 
 ### 1.1 개요

@@ -58,6 +58,28 @@ if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
 ```
 
+## 🧭 Imports: 권장 경로
+
+루트 재노출은 유지되지만, 서브패키지 경로를 사용하면 순환참조를 피하고 초기화 비용을 줄일 수 있습니다.
+
+- Core (루트에서도 노출 유지)
+    - 권장: `from mysingle.core import create_fastapi_app, CommonSettings, settings, get_settings, init_mongo, get_mongodb_url, get_database_name`
+    - 루트도 가능: `from mysingle import create_fastapi_app, CommonSettings, settings, get_settings, init_mongo, get_mongodb_url, get_database_name`
+
+- Logging
+    - 권장: `from mysingle.logging import get_logger, setup_logging, configure_structured_logging`
+    - 루트도 가능: `from mysingle import get_logger`
+
+- Database
+    - 권장: `from mysingle.database import BaseDuckDBManager`
+    - 루트도 가능: `from mysingle import BaseDuckDBManager`
+
+- Clients
+    - 권장: `from mysingle.clients import BaseServiceClient`
+    - 루트도 가능: `from mysingle import BaseServiceClient`
+
+루트 패키지(`mysingle`)는 지연 로딩(lazy export)으로 구성되어 있어, 심볼 접근 시점에만 서브패키지를 가져옵니다.
+
 ### With Authentication
 ```python
 from mysingle.core import create_fastapi_app
