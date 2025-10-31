@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # fetch full history and tags for versioning
 
       - name: Install uv
         uses: astral-sh/setup-uv@v3
@@ -31,38 +33,84 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Generate unique version
-        id: unique-version
+      - name: Determine and set next version (Conventional Commits)
+        id: get-version
+        shell: bash
         run: |
-          # Get current version
-          CURRENT_VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
-          echo "Current version: $CURRENT_VERSION"
+          set -euo pipefail
 
-          # Parse version parts
-          IFS='.' read -r major minor patch <<< "$CURRENT_VERSION"
+          # Helper: read version from pyproject.toml
+          read_py_version() {
+            python -c "import tomllib;print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])"
+          }
 
-          # Generate unique version using timestamp
-          TIMESTAMP=$(date +%Y%m%d%H%M)
-          BUILD_NUMBER=${GITHUB_RUN_NUMBER:-1}
-          NEW_VERSION="${major}.${minor}.${BUILD_NUMBER}"
+          # Find latest tag matching v* (semantic version)
+          LAST_TAG=$(git describe --tags --match "v[0-9]*" --abbrev=0 2>/dev/null || echo "")
+          if [ -n "$LAST_TAG" ]; then
+            BASE_VERSION="${LAST_TAG#v}"
+            RANGE="$LAST_TAG..HEAD"
+          else
+            BASE_VERSION=$(read_py_version)
+            RANGE="HEAD"
+          fi
+          echo "Base version: $BASE_VERSION"
 
-          echo "Generated unique version: $NEW_VERSION"
-          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          # Gather commit messages since last tag (or all)
+          COMMITS=$(git log $RANGE --pretty=format:"%s%n%b" || echo "")
 
-          # Update pyproject.toml
+          # Determine bump level using Conventional Commits
+          BUMP="patch"
+          if echo "$COMMITS" | grep -qiE 'BREAKING CHANGE|feat!|refactor!|perf!'; then
+            BUMP="major"
+          elif echo "$COMMITS" | grep -qiE '(^|[[:space:]])feat(\(|:)|^feat(\(|:)|\nfeat(\(|:)'; then
+            BUMP="minor"
+          elif echo "$COMMITS" | grep -qiE '(^|[[:space:]])fix(\(|:)|^fix(\(|:)|\nfix(\(|:)'; then
+            BUMP="patch"
+          else
+            BUMP="patch"
+          fi
+          echo "Bump level: $BUMP"
+
+          # Parse version parts (default to 0 if missing)
+          IFS='.' read -r major minor patch <<< "$BASE_VERSION"
+          major=${major:-0}; minor=${minor:-0}; patch=${patch:-0}
+
+          # Compute next version
+          if [ "$BUMP" = "major" ]; then
+            major=$((major+1)); minor=0; patch=0
+          elif [ "$BUMP" = "minor" ]; then
+            minor=$((minor+1)); patch=0
+          else
+            patch=$((patch+1))
+          fi
+          NEW_VERSION="${major}.${minor}.${patch}"
+
+          echo "Computed next version: $NEW_VERSION"
+
+          # If version already changed in this commit, skip auto-bump and use it as-is
+          PREV_PY=$(git show HEAD~1:pyproject.toml 2>/dev/null || true)
+          if [ -n "$PREV_PY" ]; then
+            PREV_VER=$(echo "$PREV_PY" | python -c "import sys, tomllib; print(tomllib.loads(sys.stdin.read())['project']['version'])" 2>/dev/null || true)
+          else
+            PREV_VER=""
+          fi
+          CUR_VER=$(read_py_version)
+          if [ -n "$PREV_VER" ] && [ "$PREV_VER" != "$CUR_VER" ]; then
+            echo "Detected manual version bump in current commit: $CUR_VER (previous: $PREV_VER). Skipping auto-bump."
+            echo "version=$CUR_VER" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Update pyproject.toml in-place
+          CURRENT_VERSION=$(read_py_version)
           sed -i "s/version = \"$CURRENT_VERSION\"/version = \"$NEW_VERSION\"/" pyproject.toml
-          echo "Updated pyproject.toml with version $NEW_VERSION"
 
-          # Verify the update
-          UPDATED_VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+          # Verify
+          UPDATED_VERSION=$(read_py_version)
           echo "Verified updated version: $UPDATED_VERSION"
 
-      - name: Get version
-        id: get-version
-        run: |
-          VERSION=${{ steps.unique-version.outputs.version }}
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Package version: $VERSION"
+          # Expose for downstream steps/jobs
+          echo "version=$UPDATED_VERSION" >> $GITHUB_OUTPUT
 
       - name: Build package
         run: |
@@ -84,9 +132,9 @@ jobs:
     name: Publish to PyPI
     runs-on: ubuntu-latest
     needs: build
-    if: (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    if: ${{ github.event_name == 'push' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main') }}
     environment:
-      name: pypi
+      name: ${{ 'pypi' }}
       url: https://pypi.org/project/mysingle/
     steps:
       - name: Download build artifacts
@@ -98,7 +146,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v3
         with:
-          enable-cache: false # Disable cache for publish job
+          enable-cache: false
           version: "latest"
 
       - name: Publish to PyPI
@@ -110,6 +158,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build, publish-prod]
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    environment:
+      name: ${{ 'pypi' }}
+      url: https://pypi.org/project/mysingle/
     permissions:
       contents: write
     steps:
@@ -145,11 +196,11 @@ jobs:
 
             ## Installation
             ```bash
-            pip install mysingle-quant==${{ needs.build.outputs.version }}
+            pip install mysingle==${{ needs.build.outputs.version }}
             ```
 
             ## PyPI
-            https://pypi.org/project/mysingle-quant/${{ needs.build.outputs.version }}/
+            https://pypi.org/project/mysingle/${{ needs.build.outputs.version }}/
           draft: false
           prerelease: false
           generate_release_notes: false

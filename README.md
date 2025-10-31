@@ -139,6 +139,25 @@ ruff check src/ --fix
 mypy src/mysingle/
 ```
 
+## 🔖 Release & Versioning
+
+CI는 기본적으로 Conventional Commits를 파싱해 자동으로 다음 버전을 결정(major/minor/patch)합니다. 하지만 릴리스 전에 수동으로 버전을 지정하고 싶다면, 제공된 대화형 스크립트를 사용하세요. 이 스크립트로 직접 버전을 올리면 CI의 자동 버전 결정은 스킵됩니다(수동 변경 우선).
+
+### 대화형 버전 업 스크립트 사용법
+
+```bash
+python scripts/bump_version.py
+```
+
+- 현재 버전을 읽어와 bump 종류(major/minor/patch/custom)를 선택할 수 있습니다.
+- 옵션으로 main 브랜치 전환/최신 반영, 커밋/태그 생성, 원격 푸시까지 지원합니다.
+- 커밋 메시지는 `chore(release): vX.Y.Z (bump <type>)` 형태로 생성됩니다.
+- pyproject.toml의 `project.version`이 변경되므로, 같은 커밋에서 다시 자동 버전 올리기를 하지 않습니다.
+
+권장 플로우(수동 릴리스):
+
+1) 테스트/검토 완료 → 2) `python scripts/bump_version.py` 실행 → 3) 커밋/태그/푸시 → 4) CI가 빌드/퍼블리시 수행(수동 버전 유지)
+
 ## �️ Roadmap
 
 ### Phase 1: Enhanced Developer Experience (Current)
