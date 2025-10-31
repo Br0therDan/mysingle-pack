@@ -1,46 +1,46 @@
-# MySingle Quant
+# MySingle
 
-Common utilities and configurations for Quant Platform microservices.
+Common utilities and configurations for MySingle Platform microservices.
 
 ## 📦 Installation
 
 ### Basic Installation
 ```bash
-pip install mysingle-quant
+pip install mysingle
 ```
 Installs only core dependencies (`pydantic`, `pydantic-settings`).
 
 ### Feature-specific Installation
 ```bash
 # Authentication features
-pip install mysingle-quant[auth]
+pip install mysingle[auth]
 
 # Web framework features
-pip install mysingle-quant[web]
+pip install mysingle[web]
 
 # Database features
-pip install mysingle-quant[database]
+pip install mysingle[database]
 
 # Email features
-pip install mysingle-quant[email]
+pip install mysingle[email]
 
 # Monitoring features
-pip install mysingle-quant[monitoring]
+pip install mysingle[monitoring]
 
 # All features
-pip install mysingle-quant[full]
+pip install mysingle[full]
 
 # Development tools
-pip install mysingle-quant[dev]
+pip install mysingle[dev]
 ```
 
 ### Combined Installation
 ```bash
 # Web + Auth + Database
-pip install mysingle-quant[web,auth,database]
+pip install mysingle[web,auth,database]
 
 # Full features + development tools
-pip install mysingle-quant[full,dev]
+pip install mysingle[full,dev]
 ```
 
 ## 🚀 Quick Start
