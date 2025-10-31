@@ -20,7 +20,7 @@ MySingle-Quant Package는 마이크로서비스 아키텍처를 위한 통합 �
 
 ### 1.1 개요
 
-MySingle 패키지의 의 인증 시스템은 Kong Gateway와 완전히 통합된 Request 기반 인증 의존성 시스템을 제공합니다.
+MySingle 패키지의 인증 시스템은 Kong Gateway와 완전히 통합된 Request 기반 인증 의존성 시스템을 제공합니다.
 
 ### 1.2 주요 특징
 
@@ -28,7 +28,7 @@ MySingle 패키지의 의 인증 시스템은 Kong Gateway와 완전히 통합�
 - **Kong Gateway 완전 지원**: 헤더 기반 인증으로 높은 성능
 - **User 캐싱 시스템**: Redis + In-Memory 캐싱으로 DB 조회 최소화
 - **서비스 타입별 자동 인증**: IAM vs NON_IAM 서비스 구분
-- **Depends() 호환성**: 기존 코드와의 하위 호환성 제공
+- **데코레이터 지원**: 인증/권한 체크 데코레이터로 엔드포인트 간소화
 
 ### 1.3 기본 사용법
 
@@ -68,30 +68,100 @@ async def flexible_endpoint(request: Request):
         return {"message": "Hello anonymous user"}
 ```
 
-#### Depends() 패턴 (호환성)
+#### 데코레이터 패턴 (간소화)
 
 ```python
-from fastapi import Depends, APIRouter
-from mysingle.auth.deps import (
-    get_current_active_user_deps,
-    get_current_active_verified_user_deps,
-    get_current_active_superuser_deps,
-)
-from mysingle.auth.models import User
+from fastapi import APIRouter, Request
+from mysingle.auth.deps import authenticated, verified_only, admin_only, resource_owner_required
 
 router = APIRouter()
 
-@router.get("/legacy-endpoint")
-async def legacy_style(user: User = Depends(get_current_active_user_deps)):
-    """기존 Depends() 패턴 호환"""
-    return {"user_id": str(user.id)}
+@router.get("/profile")
+@authenticated
+async def get_user_profile(request: Request):
+    """인증 사용자만 접근"""
+    user = request.state.user
+    return {"user_id": str(user.id), "email": user.email}
 
-@router.post("/verified-only")
-async def verified_users_only(
-    user: User = Depends(get_current_active_verified_user_deps)
-):
+@router.get("/admin")
+@admin_only
+async def admin_only_endpoint(request: Request):
+    """관리자 전용 엔드포인트"""
+    admin_user = request.state.user
+    return {"message": f"Hello admin {admin_user.email}"}
+
+@router.get("/verified")
+@verified_only
+async def verified_only_endpoint(request: Request):
     """이메일 검증된 사용자만"""
-    return {"message": f"Verified user: {user.email}"}
+    user = request.state.user
+    return {"message": f"Welcome {user.email}"}
+
+@router.get("/users/{user_id}/me")
+@authenticated
+@resource_owner_required("user_id")
+async def get_my_profile(request: Request, user_id: str):
+    """소유자(본인)만 접근 허용: path param user_id와 현재 사용자 ID가 일치해야 함"""
+    user = request.state.user
+    return {"me": {"id": str(user.id), "email": user.email}}
+```
+
+#### 리소스 소유자 커스텀 추출기(extractor) 사용
+
+중첩 바디나 복합 경로에서 소유자 식별이 필요하면 extractor를 주입할 수 있습니다.
+
+```python
+from fastapi import APIRouter, Request
+from pydantic import BaseModel
+from mysingle.auth.deps import authenticated, resource_owner_required
+
+router = APIRouter()
+
+class UpdateProfilePayload(BaseModel):
+    owner: dict
+    # e.g. {"id": "..."}
+
+def extract_owner_from_body(request: Request, kwargs: dict):
+    # FastAPI는 바디 모델을 엔드포인트 인자로 바인딩합니다.
+    payload: UpdateProfilePayload | None = kwargs.get("payload")
+    if payload and isinstance(payload.owner, dict):
+        return payload.owner.get("id")
+    return None
+
+@router.put("/users/{user_id}")
+@authenticated
+@resource_owner_required(extractor=extract_owner_from_body)
+async def update_user(request: Request, user_id: str, payload: UpdateProfilePayload):
+    # path user_id와 body.owner.id 둘 중 하나를 추출할 수 있도록 extractor 구현
+    return {"ok": True}
+```
+
+### 1.6 캐시 정책(Cache Policy)
+
+- 미들웨어: JWT( IAM )·Kong 헤더(NON_IAM) 인증 시 사용자 캐시 우선 조회, MISS 시 DB 조회 후 저장
+- 로그인: 성공 시 사용자 정보를 비동기으로 캐시에 갱신(set)
+- 리프레시: refresh-token 갱신 시 사용자 캐시도 비동기로 최신화(set)
+- 로그아웃: `UserManager.on_after_logout`에서 사용자 캐시 무효화(invalidate)
+- 업데이트/삭제: `UserManager._update`, `on_after_update`, `on_after_delete`에서 캐시 무효화
+- TTL/키 전략: 설정에서 관리(아래 참고)
+
+#### 캐시 설정
+
+`CommonSettings`에서 TTL과 키 프리픽스를 환경별로 조정할 수 있습니다.
+
+```python
+from mysingle.core.config import CommonSettings
+
+class Settings(CommonSettings):
+    USER_CACHE_TTL_SECONDS: int = 600       # 10분
+    USER_CACHE_KEY_PREFIX: str = "user"     # 키 프리픽스
+```
+
+환경변수(.env) 예시:
+
+```
+USER_CACHE_TTL_SECONDS=600
+USER_CACHE_KEY_PREFIX=user
 ```
 
 ### 1.4 인증 함수 종류

@@ -21,6 +21,7 @@ from starlette.types import ASGIApp
 
 from ..core.service_types import ServiceConfig, ServiceType
 from ..logging import get_logger
+from .cache import get_user_cache
 from .exceptions import AuthorizationFailed, InvalidToken, UserInactive, UserNotExists
 from .models import User
 
@@ -42,6 +43,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
         self.service_config = service_config
         self.public_paths = self._prepare_public_paths()
+        # User Cache (Hybrid: Redis + In-Memory)
+        self.user_cache = get_user_cache()
 
     def _prepare_public_paths(self) -> list[str]:
         """공개 경로 목록 준비"""
@@ -98,22 +101,14 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 logger.warning("JWT security module not available")
                 return None
 
-            try:
-                from beanie import PydanticObjectId
-
-                from .user_manager import UserManager
-            except ImportError:
-                logger.warning("User management modules not available")
-                return None
-
             jwt_manager = get_jwt_manager()
             decoded_token = jwt_manager.decode_token(token)
             user_id = decoded_token.get("sub")
             if not user_id:
                 return None
 
-            user_manager = UserManager()
-            user = await user_manager.get(PydanticObjectId(user_id))
+            # 캐시 우선 조회 -> 미스 시 DB 조회 후 캐시 저장
+            user = await self._get_user_with_cache(user_id)
 
             if user and not user.is_active:
                 logger.warning(f"Inactive user attempted access: {user_id}")
@@ -138,6 +133,19 @@ class AuthMiddleware(BaseHTTPMiddleware):
             if not x_user_id:
                 logger.debug("No X-User-ID header found in request")
                 return None
+
+            # 캐시에 사용자 정보가 있으면 우선 사용 (게이트웨이 경로에서도 재사용)
+            cached_user = await self.user_cache.get_user(str(x_user_id))
+            if cached_user:
+                if not cached_user.is_active:
+                    logger.warning(
+                        f"Inactive user from cache via gateway headers: {x_user_id}"
+                    )
+                    return None
+                logger.debug(
+                    f"User authenticated via cache (gateway): {cached_user.email} (ID: {cached_user.id})"
+                )
+                return cached_user
 
             # Gateway 헤더로부터 User 객체 구성
             try:
@@ -173,6 +181,12 @@ class AuthMiddleware(BaseHTTPMiddleware):
             logger.debug(
                 f"User authenticated via gateway headers: {user.email} (ID: {user.id})"
             )
+
+            # 게이트웨이 기반 사용자도 단기 캐시 (TTL 기본값)
+            try:
+                await self.user_cache.set_user(user)
+            except Exception as e:
+                logger.debug(f"Failed to set user in cache (gateway): {e}")
             return user
 
         except Exception as e:
@@ -204,6 +218,37 @@ class AuthMiddleware(BaseHTTPMiddleware):
             # Fallback: 직접 토큰 (개발 환경에서 Gateway 없이 테스트할 때)
             logger.debug("NON_IAM service: Falling back to direct JWT validation")
             return await self._authenticate_iam_service(request)
+
+    async def _get_user_with_cache(self, user_id: str) -> Optional[User]:
+        """캐시 우선으로 사용자 조회, 미스 시 DB 조회 후 캐시 저장"""
+        try:
+            # 1) 캐시 조회
+            cached = await self.user_cache.get_user(str(user_id))
+            if cached:
+                logger.debug(f"Cache HIT for user_id={user_id}")
+                return cached
+
+            logger.debug(f"Cache MISS for user_id={user_id} - querying DB")
+
+            # 2) DB 조회
+            from beanie import PydanticObjectId
+
+            from .user_manager import UserManager
+
+            user_manager = UserManager()
+            user = await user_manager.get(PydanticObjectId(user_id))
+
+            # 3) 캐시에 저장 (성공 시)
+            if user:
+                try:
+                    await self.user_cache.set_user(user)
+                except Exception as e:
+                    logger.debug(f"Failed to set user in cache: {e}")
+            return user
+
+        except Exception as e:
+            logger.debug(f"_get_user_with_cache error: {e}")
+            return None
 
     def _create_error_response(self, error: Exception) -> JSONResponse:
         """인증 에러 응답 생성"""

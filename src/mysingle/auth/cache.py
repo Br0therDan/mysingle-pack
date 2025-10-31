@@ -53,13 +53,16 @@ except ImportError:
 class BaseUserCache(ABC):
     """User 캐시 추상 기본 클래스"""
 
+    default_ttl: int = 300
+    key_prefix: str = "user"
+
     @abstractmethod
     async def get_user(self, user_id: str) -> Optional[User]:
         """사용자 조회"""
         pass
 
     @abstractmethod
-    async def set_user(self, user: User, ttl: int = 300) -> None:
+    async def set_user(self, user: User, ttl: int | None = None) -> None:
         """사용자 캐시 저장"""
         pass
 
@@ -91,7 +94,13 @@ class RedisUserCache(BaseUserCache):
     다중 서비스 인스턴스 간 캐시를 공유할 수 있습니다.
     """
 
-    def __init__(self, redis_url: str = "redis://localhost:6379/0"):
+    def __init__(
+        self,
+        redis_url: str = "redis://localhost:6379/0",
+        *,
+        key_prefix: str = "user",
+        default_ttl: int = 300,
+    ):
         """
         Redis 캐시 초기화
 
@@ -102,6 +111,8 @@ class RedisUserCache(BaseUserCache):
         self.redis_client: Optional[Redis] = None  # type: ignore
         self._initialized = False
         self._init_attempted = False
+        self.key_prefix = key_prefix
+        self.default_ttl = default_ttl
 
     async def _ensure_initialized(self):
         """Redis 클라이언트 초기화 (lazy initialization)"""
@@ -144,7 +155,7 @@ class RedisUserCache(BaseUserCache):
 
     def _user_cache_key(self, user_id: str) -> str:
         """User 캐시 키 생성"""
-        return f"user:{user_id}"
+        return f"{self.key_prefix}:{user_id}"
 
     def _serialize_user(self, user: User) -> str:
         """User 객체를 JSON 문자열로 직렬화"""
@@ -197,7 +208,7 @@ class RedisUserCache(BaseUserCache):
             logger.error(f"Redis get_user error: {e}")
             return None
 
-    async def set_user(self, user: User, ttl: int = 300) -> None:
+    async def set_user(self, user: User, ttl: int | None = None) -> None:
         """Redis에 사용자 캐시 저장"""
         if not await self._ensure_initialized():
             return
@@ -208,9 +219,9 @@ class RedisUserCache(BaseUserCache):
         try:
             cache_key = self._user_cache_key(str(user.id))
             data = self._serialize_user(user)
-
-            await self.redis_client.setex(cache_key, ttl, data)
-            logger.debug(f"Redis cache SET for user_id: {user.id}, TTL: {ttl}s")
+            ttl_to_use = ttl if ttl is not None else self.default_ttl
+            await self.redis_client.setex(cache_key, ttl_to_use, data)
+            logger.debug(f"Redis cache SET for user_id: {user.id}, TTL: {ttl_to_use}s")
 
         except Exception as e:
             logger.error(f"Redis set_user error: {e}")
@@ -284,9 +295,11 @@ class InMemoryUserCache(BaseUserCache):
     단일 프로세스 내에서만 유효합니다.
     """
 
-    def __init__(self):
+    def __init__(self, *, key_prefix: str = "user", default_ttl: int = 300):
         """In-Memory 캐시 초기화"""
         self._cache: dict[str, tuple[User, datetime]] = {}
+        self.key_prefix = key_prefix
+        self.default_ttl = default_ttl
         logger.info("In-Memory User Cache initialized")
 
     def _is_expired(self, expiry: datetime) -> bool:
@@ -303,8 +316,7 @@ class InMemoryUserCache(BaseUserCache):
     async def get_user(self, user_id: str) -> Optional[User]:
         """In-Memory 캐시에서 사용자 조회"""
         self._cleanup_expired()
-
-        cache_key = f"user:{user_id}"
+        cache_key = f"{self.key_prefix}:{user_id}"
         if cache_key in self._cache:
             user, expiry = self._cache[cache_key]
             if not self._is_expired(expiry):
@@ -318,16 +330,17 @@ class InMemoryUserCache(BaseUserCache):
         logger.debug(f"In-Memory cache MISS for user_id: {user_id}")
         return None
 
-    async def set_user(self, user: User, ttl: int = 300) -> None:
+    async def set_user(self, user: User, ttl: int | None = None) -> None:
         """In-Memory 캐시에 사용자 저장"""
-        cache_key = f"user:{user.id}"
-        expiry = datetime.utcnow() + timedelta(seconds=ttl)
+        cache_key = f"{self.key_prefix}:{user.id}"
+        ttl_to_use = ttl if ttl is not None else self.default_ttl
+        expiry = datetime.utcnow() + timedelta(seconds=ttl_to_use)
         self._cache[cache_key] = (user, expiry)
-        logger.debug(f"In-Memory cache SET for user_id: {user.id}, TTL: {ttl}s")
+        logger.debug(f"In-Memory cache SET for user_id: {user.id}, TTL: {ttl_to_use}s")
 
     async def invalidate_user(self, user_id: str) -> None:
         """In-Memory 캐시에서 사용자 무효화"""
-        cache_key = f"user:{user_id}"
+        cache_key = f"{self.key_prefix}:{user_id}"
         if cache_key in self._cache:
             del self._cache[cache_key]
             logger.debug(f"In-Memory cache INVALIDATED for user_id: {user_id}")
@@ -354,7 +367,13 @@ class HybridUserCache(BaseUserCache):
     Redis를 우선 사용하고, Redis가 없으면 In-Memory로 폴백합니다.
     """
 
-    def __init__(self, redis_url: Optional[str] = None):
+    def __init__(
+        self,
+        redis_url: Optional[str] = None,
+        *,
+        key_prefix: str = "user",
+        default_ttl: int = 300,
+    ):
         """
         하이브리드 캐시 초기화
 
@@ -362,12 +381,20 @@ class HybridUserCache(BaseUserCache):
             redis_url: Redis 연결 URL (None이면 환경변수 사용)
         """
         # Redis 캐시 (Primary)
-        self.redis_cache = RedisUserCache(redis_url or "redis://localhost:6379/0")
+        self.redis_cache = RedisUserCache(
+            redis_url or "redis://localhost:6379/0",
+            key_prefix=key_prefix,
+            default_ttl=default_ttl,
+        )
 
         # In-Memory 캐시 (Fallback)
-        self.memory_cache = InMemoryUserCache()
+        self.memory_cache = InMemoryUserCache(
+            key_prefix=key_prefix, default_ttl=default_ttl
+        )
 
         self._use_redis = True  # Redis 사용 가능 여부
+        self.key_prefix = key_prefix
+        self.default_ttl = default_ttl
 
     async def _check_redis_available(self) -> bool:
         """Redis 사용 가능 여부 확인 (캐싱)"""
@@ -392,7 +419,7 @@ class HybridUserCache(BaseUserCache):
         # Redis 실패 시 In-Memory 폴백
         return await self.memory_cache.get_user(user_id)
 
-    async def set_user(self, user: User, ttl: int = 300) -> None:
+    async def set_user(self, user: User, ttl: int | None = None) -> None:
         """하이브리드 캐시에 사용자 저장"""
         # Redis에 저장 시도
         if await self._check_redis_available():
@@ -451,19 +478,26 @@ def get_user_cache(redis_url: Optional[str] = None) -> BaseUserCache:
     global _user_cache_instance
 
     if _user_cache_instance is None:
-        # 환경변수에서 Redis URL 가져오기
+        # 환경설정에서 Redis URL 및 캐시 설정 가져오기
+        key_prefix = "user"
+        default_ttl = 300
         if redis_url is None:
             try:
                 from ..core.config import CommonSettings
 
                 settings = CommonSettings()
                 redis_url = getattr(settings, "REDIS_URL", None)
+                key_prefix = getattr(settings, "USER_CACHE_KEY_PREFIX", "user")
+                default_ttl = getattr(settings, "USER_CACHE_TTL_SECONDS", 300)
             except Exception:
                 redis_url = None
-
         # 하이브리드 캐시 생성 (Redis + In-Memory)
-        _user_cache_instance = HybridUserCache(redis_url)
-        logger.info("User cache singleton initialized (Hybrid: Redis + In-Memory)")
+        _user_cache_instance = HybridUserCache(
+            redis_url, key_prefix=key_prefix, default_ttl=default_ttl
+        )
+        logger.info(
+            f"User cache singleton initialized (Hybrid: Redis + In-Memory, prefix='{key_prefix}', ttl={default_ttl}s)"
+        )
 
     return _user_cache_instance
 

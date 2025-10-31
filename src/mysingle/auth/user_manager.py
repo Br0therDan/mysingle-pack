@@ -20,6 +20,7 @@ from ..email.email_gen import (
 )
 from ..email.email_sending import send_email
 from ..logging import get_logger
+from .cache import get_user_cache
 from .exceptions import (
     InvalidID,
     InvalidResetPasswordToken,
@@ -555,7 +556,8 @@ class UserManager:
         triggered the operation, defaults to None.
         """
         await self.on_before_delete(user, request)
-        await self.delete(user)
+        # 실제 삭제 수행 (Beanie Document instance 삭제)
+        await user.delete()
         await self.on_after_delete(user, request)
 
     async def validate_password(self, password: str, user: UserCreate | User) -> None:
@@ -634,6 +636,12 @@ class UserManager:
         logger.info(
             f"User updated: {user.email} (ID: {user.id}), fields: {list(update_dict.keys())}"
         )
+        # 캐시 무효화
+        try:
+            await get_user_cache().invalidate_user(str(user.id))
+            logger.debug(f"User cache invalidated after update: {user.id}")
+        except Exception as e:
+            logger.debug(f"Failed to invalidate user cache after update: {e}")
 
     async def on_after_request_verify(
         self, user: User, token: str, request: Request | None = None
@@ -863,6 +871,12 @@ class UserManager:
         :param request: 선택적 FastAPI 요청
         """
         logger.info(f"User logged out: {user.email} (ID: {user.id})")
+        # 로그아웃 시 캐시 무효화 정책 적용 (세션 종료 시점에 최신 정책 반영)
+        try:
+            await get_user_cache().invalidate_user(str(user.id))
+            logger.debug(f"User cache invalidated after logout: {user.id}")
+        except Exception as e:
+            logger.debug(f"Failed to invalidate user cache after logout: {e}")
         return  # pragma: no cover
 
     async def on_before_delete(
@@ -889,6 +903,12 @@ class UserManager:
         :param request: Optional FastAPI request that
         triggered the operation, defaults to None.
         """
+        # 캐시 무효화
+        try:
+            await get_user_cache().invalidate_user(str(user.id))
+            logger.debug(f"User cache invalidated after delete: {user.id}")
+        except Exception as e:
+            logger.debug(f"Failed to invalidate user cache after delete: {e}")
         return  # pragma: no cover
 
     async def authenticate(self, username: str, password: str) -> User | None:
@@ -940,6 +960,12 @@ class UserManager:
         for key, val in validated_update_dict.items():
             setattr(user, key, val)
         await user.save()
+        # 업데이트 후 캐시 무효화 (중앙화)
+        try:
+            await get_user_cache().invalidate_user(str(user.id))
+            logger.debug(f"User cache invalidated in _update: {user.id}")
+        except Exception as e:
+            logger.debug(f"Failed to invalidate user cache in _update: {e}")
         return user
 
 

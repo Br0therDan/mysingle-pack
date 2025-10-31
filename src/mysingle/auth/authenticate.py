@@ -6,6 +6,7 @@ from pydantic import SecretStr
 
 from ..core.config import settings
 from ..logging import get_logger
+from .cache import get_user_cache
 from .models import User
 from .schemas.auth import TokenResponse
 from .security.cookie import delete_cookie, set_auth_cookies
@@ -50,6 +51,24 @@ class Authentication:
             is_superuser=user.is_superuser,
             is_active=user.is_active,
         )
+
+        # 캐시 갱신: 로그인 성공 시 최신 사용자 정보 캐시에 저장 (비동기, 실패 무시)
+        try:
+            import asyncio
+
+            async def _cache_set():
+                try:
+                    await get_user_cache().set_user(user)
+                except Exception:
+                    pass
+
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                loop.create_task(_cache_set())
+            else:
+                loop.run_until_complete(_cache_set())
+        except Exception:
+            pass
 
         # 토큰 전송 방식에 따른 처리
         token_response = TokenResponse(
@@ -106,6 +125,28 @@ class Authentication:
             is_superuser=payload.get("is_superuser", False),
             is_active=payload.get("is_active", True),
         )
+
+        # 캐시 갱신: refresh 토큰 갱신 시에도 사용자 캐시 최신화 (비동기, 실패 무시)
+        try:
+            import asyncio
+
+            from beanie import PydanticObjectId
+
+            async def _refresh_cache():
+                try:
+                    user = await user_manager.get(PydanticObjectId(user_id))
+                    if user:
+                        await get_user_cache().set_user(user)
+                except Exception:
+                    pass
+
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                loop.create_task(_refresh_cache())
+            else:
+                loop.run_until_complete(_refresh_cache())
+        except Exception:
+            pass
 
         token_response = TokenResponse(
             access_token=access_token,

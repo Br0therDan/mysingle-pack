@@ -63,6 +63,9 @@ class CommonSettings(BaseSettings):
     MONGODB_USERNAME: str = "root"
     MONGODB_PASSWORD: str = "example"
     REDIS_URL: str = "redis://localhost:6379/0"
+    # USER CACHE SETTINGS
+    USER_CACHE_TTL_SECONDS: int = 300
+    USER_CACHE_KEY_PREFIX: str = "user"
 
     # SECURITY & AUTH TOKEN SETTINGS
     SECRET_KEY: str = "dev-secret-key-change-in-production"
