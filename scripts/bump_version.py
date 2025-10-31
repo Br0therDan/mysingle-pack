@@ -104,7 +104,10 @@ def write_version(new_version: Version) -> None:
     # Replace existing version line if present
     pattern = re.compile(r'(?m)^(\s*version\s*=\s*")([^\"]+)(\")\s*$')
     if pattern.search(content):
-        content = pattern.sub(rf"\1{new_version}\3", content)
+        # Use a function replacement to avoid backreference ambiguity like \11
+        content = pattern.sub(
+            lambda m: f"{m.group(1)}{new_version}{m.group(3)}", content
+        )
     else:
         # Insert after name line if exists within [project] section
         lines = content.splitlines(keepends=True)
