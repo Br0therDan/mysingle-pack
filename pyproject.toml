@@ -1,7 +1,7 @@
 
 [project]
 name = "mysingle"
-version = "1.1.0"
+version = "1.1.1"
 description = "Common utilities and configurations for MySingle Platform microservices"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -90,7 +90,7 @@ ignore = [
     "B904",   # raise ... from err (not always necessary for HTTP exceptions)
     "SIM105", # suppressible-exception (try-except-pass 패턴, 일부 허용)
     "SIM117",
-    "SIM103"
+    "SIM103",
 ]
 
 [tool.ruff.lint.isort]

@@ -79,17 +79,73 @@ def read_current_version() -> Version:
 
     with open(PYPROJECT_PATH, "rb") as f:
         data = tomllib.load(f)
-    v = data["project"]["version"]
-    return Version.parse(v)
+
+    try:
+        v = data["project"]["version"]
+        return Version.parse(v)
+    except KeyError:
+        # Fallback: try to find a version line in raw text or initialize
+        with open(PYPROJECT_PATH, "r", encoding="utf-8") as fr:
+            raw = fr.read()
+        m = re.search(r"(?m)^\s*version\s*=\s*\"([^\"]+)\"\s*$", raw)
+        if m:
+            return Version.parse(m.group(1))
+        # No version present; initialize to 0.0.0 as base
+        print(
+            "\nWarning: No [project].version found in pyproject.toml; initializing from 0.0.0"
+        )
+        return Version(0, 0, 0)
 
 
 def write_version(new_version: Version) -> None:
     with open(PYPROJECT_PATH, "r", encoding="utf-8") as f:
         content = f.read()
-    # naive safe replacement (assumes single version line)
-    content = re.sub(
-        r'(?m)^(version\s*=\s*")([^"]+)(")', rf"\\1{new_version}\\3", content
-    )
+
+    # Replace existing version line if present
+    pattern = re.compile(r'(?m)^(\s*version\s*=\s*")([^\"]+)(\")\s*$')
+    if pattern.search(content):
+        content = pattern.sub(rf"\1{new_version}\3", content)
+    else:
+        # Insert after name line if exists within [project] section
+        lines = content.splitlines(keepends=True)
+        inserted = False
+        in_project = False
+        new_lines: list[str] = []
+        for _i, line in enumerate(lines):
+            if line.strip().startswith("[project]"):
+                in_project = True
+                new_lines.append(line)
+                continue
+            if in_project and re.match(r"^\s*\[.*\]", line):
+                # reached next section without finding name; insert before leaving section
+                if not inserted:
+                    new_lines.append(f'version = "{new_version}"\n')
+                    inserted = True
+                new_lines.append(line)
+                in_project = False
+                continue
+            new_lines.append(line)
+            if (
+                in_project
+                and (re.match(r'^\s*name\s*=\s*".*"\s*$', line))
+                and not inserted
+            ):
+                new_lines.append(f'version = "{new_version}"\n')
+                inserted = True
+        if not inserted:
+            # If still not inserted, try to place right after [project] header
+            content = re.sub(
+                r"(?m)^\[project\]\s*\n",
+                f'[project]\nversion = "{new_version}"\n',
+                content,
+                count=1,
+            )
+        else:
+            content = "".join(new_lines)
+
+    # Also remove any accidental stray backreference artifacts like \11.2.3\3 lines
+    content = re.sub(r"(?m)^\\\d+\.[^\n]*\\\d+\s*$", "", content)
+
     with open(PYPROJECT_PATH, "w", encoding="utf-8") as f:
         f.write(content)
 
