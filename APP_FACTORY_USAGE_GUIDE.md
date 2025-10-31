@@ -1,6 +1,7 @@
 # APP Factory 사용 가이드
 
 FastAPI 애플리케이션 팩토리를 사용하여 표준화된 마이크로서비스를 생성하는 종합 가이드입니다.
+📊 **[MySingle 패키지 활용가이드](./MYSINGLE_PACK_USAGE_GUIDE.md)**
 
 ## 📋 목차
 
