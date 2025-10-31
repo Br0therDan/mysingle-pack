@@ -90,6 +90,7 @@ ignore = [
     "B904",   # raise ... from err (not always necessary for HTTP exceptions)
     "SIM105", # suppressible-exception (try-except-pass 패턴, 일부 허용)
     "SIM117",
+    "SIM103"
 ]
 
 [tool.ruff.lint.isort]

@@ -9,8 +9,8 @@ from .core import (
     init_mongo,
     settings,
 )
-from .logging import get_logger
 from .database import BaseDuckDBManager
+from .logging import get_logger
 
 __all__ = [
     # Core: Config

@@ -23,10 +23,9 @@
 
 import logging
 import sys
-import time
 from contextvars import ContextVar
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Optional
 
 import structlog
 

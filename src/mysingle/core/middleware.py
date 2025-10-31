@@ -10,11 +10,11 @@ from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from ..logging.structured_logging import (
+    clear_logging_context,
     get_structured_logger,
     set_correlation_id,
-    set_user_id,
     set_request_id,
-    clear_logging_context,
+    set_user_id,
 )
 
 
@@ -180,8 +180,9 @@ def add_logging_middleware(app, service_name: str, enable_timing_logs: bool = Fa
 
 def setup_request_id_dependency():
     """Request ID 의존성 함수 (FastAPI dependency)"""
-    from fastapi import Depends, Header
     from typing import Optional
+
+    from fastapi import Depends, Header
 
     def get_request_context(
         correlation_id: Optional[str] = Header(None, alias="correlation-id"),

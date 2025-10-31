@@ -10,7 +10,6 @@ from httpx_oauth.clients.kakao import KakaoOAuth2
 from httpx_oauth.clients.naver import NaverOAuth2
 
 from ..core.config import settings
-
 from .schemas.oauth2 import (
     BaseOAuthToken,
     GoogleProfile,

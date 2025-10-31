@@ -13,13 +13,13 @@ from ..auth.models import OAuthAccount, User
 from ..auth.schemas.user import UserCreate, UserUpdate
 from ..auth.types import DependencyCallable
 from ..core.config import settings
-from ..logging import get_logger
 from ..email.email_gen import (
     generate_new_account_email,
     generate_reset_password_email,
     generate_verification_email,
 )
 from ..email.email_sending import send_email
+from ..logging import get_logger
 from .exceptions import (
     InvalidID,
     InvalidResetPasswordToken,

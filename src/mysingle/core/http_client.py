@@ -3,9 +3,11 @@
 Standard HTTP Client with Connection Pooling
 """
 
-import httpx
-from typing import Optional, Dict, Any
 from contextlib import asynccontextmanager
+from typing import Dict, Optional
+
+import httpx
+
 from ..core.config import settings
 from ..logging import get_logger
 

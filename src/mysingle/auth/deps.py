@@ -25,7 +25,7 @@ Usage Example:
 
 from typing import Optional
 
-from fastapi import Request
+from fastapi import Depends, Request
 
 from ..logging import get_logger
 from .exceptions import AuthorizationFailed, UserInactive, UserNotExists
@@ -590,7 +590,6 @@ Example:
         return {"user_id": str(user.id)}
 """
 
-from fastapi import Depends
 
 
 def get_current_user_deps(request: Request = Depends()) -> User:

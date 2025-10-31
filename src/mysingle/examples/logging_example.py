@@ -6,19 +6,20 @@ Structured Logging 시스템 테스트 예제
 """
 
 import asyncio
+
 from mysingle.logging import (
-    configure_structured_logging,
-    get_structured_logger,
-    set_correlation_id,
-    set_user_id,
-    set_request_id,
-    get_correlation_id,
-    get_user_id,
-    get_request_id,
     clear_logging_context,
-    log_user_action,
-    log_service_call,
+    configure_structured_logging,
+    get_correlation_id,
+    get_request_id,
+    get_structured_logger,
+    get_user_id,
     log_database_operation,
+    log_service_call,
+    log_user_action,
+    set_correlation_id,
+    set_request_id,
+    set_user_id,
 )
 
 

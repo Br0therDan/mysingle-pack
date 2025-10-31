@@ -6,22 +6,22 @@ from .db import (
     init_mongo,
 )
 from .http_client import (
+    HttpClientConfig,
     ServiceHttpClient,
     ServiceHttpClientManager,
     create_service_http_client,
     get_service_http_client,
-    make_service_request,
     http_client_lifespan,
-    HttpClientConfig,
+    make_service_request,
 )
-from .service_types import ServiceType, create_service_config
 from .middleware import (
-    LoggingMiddleware,
     HealthCheckLoggingFilter,
+    LoggingMiddleware,
     TimingLogMiddleware,
     add_logging_middleware,
     setup_request_id_dependency,
 )
+from .service_types import ServiceType, create_service_config
 
 __all__ = [
     # Core Settings

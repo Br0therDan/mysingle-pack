@@ -19,8 +19,8 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
-from ..logging import get_logger
 from ..core.service_types import ServiceConfig, ServiceType
+from ..logging import get_logger
 from .exceptions import AuthorizationFailed, InvalidToken, UserInactive, UserNotExists
 from .models import User
 
