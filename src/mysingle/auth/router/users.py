@@ -1,7 +1,5 @@
 from beanie import PydanticObjectId
-from fastapi import APIRouter, Depends, Request, Response, status
-
-from mysingle.auth.models import User
+from fastapi import APIRouter, Request, Response, status
 
 from ..deps import get_current_active_superuser, get_current_active_verified_user
 from ..exceptions import (
@@ -22,11 +20,9 @@ def get_users_router() -> APIRouter:
         response_model=UserResponse,
     )
     async def get_user_me(
-        current_user: User = Depends(get_current_active_verified_user),
+        request: Request,
     ) -> UserResponse:
-        if current_user is None:
-            raise UserNotExists(identifier="current user", identifier_type="user")
-
+        current_user = get_current_active_verified_user(request)
         return UserResponse(**current_user.model_dump(by_alias=True))
 
     @router.get(
@@ -34,7 +30,7 @@ def get_users_router() -> APIRouter:
         response_model=dict,
     )
     async def get_user_activity(
-        current_user: User = Depends(get_current_active_verified_user),
+        request: Request,
     ) -> dict:
         """
         현재 사용자의 활동 기록 조회.
@@ -42,6 +38,7 @@ def get_users_router() -> APIRouter:
         Returns:
             dict: 사용자 활동 요약 정보
         """
+        current_user = get_current_active_verified_user(request)
         return await user_manager.get_user_activity_summary(current_user)
 
     @router.patch(
@@ -49,9 +46,10 @@ def get_users_router() -> APIRouter:
         response_model=UserResponse,
     )
     async def update_user_me(
+        request: Request,
         obj_in: UserUpdate,
-        current_user: User = Depends(get_current_active_verified_user),
     ) -> UserResponse:
+        current_user = get_current_active_verified_user(request)
         # UserManager.update에서 이미 적절한 예외를 발생시키므로
         # 직접 전파하도록 수정
         user = await user_manager.update(obj_in, current_user)
@@ -60,11 +58,13 @@ def get_users_router() -> APIRouter:
     @router.get(
         "/{user_id}",
         response_model=UserResponse,
-        dependencies=[Depends(get_current_active_superuser)],
     )
     async def get_user(
+        request: Request,
         user_id: PydanticObjectId,
     ) -> UserResponse:
+        # 슈퍼유저 권한 확인
+        get_current_active_superuser(request)
         user = await user_manager.get(user_id)
         if user is None:
             raise UserNotExists(identifier=str(user_id), identifier_type="user")
@@ -73,9 +73,9 @@ def get_users_router() -> APIRouter:
     @router.get(
         "/{user_id}/activity",
         response_model=dict,
-        dependencies=[Depends(get_current_active_superuser)],
     )
     async def get_user_activity_by_id(
+        request: Request,
         user_id: PydanticObjectId,
     ) -> dict:
         """
@@ -87,6 +87,8 @@ def get_users_router() -> APIRouter:
         Returns:
             dict: 사용자 활동 요약 정보
         """
+        # 슈퍼유저 권한 확인
+        get_current_active_superuser(request)
         user = await user_manager.get(user_id)
         if user is None:
             raise UserNotExists(identifier=str(user_id), identifier_type="user")
@@ -95,7 +97,6 @@ def get_users_router() -> APIRouter:
     @router.patch(
         "/{user_id}",
         response_model=UserResponse,
-        dependencies=[Depends(get_current_active_superuser)],
     )
     async def update_user(
         request: Request,
@@ -103,6 +104,7 @@ def get_users_router() -> APIRouter:
         obj_in: UserUpdate,  # type: ignore
     ) -> UserResponse:
         # 슈퍼유저 권한 확인
+        get_current_active_superuser(request)
         user = await user_manager.get(user_id)
         if user is None:
             raise UserNotExists(identifier=str(user_id), identifier_type="user")
@@ -113,13 +115,13 @@ def get_users_router() -> APIRouter:
         "/{user_id}",
         status_code=status.HTTP_204_NO_CONTENT,
         response_class=Response,
-        dependencies=[Depends(get_current_active_superuser)],
     )
     async def delete_user(
         request: Request,
         user_id: PydanticObjectId,
     ) -> None:
         # 슈퍼유저 권한 확인
+        get_current_active_superuser(request)
         user = await user_manager.get(user_id)
         if user is None:
             raise UserNotExists(identifier=str(id), identifier_type="user")

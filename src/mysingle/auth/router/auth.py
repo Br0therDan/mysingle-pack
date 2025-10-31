@@ -72,24 +72,23 @@ def create_auth_router() -> APIRouter:
 
         쿠키에서 토큰을 삭제하고 로그아웃 처리를 합니다.
         """
-        # Request 기반으로 현재 사용자 가져오기
-        try:
-            from ..deps import get_current_active_verified_user
+        from ..deps import get_current_user_optional
 
-            user = get_current_active_verified_user(request)
-        except Exception as e:
-            logger.warning(f"Failed to get current user for logout: {e}")
-            # 사용자 정보를 가져올 수 없어도 쿠키는 삭제
-            authenticator.logout(response)
-            return None
+        # 현재 사용자 가져오기 (선택적)
+        user = get_current_user_optional(request)
 
         # authenticator를 사용하여 쿠키 삭제
         authenticator.logout(response)
 
-        current_user = await user_manager.get(PydanticObjectId(user.id))
+        # 사용자가 인증된 경우에만 후처리 로직 실행
+        if user:
+            try:
+                current_user = await user_manager.get(PydanticObjectId(user.id))
+                if current_user:
+                    await user_manager.on_after_logout(current_user, request)
+            except Exception as e:
+                logger.warning(f"Failed to execute logout callback: {e}")
 
-        # 로그아웃 후 처리 로직 실행
-        await user_manager.on_after_logout(current_user, request)
         # HTTP 204는 응답 본문이 없어야 하므로 None 반환
         return None
 

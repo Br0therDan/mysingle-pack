@@ -5,14 +5,25 @@
 
 MySingle-Quant Package는 마이크로서비스 아키텍처를 위한 통합 개발 프레임워크입니다. 이 가이드는 주요 기능들의 활용 방법을 설명합니다.
 
+**주요 업데이트 (2025-10-31):**
+- ✅ Depends() vs 직접 호출 패턴 가이드 추가
+- ✅ External/Internal 라우터 케이스별 사용법 추가
+- ✅ 데코레이터 적절한 사용 케이스 명시 (라우터 함수 직접 적용 금지)
+- ✅ MSA 표준 패턴 (직접 호출 우선) 명확화
+- ✅ MongoDB/Beanie ODM 환경에 맞게 Depends() 사용 케이스 재정의
+
 ## 목차
 
-1. [인증 시스템 (Authentication)](#1-인증-시스템-authentication)
-2. [Kong Gateway 헤더 표준화](#2-kong-gateway-헤더-표준화)
-3. [통합 로깅 시스템](#3-통합-로깅-시스템)
-4. [HTTP Client](#4-http-client)
-5. [모니터링 메트릭](#5-모니터링-메트릭)
-6. [감사 로깅 (Audit Logging)](#6-감사-로깅-audit-logging)
+1. [FastAPI App 생성](#1-fastapi-app-생성)
+2. [인증 시스템 (Authentication)](#2-인증-시스템-authentication)
+3. [Kong Gateway 헤더 표준화](#3-kong-gateway-헤더-표준화)
+4. [통합 로깅 시스템](#4-통합-로깅-시스템)
+5. [HTTP Client](#5-http-client)
+6. [모니터링 메트릭](#6-모니터링-메트릭)
+7. [감사 로깅 (Audit Logging)](#7-감사-로깅-audit-logging)
+8. [종합 활용 예시](#8-종합-활용-예시)
+9. [베스트 프랙티스](#9-베스트-프랙티스)
+10. [트러블슈팅](#10-트러블슈팅)
 
 ---
 
@@ -38,23 +49,103 @@ MySingle-Quant Package는 마이크로서비스 아키텍처를 위한 통합 �
 
 루트 패키지는 지연 로딩(lazy export) 구조입니다. 심볼 접근 시점에만 해당 서브패키지를 가져오므로, 불필요한 의존성 로딩을 줄일 수 있습니다.
 
-## 1. 인증 시스템 (Authentication)
+---
+
+## 1. FastAPI App 생성
 
 ### 1.1 개요
 
+MySingle Package는 **Application Factory 패턴**을 사용하여 표준화되고 일관된 FastAPI 애플리케이션을 생성합니다. 이를 통해 MSA(Microservices Architecture) 환경에서 모든 서비스가 동일한 구조와 기능을 갖도록 보장합니다.
+
+### 1.2 주요 기능
+
+- ✅ **표준화된 설정**: `ServiceConfig`를 통한 선언적 서비스 구성
+- ✅ **자동 미들웨어**: CORS, Auth, Metrics, Audit 자동 추가
+- ✅ **서비스 타입별 전략**: IAM vs Non-IAM 자동 분기
+- ✅ **생명주기 관리**: Startup/Shutdown 이벤트 통합
+- ✅ **관측성 내장**: Logging, Metrics, Health Check 기본 제공
+
+### 1.3 빠른 시작
+
+```python
+from mysingle.core import (
+    ServiceType,
+    create_fastapi_app,
+    create_service_config,
+    setup_logging,
+)
+
+# 로깅 초기화
+setup_logging()
+
+# 서비스 설정 생성
+service_config = create_service_config(
+    service_name="my-service",
+    service_type=ServiceType.NON_IAM_SERVICE,
+    service_version="1.0.0",
+    description="My Awesome Service",
+)
+
+# FastAPI 앱 생성
+app = create_fastapi_app(service_config=service_config)
+```
+
+이것만으로 다음 기능이 자동으로 추가됩니다:
+- ✅ CORS 설정
+- ✅ Health Check (`/health`, `/ready`)
+- ✅ Metrics 수집 (`/metrics`)
+- ✅ Structured Logging
+- ✅ MongoDB 연결
+
+### 1.4 서비스 타입
+
+| 서비스 타입 | 설명 | 인증 방식 | 사용 사례 |
+|------------|------|----------|----------|
+| `IAM_SERVICE` | 인증/인가 서비스 | 직접 JWT 검증 | 사용자 관리, 인증 서버 |
+| `NON_IAM_SERVICE` | 일반 비즈니스 서비스 | Gateway 헤더 기반 | Backtest, ML, Market Data 등 |
+
+### 1.5 상세 가이드
+
+FastAPI 애플리케이션 생성에 대한 전체 가이드는 다음 문서를 참고하세요:
+
+📘 **[APP Factory 사용 가이드](./APP_FACTORY_USAGE_GUIDE.md)**
+
+주요 내용:
+- 핵심 개념 및 ServiceConfig 설명
+- IAM/Non-IAM 서비스 구현 예제
+- 고급 설정 (Document Models, CORS, Metrics 등)
+- Best Practices 및 트러블슈팅
+- 생명주기 관리 및 리소스 정리
+
+📊 **[APP Factory 플로우차트](./APP_FACTORY_FLOWCHART.md)**
+
+프로세스 플로우:
+- Main Flow: `create_fastapi_app()` 실행 흐름
+- Lifespan Process: Startup/Shutdown 생명주기
+- Middleware Stack: 미들웨어 실행 순서
+- Configuration Options: ServiceConfig 옵션 구조
+
+---
+
+## 2. 인증 시스템 (Authentication)
+
+### 2.1 개요
+
 MySingle 패키지의 인증 시스템은 Kong Gateway와 완전히 통합된 Request 기반 인증 의존성 시스템을 제공합니다.
 
-### 1.2 주요 특징
+### 2.2 주요 특징
 
-- **Request 기반 인증**: Request 파라미터를 직접 사용하여 효율적인 인증 처리
+- **직접 호출 패턴 (MSA 표준)**: Request 기반 직접 호출로 간결하고 유연한 인증 처리
 - **Kong Gateway 완전 지원**: 헤더 기반 인증으로 높은 성능
 - **User 캐싱 시스템**: Redis + In-Memory 캐싱으로 DB 조회 최소화
 - **서비스 타입별 자동 인증**: IAM vs NON_IAM 서비스 구분
-- **데코레이터 지원**: 인증/권한 체크 데코레이터로 엔드포인트 간소화
+- **조건부 인증**: Depends()와 직접 호출의 장점을 상황에 맞게 선택
 
-### 1.3 기본 사용법
+### 2.3 기본 사용법
 
-#### Request 기반 패턴 (권장)
+#### 🔷 직접 호출 패턴 (권장 - MSA 표준)
+
+mysingle-quant 프로젝트는 **직접 호출 방식을 표준**으로 채택합니다. 이는 MSA 아키텍처에서 Gateway가 인증을 처리하고, 내부 서비스는 간결하고 유연한 로직에 집중하기 위함입니다.
 
 ```python
 from fastapi import Request, APIRouter
@@ -70,7 +161,7 @@ router = APIRouter()
 
 @router.get("/profile")
 async def get_user_profile(request: Request):
-    """사용자 프로필 조회"""
+    """사용자 프로필 조회 - 활성 사용자 필수"""
     user = get_current_active_user(request)
     return {"user_id": str(user.id), "email": user.email}
 
@@ -88,77 +179,111 @@ async def flexible_endpoint(request: Request):
         return {"message": f"Hello {user.email}"}
     else:
         return {"message": "Hello anonymous user"}
+
+@router.patch("/resources/{resource_id}")
+async def update_resource(request: Request, resource_id: str, data: dict):
+    """조건부 권한 체크 - 직접 호출 방식의 장점"""
+    user = get_current_user(request)
+    resource = await get_resource(resource_id)
+
+    # 조건에 따라 다른 권한 체크
+    if resource.owner_id != user.id:
+        # 소유자가 아니면 관리자 권한 필요
+        get_current_active_superuser(request)
+
+    return await update_resource_logic(resource, data)
 ```
 
-#### 데코레이터 패턴 (간소화)
+#### 🔷 Depends() 패턴 (특정 케이스)
+
+**사용하는 경우:**
+- 복잡한 중첩 의존성 그래프
+- Public API에서 OpenAPI 문서화가 중요한 경우
+- 라우터 레벨 공통 검증
+
+**참고:** MongoDB/Beanie 환경에서는 세션 관리가 불필요하므로 Depends()의 주요 사용 이유가 제한적입니다.
 
 ```python
-from fastapi import APIRouter, Request
-from mysingle.auth.deps import authenticated, verified_only, admin_only, resource_owner_required
+from fastapi import Depends, APIRouter
 
 router = APIRouter()
 
-@router.get("/profile")
-@authenticated
-async def get_user_profile(request: Request):
-    """인증 사용자만 접근"""
-    user = request.state.user
-    return {"user_id": str(user.id), "email": user.email}
+# 복잡한 중첩 의존성 예제
+def get_cache_client(config: Config = Depends(get_config)) -> CacheClient:
+    """Redis 캐시 클라이언트"""
+    return CacheClient(config.redis_url)
 
-@router.get("/admin")
-@admin_only
-async def admin_only_endpoint(request: Request):
-    """관리자 전용 엔드포인트"""
-    admin_user = request.state.user
-    return {"message": f"Hello admin {admin_user.email}"}
+def get_notification_service(
+    cache: CacheClient = Depends(get_cache_client),
+) -> NotificationService:
+    """알림 서비스 - 캐시 의존성 주입"""
+    return NotificationService(cache)
 
-@router.get("/verified")
-@verified_only
-async def verified_only_endpoint(request: Request):
-    """이메일 검증된 사용자만"""
-    user = request.state.user
-    return {"message": f"Welcome {user.email}"}
+@router.post("/notify")
+async def send_notification(
+    request: Request,
+    data: NotificationData,
+    service: NotificationService = Depends(get_notification_service),
+):
+    """Depends로 복잡한 의존성 그래프 처리"""
+    user = get_current_active_user(request)  # 인증은 직접 호출
+    return await service.send(user.id, data)
 
-@router.get("/users/{user_id}/me")
-@authenticated
-@resource_owner_required("user_id")
-async def get_my_profile(request: Request, user_id: str):
-    """소유자(본인)만 접근 허용: path param user_id와 현재 사용자 ID가 일치해야 함"""
-    user = request.state.user
-    return {"me": {"id": str(user.id), "email": user.email}}
+# 라우터 레벨 공통 검증
+admin_router = APIRouter(
+    prefix="/admin",
+    dependencies=[Depends(verify_admin_token)]  # 모든 엔드포인트에 적용
+)
 ```
 
-#### 리소스 소유자 커스텀 추출기(extractor) 사용
+#### 🔷 External vs Internal 라우터 케이스
 
-중첩 바디나 복합 경로에서 소유자 식별이 필요하면 extractor를 주입할 수 있습니다.
+**External 라우터** (프론트엔드 공개):
+- OpenAPI 문서화가 중요한 경우 `Depends()` 고려
+- 하지만 mysingle-quant는 직접 호출 + 수동 문서화 권장
 
 ```python
-from fastapi import APIRouter, Request
-from pydantic import BaseModel
-from mysingle.auth.deps import authenticated, resource_owner_required
-
-router = APIRouter()
-
-class UpdateProfilePayload(BaseModel):
-    owner: dict
-    # e.g. {"id": "..."}
-
-def extract_owner_from_body(request: Request, kwargs: dict):
-    # FastAPI는 바디 모델을 엔드포인트 인자로 바인딩합니다.
-    payload: UpdateProfilePayload | None = kwargs.get("payload")
-    if payload and isinstance(payload.owner, dict):
-        return payload.owner.get("id")
-    return None
-
-@router.put("/users/{user_id}")
-@authenticated
-@resource_owner_required(extractor=extract_owner_from_body)
-async def update_user(request: Request, user_id: str, payload: UpdateProfilePayload):
-    # path user_id와 body.owner.id 둘 중 하나를 추출할 수 있도록 extractor 구현
-    return {"ok": True}
+# External API - 프론트엔드 대상
+@router.get(
+    "/api/v1/strategies",
+    response_model=list[StrategyResponse],
+    responses={
+        401: {"description": "Unauthorized - 인증 필요"},
+        403: {"description": "Forbidden - 권한 부족"},
+    },
+    summary="사용자 전략 목록 조회",
+    description="인증된 사용자의 전략 목록을 반환합니다."
+)
+async def list_strategies(request: Request, limit: int = 100):
+    """External API: 직접 호출 + 수동 문서화"""
+    user = get_current_active_verified_user(request)
+    strategies = await strategy_service.list_user_strategies(user.id, limit)
+    return strategies
 ```
 
-### 1.6 캐시 정책(Cache Policy)
+**Internal 라우터** (서비스 간 통신):
+- 무조건 직접 호출 방식 ✅
+- OpenAPI 문서화 우선순위 낮음
+- Gateway에서 이미 인증 처리
+
+```python
+# Internal API - 서비스 간 호출
+@internal_router.post("/internal/backtests/{backtest_id}/start")
+async def start_backtest_internal(
+    request: Request,
+    backtest_id: str,
+    config: BacktestConfig,
+):
+    """Internal API: Gateway에서 인증됨, 간결한 로직"""
+    # Kong이 X-User-ID 헤더 주입, 필요시만 사용자 정보 조회
+    user_id = request.headers.get("X-User-ID")
+
+    # 비즈니스 로직에 집중
+    result = await backtest_engine.start(backtest_id, config, user_id)
+    return {"job_id": result.job_id, "status": "started"}
+```
+
+### 1.7 캐시 정책(Cache Policy)
 
 - 미들웨어: JWT( IAM )·Kong 헤더(NON_IAM) 인증 시 사용자 캐시 우선 조회, MISS 시 DB 조회 후 저장
 - 로그인: 성공 시 사용자 정보를 비동기으로 캐시에 갱신(set)
@@ -186,7 +311,9 @@ USER_CACHE_TTL_SECONDS=600
 USER_CACHE_KEY_PREFIX=user
 ```
 
-### 1.4 인증 함수 종류
+---
+
+### 2.4 인증 함수 종류
 
 | 함수명 | 설명 | 예외 발생 조건 |
 |--------|------|---------------|
@@ -196,7 +323,171 @@ USER_CACHE_KEY_PREFIX=user
 | `get_current_active_superuser()` | 슈퍼유저 | 미인증, 비활성, 권한 부족 |
 | `get_current_user_optional()` | 선택적 인증 | 예외 없음 (None 반환) |
 
-### 1.5 유틸리티 함수들
+### 2.5 패턴 선택 가이드
+
+#### ✅ 직접 호출을 사용해야 하는 경우 (기본)
+
+1. **조건부 권한 체크**
+```python
+@router.patch("/resources/{resource_id}")
+async def update_resource(request: Request, resource_id: str, data: dict):
+    user = get_current_user(request)
+    resource = await get_resource(resource_id)
+
+    # 소유자가 아니면 관리자만 가능
+    if resource.owner_id != user.id:
+        get_current_active_superuser(request)
+
+    return await update_logic(resource, data)
+```
+
+2. **복잡한 비즈니스 로직**
+```python
+@router.post("/orders")
+async def create_order(request: Request, data: OrderCreate):
+    user = get_current_active_verified_user(request)
+
+    # 사용자 등급별 할인
+    discount = calculate_discount(user.tier)
+
+    # 재고 확인
+    if not await check_inventory(data.items):
+        raise HTTPException(400, "Out of stock")
+
+    # 결제 처리
+    payment = await process_payment(user, data.payment_info)
+
+    return await create_order_logic(user, data, discount, payment)
+```
+
+3. **Internal 라우터 (서비스 간 통신)**
+```python
+@internal_router.post("/internal/execute")
+async def execute_internal(request: Request, config: dict):
+    """Gateway에서 인증됨, 간결한 로직 유지"""
+    user_id = request.headers.get("X-User-ID")
+    return await execute_logic(user_id, config)
+```
+
+4. **세밀한 에러 처리**
+```python
+@router.post("/sensitive-data")
+async def handle_sensitive(request: Request):
+    try:
+        user = get_current_active_verified_user(request)
+    except UserNotExists:
+        # 보안: 사용자 존재 여부 노출 방지
+        await asyncio.sleep(random.uniform(0.1, 0.3))
+        raise HTTPException(404, "Not found")
+    except UserInactive:
+        await log_suspicious_activity(request)
+        raise HTTPException(403, "Account suspended")
+
+    # 민감한 작업...
+```
+
+#### ✅ Depends()를 사용해야 하는 경우 (특수)
+
+**중요:** MongoDB/Beanie ODM 환경에서는 SQLAlchemy처럼 세션 생명주기 관리가 필요 없으므로, Depends()의 실질적 사용 케이스가 매우 제한적입니다.
+
+1. **복잡한 중첩 의존성 (서비스 팩토리)**
+```python
+def get_redis_client(config: Config = Depends(get_config)) -> Redis:
+    return Redis(config.redis_url)
+
+def get_cache_service(
+    redis: Redis = Depends(get_redis_client),
+) -> CacheService:
+    return CacheService(redis)
+
+@router.get("/cached-data")
+async def get_cached_data(
+    request: Request,
+    cache: CacheService = Depends(get_cache_service),
+):
+    user = get_current_active_user(request)
+    return await cache.get_user_data(user.id)
+```
+
+2. **라우터 레벨 공통 검증**
+```python
+# 모든 엔드포인트에 자동 적용
+router = APIRouter(
+    prefix="/admin",
+    dependencies=[Depends(verify_admin_token)]
+)
+```
+
+3. **Public API OpenAPI 문서화 중시 (선택적)**
+```python
+@router.get(
+    "/api/v1/products/{product_id}",
+    response_model=ProductResponse,
+)
+async def get_product(
+    request: Request,
+    product_id: UUID,
+    current_user: User = Depends(get_current_active_user),  # 문서에 반영
+):
+    """OpenAPI 문서화를 위한 Depends 사용 (선택적)"""
+    # MongoDB/Beanie는 직접 쿼리
+    product = await Product.get(product_id)
+    if not product:
+        raise HTTPException(404)
+    return product
+```
+
+**mysingle-quant 프로젝트 권장:**
+- MongoDB/Beanie 환경에서는 **직접 호출 패턴을 우선**으로 사용
+- Depends()는 라우터 레벨 공통 검증이나 복잡한 서비스 팩토리에만 제한적 사용
+
+#### ❌ 데코레이터를 피해야 하는 경우
+
+**FastAPI 라우터 함수에 직접 적용 금지** - OpenAPI 스키마 생성 방해, 타입 추론 손실, 디버깅 복잡도 증가
+
+```python
+# ❌ 나쁜 예: 라우터에 데코레이터 직접 적용
+@router.get("/protected")
+@authenticated  # OpenAPI 스키마 문제 발생
+async def protected_endpoint(request: Request):
+    user = request.state.user
+    return user
+
+# ✅ 좋은 예: 직접 호출
+@router.get("/protected")
+async def protected_endpoint(request: Request):
+    user = get_current_active_user(request)
+    return user
+```
+
+#### ✅ 데코레이터 적절한 사용 케이스
+
+**비즈니스 로직 함수, 유틸리티 함수, 클래스 메서드**에만 사용
+
+```python
+from mysingle.auth.deps import authenticated
+
+class StrategyService:
+    @authenticated
+    async def create_strategy(self, request: Request, data: dict):
+        """서비스 레이어에서는 데코레이터 사용 가능"""
+        user = request.state.user
+        return await self._create_logic(user, data)
+
+# 유틸리티 함수
+@authenticated
+async def process_user_data(request: Request, data: dict):
+    """라우터가 아닌 헬퍼 함수에는 사용 가능"""
+    user = request.state.user
+    return transform_data(user, data)
+
+# 라우터는 이를 호출
+@router.post("/process")
+async def process_endpoint(request: Request, data: dict):
+    return await process_user_data(request, data)
+```
+
+### 2.6 유틸리티 함수들
 
 ```python
 from mysingle.auth.deps import (
@@ -226,13 +517,13 @@ async def sensitive_action(request: Request):
 
 ---
 
-## 2. Kong Gateway 헤더 표준화
+## 3. Kong Gateway 헤더 표준화
 
-### 2.1 개요
+### 3.1 개요
 
 Kong Gateway와의 완벽한 통합을 위한 표준화된 헤더 처리 시스템입니다.
 
-### 2.2 표준 Kong 헤더들
+### 3.2 표준 Kong 헤더들
 
 #### 인증 관련 헤더
 
@@ -252,7 +543,7 @@ Kong Gateway와의 완벽한 통합을 위한 표준화된 헤더 처리 시스�
 | `X-Kong-Upstream-Latency` | 업스트림 지연시간 | 성능 모니터링 |
 | `X-Kong-Proxy-Latency` | 프록시 지연시간 | 성능 모니터링 |
 
-### 2.3 헤더 추출 함수들
+### 3.3 헤더 추출 함수들
 
 ```python
 from fastapi import Request
@@ -300,7 +591,7 @@ async def get_trace_info(request: Request):
     }
 ```
 
-### 2.4 Kong Gateway 설정 예시
+### 3.4 Kong Gateway 설정 예시
 
 #### JWT Plugin 설정
 
@@ -331,13 +622,13 @@ plugins:
 
 ---
 
-## 3. 통합 로깅 시스템
+## 4. 통합 로깅 시스템
 
-### 3.1 개요
+### 4.1 개요
 
 구조화된 로깅(structlog)과 전통적인 로깅을 통합한 고성능 로깅 시스템입니다.
 
-### 3.2 주요 특징
+### 4.2 주요 특징
 
 - **구조화된 로깅**: JSON 형식 지원, Correlation ID 자동 추가
 - **전통적인 로깅**: 컬러 출력, 파일 로깅
@@ -345,7 +636,7 @@ plugins:
 - **환경별 설정**: Development/Production 모드
 - **편의 함수**: 사용자 액션, 서비스 호출, DB 작업 로깅
 
-### 3.3 기본 설정
+### 4.3 기본 설정
 
 ```python
 from mysingle.logging import setup_logging
@@ -361,7 +652,7 @@ setup_logging(
 )
 ```
 
-### 3.4 구조화된 로깅 사용법
+### 4.4 구조화된 로깅 사용법
 
 ```python
 from mysingle.logging import (
@@ -417,7 +708,7 @@ async def create_strategy(request: Request, strategy_data: dict):
         clear_logging_context()
 ```
 
-### 3.5 편의 함수들
+### 4.5 편의 함수들
 
 ```python
 from mysingle.logging import (
@@ -453,7 +744,7 @@ log_database_operation(
 )
 ```
 
-### 3.6 미들웨어 통합
+### 4.6 미들웨어 통합
 
 ```python
 from mysingle.core import (
@@ -484,9 +775,9 @@ def create_app():
 ```
 
 ---
-## 4. HTTP Client
+## 5. HTTP Client
 
-### 4.1 주요 특징
+### 5.1 주요 특징
 
 - **연결 풀링**: httpx 기반 비동기 연결 풀 관리
 - **자동 URL 구성**: 서비스명으로부터 Gateway/Direct URL 자동 생성
@@ -494,7 +785,7 @@ def create_app():
 - **생명주기 관리**: App Factory와 통합된 자동 정리
 - **환경 설정**: 환경 변수로 타임아웃, 연결 수 등 제어 가능
 
-### 4.2 기본사용법
+### 5.2 기본사용법
 #### 1) 서비스 클라이언트 생성 (일회성)
 
 ```python
@@ -546,7 +837,7 @@ response = await make_service_request(
 )
 ```
 
-### 4.3 서비스별 클라이언트 예시
+### 5.3 서비스별 클라이언트 예시
 
 #### 1) Strategy Service 연동
 
@@ -909,9 +1200,9 @@ async def test_journey_creation(mock_strategy_service):
 
 ---
 
-## 5. 모니터링 메트릭
+## 6. 모니터링 메트릭
 
-### 5.1 개요
+### 6.1 개요
 
 고성능 메트릭 수집 및 모니터링 시스템으로 Prometheus 형식 지원과 성능 최적화가 특징입니다.
 
@@ -1034,9 +1325,9 @@ create_metrics_middleware(
 
 ---
 
-## 6. 감사 로깅 (Audit Logging)
+## 7. 감사 로깅 (Audit Logging)
 
-### 6.1 개요
+### 7.1 개요
 
 HTTP 요청/응답에 대한 감사 로그를 자동으로 수집하고 저장하는 시스템입니다.
 
@@ -1224,9 +1515,9 @@ class CustomAuditMiddleware(AuditLoggingMiddleware):
 
 ---
 
-## 7. 종합 활용 예시
+## 8. 종합 활용 예시
 
-### 7.1 완전한 서비스 설정
+### 8.1 완전한 서비스 설정
 
 ```python
 from fastapi import FastAPI, Request, APIRouter
@@ -1346,7 +1637,7 @@ if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
 ```
 
-### 7.2 모니터링 대시보드 구성
+### 8.2 모니터링 대시보드 구성
 
 ```python
 @router.get("/admin/system-status")
@@ -1394,23 +1685,23 @@ async def get_system_status(request: Request):
 
 ---
 
-## 8. 베스트 프랙티스
+## 9. 베스트 프랙티스
 
-### 8.1 성능 최적화
+### 9.1 성능 최적화
 
 1. **메트릭 제외 경로 설정**: 헬스체크, 정적 파일 제외
 2. **로그 레벨 조정**: Production에서는 INFO 이상만
 3. **감사 로그 선택적 기록**: 민감한 정보 제외
 4. **Kong 헤더 캐싱**: 자주 사용하는 헤더값 캐시
 
-### 8.2 보안 고려사항
+### 9.2 보안 고려사항
 
 1. **민감한 정보 로그 제외**: 비밀번호, 토큰 등
 2. **감사 로그 접근 제한**: 관리자만 접근 가능
 3. **헤더 검증**: Kong 헤더 위조 방지
 4. **로그 보존 정책**: 개인정보 보호 규정 준수
 
-### 8.3 운영 가이드라인
+### 9.3 운영 가이드라인
 
 1. **로그 모니터링**: 에러 로그 실시간 모니터링
 2. **메트릭 알림**: 성능 임계값 기반 알림
@@ -1419,9 +1710,9 @@ async def get_system_status(request: Request):
 
 ---
 
-## 9. 트러블슈팅
+## 10. 트러블슈팅
 
-### 9.1 인증 문제
+### 10.1 인증 문제
 
 **문제**: `UserNotExists` 예외 발생
 **해결**: Kong 헤더 확인, AuthMiddleware 설정 검토
@@ -1429,7 +1720,7 @@ async def get_system_status(request: Request):
 **문제**: `UserInactive` 예외 발생
 **해결**: 사용자 활성화 상태 확인
 
-### 9.2 로깅 문제
+### 10.2 로깅 문제
 
 **문제**: 로그가 기록되지 않음
 **해결**: 로깅 설정, 로그 레벨 확인
@@ -1437,7 +1728,7 @@ async def get_system_status(request: Request):
 **문제**: Correlation ID가 전파되지 않음
 **해결**: 미들웨어 순서, 헤더 설정 확인
 
-### 9.3 메트릭 문제
+### 10.3 메트릭 문제
 
 **문제**: 메트릭이 수집되지 않음
 **해결**: MetricsMiddleware 활성화 확인

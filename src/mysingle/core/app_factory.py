@@ -125,14 +125,8 @@ def create_fastapi_app(
     service_config: ServiceConfig,
     document_models: list[type[Document]] | None = None,
 ) -> FastAPI:
-    """Create a standardized FastAPI application with simplified ServiceConfig.
-
-    Args:
-        service_config: 통합 서비스 설정 (ServiceConfig)
-        document_models: List of Beanie document models
-
-    Returns:
-        Configured FastAPI application
+    """
+    Create a standardized FastAPI application with simplified ServiceConfig.
     """
     # Application metadata
     app_title = (

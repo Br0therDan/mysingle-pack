@@ -4,6 +4,7 @@ from beanie import PydanticObjectId
 from fastapi import APIRouter, Request, status
 
 from ..deps import get_current_active_superuser, get_current_active_verified_user
+from ..exceptions import UserNotExists
 from ..user_manager import UserManager
 
 user_manager = UserManager()
@@ -20,8 +21,9 @@ def get_oauth_management_router() -> APIRouter:
     async def get_my_oauth_accounts(
         request: Request,
     ) -> dict:
-        current_user = get_current_active_verified_user(request)
         """현재 사용자의 연결된 OAuth 계정 목록을 조회합니다."""
+        current_user = get_current_active_verified_user(request)
+
         oauth_accounts = []
         for oauth_account in current_user.oauth_accounts:
             oauth_accounts.append(
@@ -45,8 +47,9 @@ def get_oauth_management_router() -> APIRouter:
         oauth_name: str,
         account_id: str,
     ) -> None:
-        current_user = get_current_active_verified_user(request)
         """특정 OAuth 계정 연결을 해제합니다."""
+        current_user = get_current_active_verified_user(request)
+
         await user_manager.remove_oauth_account(current_user, oauth_name, account_id)
         await user_manager.on_after_update(
             current_user, {"oauth_accounts": "removed"}, request
@@ -60,10 +63,13 @@ def get_oauth_management_router() -> APIRouter:
         request: Request,
         user_id: PydanticObjectId,
     ) -> dict:
+        """특정 사용자의 OAuth 계정 목록을 조회합니다. (관리자 전용)"""
         # 슈퍼유저 권한 확인
         get_current_active_superuser(request)
-        """특정 사용자의 OAuth 계정 목록을 조회합니다. (관리자 전용)"""
+
         user = await user_manager.get(user_id)
+        if user is None:
+            raise UserNotExists(identifier=str(user_id), identifier_type="user")
 
         oauth_accounts = []
         for oauth_account in user.oauth_accounts:
