@@ -41,51 +41,59 @@ def create_lifespan(
         startup_tasks = []
 
         # Initialize database if enabled
-        if service_config.enable_database and document_models:
-            # Prepare models list (make a copy to avoid modifying the original)
-            models_to_init = list(document_models)
+        if service_config.enable_database:
+            # Prepare models list (copy provided list or start empty)
+            models_to_init: list[type[Document]] = []
+            if document_models:
+                models_to_init.extend(document_models)
 
-            if service_config.enable_audit_logging:
-                # Ensure AuditLog model is included
+            # Ensure AuditLog is included when audit logging is enabled
+            if service_config.enable_audit_logging and AuditLog not in models_to_init:
                 models_to_init.append(AuditLog)
 
+            # Ensure auth models are included when auth is enabled (IAM service)
             if service_config.enable_auth:
-                # Ensure auth models are included
                 auth_models = [User, OAuthAccount]
                 for model in auth_models:
                     if model not in models_to_init:
                         models_to_init.append(model)
-            try:
-                client = await init_mongo(
-                    models_to_init,
-                    service_config.service_name,
-                )
-                startup_tasks.append(("mongodb_client", client))
+
+            if models_to_init:
+                try:
+                    client = await init_mongo(
+                        models_to_init,
+                        service_config.service_name,
+                    )
+                    startup_tasks.append(("mongodb_client", client))
+                    logger.info(
+                        f"✅ Connected to MongoDB for {service_config.service_name}"
+                    )
+
+                    # Create first super admin after database initialization
+                    # IAM 서비스(Strategy Service)에서만 유저 생성
+                    if service_config.enable_auth:
+                        from .service_types import ServiceType
+
+                        if service_config.service_type == ServiceType.IAM_SERVICE:
+                            logger.info(
+                                f"🔐 IAM Service detected: Creating super admin and test users for {service_config.service_name}"
+                            )
+                            await create_first_super_admin()
+                            await create_test_users()  # 테스트 유저 생성 (dev/local만)
+                        else:
+                            logger.info(
+                                f"⏭️ Non-IAM Service: Skipping user creation for {service_config.service_name}"
+                            )
+
+                except Exception as e:
+                    logger.error(f"❌ Failed to connect to MongoDB: {e}")
+                    if not settings.MOCK_DATABASE:
+                        raise
+                    logger.warning("🔄 Running with mock database")
+            else:
                 logger.info(
-                    f"✅ Connected to MongoDB for {service_config.service_name}"
+                    f"ℹ️ No document models configured; skipping Mongo initialization for {service_config.service_name}"
                 )
-
-                # Create first super admin after database initialization
-                # IAM 서비스(Strategy Service)에서만 유저 생성
-                if service_config.enable_auth:
-                    from .service_types import ServiceType
-
-                    if service_config.service_type == ServiceType.IAM_SERVICE:
-                        logger.info(
-                            f"🔐 IAM Service detected: Creating super admin and test users for {service_config.service_name}"
-                        )
-                        await create_first_super_admin()
-                        await create_test_users()  # 테스트 유저 생성 (dev/local만)
-                    else:
-                        logger.info(
-                            f"⏭️ Non-IAM Service: Skipping user creation for {service_config.service_name}"
-                        )
-
-            except Exception as e:
-                logger.error(f"❌ Failed to connect to MongoDB: {e}")
-                if not settings.MOCK_DATABASE:
-                    raise
-                logger.warning("🔄 Running with mock database")
 
         # Store startup tasks in app state
         app.state.startup_tasks = startup_tasks
