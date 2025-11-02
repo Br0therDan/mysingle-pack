@@ -265,6 +265,34 @@ class JWTManager:
             logger.error(f"Failed to create reset password token: {e}")
             raise
 
+    def create_email_token(self, email: str) -> str:
+        """
+        이메일 인증용 토큰 생성
+
+        iss는 iam-service consumer로 설정합니다.
+        aud = "emails", typ = "email"
+        """
+        now = datetime.now(UTC)
+        expire = now + timedelta(hours=self.verify_token_expire_hours)
+
+        consumer_key = self.service_consumer_keys["iam-service"]
+        secret = self._get_jwt_secret_for_consumer(consumer_key)
+
+        payload = {
+            "iss": consumer_key,
+            "sub": email,
+            "aud": "emails",
+            "typ": "email",
+            "iat": now,
+            "exp": expire,
+        }
+
+        try:
+            return jwt.encode(payload, secret, algorithm=self.algorithm)
+        except Exception as e:
+            logger.error(f"Failed to create email token: {e}")
+            raise
+
     def decode_token(
         self,
         token: str,

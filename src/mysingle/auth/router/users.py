@@ -22,7 +22,6 @@ def get_users_router() -> APIRouter:
         "/me",
         response_model=UserResponse,
     )
-    @verified_only
     async def get_user_me(
         request: Request,
     ) -> UserResponse:
@@ -37,7 +36,6 @@ def get_users_router() -> APIRouter:
         "/me/activity",
         response_model=dict,
     )
-    @verified_only
     async def get_user_activity(
         request: Request,
     ) -> dict:

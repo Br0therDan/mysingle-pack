@@ -114,6 +114,47 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 logger.warning(f"Inactive user attempted access: {user_id}")
                 return None
 
+            # DB에 사용자 레코드가 없더라도, JWT 클레임으로 최소 사용자 컨텍스트를 구성해 허용
+            # (게이트웨이에서 이미 서명 검증을 통과했고, 여기서도 검증됨)
+            if not user:
+                try:
+                    from beanie import PydanticObjectId
+                except Exception:
+                    PydanticObjectId = None  # 타입 회피
+
+                user_obj_id = (
+                    PydanticObjectId(decoded_token.get("sub"))
+                    if PydanticObjectId
+                    else decoded_token.get("sub")
+                )
+                user = User(
+                    id=user_obj_id,  # type: ignore[arg-type]
+                    email=decoded_token.get("email") or "unknown@token.local",
+                    hashed_password="",
+                    is_verified=bool(decoded_token.get("is_verified", False)),
+                    is_active=bool(decoded_token.get("is_active", True)),
+                    is_superuser=bool(decoded_token.get("is_superuser", False)),
+                )
+
+                # 비활성 토큰은 거부
+                if not user.is_active:
+                    logger.warning(
+                        f"Inactive user (from token claims) attempted access: {user_id}"
+                    )
+                    return None
+
+                logger.debug(
+                    "Authenticated via JWT claims fallback: %s (ID: %s)",
+                    user.email,
+                    user.id,
+                )
+
+                # 캐시에도 적재 시도 (최소 컨텍스트)
+                try:
+                    await self.user_cache.set_user(user)
+                except Exception as e:
+                    logger.debug(f"Failed to cache user from claims: {e}")
+
             return user
 
         except Exception as e:

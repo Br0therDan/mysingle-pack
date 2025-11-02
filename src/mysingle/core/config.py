@@ -67,9 +67,6 @@ class CommonSettings(BaseSettings):
     USER_CACHE_TTL_SECONDS: int = 300
     USER_CACHE_KEY_PREFIX: str = "user"
 
-    # SECURITY & AUTH TOKEN SETTINGS
-    SECRET_KEY: str = "dev-secret-key-change-in-production"
-
     TOKEN_TRANSPORT_TYPE: Literal["bearer", "cookie", "hybrid"] = "hybrid"
     HTTPONLY_COOKIES: bool = False
     SAMESITE_COOKIES: Literal["lax", "strict", "none"] = "lax"
