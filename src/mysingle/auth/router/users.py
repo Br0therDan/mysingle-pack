@@ -3,7 +3,6 @@ from fastapi import APIRouter, Request, Response, status
 
 from ..deps import (
     admin_only,
-    verified_only,
 )
 from ..exceptions import (
     UserNotExists,
@@ -54,7 +53,6 @@ def get_users_router() -> APIRouter:
         "/me",
         response_model=UserResponse,
     )
-    @verified_only
     async def update_user_me(
         request: Request,
         obj_in: UserUpdate,
@@ -73,7 +71,6 @@ def get_users_router() -> APIRouter:
     )
     @admin_only
     async def get_user(
-        request: Request,
         user_id: PydanticObjectId,
     ) -> UserResponse:
         user = await user_manager.get(user_id)
@@ -87,7 +84,6 @@ def get_users_router() -> APIRouter:
     )
     @admin_only
     async def get_user_activity_by_id(
-        request: Request,
         user_id: PydanticObjectId,
     ) -> dict:
         """

@@ -63,8 +63,10 @@ class ServiceConfig:
             self.public_paths.extend(["/docs", "/openapi.json"])
 
         else:  # NON_IAM_SERVICE
-            # Non-IAM 서비스: Gateway 헤더 기반 인증
-            self.enable_auth = False
+            # Non-IAM 서비스: Gateway 헤더 기반 인증 우선 + 미들웨어 활성화
+            # 미들웨어는 우선 Kong 헤더를 사용하고, 없으면 직접 JWT(헤더/쿠키)로 폴백합니다.
+            # 따라서 Non-IAM 서비스에서도 enable_auth 를 True 로 설정해 미들웨어를 장착합니다.
+            self.enable_auth = True
             self.enable_oauth = False
             self.enable_user_management = False
             self.is_gateway_downstream = True

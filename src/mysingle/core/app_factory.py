@@ -291,8 +291,10 @@ def create_fastapi_app(
                 f"⚠️ Failed to add audit logging middleware for {service_config.service_name}: {e}"
             )
 
-    # Include auth routers if enabled
-    if service_config.enable_auth:
+    # Include auth routers only for IAM service
+    from .service_types import ServiceType as _AppFactoryServiceType
+
+    if service_config.service_type == _AppFactoryServiceType.IAM_SERVICE:
         from ..auth.router import auth_router, user_router
 
         app.include_router(
@@ -306,7 +308,7 @@ def create_fastapi_app(
         logger.info(
             f"🔐 Auth routes and exception handlers added for {service_config.service_name}"
         )
-        # Include OAuth2 routers if enabled
+        # Include OAuth2 routers if enabled (IAM only)
         if service_config.enable_oauth:
             try:
                 from ..auth.router import oauth2_router
