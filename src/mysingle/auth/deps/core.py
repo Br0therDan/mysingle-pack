@@ -1,9 +1,8 @@
 from typing import Any, Dict, Optional
 
-from fastapi import Request
+from fastapi import HTTPException, Request, status
 
 from ...logging import get_structured_logger
-from ..exceptions import AuthorizationFailed, UserInactive, UserNotExists
 from ..models import User
 from .kong import (
     get_kong_correlation_id,
@@ -23,11 +22,18 @@ def get_current_user(request: Request) -> User:
 
     if not user:
         logger.warning("No user found in request.state - authentication failed")
-        raise UserNotExists(identifier="user", identifier_type="authenticated user")
+        # 인증 실패는 서버 에러(500)가 아닌 401을 반환해야 함
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+        )
 
     if not isinstance(user, User):
         logger.error(f"Invalid user type in request.state: {type(user)}")
-        raise UserNotExists(identifier="user", identifier_type="invalid_user_type")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication context",
+        )
 
     # Kong Gateway 보안 검증 (헤더가 있으면 교차 확인)
     kong_user_id = get_kong_user_id(request)
@@ -36,8 +42,10 @@ def get_current_user(request: Request) -> User:
         logger.debug(f"Kong authenticated request: {kong_headers}")
         if str(user.id) != kong_user_id:
             logger.error(f"User ID mismatch: Kong={kong_user_id}, User={user.id}")
-            raise UserNotExists(
-                identifier=kong_user_id, identifier_type="user_id_mismatch"
+            # 보안상 불일치는 인증 실패로 간주하여 401 반환
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Authentication user mismatch",
             )
 
     return user
@@ -48,7 +56,11 @@ def get_current_active_user(request: Request) -> User:
     user = get_current_user(request)
     if not user.is_active:
         logger.warning(f"Inactive user attempted access: {user.id}")
-        raise UserInactive(user_id=str(user.id))
+        # 비활성 사용자는 인가 실패로 403 반환
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User is inactive",
+        )
     return user
 
 
@@ -57,7 +69,10 @@ def get_current_active_verified_user(request: Request) -> User:
     user = get_current_active_user(request)
     if not user.is_verified:
         logger.warning(f"Unverified user attempted access: {user.id}")
-        raise AuthorizationFailed("Email verification required", user_id=str(user.id))
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Email verification required",
+        )
     return user
 
 
@@ -66,7 +81,10 @@ def get_current_active_superuser(request: Request) -> User:
     user = get_current_active_verified_user(request)
     if not user.is_superuser:
         logger.warning(f"Non-superuser attempted admin access: {user.id}")
-        raise AuthorizationFailed("Superuser privileges required", user_id=str(user.id))
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Superuser privileges required",
+        )
     return user
 
 
