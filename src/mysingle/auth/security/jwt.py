@@ -325,12 +325,12 @@ class JWTManager:
 
                 secret = self._get_jwt_secret_for_consumer(consumer_key)
 
-                # 서명 검증
+                # 서명 검증 (aud 검증은 비활성화: 프런트/서비스 토큰의 aud 다양성 허용)
                 payload = jwt.decode(
                     token,
                     secret,
                     algorithms=[self.algorithm],
-                    options={"verify_exp": True},
+                    options={"verify_exp": True, "verify_aud": False},
                 )
             else:
                 # 검증 없이 디코딩 (디버깅용)
