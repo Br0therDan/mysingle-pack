@@ -87,10 +87,17 @@ class AuthMiddleware(BaseHTTPMiddleware):
         try:
             # Authorization 헤더에서 Bearer 토큰 추출
             authorization = request.headers.get("Authorization", "")
-            if not authorization.startswith("Bearer "):
-                return None
+            token: Optional[str] = None
+            if authorization.startswith("Bearer "):
+                token = authorization.replace("Bearer ", "").strip()
 
-            token = authorization.replace("Bearer ", "")
+            # Authorization이 없으면 쿠키에서 access_token 검색 (브라우저 호출 대비)
+            if not token:
+                try:
+                    token = request.cookies.get("access_token")
+                except Exception:
+                    token = None
+
             if not token:
                 return None
 
