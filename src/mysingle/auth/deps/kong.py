@@ -17,10 +17,15 @@ def _get_header(request: Request, key: str) -> Optional[str]:
 
 
 def get_kong_user_id(request: Request) -> Optional[str]:
-    """Kong JWT Plugin이 전달한 사용자 ID (X-Consumer-Custom-ID | X-User-Id)"""
-    return _get_header(request, "x-consumer-custom-id") or _get_header(
-        request, "x-user-id"
-    )
+    """
+    애플리케이션 최종 사용자 ID.
+
+    - 기본 OSS Kong JWT 플러그인은 최종 사용자 ID를 자동으로 헤더에 넣지 않습니다.
+        (X-Consumer-*는 '컨슈머(클라이언트/앱)' 식별자일 뿐입니다.)
+    - 따라서 여기서는 오직 X-User-Id 만을 사용자 ID로 인정합니다.
+        게이트웨이에서 필요 시 클레임 매핑(Transform)으로 X-User-Id를 주입하세요.
+    """
+    return _get_header(request, "x-user-id")
 
 
 def get_kong_consumer_id(request: Request) -> Optional[str]:
