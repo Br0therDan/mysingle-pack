@@ -18,6 +18,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from ...core.config import settings
 from ...logging import get_structured_logger
 from ..authenticate import authenticator
+from ..deps import get_current_user, get_current_user_optional, verified_only
 from ..exceptions import AuthenticationFailed
 from ..schemas.auth import LoginResponse, UserInfo, VerifyTokenResponse
 from ..user_manager import UserManager
@@ -72,8 +73,6 @@ def create_auth_router() -> APIRouter:
 
         쿠키에서 토큰을 삭제하고 로그아웃 처리를 합니다.
         """
-        from ..deps import get_current_user_optional
-
         # 현재 사용자 가져오기 (선택적)
         user = get_current_user_optional(request)
 
@@ -115,13 +114,13 @@ def create_auth_router() -> APIRouter:
             # 토큰 전송 방식에 맞게 새 토큰 생성
             from typing import Literal
 
-            transport_type: Literal["cookie", "header", "bearer"]
+            transport_type: Literal["cookie", "header", "bearer", "hybrid"]
             if settings.TOKEN_TRANSPORT_TYPE == "bearer":
                 transport_type = "bearer"
             elif settings.TOKEN_TRANSPORT_TYPE == "cookie":
                 transport_type = "cookie"
             else:  # hybrid
-                transport_type = "header"
+                transport_type = "hybrid"
 
             token_data = authenticator.refresh_token(
                 refresh_token=refresh_token,
@@ -154,13 +153,12 @@ def create_auth_router() -> APIRouter:
             return None
 
     @router.get("/token/verify")
+    @verified_only
     async def verify_token(
         request: Request,
     ) -> VerifyTokenResponse:
         """토큰 검증 및 사용자 정보 반환 (디버깅용)"""
-        from ..deps import get_current_active_verified_user
-
-        current_user = get_current_active_verified_user(request)
+        current_user = get_current_user(request)
         return VerifyTokenResponse(
             valid=True,
             user_id=str(current_user.id),

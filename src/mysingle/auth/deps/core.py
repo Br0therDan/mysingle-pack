@@ -1,11 +1,16 @@
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from fastapi import Request
 
 from ...logging import get_structured_logger
 from ..exceptions import AuthorizationFailed, UserInactive, UserNotExists
 from ..models import User
-from .kong import get_kong_headers_dict, get_kong_user_id
+from .kong import (
+    get_kong_correlation_id,
+    get_kong_headers_dict,
+    get_kong_request_id,
+    get_kong_user_id,
+)
 
 logger = get_structured_logger(__name__)
 
@@ -66,13 +71,14 @@ def get_current_active_superuser(request: Request) -> User:
 
 
 def get_current_user_optional(request: Request) -> Optional[User]:
-    """선택적 인증: 없으면 None"""
-    return getattr(request.state, "user", None)
+    """선택적 인증: 없으면 None (타입 보장)"""
+    user = getattr(request.state, "user", None)
+    return user if isinstance(user, User) else None
 
 
 def is_user_authenticated(request: Request) -> bool:
     """사용자 인증 여부"""
-    return hasattr(request.state, "user") and request.state.user is not None
+    return isinstance(getattr(request.state, "user", None), User)
 
 
 def get_user_id(request: Request) -> Optional[str]:
@@ -83,9 +89,7 @@ def get_user_id(request: Request) -> Optional[str]:
 
 def get_user_email(request: Request) -> Optional[str]:
     """사용자 이메일 반환"""
-    user = getattr(request.state, "user", None)
-    if not user:
-        return None
+    user = get_current_user_optional(request)
     return user.email if user else None
 
 
@@ -103,9 +107,9 @@ def get_user_display_name(request: Request) -> Optional[str]:
         return f"User {str(user.id)[:8]}"
 
 
-def get_request_security_context(request: Request) -> dict:
-    """요청 보안 컨텍스트 반환"""
-    user = getattr(request.state, "user", None)
+def get_request_security_context(request: Request) -> Dict[str, Any]:
+    """요청 보안 컨텍스트 반환 (Kong 트레이싱 일부 포함)"""
+    user = get_current_user_optional(request)
     return {
         "authenticated": user is not None,
         "user_id": str(user.id) if user else None,
@@ -116,4 +120,6 @@ def get_request_security_context(request: Request) -> dict:
         "client_ip": request.client.host if request.client else None,
         "user_agent": request.headers.get("user-agent"),
         "endpoint": f"{request.method} {request.url.path}",
+        "correlation_id": get_kong_correlation_id(request),
+        "request_id": get_kong_request_id(request),
     }

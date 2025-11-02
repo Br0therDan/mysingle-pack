@@ -1,43 +1,57 @@
-from typing import Optional
+from typing import Optional, TypedDict
 
 from fastapi import Request
 
 
+def _get_header(request: Request, key: str) -> Optional[str]:
+    """Case-insensitive, trimmed header getter.
+
+    Starlette's Headers mapping is case-insensitive, so we can use a single
+    canonical lowercase key. Returns None for missing or empty values.
+    """
+    val = request.headers.get(key)
+    if val is None:
+        return None
+    val = val.strip()
+    return val or None
+
+
 def get_kong_user_id(request: Request) -> Optional[str]:
     """Kong JWT Plugin이 전달한 사용자 ID (X-Consumer-Custom-ID | X-User-Id)"""
-    return (
-        request.headers.get("x-consumer-custom-id")
-        or request.headers.get("X-Consumer-Custom-ID")
-        or request.headers.get("x-user-id")
-        or request.headers.get("X-User-Id")
+    return _get_header(request, "x-consumer-custom-id") or _get_header(
+        request, "x-user-id"
     )
 
 
 def get_kong_consumer_id(request: Request) -> Optional[str]:
     """Kong Consumer 내부 ID"""
-    return request.headers.get("x-consumer-id") or request.headers.get("X-Consumer-ID")
+    return _get_header(request, "x-consumer-id")
 
 
 def get_kong_consumer_username(request: Request) -> Optional[str]:
     """Kong Consumer username"""
-    return request.headers.get("x-consumer-username") or request.headers.get(
-        "X-Consumer-Username"
-    )
+    return _get_header(request, "x-consumer-username")
 
 
 def get_kong_forwarded_service(request: Request) -> Optional[str]:
     """Kong Request Transformer가 추가한 서비스명"""
-    return request.headers.get("x-forwarded-service") or request.headers.get(
-        "X-Forwarded-Service"
-    )
+    return _get_header(request, "x-forwarded-service")
 
 
 def is_kong_authenticated(request: Request) -> bool:
     """Kong 헤더가 존재하면 인증된 것으로 판단"""
-    return get_kong_user_id(request) is not None
+    return bool(get_kong_user_id(request))
 
 
-def get_kong_headers_dict(request: Request) -> dict:
+class KongHeaders(TypedDict, total=False):
+    user_id: Optional[str]
+    consumer_id: Optional[str]
+    consumer_username: Optional[str]
+    forwarded_service: Optional[str]
+    is_authenticated: bool
+
+
+def get_kong_headers_dict(request: Request) -> KongHeaders:
     """표준 Kong 인증 헤더를 dict로 반환"""
     return {
         "user_id": get_kong_user_id(request),
@@ -50,42 +64,39 @@ def get_kong_headers_dict(request: Request) -> dict:
 
 def get_kong_correlation_id(request: Request) -> Optional[str]:
     """Correlation ID 추출"""
-    return (
-        request.headers.get("x-correlation-id")
-        or request.headers.get("X-Correlation-Id")
-        or request.headers.get("correlation-id")
-        or request.headers.get("Correlation-Id")
+    return _get_header(request, "x-correlation-id") or _get_header(
+        request, "correlation-id"
     )
 
 
 def get_kong_request_id(request: Request) -> Optional[str]:
     """Kong Request ID 추출"""
-    return (
-        request.headers.get("x-kong-request-id")
-        or request.headers.get("X-Kong-Request-Id")
-        or request.headers.get("x-request-id")
-        or request.headers.get("X-Request-Id")
+    return _get_header(request, "x-kong-request-id") or _get_header(
+        request, "x-request-id"
     )
 
 
 def get_kong_upstream_latency(request: Request) -> Optional[str]:
     """업스트림 지연시간(ms)"""
-    return request.headers.get("x-kong-upstream-latency") or request.headers.get(
-        "X-Kong-Upstream-Latency"
-    )
+    return _get_header(request, "x-kong-upstream-latency")
 
 
 def get_kong_proxy_latency(request: Request) -> Optional[str]:
     """프록시 지연시간(ms)"""
-    return request.headers.get("x-kong-proxy-latency") or request.headers.get(
-        "X-Kong-Proxy-Latency"
-    )
+    return _get_header(request, "x-kong-proxy-latency")
 
 
-def get_extended_kong_headers_dict(request: Request) -> dict:
+class KongExtendedHeaders(KongHeaders, total=False):
+    correlation_id: Optional[str]
+    request_id: Optional[str]
+    upstream_latency: Optional[str]
+    proxy_latency: Optional[str]
+
+
+def get_extended_kong_headers_dict(request: Request) -> KongExtendedHeaders:
     """기본 인증 헤더 + 운영 헤더 전체 반환"""
     base_headers = get_kong_headers_dict(request)
-    extended_headers = {
+    extended_headers: KongExtendedHeaders = {
         **base_headers,
         "correlation_id": get_kong_correlation_id(request),
         "request_id": get_kong_request_id(request),

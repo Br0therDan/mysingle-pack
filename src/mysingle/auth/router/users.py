@@ -1,7 +1,10 @@
 from beanie import PydanticObjectId
 from fastapi import APIRouter, Request, Response, status
 
-from ..deps import get_current_active_superuser, get_current_active_verified_user
+from ..deps import (
+    admin_only,
+    verified_only,
+)
 from ..exceptions import (
     UserNotExists,
 )
@@ -19,16 +22,22 @@ def get_users_router() -> APIRouter:
         "/me",
         response_model=UserResponse,
     )
+    @verified_only
     async def get_user_me(
         request: Request,
     ) -> UserResponse:
-        current_user = get_current_active_verified_user(request)
+        # verified_only 데코레이터로 대체 (보안 강제는 라우팅 구성에서 수행 권장)
+        # 여기서는 request.state.user 를 신뢰하여 반환 형식만 정리합니다.
+        from ..deps import get_current_user
+
+        current_user = get_current_user(request)
         return UserResponse(**current_user.model_dump(by_alias=True))
 
     @router.get(
         "/me/activity",
         response_model=dict,
     )
+    @verified_only
     async def get_user_activity(
         request: Request,
     ) -> dict:
@@ -38,18 +47,23 @@ def get_users_router() -> APIRouter:
         Returns:
             dict: 사용자 활동 요약 정보
         """
-        current_user = get_current_active_verified_user(request)
+        from ..deps import get_current_user
+
+        current_user = get_current_user(request)
         return await user_manager.get_user_activity_summary(current_user)
 
     @router.patch(
         "/me",
         response_model=UserResponse,
     )
+    @verified_only
     async def update_user_me(
         request: Request,
         obj_in: UserUpdate,
     ) -> UserResponse:
-        current_user = get_current_active_verified_user(request)
+        from ..deps import get_current_user
+
+        current_user = get_current_user(request)
         # UserManager.update에서 이미 적절한 예외를 발생시키므로
         # 직접 전파하도록 수정
         user = await user_manager.update(obj_in, current_user)
@@ -59,12 +73,11 @@ def get_users_router() -> APIRouter:
         "/{user_id}",
         response_model=UserResponse,
     )
+    @admin_only
     async def get_user(
         request: Request,
         user_id: PydanticObjectId,
     ) -> UserResponse:
-        # 슈퍼유저 권한 확인
-        get_current_active_superuser(request)
         user = await user_manager.get(user_id)
         if user is None:
             raise UserNotExists(identifier=str(user_id), identifier_type="user")
@@ -74,6 +87,7 @@ def get_users_router() -> APIRouter:
         "/{user_id}/activity",
         response_model=dict,
     )
+    @admin_only
     async def get_user_activity_by_id(
         request: Request,
         user_id: PydanticObjectId,
@@ -87,8 +101,6 @@ def get_users_router() -> APIRouter:
         Returns:
             dict: 사용자 활동 요약 정보
         """
-        # 슈퍼유저 권한 확인
-        get_current_active_superuser(request)
         user = await user_manager.get(user_id)
         if user is None:
             raise UserNotExists(identifier=str(user_id), identifier_type="user")
@@ -98,13 +110,12 @@ def get_users_router() -> APIRouter:
         "/{user_id}",
         response_model=UserResponse,
     )
+    @admin_only
     async def update_user(
         request: Request,
         user_id: PydanticObjectId,
         obj_in: UserUpdate,  # type: ignore
     ) -> UserResponse:
-        # 슈퍼유저 권한 확인
-        get_current_active_superuser(request)
         user = await user_manager.get(user_id)
         if user is None:
             raise UserNotExists(identifier=str(user_id), identifier_type="user")
@@ -116,15 +127,14 @@ def get_users_router() -> APIRouter:
         status_code=status.HTTP_204_NO_CONTENT,
         response_class=Response,
     )
+    @admin_only
     async def delete_user(
         request: Request,
         user_id: PydanticObjectId,
     ) -> None:
-        # 슈퍼유저 권한 확인
-        get_current_active_superuser(request)
         user = await user_manager.get(user_id)
         if user is None:
-            raise UserNotExists(identifier=str(id), identifier_type="user")
+            raise UserNotExists(identifier=str(user_id), identifier_type="user")
         await user_manager.delete(user, request=request)
         return None
 

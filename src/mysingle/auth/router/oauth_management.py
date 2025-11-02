@@ -3,7 +3,7 @@
 from beanie import PydanticObjectId
 from fastapi import APIRouter, Request, status
 
-from ..deps import get_current_active_superuser, get_current_active_verified_user
+from ..deps import admin_only, get_current_user, verified_only
 from ..exceptions import UserNotExists
 from ..user_manager import UserManager
 
@@ -18,11 +18,12 @@ def get_oauth_management_router() -> APIRouter:
         "/me/oauth-accounts",
         response_model=dict,
     )
+    @verified_only
     async def get_my_oauth_accounts(
         request: Request,
     ) -> dict:
         """현재 사용자의 연결된 OAuth 계정 목록을 조회합니다."""
-        current_user = get_current_active_verified_user(request)
+        current_user = get_current_user(request)
 
         oauth_accounts = []
         for oauth_account in current_user.oauth_accounts:
@@ -42,13 +43,14 @@ def get_oauth_management_router() -> APIRouter:
         "/me/oauth-accounts/{oauth_name}/{account_id}",
         status_code=status.HTTP_204_NO_CONTENT,
     )
+    @verified_only
     async def remove_oauth_account(
         request: Request,
         oauth_name: str,
         account_id: str,
     ) -> None:
         """특정 OAuth 계정 연결을 해제합니다."""
-        current_user = get_current_active_verified_user(request)
+        current_user = get_current_user(request)
 
         await user_manager.remove_oauth_account(current_user, oauth_name, account_id)
         await user_manager.on_after_update(
@@ -59,13 +61,12 @@ def get_oauth_management_router() -> APIRouter:
         "/{user_id}/oauth-accounts",
         response_model=dict,
     )
+    @admin_only
     async def get_user_oauth_accounts(
         request: Request,
         user_id: PydanticObjectId,
     ) -> dict:
         """특정 사용자의 OAuth 계정 목록을 조회합니다. (관리자 전용)"""
-        # 슈퍼유저 권한 확인
-        get_current_active_superuser(request)
 
         user = await user_manager.get(user_id)
         if user is None:
