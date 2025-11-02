@@ -2,12 +2,12 @@ from typing import List
 
 from fastapi import Request
 
-from ...logging import get_logger
+from ...logging import get_structured_logger
 from ..exceptions import AuthorizationFailed
 from ..models import User
 from .core import get_current_active_verified_user
 
-logger = get_logger(__name__)
+logger = get_structured_logger(__name__)
 
 
 def require_user_role(request: Request, required_roles: List[str]) -> User:

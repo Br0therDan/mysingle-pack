@@ -2,12 +2,12 @@ from typing import Optional
 
 from fastapi import Request
 
-from ...logging import get_logger
+from ...logging import get_structured_logger
 from ..exceptions import AuthorizationFailed, UserInactive, UserNotExists
 from ..models import User
 from .kong import get_kong_headers_dict, get_kong_user_id
 
-logger = get_logger(__name__)
+logger = get_structured_logger(__name__)
 
 
 def get_current_user(request: Request) -> User:

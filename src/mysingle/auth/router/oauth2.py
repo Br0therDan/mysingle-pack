@@ -2,7 +2,7 @@ from urllib.parse import unquote
 
 from fastapi import APIRouter, HTTPException, Query, Request, Response, status
 
-from ...logging import get_logger
+from ...logging import get_structured_logger
 from ..authenticate import authenticator
 from ..exceptions import AuthenticationFailed
 from ..oauth_manager import oauth_manager
@@ -12,7 +12,7 @@ from ..user_manager import UserManager
 
 user_manager = UserManager()
 jwt_manager = get_jwt_manager()
-logger = get_logger(__name__)
+logger = get_structured_logger(__name__)
 
 
 def get_oauth2_router() -> APIRouter:

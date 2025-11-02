@@ -11,9 +11,9 @@ from typing import Any
 
 import duckdb
 
-from mysingle.logging import get_logger
+from mysingle.logging import get_structured_logger
 
-logger = get_logger(__name__)
+logger = get_structured_logger(__name__)
 
 
 class BaseDuckDBManager:

@@ -433,7 +433,7 @@ def setup_logging(
         )
 
     # 설정 완료 로그
-    logger = get_logger(__name__)
+    logger = get_structured_logger(__name__)
     logger.info(f"✅ Integrated logging configured for {service_name}")
     logger.info(f"Environment: {environment}, Level: {log_level}, JSON: {enable_json}")
 

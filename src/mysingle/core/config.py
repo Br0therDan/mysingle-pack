@@ -123,17 +123,20 @@ class CommonSettings(BaseSettings):
     # API GATEWAY SETTINGS
     USE_API_GATEWAY: bool = True
     API_GATEWAY_URL: str = "http://localhost:8000"
-    KONG_JWT_SECRET_FRONTEND: str = "ypMmUBFkXFkMOfWpIxSvg+ypeCN/vhuZe7OUsb2L+LY="
-    KONG_JWT_SECRET_STRATEGY_SERVICE: str = (
-        "qE81i/aoJxrZ8+yDQz9nz2x5RT+Qk4zKq/iDMBDuc7E="
+    KONG_JWT_SECRET_FRONTEND: str = "change-this-frontend-jwt-secret"
+    KONG_JWT_IAM: str = "change-this-iam-service-jwt-secret"
+    KONG_JWT_JOURNEY_ORCHESTRATOR: str = (
+        "change-this-journey-orchestrator-service-jwt-secret"
     )
-    KONG_JWT_SECRET_MARKET_DATA_SERVICE: str = (
-        "I+bh/ABpzCm23hKr44jc95LomKYCaRUCiYZFot/hk2Q="
-    )
-    KONG_JWT_SECRET_GENAI_SERVICE: str = "sLLR+xIYt5/82es5NJJ2G08xb0satQm/IGsSyV2kQwY="
-    KONG_JWT_SECRET_ML_SERVICE: str = "tkYXxgR1ty7/e35DzPBkRBU1Z5fmzNDM5RznuVAx/SM="
-    KONG_ADMIN_URL: str = "http://localhost:8100"
-    KONG_PROXY_URL: str = "http://localhost:8000"
+    KONG_JWT_SECRET_STRATEGY: str = "change-this-strategy-service-jwt-secret"
+    KONG_JWT_SECRET_BACKTEST: str = "change-this-backtest-service-jwt-secret"
+    KONG_JWT_OPTIMIZATION: str = "change-this-optimization-service-jwt-secret"
+    KONG_JWT_DASHBOARD: str = "change-this-dashboard-service-jwt-secret"
+
+    KONG_JWT_SECRET_NOTIFICATION: str = "change-this-notification-service-jwt-secret"
+    KONG_JWT_SECRET_MARKET_DATA: str = "change-this-market-data-service-jwt-secret"
+    KONG_JWT_SECRET_GENAI: str = "change-this-genai-service-jwt-secret"
+    KONG_JWT_SECRET_ML: str = "change-this-ml-service-jwt-secret"
 
     # SMTP SETTINGS
     SMTP_TLS: bool = True

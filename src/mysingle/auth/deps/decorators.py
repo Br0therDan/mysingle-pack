@@ -6,7 +6,7 @@ from typing import Any, Callable
 
 from fastapi import Request
 
-from ...logging import get_logger
+from ...logging import get_structured_logger
 from ..exceptions import AuthorizationFailed
 from .core import (
     get_current_active_superuser,
@@ -15,7 +15,7 @@ from .core import (
 )
 from .permissions import require_user_role
 
-logger = get_logger(__name__)
+logger = get_structured_logger(__name__)
 
 
 def _extract_request(*args: Any, **kwargs: Any) -> Request:

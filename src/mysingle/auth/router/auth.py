@@ -16,13 +16,13 @@ from fastapi import (
 from fastapi.security import OAuth2PasswordRequestForm
 
 from ...core.config import settings
-from ...logging import get_logger
+from ...logging import get_structured_logger
 from ..authenticate import authenticator
 from ..exceptions import AuthenticationFailed
 from ..schemas.auth import LoginResponse, UserInfo, VerifyTokenResponse
 from ..user_manager import UserManager
 
-logger = get_logger(__name__)
+logger = get_structured_logger(__name__)
 access_token_expire_minutes = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 user_manager = UserManager()
 authenticator = authenticator

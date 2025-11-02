@@ -13,7 +13,7 @@ from ..auth.exception_handlers import register_auth_exception_handlers
 from ..auth.init_data import create_first_super_admin, create_test_users
 from ..auth.models import OAuthAccount, User
 from ..health import create_health_router
-from ..logging import get_logger
+from ..logging import get_structured_logger
 from ..logging.structured_logging import setup_logging
 from .config import settings
 from .db import init_mongo
@@ -21,7 +21,7 @@ from .http_client import ServiceHttpClientManager
 from .service_types import ServiceConfig
 
 setup_logging()
-logger = get_logger(__name__)
+logger = get_structured_logger(__name__)
 
 
 def custom_generate_unique_id(route: APIRoute) -> str:

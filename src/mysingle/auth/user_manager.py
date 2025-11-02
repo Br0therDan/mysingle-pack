@@ -19,7 +19,7 @@ from ..email.email_gen import (
     generate_verification_email,
 )
 from ..email.email_sending import send_email
-from ..logging import get_logger
+from ..logging import get_structured_logger
 from .cache import get_user_cache
 from .exceptions import (
     InvalidID,
@@ -33,7 +33,7 @@ from .exceptions import (
 from .security.jwt import get_jwt_manager
 from .security.password import PasswordHelper, password_helper
 
-logger = get_logger(__name__)
+logger = get_structured_logger(__name__)
 jwt_manager = get_jwt_manager()
 
 # RESET_PASSWORD_TOKEN_AUDIENCE = "users:reset"
@@ -388,14 +388,9 @@ class UserManager:
         if user.is_verified:
             raise UserAlreadyVerified()
 
-        token_data = {
-            "sub": str(user.id),
-            "email": user.email,
-            "aud": "users:verify",
-        }
-        # Verify 토큰은 특수 payload로 직접 생성
-        token = jwt.encode(
-            token_data, jwt_manager.settings.SECRET_KEY, algorithm=jwt_manager.algorithm
+        # JWTManager를 통해 이메일 인증 토큰 생성 (aud/typ/iss 포함)
+        token = jwt_manager.create_verification_token(
+            user_id=str(user.id), email=user.email
         )
         await self.on_after_request_verify(user, token, request)
 
@@ -414,12 +409,7 @@ class UserManager:
         :return: 인증된 사용자.
         """
         try:
-            data = jwt.decode(
-                token,
-                jwt_manager.settings.SECRET_KEY,
-                algorithms=[jwt_manager.algorithm],
-                audience="users:verify",
-            )
+            data = jwt_manager.decode_token(token)
         except jwt.PyJWTError:
             raise InvalidVerifyToken()
 
@@ -427,6 +417,10 @@ class UserManager:
             # user_id = data["sub"]
             email = data["email"]
         except KeyError:
+            raise InvalidVerifyToken()
+
+        # aud/typ 검증
+        if data.get("aud") != "users:verify" or data.get("typ") != "verify":
             raise InvalidVerifyToken()
 
         try:
@@ -456,14 +450,10 @@ class UserManager:
         if not user.is_active:
             raise UserInactive()
 
-        token_data = {
-            "sub": str(user.id),
-            "password_fgpt": password_helper.hash(user.hashed_password),
-            "aud": "users:reset",
-        }
-        # Reset 토큰은 특수 payload로 직접 생성
-        token = jwt.encode(
-            token_data, jwt_manager.settings.SECRET_KEY, algorithm=jwt_manager.algorithm
+        password_fingerprint = password_helper.hash(user.hashed_password)
+        # JWTManager를 통해 비밀번호 재설정 토큰 생성 (aud/typ/iss 포함)
+        token = jwt_manager.create_reset_password_token(
+            user_id=str(user.id), password_fingerprint=password_fingerprint
         )
         await self.on_after_forgot_password(user, token, request)
 
@@ -484,12 +474,7 @@ class UserManager:
         :return: 비밀번호가 업데이트된 사용자.
         """
         try:
-            data = jwt.decode(
-                token,
-                jwt_manager.settings.SECRET_KEY,
-                algorithms=[jwt_manager.algorithm],
-                audience="users:reset",
-            )
+            data = jwt_manager.decode_token(token)
         except jwt.PyJWTError:
             raise InvalidResetPasswordToken()
 
@@ -497,6 +482,10 @@ class UserManager:
             user_id = data["sub"]
             password_fingerprint = data["password_fgpt"]
         except KeyError:
+            raise InvalidResetPasswordToken()
+
+        # aud/typ 검증
+        if data.get("aud") != "users:reset" or data.get("typ") != "reset":
             raise InvalidResetPasswordToken()
         user = await self.get(user_id)
 

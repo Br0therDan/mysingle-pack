@@ -20,12 +20,12 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
 from ..core.service_types import ServiceConfig, ServiceType
-from ..logging import get_logger
+from ..logging import get_structured_logger
 from .cache import get_user_cache
 from .exceptions import AuthorizationFailed, InvalidToken, UserInactive, UserNotExists
 from .models import User
 
-logger = get_logger(__name__)
+logger = get_structured_logger(__name__)
 
 
 class AuthMiddleware(BaseHTTPMiddleware):

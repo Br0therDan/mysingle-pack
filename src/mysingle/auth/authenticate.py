@@ -5,7 +5,7 @@ from fastapi.responses import Response
 from pydantic import SecretStr
 
 from ..core.config import settings
-from ..logging import get_logger
+from ..logging import get_structured_logger
 from .cache import get_user_cache
 from .models import User
 from .schemas.auth import TokenResponse
@@ -13,14 +13,14 @@ from .security.cookie import delete_cookie, set_auth_cookies
 from .security.jwt import get_jwt_manager
 from .user_manager import UserManager
 
-logger = get_logger(__name__)
+logger = get_structured_logger(__name__)
 SecretType = Union[str, SecretStr]
 user_manager = UserManager()
 
 
 class Authentication:
     def __init__(self) -> None:
-        self.logger = get_logger(__name__)
+        self.logger = get_structured_logger(__name__)
         self.jwt_manager = get_jwt_manager()
         self.transport_type = settings.TOKEN_TRANSPORT_TYPE
 
@@ -36,20 +36,24 @@ class Authentication:
         if not user.is_verified:
             raise HTTPException(status_code=400, detail="Unverified user")
 
-        # JWT Manager로 토큰 생성
+        # JWT Manager로 토큰 생성 (access / refresh 구분)
         access_token = self.jwt_manager.create_user_token(
             user_id=str(user.id),
             email=user.email,
+            token_type="access",
             is_verified=user.is_verified,
             is_superuser=user.is_superuser,
             is_active=user.is_active,
+            audience="quant-users",
         )
         refresh_token = self.jwt_manager.create_user_token(
             user_id=str(user.id),
             email=user.email,
+            token_type="refresh",
             is_verified=user.is_verified,
             is_superuser=user.is_superuser,
             is_active=user.is_active,
+            audience="quant-users",
         )
 
         # 캐시 갱신: 로그인 성공 시 최신 사용자 정보 캐시에 저장 (비동기, 실패 무시)
@@ -96,7 +100,7 @@ class Authentication:
         self,
         refresh_token: str,
         response: Response,
-        transport_type: Literal["cookie", "header", "bearer"] = "bearer",
+        transport_type: Literal["cookie", "bearer", "hybrid"] | None = None,
     ) -> TokenResponse | None:
         """Refresh token을 사용하여 새로운 access token과 refresh token을 생성합니다."""
         try:
@@ -110,20 +114,30 @@ class Authentication:
         if not user_id:
             raise HTTPException(status_code=401, detail="Invalid token payload")
 
+        # refresh 토큰 유형/오디언스 검증
+        token_typ = payload.get("typ")
+        token_aud = payload.get("aud")
+        if token_typ != "refresh" or token_aud != "quant-users":
+            raise HTTPException(status_code=401, detail="Invalid refresh token type")
+
         # 새로운 토큰 생성
         access_token = self.jwt_manager.create_user_token(
             user_id=user_id,
             email=email,
+            token_type="access",
             is_verified=payload.get("is_verified", False),
             is_superuser=payload.get("is_superuser", False),
             is_active=payload.get("is_active", True),
+            audience="quant-users",
         )
         new_refresh_token = self.jwt_manager.create_user_token(
             user_id=user_id,
             email=email,
+            token_type="refresh",
             is_verified=payload.get("is_verified", False),
             is_superuser=payload.get("is_superuser", False),
             is_active=payload.get("is_active", True),
+            audience="quant-users",
         )
 
         # 캐시 갱신: refresh 토큰 갱신 시에도 사용자 캐시 최신화 (비동기, 실패 무시)
@@ -154,14 +168,17 @@ class Authentication:
             token_type="bearer",
         )
 
-        if transport_type == "cookie":
+        # 기본 전송 방식은 인스턴스 설정을 따른다
+        effective_transport = transport_type or self.transport_type
+
+        if effective_transport in ["cookie", "hybrid"]:
             set_auth_cookies(
                 response,
                 access_token=access_token,
                 refresh_token=new_refresh_token,
             )
 
-        if transport_type == "header":
+        if effective_transport in ["bearer", "hybrid"]:
             return token_response
 
         return None

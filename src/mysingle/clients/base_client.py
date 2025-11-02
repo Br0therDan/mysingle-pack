@@ -12,12 +12,12 @@ from typing import TYPE_CHECKING, Any, Dict
 
 import httpx
 
-from mysingle.logging import get_logger
+from mysingle.logging import get_structured_logger
 
 if TYPE_CHECKING:
     from fastapi import Request
 
-logger = get_logger(__name__)
+logger = get_structured_logger(__name__)
 
 
 class BaseServiceClient:

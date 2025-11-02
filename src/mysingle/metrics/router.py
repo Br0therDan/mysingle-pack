@@ -4,11 +4,11 @@ from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 
-from ..logging import get_logger
+from ..logging import get_structured_logger
 from .collector import MetricsCollector
 from .middleware import get_metrics_collector
 
-logger = get_logger(__name__)
+logger = get_structured_logger(__name__)
 
 
 def create_metrics_router() -> APIRouter:

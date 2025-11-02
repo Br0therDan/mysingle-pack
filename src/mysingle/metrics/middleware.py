@@ -6,10 +6,10 @@ from typing import Any
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from ..logging import get_logger
+from ..logging import get_structured_logger
 from .collector import MetricsCollector, MetricsConfig
 
-logger = get_logger(__name__)
+logger = get_structured_logger(__name__)
 
 # Global metrics collector
 _metrics_collector: MetricsCollector | None = None

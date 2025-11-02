@@ -15,10 +15,10 @@ from fastapi.responses import Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from ..core.config import settings
-from ..logging import get_logger
+from ..logging import get_structured_logger
 from .models import AuditLog
 
-logger = get_logger(__name__)
+logger = get_structured_logger(__name__)
 
 
 class AuditLoggingMiddleware(BaseHTTPMiddleware):

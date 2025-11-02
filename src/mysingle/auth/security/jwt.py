@@ -2,36 +2,41 @@
 JWT Token Management - Unified System
 
 Kong Gateway와 통합된 JWT 토큰 관리 시스템입니다.
-- 토큰 생성 (로그인 시)
-- 토큰 검증
-- 토큰 디코딩
+- 사용자 액세스/리프레시 토큰 생성 및 검증
+- 이메일 인증/비밀번호 재설정 토큰 생성 및 검증
 - 서비스 간 통신용 토큰 생성
+
+본 모듈은 용도별 별도 시크릿을 사용합니다. SECRET_KEY는 사용하지 않습니다.
 
 Usage Example:
     from mysingle.auth.security.jwt import get_jwt_manager
 
-    # 사용자 로그인 토큰 생성
+    # 사용자 로그인 토큰 생성 (access / refresh)
     jwt_manager = get_jwt_manager()
-    token = jwt_manager.create_user_token(
+    access = jwt_manager.create_user_token(
         user_id="507f1f77bcf86cd799439011",
         email="user@example.com",
-        is_verified=True,
-        is_superuser=False
+        token_type="access",
+    )
+    refresh = jwt_manager.create_user_token(
+        user_id="507f1f77bcf86cd799439011",
+        email="user@example.com",
+        token_type="refresh",
     )
 
-    # 토큰 검증
-    payload = jwt_manager.decode_token(token)
+    # 토큰 검증/디코딩
+    payload = jwt_manager.decode_token(access)
 """
 
 from datetime import UTC, datetime, timedelta
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 import jwt
 
-from ...core.config import CommonSettings
-from ...logging import get_logger
+from ...core.config import settings
+from ...logging import get_structured_logger
 
-logger = get_logger(__name__)
+logger = get_structured_logger(__name__)
 
 
 class JWTManager:
@@ -41,24 +46,36 @@ class JWTManager:
     Kong Gateway와 호환되는 JWT 토큰을 생성하고 검증합니다.
     """
 
-    def __init__(self, settings: Optional[CommonSettings] = None):
+    def __init__(self, app_settings: Optional[Any] = None):
         """
         JWTManager 초기화
 
         Args:
             settings: CommonSettings 인스턴스 (None이면 자동 생성)
         """
-        self.settings = settings or CommonSettings()
+        # 전역 settings 싱글톤을 기본으로 사용합니다.
+        self.settings = app_settings or settings
 
         # JWT 설정
         self.algorithm = "HS256"
-        self.access_token_expire_hours = 24  # 24시간
+        # 만료 시간 정책 (기본값)
+        self.access_token_expire_minutes = 60  # 1시간
+        self.refresh_token_expire_days = 30  # 30일
         self.service_token_expire_minutes = 5  # 서비스 토큰은 5분
+        self.verify_token_expire_hours = 24  # 이메일 인증 토큰 24시간
+        self.reset_token_expire_hours = 2  # 비밀번호 재설정 토큰 2시간
 
         # Kong Consumer Keys
         self.frontend_consumer_key = "frontend-key"
+        # 서비스명은 '-service' 접미를 기준으로 정규화합니다.
         self.service_consumer_keys = {
+            "iam-service": "iam-service-key",
+            "journey-orchestrator-service": "journey-orchestrator-service-key",
             "strategy-service": "strategy-service-key",
+            "backtest-service": "backtest-service-key",
+            "optimization-service": "optimization-service-key",
+            "dashboard-service": "dashboard-service-key",
+            "notification-service": "notification-service-key",
             "market-data-service": "market-data-service-key",
             "genai-service": "genai-service-key",
             "ml-service": "ml-service-key",
@@ -68,9 +85,12 @@ class JWTManager:
         self,
         user_id: str,
         email: str,
+        *,
+        token_type: Literal["access", "refresh"] = "access",
         is_verified: bool = False,
         is_superuser: bool = False,
         is_active: bool = True,
+        audience: str = "quant-users",
         expires_delta: Optional[timedelta] = None,
     ) -> str:
         """
@@ -79,16 +99,21 @@ class JWTManager:
         Args:
             user_id: 사용자 ID (MongoDB ObjectId string)
             email: 사용자 이메일
+            token_type: 토큰 용도 (access|refresh)
             is_verified: 이메일 인증 여부
             is_superuser: 관리자 여부
             is_active: 활성 사용자 여부
-            expires_delta: 만료 시간 (None이면 24시간)
+            audience: aud 클레임 값(기본: "quant-users")
+            expires_delta: 만료 시간 (None이면 정책에 따름)
 
         Returns:
             str: JWT 토큰
         """
         if expires_delta is None:
-            expires_delta = timedelta(hours=self.access_token_expire_hours)
+            if token_type == "access":
+                expires_delta = timedelta(minutes=self.access_token_expire_minutes)
+            else:
+                expires_delta = timedelta(days=self.refresh_token_expire_days)
 
         now = datetime.now(UTC)
         expire = now + expires_delta
@@ -99,6 +124,8 @@ class JWTManager:
             "sub": user_id,  # Subject (User ID)
             "exp": expire,  # Expiration Time
             "iat": now,  # Issued At
+            "aud": audience,
+            "typ": token_type,
             # 커스텀 클레임 (사용자 정보)
             "email": email,
             "is_verified": is_verified,
@@ -134,7 +161,12 @@ class JWTManager:
         Returns:
             str: JWT 토큰
         """
-        if service_name not in self.service_consumer_keys:
+        normalized = (
+            service_name
+            if service_name.endswith("-service")
+            else f"{service_name}-service"
+        )
+        if normalized not in self.service_consumer_keys:
             raise ValueError(
                 f"Unknown service: {service_name}. "
                 f"Valid services: {list(self.service_consumer_keys.keys())}"
@@ -146,7 +178,7 @@ class JWTManager:
         now = datetime.now(UTC)
         expire = now + expires_delta
 
-        consumer_key = self.service_consumer_keys[service_name]
+        consumer_key = self.service_consumer_keys[normalized]
 
         payload = {
             # JWT 표준 클레임
@@ -154,9 +186,10 @@ class JWTManager:
             "sub": "service-account",  # Subject (Service Account)
             "exp": expire,  # Expiration Time
             "iat": now,  # Issued At
+            "aud": "internal",
+            "typ": "service",
             # 커스텀 클레임 (서비스 정보)
-            "service": service_name,
-            "type": "service-to-service",
+            "service": normalized,
         }
 
         # JWT Secret (서비스별 Secret)
@@ -170,6 +203,66 @@ class JWTManager:
             return token
         except Exception as e:
             logger.error(f"Failed to create service token: {e}")
+            raise
+
+    def create_verification_token(self, user_id: str, email: str) -> str:
+        """
+        이메일 인증 토큰 생성
+
+        iss는 iam-service consumer로 설정합니다.
+        aud = "users:verify", typ = "verify"
+        """
+        now = datetime.now(UTC)
+        expire = now + timedelta(hours=self.verify_token_expire_hours)
+
+        consumer_key = self.service_consumer_keys["iam-service"]
+        secret = self._get_jwt_secret_for_consumer(consumer_key)
+
+        payload = {
+            "iss": consumer_key,
+            "sub": user_id,
+            "email": email,
+            "aud": "users:verify",
+            "typ": "verify",
+            "iat": now,
+            "exp": expire,
+        }
+
+        try:
+            return jwt.encode(payload, secret, algorithm=self.algorithm)
+        except Exception as e:
+            logger.error(f"Failed to create verification token: {e}")
+            raise
+
+    def create_reset_password_token(
+        self, user_id: str, password_fingerprint: str
+    ) -> str:
+        """
+        비밀번호 재설정 토큰 생성
+
+        iss는 iam-service consumer로 설정합니다.
+        aud = "users:reset", typ = "reset"
+        """
+        now = datetime.now(UTC)
+        expire = now + timedelta(hours=self.reset_token_expire_hours)
+
+        consumer_key = self.service_consumer_keys["iam-service"]
+        secret = self._get_jwt_secret_for_consumer(consumer_key)
+
+        payload = {
+            "iss": consumer_key,
+            "sub": user_id,
+            "password_fgpt": password_fingerprint,
+            "aud": "users:reset",
+            "typ": "reset",
+            "iat": now,
+            "exp": expire,
+        }
+
+        try:
+            return jwt.encode(payload, secret, algorithm=self.algorithm)
+        except Exception as e:
+            logger.error(f"Failed to create reset password token: {e}")
             raise
 
     def decode_token(
@@ -291,7 +384,13 @@ class JWTManager:
         # 환경변수 이름 매핑
         secret_env_map = {
             "frontend-key": "KONG_JWT_SECRET_FRONTEND",
+            "iam-service-key": "KONG_JWT_SECRET_IAM",
+            "journey-orchestrator-service-key": "KONG_JWT_SECRET_JOURNEY_ORCHESTRATOR",
             "strategy-service-key": "KONG_JWT_SECRET_STRATEGY",
+            "backtest-service-key": "KONG_JWT_SECRET_BACKTEST",
+            "optimization-service-key": "KONG_JWT_SECRET_OPTIMIZATION",
+            "dashboard-service-key": "KONG_JWT_SECRET_DASHBOARD",
+            "notification-service-key": "KONG_JWT_SECRET_NOTIFICATION",
             "market-data-service-key": "KONG_JWT_SECRET_MARKET_DATA",
             "genai-service-key": "KONG_JWT_SECRET_GENAI",
             "ml-service-key": "KONG_JWT_SECRET_ML",
@@ -303,12 +402,10 @@ class JWTManager:
 
         secret = getattr(self.settings, env_var, None)
         if not secret:
-            # 개발 환경 fallback
-            logger.warning(
-                f"JWT secret not found in environment variable {env_var}, "
-                f"using SECRET_KEY as fallback"
+            # SECRET_KEY는 사용하지 않습니다. 구성 누락은 즉시 오류 처리합니다.
+            raise ValueError(
+                f"JWT secret not found for consumer '{consumer_key}'. Missing env: {env_var}"
             )
-            return self.settings.SECRET_KEY
 
         return str(secret)
 

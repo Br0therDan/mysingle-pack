@@ -1,13 +1,13 @@
 import asyncio
 
 from ..core.config import settings
-from ..logging import get_logger
+from ..logging import get_structured_logger
 from .models import User
 from .security.password import PasswordHelper
 
 password_helper = PasswordHelper()
 
-logger = get_logger(__name__)
+logger = get_structured_logger(__name__)
 
 
 async def _try_create_with_retry(

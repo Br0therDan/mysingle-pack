@@ -33,10 +33,10 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import Any, Optional
 
-from ..logging import get_logger
+from ..logging import get_structured_logger
 from .models import User
 
-logger = get_logger(__name__)
+logger = get_structured_logger(__name__)
 
 # Redis 타입 힌트 (optional)
 try:

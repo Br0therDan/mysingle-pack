@@ -9,9 +9,9 @@ from typing import Dict, Optional
 import httpx
 
 from ..core.config import settings
-from ..logging import get_logger
+from ..logging import get_structured_logger
 
-logger = get_logger(__name__)
+logger = get_structured_logger(__name__)
 
 
 class ServiceHttpClient:
