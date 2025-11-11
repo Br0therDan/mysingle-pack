@@ -31,10 +31,10 @@ FastAPI 애플리케이션 팩토리를 사용하여 표준화된 마이크로�
 
 ### 지원하는 서비스 타입
 
-| 서비스 타입 | 설명 | 인증 방식 | 사용 사례 |
-|------------|------|----------|----------|
-| `IAM_SERVICE` | 인증/인가 담당 서비스 | 직접 JWT 검증 + OAuth2 | 사용자 관리, 인증 서버 |
-| `NON_IAM_SERVICE` | 일반 비즈니스 서비스 | Gateway 헤더 기반 | Backtest, ML, Market Data 등 |
+| 서비스 타입       | 설명                  | 인증 방식              | 사용 사례                    |
+| ----------------- | --------------------- | ---------------------- | ---------------------------- |
+| `IAM_SERVICE`     | 인증/인가 담당 서비스 | 직접 JWT 검증 + OAuth2 | 사용자 관리, 인증 서버       |
+| `NON_IAM_SERVICE` | 일반 비즈니스 서비스  | Gateway 헤더 기반      | Backtest, ML, Market Data 등 |
 
 ---
 
@@ -227,7 +227,7 @@ async def lifespan(app: FastAPI):
 service_config = create_service_config(
     service_type=ServiceType.IAM_SERVICE,
     service_name=settings.SERVICE_NAME,
-    service_version=settings.API_VERSION,
+    service_version=settings.APP_VERSION,
     description="Identity and Access Management Service",
     enable_audit_logging=True,  # 감사 로그 활성화 (보안 중요)
     lifespan=lifespan,
@@ -603,7 +603,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     # 환경 변수에서 로드
     SERVICE_NAME: str = "my-service"
-    API_VERSION: str = "v1"
+    APP_VERSION: str = "v1"
     ENVIRONMENT: str = "development"  # development, staging, production
 
     # MongoDB
@@ -626,7 +626,7 @@ from app.core.config import settings
 service_config = create_service_config(
     service_name=settings.SERVICE_NAME,
     service_type=ServiceType.NON_IAM_SERVICE,
-    service_version=settings.API_VERSION,
+    service_version=settings.APP_VERSION,
     cors_origins=settings.ALLOWED_ORIGINS,
 )
 ```

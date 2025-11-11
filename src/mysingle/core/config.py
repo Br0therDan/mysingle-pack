@@ -43,7 +43,7 @@ class CommonSettings(BaseSettings):
 
     # AUTH HOST SETTINGS (서비스 내부통신용 )
     AUTH_HOST: str = "http://localhost:8001"  # 또는 http://localhost:8000/strategy
-    AUTH_API_VERSION: str = "v1"  # MySingle Auth 패키지 내부용
+    AUTH_APP_VERSION: str = "v1"  # MySingle Auth 패키지 내부용
 
     AUTH_PUBLIC_PATHS: list[str] = [
         "/api/v1/auth/login",
@@ -63,6 +63,7 @@ class CommonSettings(BaseSettings):
     MONGODB_USERNAME: str = "root"
     MONGODB_PASSWORD: str = "example"
     REDIS_URL: str = "redis://localhost:6379/0"
+    REDIS_PASSWORD: str = "change-this-redis-password"
     # USER CACHE SETTINGS
     USER_CACHE_TTL_SECONDS: int = 300
     USER_CACHE_KEY_PREFIX: str = "user"
@@ -120,16 +121,14 @@ class CommonSettings(BaseSettings):
     # API GATEWAY SETTINGS
     USE_API_GATEWAY: bool = True
     API_GATEWAY_URL: str = "http://localhost:8000"
+
     KONG_JWT_SECRET_FRONTEND: str = "change-this-frontend-jwt-secret"
-    KONG_JWT_IAM: str = "change-this-iam-service-jwt-secret"
-    KONG_JWT_JOURNEY_ORCHESTRATOR: str = (
-        "change-this-journey-orchestrator-service-jwt-secret"
-    )
+    KONG_JWT_SECRET_IAM: str = "change-this-iam-service-jwt-secret"
     KONG_JWT_SECRET_STRATEGY: str = "change-this-strategy-service-jwt-secret"
     KONG_JWT_SECRET_BACKTEST: str = "change-this-backtest-service-jwt-secret"
-    KONG_JWT_OPTIMIZATION: str = "change-this-optimization-service-jwt-secret"
-    KONG_JWT_DASHBOARD: str = "change-this-dashboard-service-jwt-secret"
-
+    KONG_JWT_SECRET_INDICATOR: str = "change-this-indicator-service-jwt-secret"
+    KONG_JWT_SECRET_OPTIMIZATION: str = "change-this-optimization-service-jwt-secret"
+    KONG_JWT_SECRET_DASHBOARD: str = "change-this-dashboard-service-jwt-secret"
     KONG_JWT_SECRET_NOTIFICATION: str = "change-this-notification-service-jwt-secret"
     KONG_JWT_SECRET_MARKET_DATA: str = "change-this-market-data-service-jwt-secret"
     KONG_JWT_SECRET_GENAI: str = "change-this-genai-service-jwt-secret"
