@@ -27,6 +27,9 @@ pip install mysingle[email]
 # Monitoring features
 pip install mysingle[monitoring]
 
+# DSL runtime features
+pip install mysingle[dsl]
+
 # All features
 pip install mysingle[full]
 
@@ -78,6 +81,10 @@ if __name__ == "__main__":
     - 권장: `from mysingle.clients import BaseServiceClient`
     - 루트도 가능: `from mysingle import BaseServiceClient`
 
+- DSL
+    - 권장: `from mysingle.dsl import DSLParser, DSLExecutor, SecurityValidator, ResourceLimits`
+    - 루트도 가능: `from mysingle import DSLParser, DSLExecutor, SecurityValidator, ResourceLimits`
+
 루트 패키지(`mysingle`)는 지연 로딩(lazy export)으로 구성되어 있어, 심볼 접근 시점에만 서브패키지를 가져옵니다.
 
 ### With Authentication
@@ -102,6 +109,22 @@ async def startup():
     await init_db()
 ```
 
+### With DSL Runtime
+```python
+from mysingle.dsl import DSLParser, DSLExecutor
+import pandas as pd
+
+# Parse and compile DSL code
+parser = DSLParser()
+bytecode = parser.parse("result = sma(close, 20)")
+
+# Execute with data
+executor = DSLExecutor()
+data = pd.DataFrame({"close": [100, 102, 105, 103, 107]})
+result = executor.execute(bytecode, data={"close": data["close"]})
+print(result["result"])  # 20-period SMA
+```
+
 ## 📋 Features
 
 - **🔐 Authentication**: JWT-based auth with OAuth support
@@ -110,6 +133,7 @@ async def startup():
 - **📧 Email**: Template-based email system
 - **📊 Monitoring**: Prometheus metrics and structured logging
 - **⚙️ Configuration**: Pydantic-based settings management
+- **🔧 DSL Runtime**: Secure Python DSL execution engine for user-defined indicators and strategies
 
 ## 📝 Available Dependencies by Feature
 
@@ -139,6 +163,11 @@ async def startup():
 ### Monitoring
 - `prometheus-client>=0.19.0`
 - `structlog>=23.2.0`
+
+### DSL
+- `RestrictedPython>=7.4`
+- `pandas>=2.1.4`
+- `numpy>=1.24.0`
 
 ## 🛠️ Development
 

@@ -1,6 +1,6 @@
 """DSL 표준 라이브러리 - 공통 함수"""
 
-from typing import Any, Callable
+from typing import Any, Callable, Literal
 
 import pandas as pd
 
@@ -200,6 +200,80 @@ def atr(
     return EMA(tr, window)
 
 
+# ============================================================================
+# 전략 특화 함수 (Strategy Service 전용)
+# ============================================================================
+
+
+def generate_signal(
+    condition: pd.Series, signal_type: Literal["long", "short"] = "long"
+) -> pd.Series:
+    """
+    조건을 명시적 boolean 시그널로 변환
+
+    Args:
+        condition: 조건 Series (True/False)
+        signal_type: 시그널 방향 ("long" or "short")
+
+    Returns:
+        pd.Series[bool]: 시그널 (True = 진입, False = 보유)
+
+    Example:
+        >>> oversold = data['RSI'] < 30
+        >>> buy_signal = generate_signal(oversold, signal_type="long")
+    """
+    # 명시적 boolean 변환
+    return condition.astype(bool)
+
+
+def entry_exit_signals(
+    entry_condition: pd.Series, exit_condition: pd.Series
+) -> pd.DataFrame:
+    """
+    진입 조건과 청산 조건을 페어로 생성
+
+    Args:
+        entry_condition: 진입 조건 Series
+        exit_condition: 청산 조건 Series
+
+    Returns:
+        pd.DataFrame: {'entry': pd.Series[bool], 'exit': pd.Series[bool]}
+
+    Example:
+        >>> entry = crossover(data['SMA_50'], data['SMA_200'])
+        >>> exit = crossunder(data['SMA_50'], data['SMA_200'])
+        >>> signals = entry_exit_signals(entry, exit)
+        >>> result = signals['entry']  # 진입 시그널만 반환
+    """
+    return pd.DataFrame(
+        {"entry": entry_condition.astype(bool), "exit": exit_condition.astype(bool)}
+    )
+
+
+def signal_filter(signals: pd.Series, filter_condition: pd.Series) -> pd.Series:
+    """
+    시그널을 필터 조건으로 필터링
+
+    Args:
+        signals: 시그널 Series
+        filter_condition: 필터 조건 Series
+
+    Returns:
+        pd.Series[bool]: 필터링된 시그널
+
+    Example:
+        >>> # RSI 과매도 시그널
+        >>> oversold = data['RSI'] < 30
+        >>>
+        >>> # 거래량 필터 (평균 대비 1.5배 이상)
+        >>> high_volume = data['volume'] > data['volume'].rolling(20).mean() * 1.5
+        >>>
+        >>> # 필터링된 시그널
+        >>> filtered = signal_filter(oversold, high_volume)
+    """
+    return (signals & filter_condition).astype(bool)
+
+
 def get_stdlib_functions() -> dict[str, Callable[..., Any]]:
     """
     표준 라이브러리 함수 딕셔너리 반환
@@ -225,4 +299,8 @@ def get_stdlib_functions() -> dict[str, Callable[..., Any]]:
         "stdev": stdev,
         "bbands": bbands,
         "atr": atr,
+        # 전략 특화 함수
+        "generate_signal": generate_signal,
+        "entry_exit_signals": entry_exit_signals,
+        "signal_filter": signal_filter,
     }

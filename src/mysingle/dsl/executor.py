@@ -1,8 +1,10 @@
 """DSL 코드 실행 엔진"""
 
+import marshal
 import resource
 import signal
 from contextlib import contextmanager
+from types import CodeType
 from typing import Any
 
 import numpy as np
@@ -35,7 +37,7 @@ class DSLExecutor:
 
     def execute(
         self,
-        compiled_code: bytes,
+        compiled_code: bytes | CodeType,
         data: pd.DataFrame,
         params: dict[str, Any],
     ) -> pd.Series | pd.DataFrame:
@@ -43,7 +45,7 @@ class DSLExecutor:
         컴파일된 DSL 코드 실행
 
         Args:
-            compiled_code: 컴파일된 바이트코드
+            compiled_code: 컴파일된 바이트코드 (bytes) 또는 code object (CodeType)
             data: OHLCV 데이터프레임
             params: 파라미터 딕셔너리
 
@@ -57,11 +59,17 @@ class DSLExecutor:
         """
         with self._resource_limits():
             try:
+                # 바이트코드인 경우 code object로 변환
+                if isinstance(compiled_code, bytes):
+                    code_object = marshal.loads(compiled_code)
+                else:
+                    code_object = compiled_code
+
                 # 안전한 글로벌 네임스페이스 구성
                 namespace = self._build_namespace(data, params)
 
                 # 바이트코드 실행
-                exec(compiled_code, namespace)  # nosec B102 - Controlled execution with RestrictedPython
+                exec(code_object, namespace)  # nosec B102 - Controlled execution with RestrictedPython
 
                 # 'result' 변수 확인 (DSL 코드가 result = ... 형식으로 작성됨)
                 if "result" not in namespace:
@@ -143,10 +151,12 @@ class DSLExecutor:
                 "pd": pd,
                 # 데이터
                 "data": data,
+                # 파라미터 딕셔너리 (전략에서 params['key'] 또는 params.get('key', default) 형식으로 접근)
+                "params": params,
             }
         )
 
-        # 파라미터를 개별 변수로 주입
+        # 파라미터를 개별 변수로도 주입 (하위 호환성)
         namespace.update(params)
 
         # StdLib 함수 추가

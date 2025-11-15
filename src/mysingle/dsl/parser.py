@@ -1,6 +1,8 @@
 """RestrictedPython 기반 DSL 파서"""
 
 import hashlib
+import marshal
+from types import CodeType
 from typing import Any
 
 from RestrictedPython import compile_restricted
@@ -70,7 +72,7 @@ class DSLParser:
             filename: 파일명 (에러 메시지용)
 
         Returns:
-            bytes: 컴파일된 바이트코드
+            bytes: 컴파일된 바이트코드 (marshal로 직렬화됨)
 
         Raises:
             DSLCompilationError: 컴파일 실패 시
@@ -101,12 +103,31 @@ class DSLParser:
             if code_object is None:
                 raise DSLCompilationError("Compilation produced no code object")
 
-            return code_object
+            # marshal을 사용하여 바이트코드로 직렬화
+            return marshal.dumps(code_object)
 
         except SyntaxError as e:
             raise DSLCompilationError(f"Syntax error: {e}") from e
         except Exception as e:
             raise DSLCompilationError(f"Unexpected compilation error: {e}") from e
+
+    def load(self, bytecode: bytes) -> CodeType:
+        """
+        직렬화된 바이트코드를 code object로 로드
+
+        Args:
+            bytecode: marshal로 직렬화된 바이트코드
+
+        Returns:
+            CodeType: 로드된 code object
+
+        Raises:
+            DSLCompilationError: 로드 실패 시
+        """
+        try:
+            return marshal.loads(bytecode)
+        except Exception as e:
+            raise DSLCompilationError(f"Failed to load bytecode: {e}") from e
 
     def get_code_hash(self, code: str) -> str:
         """
