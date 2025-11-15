@@ -474,7 +474,7 @@ service_config = create_service_config(
     service_name="my-service",
     service_type=ServiceType.NON_IAM_SERVICE,
     service_version="1.0.0",
-    enable_audit_logging=False,  # 감사 로그 비활성화
+    enable_audit_logging=settings.AUDIT_LOGGING_ENABLED,  # 감사 로그 비활성화
 )
 ```
 
@@ -603,7 +603,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     # 환경 변수에서 로드
     SERVICE_NAME: str = "my-service"
-    APP_VERSION: str = "v1"
+    APP_VERSION: str = "0.1.0"
     ENVIRONMENT: str = "development"  # development, staging, production
 
     # MongoDB

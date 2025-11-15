@@ -17,7 +17,7 @@ class CommonSettings(BaseSettings):
     )
 
     # PROJECT INFORMATION
-    PROJECT_NAME: str = "Quant Platform"
+    PROJECT_NAME: str = "My Project"
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
     DEV_MODE: bool = True
@@ -41,9 +41,7 @@ class CommonSettings(BaseSettings):
     TEST_ADMIN_PASSWORD: str = "1234"
     TEST_ADMIN_FULLNAME: str = "Test Admin"
 
-    # AUTH HOST SETTINGS (서비스 내부통신용 )
-    AUTH_HOST: str = "http://localhost:8001"  # 또는 http://localhost:8000/strategy
-    AUTH_APP_VERSION: str = "v1"  # MySingle Auth 패키지 내부용
+    AUTH_APP_VERSION: str = "0.1.0"  # MySingle Auth 패키지 내부용
 
     AUTH_PUBLIC_PATHS: list[str] = [
         "/api/v1/auth/login",
@@ -85,10 +83,6 @@ class CommonSettings(BaseSettings):
         default=["http://localhost:3000", "http://localhost:8000"],
         description="CORS origins",
     )
-
-    # PERFORMANCE SETTINGS
-    MAX_CONNECTIONS_COUNT: int = 10
-    MIN_CONNECTIONS_COUNT: int = 1
 
     # HTTP CLIENT SETTINGS
     HTTP_CLIENT_TIMEOUT: float = 30.0

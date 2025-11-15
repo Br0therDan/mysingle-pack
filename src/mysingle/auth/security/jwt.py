@@ -6,7 +6,6 @@ Kong Gateway와 통합된 JWT 토큰 관리 시스템입니다.
 - 이메일 인증/비밀번호 재설정 토큰 생성 및 검증
 - 서비스 간 통신용 토큰 생성
 
-본 모듈은 용도별 별도 시크릿을 사용합니다. SECRET_KEY는 사용하지 않습니다.
 
 Usage Example:
     from mysingle.auth.security.jwt import get_jwt_manager
