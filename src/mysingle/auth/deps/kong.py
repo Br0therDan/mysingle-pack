@@ -2,6 +2,14 @@ from typing import Optional, TypedDict
 
 from fastapi import Request
 
+from mysingle.constants import (
+    HEADER_CORRELATION_ID,
+    HEADER_KONG_CONSUMER_ID,
+    HEADER_KONG_REQUEST_ID,
+    HEADER_KONG_USER_ID,
+    HEADER_USER_ID,
+)
+
 
 def _get_header(request: Request, key: str) -> Optional[str]:
     """Case-insensitive, trimmed header getter.
@@ -20,17 +28,26 @@ def get_kong_user_id(request: Request) -> Optional[str]:
     """
     애플리케이션 최종 사용자 ID.
 
-    - 기본 OSS Kong JWT 플러그인은 최종 사용자 ID를 자동으로 헤더에 넣지 않습니다.
-        (X-Consumer-*는 '컨슈머(클라이언트/앱)' 식별자일 뿐입니다.)
-    - 따라서 여기서는 오직 X-User-Id 만을 사용자 ID로 인정합니다.
-        게이트웨이에서 필요 시 클레임 매핑(Transform)으로 X-User-Id를 주입하세요.
+    Kong Gateway에서 JWT 플러그인을 통해 주입하는 헤더:
+    - X-Consumer-Custom-ID: JWT의 sub 클레임 값 (원본)
+    - X-User-Id: 다운스트림 서비스로 전파되는 표준 헤더
+
+    우선순위:
+    1. X-User-Id (서비스 간 전파 표준)
+    2. X-Consumer-Custom-ID (Kong JWT 플러그인 원본)
     """
-    return _get_header(request, "x-user-id")
+    # 우선순위 1: 서비스 간 전파 표준 헤더
+    user_id = _get_header(request, HEADER_USER_ID.lower())
+    if user_id:
+        return user_id
+
+    # 우선순위 2: Kong JWT 플러그인 원본 헤더
+    return _get_header(request, HEADER_KONG_USER_ID.lower())
 
 
 def get_kong_consumer_id(request: Request) -> Optional[str]:
     """Kong Consumer 내부 ID"""
-    return _get_header(request, "x-consumer-id")
+    return _get_header(request, HEADER_KONG_CONSUMER_ID.lower())
 
 
 def get_kong_consumer_username(request: Request) -> Optional[str]:
@@ -68,15 +85,23 @@ def get_kong_headers_dict(request: Request) -> KongHeaders:
 
 
 def get_kong_correlation_id(request: Request) -> Optional[str]:
-    """Correlation ID 추출"""
-    return _get_header(request, "x-correlation-id") or _get_header(
+    """
+    Correlation ID 추출
+
+    X-Correlation-Id 헤더를 우선 사용하며, 없으면 대체 헤더 확인
+    """
+    return _get_header(request, HEADER_CORRELATION_ID.lower()) or _get_header(
         request, "correlation-id"
     )
 
 
 def get_kong_request_id(request: Request) -> Optional[str]:
-    """Kong Request ID 추출"""
-    return _get_header(request, "x-kong-request-id") or _get_header(
+    """
+    Kong Request ID 추출
+
+    X-Kong-Request-Id 헤더를 우선 사용하며, 없으면 대체 헤더 확인
+    """
+    return _get_header(request, HEADER_KONG_REQUEST_ID.lower()) or _get_header(
         request, "x-request-id"
     )
 

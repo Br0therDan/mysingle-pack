@@ -134,8 +134,161 @@ print(result["result"])  # 20-period SMA
 - **📊 Monitoring**: Prometheus metrics and structured logging
 - **⚙️ Configuration**: Pydantic-based settings management
 - **🔧 DSL Runtime**: Secure Python DSL execution engine for user-defined indicators and strategies
+- **🔑 Standard Constants**: HTTP headers and environment variable naming conventions
 
-## 📝 Available Dependencies by Feature
+## 🔑 Standard Constants
+
+모든 마이크로서비스에서 일관된 헤더 및 환경 변수 사용을 위한 표준 상수를 제공합니다.
+
+### HTTP 헤더 상수
+
+```python
+from mysingle.constants import (
+    # Kong Gateway 원본 헤더
+    HEADER_KONG_USER_ID,         # "X-Consumer-Custom-ID" (JWT sub 클레임)
+    HEADER_KONG_CONSUMER_ID,     # "X-Consumer-ID"
+    HEADER_KONG_REQUEST_ID,      # "X-Kong-Request-Id"
+    HEADER_CORRELATION_ID,       # "X-Correlation-Id"
+
+    # 서비스 간 전파용 헤더
+    HEADER_USER_ID,              # "X-User-Id" (다운스트림 전파)
+    HEADER_AUTHORIZATION,        # "Authorization"
+)
+
+# 사용 예시
+headers = {
+    HEADER_AUTHORIZATION: f"Bearer {token}",
+    HEADER_USER_ID: user_id,
+    HEADER_CORRELATION_ID: correlation_id,
+}
+```
+
+### gRPC 메타데이터 상수
+
+```python
+from mysingle.constants import (
+    GRPC_METADATA_USER_ID,       # "user_id"
+    GRPC_METADATA_AUTHORIZATION, # "authorization"
+    GRPC_METADATA_CORRELATION_ID,# "correlation_id"
+)
+
+# 사용 예시
+metadata = [
+    (GRPC_METADATA_USER_ID, user_id),
+    (GRPC_METADATA_CORRELATION_ID, correlation_id),
+]
+```
+
+### 환경 변수 네이밍 규칙
+
+```python
+from mysingle.constants import (
+    HTTP_CLIENT_MAX_CONNECTIONS,  # "HTTP_CLIENT_MAX_CONNECTIONS"
+    HTTP_CLIENT_TIMEOUT,           # "HTTP_CLIENT_TIMEOUT"
+    ENV_TEST_ALLOW_SIMPLE_USER,   # "TEST_ALLOW_SIMPLE_USER"
+)
+
+# 서비스별 gRPC 설정 패턴
+# USE_GRPC_FOR_<SERVICE_NAME>
+# <SERVICE_NAME>_GRPC_HOST
+# <SERVICE_NAME>_GRPC_PORT
+```
+
+### BaseServiceClient 표준 사용법
+
+```python
+from mysingle.clients import BaseServiceClient
+from fastapi import Request
+
+class MyServiceClient(BaseServiceClient):
+    def __init__(self, request: Request | None = None):
+        super().__init__(
+            service_name="my-service",
+            default_port=8001,
+            request=request,  # JWT와 X-User-Id 자동 전파
+        )
+
+    async def get_data(self) -> dict:
+        return await self._request("GET", "/api/v1/data")
+
+# 엔드포인트에서 사용
+@router.get("/endpoint")
+async def endpoint(request: Request):
+    async with MyServiceClient(request=request) as client:
+        # request에서 Authorization, X-User-Id 자동 추출 및 전파
+        data = await client.get_data()
+    return data
+```
+
+## � gRPC Interceptors
+
+gRPC 서비스에서 인증, 로깅, 메타데이터 전파를 위한 표준 인터셉터를 제공합니다.
+
+### 서버 인터셉터 적용
+
+```python
+import grpc
+from mysingle.grpc import AuthInterceptor, LoggingInterceptor, MetadataInterceptor
+
+# gRPC 서버 생성 시 인터셉터 적용
+async def serve():
+    server = grpc.aio.server(
+        interceptors=[
+            AuthInterceptor(
+                require_auth=True,
+                exempt_methods=["/health/Check", "/health/Ready"]
+            ),
+            MetadataInterceptor(auto_generate=True),
+            LoggingInterceptor(),
+        ]
+    )
+
+    # servicer 등록
+    my_pb2_grpc.add_MyServiceServicer_to_server(MyServiceServicer(), server)
+
+    server.add_insecure_port('[::]:50051')
+    await server.start()
+    await server.wait_for_termination()
+```
+
+### 클라이언트 인터셉터 적용
+
+```python
+from mysingle.grpc import ClientAuthInterceptor
+
+async def call_grpc_service(user_id: str, correlation_id: str | None = None):
+    async with grpc.aio.insecure_channel(
+        'strategy-service:50051',
+        interceptors=[
+            ClientAuthInterceptor(
+                user_id=user_id,
+                correlation_id=correlation_id
+            )
+        ]
+    ) as channel:
+        stub = strategy_pb2_grpc.StrategyServiceStub(channel)
+        response = await stub.GetStrategy(request)
+        return response
+```
+
+### 메타데이터 표준
+
+모든 gRPC 호출은 아래 메타데이터를 전파합니다:
+
+```python
+from mysingle.constants import (
+    GRPC_METADATA_USER_ID,        # "user_id" (필수)
+    GRPC_METADATA_CORRELATION_ID, # "correlation_id" (선택, 자동 생성)
+    GRPC_METADATA_REQUEST_ID,     # "request_id" (선택, 자동 생성)
+)
+```
+
+**주의사항:**
+- `user_id`는 모든 gRPC 호출에 필수입니다.
+- `AuthInterceptor`는 `user_id` 누락 시 `UNAUTHENTICATED` 에러를 반환합니다.
+- 개발/테스트 환경에서는 `require_auth=False`로 인증을 비활성화할 수 있습니다.
+
+## �📝 Available Dependencies by Feature
 
 ### Core (always installed)
 - `pydantic>=2.5.0`

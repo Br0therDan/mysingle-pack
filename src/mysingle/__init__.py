@@ -33,6 +33,13 @@ __all__ = [
     "BaseDuckDBManager",
     # Clients: HTTP Service Clients
     "BaseServiceClient",
+    # Constants: Headers and Environment Variables
+    "HEADER_AUTHORIZATION",
+    "HEADER_USER_ID",
+    "HEADER_CORRELATION_ID",
+    "HEADER_KONG_USER_ID",
+    "HEADER_KONG_CONSUMER_ID",
+    "HEADER_KONG_REQUEST_ID",
 ]
 
 # 지연 로딩 매핑: 심볼명 -> (모듈경로, 속성명)
@@ -52,6 +59,13 @@ _EXPORTS = {
     "BaseDuckDBManager": ("mysingle.database", "BaseDuckDBManager"),
     # Clients
     "BaseServiceClient": ("mysingle.clients", "BaseServiceClient"),
+    # Constants
+    "HEADER_AUTHORIZATION": ("mysingle.constants", "HEADER_AUTHORIZATION"),
+    "HEADER_USER_ID": ("mysingle.constants", "HEADER_USER_ID"),
+    "HEADER_CORRELATION_ID": ("mysingle.constants", "HEADER_CORRELATION_ID"),
+    "HEADER_KONG_USER_ID": ("mysingle.constants", "HEADER_KONG_USER_ID"),
+    "HEADER_KONG_CONSUMER_ID": ("mysingle.constants", "HEADER_KONG_CONSUMER_ID"),
+    "HEADER_KONG_REQUEST_ID": ("mysingle.constants", "HEADER_KONG_REQUEST_ID"),
 }
 
 

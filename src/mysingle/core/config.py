@@ -172,3 +172,24 @@ settings = CommonSettings()
 def get_settings() -> CommonSettings:
     """Get the global settings instance."""
     return settings
+
+
+def get_environment() -> str:
+    """
+    현재 실행 환경 반환
+
+    Returns:
+        환경 문자열: "development", "testing", "staging", "production"
+    """
+    return settings.ENVIRONMENT.lower()
+
+
+def is_production() -> bool:
+    """프로덕션 환경 여부"""
+    return get_environment() == "production"
+
+
+def is_development() -> bool:
+    """개발 환경 여부 (development, testing 포함)"""
+    env = get_environment()
+    return env in ["development", "testing", "local"]

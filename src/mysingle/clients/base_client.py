@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, Any, Dict
 
 import httpx
 
+from mysingle.constants import HEADER_AUTHORIZATION, HEADER_USER_ID
 from mysingle.logging import get_structured_logger
 
 if TYPE_CHECKING:
@@ -113,7 +114,13 @@ class BaseServiceClient:
         # HTTP 헤더 설정
         headers = kwargs.pop("headers", {})
         if self.auth_token:
-            headers["Authorization"] = f"Bearer {self.auth_token}"
+            headers[HEADER_AUTHORIZATION] = f"Bearer {self.auth_token}"
+
+        # User ID 전파 (request에서 추출 가능한 경우)
+        if request:
+            user_id = request.headers.get(HEADER_USER_ID)
+            if user_id:
+                headers[HEADER_USER_ID] = user_id
 
         # httpx AsyncClient 초기화
         self.client = httpx.AsyncClient(
@@ -143,7 +150,7 @@ class BaseServiceClient:
         Note:
             Authorization 헤더 형식: "Bearer <token>"
         """
-        authorization = request.headers.get("Authorization", "")
+        authorization = request.headers.get(HEADER_AUTHORIZATION, "")
         if authorization.startswith("Bearer "):
             token = authorization.replace("Bearer ", "")
             logger.debug("JWT token extracted from request")
@@ -281,11 +288,11 @@ class BaseServiceClient:
             token: 새로운 JWT 토큰
         """
         self.auth_token = token
-        self.client.headers["Authorization"] = f"Bearer {token}"
+        self.client.headers[HEADER_AUTHORIZATION] = f"Bearer {token}"
         logger.debug(f"{self.__class__.__name__} auth token updated")
 
     def remove_auth_token(self):
         """인증 토큰 제거"""
         self.auth_token = ""
-        self.client.headers.pop("Authorization", None)
+        self.client.headers.pop(HEADER_AUTHORIZATION, None)
         logger.debug(f"{self.__class__.__name__} auth token removed")
