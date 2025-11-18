@@ -33,13 +33,23 @@ __all__ = [
     "BaseDuckDBManager",
     # Clients: HTTP Service Clients
     "BaseServiceClient",
-    # Constants: Headers and Environment Variables
+    # Constants: HTTP Headers
     "HEADER_AUTHORIZATION",
     "HEADER_USER_ID",
     "HEADER_CORRELATION_ID",
     "HEADER_KONG_USER_ID",
     "HEADER_KONG_CONSUMER_ID",
     "HEADER_KONG_REQUEST_ID",
+    # Constants: gRPC Metadata
+    "GRPC_METADATA_USER_ID",
+    "GRPC_METADATA_AUTHORIZATION",
+    "GRPC_METADATA_CORRELATION_ID",
+    "GRPC_METADATA_REQUEST_ID",
+    # gRPC: Interceptors
+    "AuthInterceptor",
+    "LoggingInterceptor",
+    "MetadataInterceptor",
+    "ClientAuthInterceptor",
 ]
 
 # 지연 로딩 매핑: 심볼명 -> (모듈경로, 속성명)
@@ -59,13 +69,29 @@ _EXPORTS = {
     "BaseDuckDBManager": ("mysingle.database", "BaseDuckDBManager"),
     # Clients
     "BaseServiceClient": ("mysingle.clients", "BaseServiceClient"),
-    # Constants
+    # Constants: HTTP Headers
     "HEADER_AUTHORIZATION": ("mysingle.constants", "HEADER_AUTHORIZATION"),
     "HEADER_USER_ID": ("mysingle.constants", "HEADER_USER_ID"),
     "HEADER_CORRELATION_ID": ("mysingle.constants", "HEADER_CORRELATION_ID"),
     "HEADER_KONG_USER_ID": ("mysingle.constants", "HEADER_KONG_USER_ID"),
     "HEADER_KONG_CONSUMER_ID": ("mysingle.constants", "HEADER_KONG_CONSUMER_ID"),
     "HEADER_KONG_REQUEST_ID": ("mysingle.constants", "HEADER_KONG_REQUEST_ID"),
+    # Constants: gRPC Metadata
+    "GRPC_METADATA_USER_ID": ("mysingle.constants", "GRPC_METADATA_USER_ID"),
+    "GRPC_METADATA_AUTHORIZATION": (
+        "mysingle.constants",
+        "GRPC_METADATA_AUTHORIZATION",
+    ),
+    "GRPC_METADATA_CORRELATION_ID": (
+        "mysingle.constants",
+        "GRPC_METADATA_CORRELATION_ID",
+    ),
+    "GRPC_METADATA_REQUEST_ID": ("mysingle.constants", "GRPC_METADATA_REQUEST_ID"),
+    # gRPC Interceptors
+    "AuthInterceptor": ("mysingle.grpc", "AuthInterceptor"),
+    "LoggingInterceptor": ("mysingle.grpc", "LoggingInterceptor"),
+    "MetadataInterceptor": ("mysingle.grpc", "MetadataInterceptor"),
+    "ClientAuthInterceptor": ("mysingle.grpc", "ClientAuthInterceptor"),
 }
 
 
@@ -91,6 +117,16 @@ def __dir__():  # pragma: no cover
 
 if TYPE_CHECKING:  # 타입체커를 위한 정적 import (런타임에는 지연 로딩)
     from .clients import BaseServiceClient as BaseServiceClient
+    from .constants import GRPC_METADATA_AUTHORIZATION as GRPC_METADATA_AUTHORIZATION
+    from .constants import GRPC_METADATA_CORRELATION_ID as GRPC_METADATA_CORRELATION_ID
+    from .constants import GRPC_METADATA_REQUEST_ID as GRPC_METADATA_REQUEST_ID
+    from .constants import GRPC_METADATA_USER_ID as GRPC_METADATA_USER_ID
+    from .constants import HEADER_AUTHORIZATION as HEADER_AUTHORIZATION
+    from .constants import HEADER_CORRELATION_ID as HEADER_CORRELATION_ID
+    from .constants import HEADER_KONG_CONSUMER_ID as HEADER_KONG_CONSUMER_ID
+    from .constants import HEADER_KONG_REQUEST_ID as HEADER_KONG_REQUEST_ID
+    from .constants import HEADER_KONG_USER_ID as HEADER_KONG_USER_ID
+    from .constants import HEADER_USER_ID as HEADER_USER_ID
     from .core import (
         CommonSettings as CommonSettings,
     )
@@ -116,4 +152,8 @@ if TYPE_CHECKING:  # 타입체커를 위한 정적 import (런타임에는 지�
         settings as settings,
     )
     from .database import BaseDuckDBManager as BaseDuckDBManager
+    from .grpc import AuthInterceptor as AuthInterceptor
+    from .grpc import ClientAuthInterceptor as ClientAuthInterceptor
+    from .grpc import LoggingInterceptor as LoggingInterceptor
+    from .grpc import MetadataInterceptor as MetadataInterceptor
     from .logging import get_logger as get_logger
