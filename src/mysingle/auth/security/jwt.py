@@ -58,12 +58,11 @@ class JWTManager:
         # JWT 설정
         self.algorithm = "HS256"
         # 만료 시간 정책 (기본값)
-        self.access_token_expire_minutes = 60  # 1시간
-        self.refresh_token_expire_days = 30  # 30일
-        self.service_token_expire_minutes = 5  # 서비스 토큰은 5분
-        self.verify_token_expire_hours = 24  # 이메일 인증 토큰 24시간
-        self.reset_token_expire_hours = 2  # 비밀번호 재설정 토큰 2시간
-
+        self.access_token_expire_minutes = settings.ACCESS_TOKEN_EXPIRE_MINUTES
+        self.refresh_token_expire_days = settings.REFRESH_TOKEN_EXPIRE_DAYS
+        self.service_token_expire_minutes = settings.SERVICE_TOKEN_EXPIRE_MINUTES
+        self.verify_token_expire_hours = settings.VERIFY_TOKEN_EXPIRE_MINUTES // 60
+        self.reset_token_expire_hours = settings.RESET_TOKEN_EXPIRE_MINUTES // 60
         # Kong Consumer Keys
         self.frontend_consumer_key = "frontend-key"
         # 서비스명은 '-service' 접미를 기준으로 정규화합니다.
