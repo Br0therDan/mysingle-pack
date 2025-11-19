@@ -63,18 +63,19 @@ HEADER_FORWARDED_PROTO = "X-Forwarded-Proto"
 # =============================================================================
 # gRPC 호출 시 메타데이터로 전달되는 키 이름
 # HTTP 헤더와 동일한 정보를 gRPC context에 전달
+# ⚠️ gRPC 메타데이터 키는 소문자와 하이픈(-)을 사용해야 함 (HTTP/2 표준)
 
-# 사용자 ID (소문자, 하이픈 대신 언더스코어 사용)
-GRPC_METADATA_USER_ID = "user_id"
+# 사용자 ID
+GRPC_METADATA_USER_ID = "user-id"
 
 # JWT 토큰
 GRPC_METADATA_AUTHORIZATION = "authorization"
 
 # 상관관계 ID
-GRPC_METADATA_CORRELATION_ID = "correlation_id"
+GRPC_METADATA_CORRELATION_ID = "correlation-id"
 
 # 요청 ID
-GRPC_METADATA_REQUEST_ID = "request_id"
+GRPC_METADATA_REQUEST_ID = "request-id"
 
 
 # =============================================================================
