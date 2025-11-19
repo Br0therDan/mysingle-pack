@@ -1,11 +1,9 @@
 from typing import Any, Dict, Optional
 
-from beanie import PydanticObjectId
 from fastapi import HTTPException, Request, status
 
 from ...logging import get_structured_logger
 from ..models import User
-from ..user_manager import UserManager
 from .kong import (
     get_kong_correlation_id,
     get_kong_headers_dict,
@@ -14,15 +12,13 @@ from .kong import (
 )
 
 logger = get_structured_logger(__name__)
-user_manager = UserManager()
 
 
 def get_current_user(request: Request) -> User:
     """
     현재 인증된 사용자 반환 (Kong Gateway + AuthMiddleware 통합)
     """
-    user_id = request.headers.get("x-authenticated-user")
-    user = user_manager.get(PydanticObjectId(user_id)) if user_id else None
+    user: Optional[User] = getattr(request.state, "user", None)
 
     if not user:
         logger.warning("No user found in request.state - authentication failed")

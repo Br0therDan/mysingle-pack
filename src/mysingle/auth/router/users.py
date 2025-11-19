@@ -1,11 +1,10 @@
 from beanie import PydanticObjectId
-from fastapi import APIRouter, Depends, Request, Response, status
+from fastapi import APIRouter, Request, Response, status
 
 from ..deps import admin_only, get_current_active_verified_user
 from ..exceptions import (
     UserNotExists,
 )
-from ..models import User
 from ..schemas import UserResponse, UserUpdate
 from ..user_manager import UserManager
 
@@ -21,11 +20,10 @@ def get_users_router() -> APIRouter:
         response_model=UserResponse,
     )
     async def get_user_me(
-        current_user: User = Depends(get_current_active_verified_user),
+        request: Request,
     ) -> UserResponse:
-        # verified_only 데코레이터로 대체 (보안 강제는 라우팅 구성에서 수행 권장)
-        # 여기서는 request.state.user 를 신뢰하여 반환 형식만 정리합니다.
-
+        # Request에서 인증된 사용자 가져오기
+        current_user = get_current_active_verified_user(request)
         return UserResponse(**current_user.model_dump(by_alias=True))
 
     @router.get(
@@ -33,7 +31,7 @@ def get_users_router() -> APIRouter:
         response_model=dict,
     )
     async def get_user_activity(
-        current_user: User = Depends(get_current_active_verified_user),
+        request: Request,
     ) -> dict:
         """
         현재 사용자의 활동 기록 조회.
@@ -41,6 +39,7 @@ def get_users_router() -> APIRouter:
         Returns:
             dict: 사용자 활동 요약 정보
         """
+        current_user = get_current_active_verified_user(request)
         return await user_manager.get_user_activity_summary(current_user)
 
     @router.patch(
@@ -48,9 +47,10 @@ def get_users_router() -> APIRouter:
         response_model=UserResponse,
     )
     async def update_user_me(
+        request: Request,
         obj_in: UserUpdate,
-        current_user: User = Depends(get_current_active_verified_user),
     ) -> UserResponse:
+        current_user = get_current_active_verified_user(request)
         user = await user_manager.update(obj_in, current_user)
         return UserResponse(**user.model_dump(by_alias=True))
 
