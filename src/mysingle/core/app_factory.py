@@ -297,12 +297,8 @@ def create_fastapi_app(
     if service_config.service_type == _AppFactoryServiceType.IAM_SERVICE:
         from ..auth.router import auth_router, user_router
 
-        app.include_router(
-            auth_router, prefix=f"/api/{settings.AUTH_APP_VERSION}/auth", tags=["Auth"]
-        )
-        app.include_router(
-            user_router, prefix=f"/api/{settings.AUTH_APP_VERSION}/users", tags=["User"]
-        )
+        app.include_router(auth_router, prefix="/api/v1/auth", tags=["Auth"])
+        app.include_router(user_router, prefix="/api/v1/users", tags=["User"])
         # Register auth exception handlers
         register_auth_exception_handlers(app)
         logger.info(
@@ -315,7 +311,7 @@ def create_fastapi_app(
 
                 app.include_router(
                     oauth2_router,
-                    prefix=f"/api/{settings.AUTH_APP_VERSION}",
+                    prefix="/api/v1",
                 )
                 logger.info(f"🔐 OAuth2 routes added for {service_config.service_name}")
             except Exception as e:
