@@ -35,14 +35,29 @@ def get_current_user(request: Request) -> User:
         )
 
     # Kong Gateway 보안 검증 (헤더가 있으면 교차 확인)
+    # Kong의 pre-function 플러그인이 JWT의 sub 클레임을 X-User-Id로 추출하여 전달
     kong_user_id = get_kong_user_id(request)
-    if kong_user_id and str(user.id) != kong_user_id:
-        logger.error(f"User ID mismatch: Kong={kong_user_id}, User={user.id}")
-        # 보안상 불일치는 인증 실패로 간주하여 401 반환
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authentication user mismatch",
+    if kong_user_id:
+        # ObjectId 형식인지 확인 (24자 hex 문자열)
+        is_object_id = len(kong_user_id) == 24 and all(
+            c in "0123456789abcdef" for c in kong_user_id.lower()
         )
+
+        if is_object_id:
+            # Kong에서 추출한 사용자 ID와 JWT 토큰에서 추출한 사용자 ID 일치 확인
+            if str(user.id) != kong_user_id:
+                logger.error(f"User ID mismatch: Kong={kong_user_id}, User={user.id}")
+                # 보안상 불일치는 인증 실패로 간주하여 401 반환
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Authentication user mismatch",
+                )
+            logger.debug(f"Kong user ID validation passed: {kong_user_id}")
+        else:
+            # Legacy: Consumer 이름인 경우 (구 Kong 설정 호환성)
+            logger.debug(
+                f"Kong X-User-Id is Consumer name (legacy): {kong_user_id}, authenticated user: {user.id}"
+            )
 
     return user
 
