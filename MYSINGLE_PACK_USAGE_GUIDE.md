@@ -1,11 +1,22 @@
 # MySingle Package 활용 가이드
-**최근업데이트 : 2025-10-31**
+**최근업데이트 : 2025-11-20**
 
 ## 개요
 
 MySingle-Quant Package는 마이크로서비스 아키텍처를 위한 통합 개발 프레임워크입니다. 이 가이드는 주요 기능들의 활용 방법을 설명합니다.
 
-**주요 업데이트 (2025-10-31):**
+**Package Version:** v1.5.0 (Released: 2025-11-20)
+
+**주요 업데이트 (2025-11-20 - Phase 1 완료):**
+- ✅ Kong Gateway JWT Plugin 기반 단일 인증 표준 확립
+- ✅ Request.state.user 기반 통합 인증 패턴 정립
+- ✅ HTTP BaseClient 제거, gRPC BaseGrpcClient 표준화
+- ✅ Consumer 관련 레거시 함수 제거 (Kong JWT Plugin 중심)
+- ✅ 인증 우회 메커니즘 구현 (MYSINGLE_AUTH_BYPASS)
+- ✅ 코드 간소화: 77개 Python 파일로 정리
+- ✅ 영문 문서화 완료 (AGENTS.md, copilot-instructions.md)
+
+**이전 업데이트 (2025-10-31):**
 - ✅ Depends() vs 직접 호출 패턴 가이드 추가
 - ✅ External/Internal 라우터 케이스별 사용법 추가
 - ✅ 데코레이터 적절한 사용 케이스 명시 (라우터 함수 직접 적용 금지)
@@ -99,9 +110,9 @@ app = create_fastapi_app(service_config=service_config)
 
 ### 1.4 서비스 타입
 
-| 서비스 타입 | 설명 | 인증 방식 | 사용 사례 |
-|------------|------|----------|----------|
-| `IAM_SERVICE` | 인증/인가 서비스 | 직접 JWT 검증 | 사용자 관리, 인증 서버 |
+| 서비스 타입       | 설명                 | 인증 방식         | 사용 사례                    |
+| ----------------- | -------------------- | ----------------- | ---------------------------- |
+| `IAM_SERVICE`     | 인증/인가 서비스     | 직접 JWT 검증     | 사용자 관리, 인증 서버       |
 | `NON_IAM_SERVICE` | 일반 비즈니스 서비스 | Gateway 헤더 기반 | Backtest, ML, Market Data 등 |
 
 ### 1.5 상세 가이드
@@ -133,13 +144,19 @@ FastAPI 애플리케이션 생성에 대한 전체 가이드는 다음 문서를
 
 MySingle 패키지의 인증 시스템은 Kong Gateway와 완전히 통합된 Request 기반 인증 의존성 시스템을 제공합니다.
 
+**Phase 1 완료 (v1.5.0):**
+- ✅ Kong Gateway JWT Plugin 기반 단일 표준 확립
+- ✅ Consumer 관련 레거시 함수 제거
+- ✅ Request.state.user 통합 인증 패턴
+- ✅ 5개 핵심 인증 함수로 간소화
+
 ### 2.2 주요 특징
 
 - **직접 호출 패턴 (MSA 표준)**: Request 기반 직접 호출로 간결하고 유연한 인증 처리
-- **Kong Gateway 완전 지원**: 헤더 기반 인증으로 높은 성능
+- **Kong Gateway 완전 지원**: JWT Plugin 기반 헤더 인증으로 높은 성능
 - **User 캐싱 시스템**: Redis + In-Memory 캐싱으로 DB 조회 최소화
 - **서비스 타입별 자동 인증**: IAM vs NON_IAM 서비스 구분
-- **조건부 인증**: Depends()와 직접 호출의 장점을 상황에 맞게 선택
+- **단위 테스트 지원**: MYSINGLE_AUTH_BYPASS 환경 변수 기반 인증 우회
 
 ### 2.3 기본 사용법
 
@@ -315,13 +332,13 @@ USER_CACHE_KEY_PREFIX=user
 
 ### 2.4 인증 함수 종류
 
-| 함수명 | 설명 | 예외 발생 조건 |
-|--------|------|---------------|
-| `get_current_user()` | 기본 인증된 사용자 | 미인증 |
-| `get_current_active_user()` | 활성 사용자 | 미인증 또는 비활성 |
-| `get_current_active_verified_user()` | 활성 + 검증된 사용자 | 미인증, 비활성, 미검증 |
-| `get_current_active_superuser()` | 슈퍼유저 | 미인증, 비활성, 권한 부족 |
-| `get_current_user_optional()` | 선택적 인증 | 예외 없음 (None 반환) |
+| 함수명                               | 설명                 | 예외 발생 조건            |
+| ------------------------------------ | -------------------- | ------------------------- |
+| `get_current_user()`                 | 기본 인증된 사용자   | 미인증                    |
+| `get_current_active_user()`          | 활성 사용자          | 미인증 또는 비활성        |
+| `get_current_active_verified_user()` | 활성 + 검증된 사용자 | 미인증, 비활성, 미검증    |
+| `get_current_active_superuser()`     | 슈퍼유저             | 미인증, 비활성, 권한 부족 |
+| `get_current_user_optional()`        | 선택적 인증          | 예외 없음 (None 반환)     |
 
 ### 2.5 패턴 선택 가이드
 
@@ -527,21 +544,21 @@ Kong Gateway와의 완벽한 통합을 위한 표준화된 헤더 처리 시스�
 
 #### 인증 관련 헤더
 
-| 헤더명 | 설명 | Kong 플러그인 |
-|--------|------|---------------|
-| `X-Consumer-Custom-ID` | JWT sub 클레임 (사용자 ID) | JWT Plugin |
-| `X-Consumer-ID` | Kong Consumer ID | 모든 인증 플러그인 |
-| `X-Consumer-Username` | Kong Consumer Username | 모든 인증 플러그인 |
+| 헤더명                 | 설명                       | Kong 플러그인      |
+| ---------------------- | -------------------------- | ------------------ |
+| `X-Consumer-Custom-ID` | JWT sub 클레임 (사용자 ID) | JWT Plugin         |
+| `X-Consumer-ID`        | Kong Consumer ID           | 모든 인증 플러그인 |
+| `X-Consumer-Username`  | Kong Consumer Username     | 모든 인증 플러그인 |
 
 #### 운영 관련 헤더
 
-| 헤더명 | 설명 | 용도 |
-|--------|------|------|
-| `X-Forwarded-Service` | 서비스 식별자 | Request Transformer |
-| `X-Correlation-Id` | 분산 추적 ID | Request Transformer |
-| `X-Kong-Request-Id` | Kong 요청 ID | Kong 자동 생성 |
-| `X-Kong-Upstream-Latency` | 업스트림 지연시간 | 성능 모니터링 |
-| `X-Kong-Proxy-Latency` | 프록시 지연시간 | 성능 모니터링 |
+| 헤더명                    | 설명              | 용도                |
+| ------------------------- | ----------------- | ------------------- |
+| `X-Forwarded-Service`     | 서비스 식별자     | Request Transformer |
+| `X-Correlation-Id`        | 분산 추적 ID      | Request Transformer |
+| `X-Kong-Request-Id`       | Kong 요청 ID      | Kong 자동 생성      |
+| `X-Kong-Upstream-Latency` | 업스트림 지연시간 | 성능 모니터링       |
+| `X-Kong-Proxy-Latency`    | 프록시 지연시간   | 성능 모니터링       |
 
 ### 3.3 헤더 추출 함수들
 

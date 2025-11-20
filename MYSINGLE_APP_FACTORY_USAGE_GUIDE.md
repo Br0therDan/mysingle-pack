@@ -989,8 +989,21 @@ ENVIRONMENT=development  # 또는 local
 
 - 📊 [APP Factory 플로우차트](./APP_FACTORY_FLOWCHART.md)
 - 📘 [MySingle Pack 사용 가이드](./MYSINGLE_PACK_USAGE_GUIDE.md)
-- 🔐 [인증 강화 계획](./AUTH_ENHANCEMENT_PLAN.md)
+- 🔐 [Kong API Gateway 구성 가이드](./KONG_API_GATEWAY_CONFIGURATION_GUIDE.md)
 - 🏗️ [마이크로서비스 최적화 계획](../docs/MICROSERVICE_OPTIMIZATION_PLAN.md)
+- 🚀 [Phase 1 완료 보고서](../docs/Inter-service-communications/copilot-instructions.md)
+
+---
+
+## 변경 이력
+
+**v1.5.0 (2025-11-20) - Phase 1 완료:**
+- ✅ Kong Gateway JWT Plugin 기반 단일 인증 표준 확립
+- ✅ HTTP BaseClient 제거, gRPC 표준화
+- ✅ Consumer 관련 레거시 함수 제거
+- ✅ 코드 간소화 (77개 Python 파일)
+- ✅ 인증 우회 메커니즘 (MYSINGLE_AUTH_BYPASS)
+- ✅ 영문 문서화 (AGENTS.md, copilot-instructions.md)
 
 ---
 
@@ -1005,3 +1018,9 @@ ENVIRONMENT=development  # 또는 local
 5. **보안 기본값** - 인증, 감사 로그, CORS
 
 **간단하게 시작하고, 필요에 따라 확장하세요!** 🚀
+
+---
+
+**Document Version:** 2.0
+**Last Updated:** 2025-11-20
+**Package Version:** v1.5.0
