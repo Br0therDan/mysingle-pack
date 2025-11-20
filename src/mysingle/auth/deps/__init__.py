@@ -26,12 +26,7 @@ from .decorators import (
     verified_only,
 )
 from .kong import (
-    get_extended_kong_headers_dict,
-    get_kong_consumer_id,
-    get_kong_consumer_username,
     get_kong_correlation_id,
-    get_kong_forwarded_service,
-    get_kong_headers_dict,
     get_kong_proxy_latency,
     get_kong_request_id,
     get_kong_upstream_latency,
@@ -55,18 +50,13 @@ __all__ = [
     "get_user_email",
     "get_user_display_name",
     "get_request_security_context",
-    # kong
+    # kong (simplified - only actively used functions)
     "get_kong_user_id",
-    "get_kong_consumer_id",
-    "get_kong_consumer_username",
-    "get_kong_forwarded_service",
     "is_kong_authenticated",
-    "get_kong_headers_dict",
     "get_kong_correlation_id",
     "get_kong_request_id",
     "get_kong_upstream_latency",
     "get_kong_proxy_latency",
-    "get_extended_kong_headers_dict",
     # permissions
     "require_user_role",
     "require_admin_access",

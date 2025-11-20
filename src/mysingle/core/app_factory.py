@@ -2,23 +2,25 @@
 
 from collections.abc import AsyncGenerator, Callable
 from contextlib import asynccontextmanager
+from typing import TYPE_CHECKING
 
 from beanie import Document
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 
-from ..audit import AuditLog
 from ..auth.exception_handlers import register_auth_exception_handlers
 from ..auth.init_data import create_first_super_admin, create_test_users
-from ..auth.models import OAuthAccount, User
 from ..health import create_health_router
 from ..logging import get_structured_logger
 from ..logging.structured_logging import setup_logging
 from .config import settings
 from .db import init_mongo
 from .http_client import ServiceHttpClientManager
-from .service_types import ServiceConfig
+from .service_types import ServiceConfig, ServiceType
+
+if TYPE_CHECKING:
+    pass
 
 setup_logging()
 logger = get_structured_logger(__name__)
@@ -31,7 +33,9 @@ def custom_generate_unique_id(route: APIRoute) -> str:
 
 
 def create_lifespan(
-    service_config: ServiceConfig, document_models: list[type[Document]] | None = None
+    service_config: ServiceConfig,
+    document_models: list[type[Document]] | None = None,
+    is_development: bool = False,
 ) -> Callable:
     """Create lifespan context manager for the application."""
 
@@ -48,15 +52,31 @@ def create_lifespan(
                 models_to_init.extend(document_models)
 
             # Ensure AuditLog is included when audit logging is enabled
-            if service_config.enable_audit_logging and AuditLog not in models_to_init:
-                models_to_init.append(AuditLog)
+            if service_config.enable_audit_logging:
+                from ..audit import AuditLog
 
-            # Ensure auth models are included when auth is enabled (IAM service)
-            if service_config.enable_auth:
+                if AuditLog not in models_to_init:
+                    models_to_init.append(AuditLog)
+
+            # Ensure auth models are included ONLY for IAM service
+            # NON_IAM services use Kong Gateway auth and don't need User/OAuthAccount collections
+            if (
+                service_config.enable_auth
+                and service_config.service_type == ServiceType.IAM_SERVICE
+            ):
+                from ..auth.models import OAuthAccount, User
+
                 auth_models = [User, OAuthAccount]
                 for model in auth_models:
                     if model not in models_to_init:
                         models_to_init.append(model)
+                logger.info(
+                    f"📦 IAM Service: Added User and OAuthAccount models for {service_config.service_name}"
+                )
+            elif service_config.enable_auth:
+                logger.info(
+                    f"⏭️ Non-IAM Service: Skipping User/OAuthAccount models for {service_config.service_name}"
+                )
 
             if models_to_init:
                 try:
@@ -69,21 +89,25 @@ def create_lifespan(
                         f"✅ Connected to MongoDB for {service_config.service_name}"
                     )
 
-                    # Create first super admin after database initialization
-                    # IAM 서비스(Strategy Service)에서만 유저 생성
-                    if service_config.enable_auth:
-                        from .service_types import ServiceType
+                    # Create first super admin and test users (IAM service only)
+                    if service_config.service_type == ServiceType.IAM_SERVICE:
+                        logger.info(
+                            f"� IAM Service: Creating super admin and test users for {service_config.service_name}"
+                        )
+                        await create_first_super_admin()
 
-                        if service_config.service_type == ServiceType.IAM_SERVICE:
-                            logger.info(
-                                f"🔐 IAM Service detected: Creating super admin and test users for {service_config.service_name}"
-                            )
-                            await create_first_super_admin()
-                            await create_test_users()  # 테스트 유저 생성 (dev/local만)
+                        # Test users only in development/local environments
+                        if is_development:
+                            await create_test_users()
+                            logger.info("👥 Test users created (development mode)")
                         else:
                             logger.info(
-                                f"⏭️ Non-IAM Service: Skipping user creation for {service_config.service_name}"
+                                "⏭️ Skipping test user creation (production mode)"
                             )
+                    else:
+                        logger.info(
+                            f"⏭️ Non-IAM Service: Skipping user creation for {service_config.service_name}"
+                        )
 
                 except Exception as e:
                     logger.error(f"❌ Failed to connect to MongoDB: {e}")
@@ -151,7 +175,7 @@ def create_fastapi_app(
     is_development = settings.ENVIRONMENT in ["development", "local"]
 
     # Create lifespan
-    lifespan_func = create_lifespan(service_config, document_models)
+    lifespan_func = create_lifespan(service_config, document_models, is_development)
 
     # Create FastAPI app
     app = FastAPI(
@@ -189,6 +213,13 @@ def create_fastapi_app(
 
             logger.info(
                 f"🔐 Authentication middleware {auth_status} for {service_config.service_name}"
+            )
+
+            # Register auth exception handlers for ALL services with auth enabled
+            # Both IAM and Non-IAM services need proper 401/403 error handling
+            register_auth_exception_handlers(app)
+            logger.info(
+                f"🔐 Auth exception handlers registered for {service_config.service_name}"
             )
 
         except ImportError as e:
@@ -292,18 +323,13 @@ def create_fastapi_app(
             )
 
     # Include auth routers only for IAM service
-    from .service_types import ServiceType as _AppFactoryServiceType
-
-    if service_config.service_type == _AppFactoryServiceType.IAM_SERVICE:
+    if service_config.service_type == ServiceType.IAM_SERVICE:
         from ..auth.router import auth_router, user_router
 
         app.include_router(auth_router, prefix="/api/v1/auth", tags=["Auth"])
         app.include_router(user_router, prefix="/api/v1/users", tags=["User"])
-        # Register auth exception handlers
-        register_auth_exception_handlers(app)
-        logger.info(
-            f"🔐 Auth routes and exception handlers added for {service_config.service_name}"
-        )
+        logger.info(f"🔐 Auth routes added for {service_config.service_name}")
+
         # Include OAuth2 routers if enabled (IAM only)
         if service_config.enable_oauth:
             try:
@@ -317,9 +343,6 @@ def create_fastapi_app(
             except Exception as e:
                 logger.error(f"⚠️ Failed to include OAuth2 router: {e}")
 
-        logger.info(
-            f"🔐 Authentication routes enabled for {service_config.service_name}"
-        )
         logger.info(
             f"🔐 Auth Public Paths for {service_config.service_name}: {settings.AUTH_PUBLIC_PATHS}"
         )

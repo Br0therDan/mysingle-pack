@@ -1,10 +1,11 @@
 from contextlib import contextmanager
+from unittest.mock import patch
 
+import pytest
 from fastapi import FastAPI
 from starlette.testclient import TestClient
 
 from mysingle.audit.middleware import AuditLoggingMiddleware
-from mysingle.audit.models import AuditLog
 from mysingle.core.config import settings
 
 
@@ -21,21 +22,30 @@ def override_settings(**kwargs):
             setattr(settings, k, v)
 
 
-def test_audit_logs_on_request(monkeypatch):
+@pytest.mark.asyncio
+async def test_audit_logs_on_request():
+    """Test that audit logs are created when enabled in development environment."""
     recorded = []
 
-    async def mock_insert(self):  # type: ignore[no-redef]
-        recorded.append(
-            {
-                "service": self.service,
-                "path": self.path,
-                "method": self.method,
-                "status_code": self.status_code,
-                "latency_ms": self.latency_ms,
-            }
-        )
+    # Mock the entire AuditLog class to avoid Beanie initialization
+    class MockAuditLog:
+        def __init__(self, **kwargs):
+            self.service = kwargs.get("service")
+            self.path = kwargs.get("path")
+            self.method = kwargs.get("method")
+            self.status_code = kwargs.get("status_code")
+            self.latency_ms = kwargs.get("latency_ms")
 
-    monkeypatch.setattr(AuditLog, "insert", mock_insert, raising=True)
+        async def insert(self):
+            recorded.append(
+                {
+                    "service": self.service,
+                    "path": self.path,
+                    "method": self.method,
+                    "status_code": self.status_code,
+                    "latency_ms": self.latency_ms,
+                }
+            )
 
     app = FastAPI()
     app.add_middleware(
@@ -47,9 +57,11 @@ def test_audit_logs_on_request(monkeypatch):
         return {"ok": True}
 
     with override_settings(ENVIRONMENT="development", AUDIT_LOGGING_ENABLED=True):
-        with TestClient(app) as client:
-            resp = client.get("/ping")
-            assert resp.status_code == 200
+        # Patch AuditLog in the middleware module
+        with patch("mysingle.audit.middleware.AuditLog", MockAuditLog):
+            with TestClient(app) as client:
+                resp = client.get("/ping")
+                assert resp.status_code == 200
 
     # One audit record should be written
     assert len(recorded) == 1
@@ -60,13 +72,17 @@ def test_audit_logs_on_request(monkeypatch):
     assert isinstance(rec["latency_ms"], int)
 
 
-def test_audit_skipped_in_test_env(monkeypatch):
+@pytest.mark.asyncio
+async def test_audit_skipped_in_test_env():
+    """Test that audit logs are skipped in test environment."""
     recorded = []
 
-    async def mock_insert(self):  # type: ignore[no-redef]
-        recorded.append({"path": self.path})
+    class MockAuditLog:
+        def __init__(self, **kwargs):
+            self.path = kwargs.get("path")
 
-    monkeypatch.setattr(AuditLog, "insert", mock_insert, raising=True)
+        async def insert(self):
+            recorded.append({"path": self.path})
 
     app = FastAPI()
     app.add_middleware(
@@ -79,8 +95,9 @@ def test_audit_skipped_in_test_env(monkeypatch):
 
     # ENVIRONMENT=test should skip logging regardless of enabled flag
     with override_settings(ENVIRONMENT="test", AUDIT_LOGGING_ENABLED=True):
-        with TestClient(app) as client:
-            resp = client.get("/pong")
-            assert resp.status_code == 200
+        with patch("mysingle.audit.middleware.AuditLog", MockAuditLog):
+            with TestClient(app) as client:
+                resp = client.get("/pong")
+                assert resp.status_code == 200
 
     assert recorded == []

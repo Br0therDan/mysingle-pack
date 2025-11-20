@@ -20,13 +20,8 @@ Usage:
 # 이 헤더들은 게이트웨이 레이어에서만 생성되며, 서비스가 직접 설정하지 않음
 
 # JWT의 sub 클레임 값 (사용자 고유 ID)
+# Note: 현재 Kong 구성에서는 실제로 주입되지 않음 (향후 확장 대비 유지)
 HEADER_KONG_USER_ID = "X-Consumer-Custom-ID"
-
-# Kong Consumer ID (내부 관리용)
-HEADER_KONG_CONSUMER_ID = "X-Consumer-ID"
-
-# Kong Consumer Username
-HEADER_KONG_CONSUMER_USERNAME = "X-Consumer-Username"
 
 # 요청 추적을 위한 상관관계 ID (Kong에서 생성 또는 클라이언트에서 전달)
 HEADER_CORRELATION_ID = "X-Correlation-Id"

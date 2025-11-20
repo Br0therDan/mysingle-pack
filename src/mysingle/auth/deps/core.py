@@ -6,7 +6,6 @@ from ...logging import get_structured_logger
 from ..models import User
 from .kong import (
     get_kong_correlation_id,
-    get_kong_headers_dict,
     get_kong_request_id,
     get_kong_user_id,
 )
@@ -36,26 +35,14 @@ def get_current_user(request: Request) -> User:
         )
 
     # Kong Gateway 보안 검증 (헤더가 있으면 교차 확인)
-    # 단, Kong Consumer Username이 서비스명인 경우는 제외 (서비스 간 호출)
     kong_user_id = get_kong_user_id(request)
-    if kong_user_id:
-        kong_headers = get_kong_headers_dict(request)
-        logger.debug(f"Kong authenticated request: {kong_headers}")
-
-        # Kong Consumer Username이 서비스명 패턴이면 검증 건너뛰기
-        # 예: dashboard-frontend, backtest-service 등
-        kong_consumer_username = kong_headers.get("consumer_username", "")
-        is_service_account = kong_consumer_username and (
-            "-" in kong_consumer_username or "service" in kong_consumer_username.lower()
+    if kong_user_id and str(user.id) != kong_user_id:
+        logger.error(f"User ID mismatch: Kong={kong_user_id}, User={user.id}")
+        # 보안상 불일치는 인증 실패로 간주하여 401 반환
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication user mismatch",
         )
-
-        if not is_service_account and str(user.id) != kong_user_id:
-            logger.error(f"User ID mismatch: Kong={kong_user_id}, User={user.id}")
-            # 보안상 불일치는 인증 실패로 간주하여 401 반환
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Authentication user mismatch",
-            )
 
     return user
 

@@ -9,9 +9,11 @@ Features:
 - 서비스 타입별 자동 인증 방식 선택 (IAM vs NON_IAM)
 - Kong Gateway 헤더 기반 인증 지원
 - 공개 경로 자동 제외
+- 테스트 환경 인증 우회 지원 (MYSINGLE_AUTH_BYPASS=true)
 - 높은 성능 및 에러 처리
 """
 
+import os
 from typing import Optional
 
 from fastapi import Request
@@ -45,6 +47,26 @@ class AuthMiddleware(BaseHTTPMiddleware):
         self.public_paths = self._prepare_public_paths()
         # User Cache (Hybrid: Redis + In-Memory)
         self.user_cache = get_user_cache()
+        # Test bypass flag (only active in non-production)
+        self.auth_bypass = self._check_auth_bypass()
+
+    def _check_auth_bypass(self) -> bool:
+        """Check if authentication bypass is enabled for testing"""
+        bypass_enabled = os.getenv("MYSINGLE_AUTH_BYPASS", "false").lower() == "true"
+        env = os.getenv("ENVIRONMENT", "development").lower()
+
+        if bypass_enabled and env == "production":
+            logger.warning(
+                "⚠️ MYSINGLE_AUTH_BYPASS is set in production environment - IGNORING for security"
+            )
+            return False
+
+        if bypass_enabled:
+            logger.info(
+                f"🧪 Authentication bypass enabled for testing (Environment: {env})"
+            )
+
+        return bypass_enabled
 
     def _prepare_public_paths(self) -> list[str]:
         """공개 경로 목록 준비"""
@@ -298,6 +320,44 @@ class AuthMiddleware(BaseHTTPMiddleware):
             logger.debug(f"_get_user_with_cache error: {e}")
             return None
 
+    def _create_test_user(self) -> User:
+        """Create a test user for authentication bypass
+
+        Uses environment variables for test user configuration:
+        - TEST_USER_EMAIL: Test user email (default: test_user@test.com)
+        - TEST_USER_FULLNAME: Test user full name (default: Test User)
+        - TEST_ADMIN_EMAIL: Test admin email (for superuser bypass)
+        """
+        # Determine if superuser based on auth bypass mode
+        # Default to regular test user, use admin if explicitly configured
+        use_admin = os.getenv("MYSINGLE_AUTH_BYPASS_ADMIN", "false").lower() == "true"
+
+        if use_admin:
+            email = os.getenv("TEST_ADMIN_EMAIL", "test_admin@test.com")
+            fullname = os.getenv("TEST_ADMIN_FULLNAME", "Test Admin")
+            is_superuser = True
+        else:
+            email = os.getenv("TEST_USER_EMAIL", "test_user@test.com")
+            fullname = os.getenv("TEST_USER_FULLNAME", "Test User")
+            is_superuser = False
+
+        try:
+            from beanie import PydanticObjectId
+
+            test_id = PydanticObjectId("000000000000000000000001")
+        except ImportError:
+            test_id = "000000000000000000000001"  # type: ignore
+
+        return User(
+            id=test_id,  # type: ignore
+            email=email,
+            full_name=fullname,
+            hashed_password="",
+            is_verified=True,
+            is_active=True,
+            is_superuser=is_superuser,
+        )
+
     def _create_error_response(self, error: Exception) -> JSONResponse:
         """인증 에러 응답 생성"""
         if isinstance(error, UserNotExists):
@@ -363,6 +423,15 @@ class AuthMiddleware(BaseHTTPMiddleware):
             logger.debug(
                 f"Authentication disabled for service: {self.service_config.service_name}"
             )
+            return await call_next(request)
+
+        # 테스트 환경 인증 우회
+        if self.auth_bypass:
+            logger.debug(f"🧪 Auth bypass: injecting test user for {method} {path}")
+            test_user = self._create_test_user()
+            request.state.user = test_user
+            request.state.authenticated = True
+            request.state.service_type = self.service_config.service_type
             return await call_next(request)
 
         try:

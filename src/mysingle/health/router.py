@@ -1,4 +1,12 @@
-"""Health check utilities and endpoints."""
+"""Health check utilities and endpoints.
+
+All health endpoints are public (no authentication required):
+- GET /health/ - Comprehensive health status
+- GET /health/live - Kubernetes liveness probe
+- GET /health/ready - Kubernetes readiness probe
+
+These endpoints are configured as public in Kong API Gateway.
+"""
 
 from datetime import UTC, datetime
 from typing import Any, Optional

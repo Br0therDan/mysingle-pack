@@ -1,9 +1,22 @@
-"""Enhanced metrics router with comprehensive endpoints."""
+"""Enhanced metrics router with comprehensive endpoints.
+
+Public endpoints (no auth required, configured in Kong):
+- GET /metrics/ - Basic metrics (json/prometheus format)
+- GET /metrics/json - JSON format metrics
+- GET /metrics/prometheus - Prometheus format metrics
+- GET /metrics/health - Metrics system health
+- GET /metrics/summary - Summarized metrics
+
+Protected endpoints (auth required):
+- GET /metrics/routes - Detailed route metrics (authenticated users)
+- POST /metrics/reset - Reset metrics (superuser only)
+"""
 
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 
+from ..auth import get_current_active_superuser, get_current_active_user
 from ..logging import get_structured_logger
 from .collector import MetricsCollector
 from .middleware import get_metrics_collector
@@ -138,12 +151,17 @@ def create_metrics_router() -> APIRouter:
     async def get_route_metrics(
         route_filter: str | None = Query(None, description="Filter routes by pattern"),
         collector: MetricsCollector = Depends(get_metrics_collector),
+        current_user=Depends(get_current_active_user),
     ) -> dict:
-        """Get detailed metrics for specific routes.
+        """Get detailed metrics for specific routes (authenticated users only).
+
+        This endpoint exposes internal route structure and performance metrics,
+        so it requires authentication.
 
         Args:
             route_filter: Optional filter pattern for route names
             collector: Metrics collector dependency
+            current_user: Authenticated user (injected by dependency)
 
         Returns:
             Detailed route metrics
@@ -176,10 +194,14 @@ def create_metrics_router() -> APIRouter:
     @router.post("/reset")
     async def reset_metrics(
         collector: MetricsCollector = Depends(get_metrics_collector),
+        current_user=Depends(get_current_active_superuser),
     ) -> dict:
-        """Reset all metrics (useful for testing and debugging).
+        """Reset all metrics (superuser only).
 
-        Warning: This will clear all collected metrics data.
+        This is a destructive operation that clears all collected metrics data.
+        Restricted to superuser access only for security.
+
+        Warning: This will permanently clear all collected metrics data.
         """
         try:
             collector.reset_metrics()

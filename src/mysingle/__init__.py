@@ -31,8 +31,6 @@ __all__ = [
     "create_lifespan",
     # Database: DuckDB
     "BaseDuckDBManager",
-    # Clients: HTTP Service Clients
-    "BaseServiceClient",
     # Clients: gRPC Service Clients
     "BaseGrpcClient",
     # Constants: HTTP Headers
@@ -69,8 +67,6 @@ _EXPORTS = {
     "get_logger": ("mysingle.logging", "get_logger"),
     # Database
     "BaseDuckDBManager": ("mysingle.database", "BaseDuckDBManager"),
-    # Clients: HTTP
-    "BaseServiceClient": ("mysingle.clients", "BaseServiceClient"),
     # Clients: gRPC
     "BaseGrpcClient": ("mysingle.clients", "BaseGrpcClient"),
     # Constants: HTTP Headers
@@ -121,7 +117,6 @@ def __dir__():  # pragma: no cover
 
 if TYPE_CHECKING:  # 타입체커를 위한 정적 import (런타임에는 지연 로딩)
     from .clients import BaseGrpcClient as BaseGrpcClient
-    from .clients import BaseServiceClient as BaseServiceClient
     from .constants import GRPC_METADATA_AUTHORIZATION as GRPC_METADATA_AUTHORIZATION
     from .constants import GRPC_METADATA_CORRELATION_ID as GRPC_METADATA_CORRELATION_ID
     from .constants import GRPC_METADATA_REQUEST_ID as GRPC_METADATA_REQUEST_ID

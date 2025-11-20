@@ -12,8 +12,7 @@ from .deps import (
     get_current_active_verified_user,
     get_current_user,
     get_current_user_optional,
-    # Kong Gateway integration
-    get_kong_headers_dict,
+    # Kong Gateway integration (simplified)
     get_kong_user_id,
     is_kong_authenticated,
 )
@@ -33,10 +32,9 @@ __all__ = [
     # ==========================================
     "get_current_active_superuser",  # 관리자 권한 필요
     # ==========================================
-    # Kong Gateway Integration
+    # Kong Gateway Integration (Simplified)
     # ==========================================
     "get_kong_user_id",  # Kong 헤더에서 user_id 추출
-    "get_kong_headers_dict",  # Kong 헤더 전체 정보 (디버깅용)
     "is_kong_authenticated",  # Kong 헤더 존재 여부 확인
     # ==========================================
     # Core Components
