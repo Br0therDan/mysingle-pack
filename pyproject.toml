@@ -1,7 +1,7 @@
 
 [project]
 name = "mysingle"
-version = "1.4.8"
+version = "1.5.0"
 description = "Common utilities and configurations for MySingle Platform microservices"
 readme = "README.md"
 requires-python = ">=3.12"
