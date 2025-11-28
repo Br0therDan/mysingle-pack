@@ -194,14 +194,14 @@ class AuthMiddleware(BaseHTTPMiddleware):
         """NON_IAM 서비스용 Kong Gateway 헤더 기반 인증"""
         try:
             # Kong Gateway에서 전달하는 헤더들
-            x_user_id = request.headers.get("X-User-ID")
+            x_user_id = request.headers.get("X-User-Id")
             x_user_email = request.headers.get("X-User-Email")
             x_user_verified = request.headers.get("X-User-Verified", "false")
             x_user_active = request.headers.get("X-User-Active", "false")
             x_user_superuser = request.headers.get("X-User-Superuser", "false")
 
             if not x_user_id:
-                logger.debug("No X-User-ID header found in request")
+                logger.debug("No X-User-Id header found in request")
                 return None
 
             # 캐시에 사용자 정보가 있으면 우선 사용 (게이트웨이 경로에서도 재사용)
@@ -229,7 +229,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 user_object_id = PydanticObjectId(x_user_id)
             except Exception as e:
                 logger.warning(
-                    f"Invalid user ID format in X-User-ID header: {x_user_id} ({e})"
+                    f"Invalid user ID format in X-User-Id header: {x_user_id} ({e})"
                 )
                 return None
 

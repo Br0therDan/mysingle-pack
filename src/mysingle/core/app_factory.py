@@ -16,7 +16,6 @@ from ..logging import get_structured_logger
 from ..logging.structured_logging import setup_logging
 from .config import settings
 from .db import init_mongo
-from .http_client import ServiceHttpClientManager
 from .service_types import ServiceConfig, ServiceType
 
 if TYPE_CHECKING:
@@ -82,11 +81,13 @@ def create_lifespan(
                 try:
                     client = await init_mongo(
                         models_to_init,
-                        service_config.service_name,
+                        service_config.database_name
+                        if service_config.database_name
+                        else service_config.service_name,
                     )
                     startup_tasks.append(("mongodb_client", client))
                     logger.info(
-                        f"✅ Connected to MongoDB for {service_config.service_name}"
+                        f"✅ Connected to MongoDB for {service_config.database_name or service_config.service_name}"
                     )
 
                     # Create first super admin and test users (IAM service only)
@@ -131,13 +132,6 @@ def create_lifespan(
 
         # Shutdown
         logger.info("🛑 Starting application shutdown...")
-
-        # HTTP 클라이언트 정리
-        try:
-            await ServiceHttpClientManager.close_all()
-            logger.info("✅ HTTP clients closed")
-        except Exception as e:
-            logger.error(f"⚠️ Error closing HTTP clients: {e}")
 
         # MongoDB 연결 정리
         for task_name, task_obj in startup_tasks:
