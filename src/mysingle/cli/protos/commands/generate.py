@@ -26,8 +26,15 @@ def buf_generate(config: ProtoConfig) -> None:
     log("Buf를 사용하여 코드 생성 중...", LogLevel.STEP)
 
     try:
+        # repo_root에서 실행하고 protos/buf.gen.yaml을 템플릿으로 사용
         subprocess.run(
-            ["buf", "generate", "--template", str(config.buf_template)],
+            [
+                "buf",
+                "generate",
+                "protos",
+                "--template",
+                "protos/buf.gen.yaml",
+            ],
             cwd=config.repo_root,
             check=True,
         )
@@ -42,7 +49,7 @@ def buf_generate(config: ProtoConfig) -> None:
 
 
 def rewrite_generated_imports(
-    generated_dir: Path, package_name: str = "mysingle_protos"
+    generated_dir: Path, package_name: str = "mysingle"
 ) -> list[Path]:
     """생성된 파일의 import 경로 수정"""
     if not generated_dir.exists():

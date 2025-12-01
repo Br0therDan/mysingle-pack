@@ -2,9 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from mysingle.protos.services.ml.v1 import (
-    ml_service_pb2 as protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2,
-)
+from services.ml.v1 import ml_service_pb2 as services_dot_ml_dot_v1_dot_ml__service__pb2
 
 
 class MLServiceStub(object):
@@ -20,38 +18,38 @@ class MLServiceStub(object):
         """
         self.OptimizeParameters = channel.unary_stream(
                 '/ml.MLService/OptimizeParameters',
-                request_serializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.OptimizeRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.OptimizeProgress.FromString,
+                request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.OptimizeRequest.SerializeToString,
+                response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.OptimizeProgress.FromString,
                 _registered_method=True)
         self.AnalyzeWalkForward = channel.unary_unary(
                 '/ml.MLService/AnalyzeWalkForward',
-                request_serializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeResponse.FromString,
+                request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeRequest.SerializeToString,
+                response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeResponse.FromString,
                 _registered_method=True)
         self.PredictSignal = channel.unary_unary(
                 '/ml.MLService/PredictSignal',
-                request_serializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.MLPredictionRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.MLSignalInsight.FromString,
+                request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.MLPredictionRequest.SerializeToString,
+                response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.MLSignalInsight.FromString,
                 _registered_method=True)
         self.PredictSignalsBatch = channel.unary_stream(
                 '/ml.MLService/PredictSignalsBatch',
-                request_serializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.BatchMLPredictionRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.MLSignalInsight.FromString,
+                request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.BatchMLPredictionRequest.SerializeToString,
+                response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.MLSignalInsight.FromString,
                 _registered_method=True)
         self.StoreFeatures = channel.unary_unary(
                 '/ml.MLService/StoreFeatures',
-                request_serializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.FeatureStoreRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.FeatureStoreResponse.FromString,
+                request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.FeatureStoreRequest.SerializeToString,
+                response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.FeatureStoreResponse.FromString,
                 _registered_method=True)
         self.HealthCheck = channel.unary_unary(
                 '/ml.MLService/HealthCheck',
-                request_serializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.HealthCheckRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.HealthCheckResponse.FromString,
+                request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.HealthCheckRequest.SerializeToString,
+                response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.HealthCheckResponse.FromString,
                 _registered_method=True)
         self.AnalyzeMLBacktestPerformance = channel.unary_unary(
                 '/ml.MLService/AnalyzeMLBacktestPerformance',
-                request_serializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeMLBacktestPerformanceRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeMLBacktestPerformanceResponse.FromString,
+                request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeMLBacktestPerformanceRequest.SerializeToString,
+                response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeMLBacktestPerformanceResponse.FromString,
                 _registered_method=True)
 
 
@@ -114,38 +112,38 @@ def add_MLServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'OptimizeParameters': grpc.unary_stream_rpc_method_handler(
                     servicer.OptimizeParameters,
-                    request_deserializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.OptimizeRequest.FromString,
-                    response_serializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.OptimizeProgress.SerializeToString,
+                    request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.OptimizeRequest.FromString,
+                    response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.OptimizeProgress.SerializeToString,
             ),
             'AnalyzeWalkForward': grpc.unary_unary_rpc_method_handler(
                     servicer.AnalyzeWalkForward,
-                    request_deserializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeRequest.FromString,
-                    response_serializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeResponse.SerializeToString,
+                    request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeRequest.FromString,
+                    response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeResponse.SerializeToString,
             ),
             'PredictSignal': grpc.unary_unary_rpc_method_handler(
                     servicer.PredictSignal,
-                    request_deserializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.MLPredictionRequest.FromString,
-                    response_serializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.MLSignalInsight.SerializeToString,
+                    request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.MLPredictionRequest.FromString,
+                    response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.MLSignalInsight.SerializeToString,
             ),
             'PredictSignalsBatch': grpc.unary_stream_rpc_method_handler(
                     servicer.PredictSignalsBatch,
-                    request_deserializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.BatchMLPredictionRequest.FromString,
-                    response_serializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.MLSignalInsight.SerializeToString,
+                    request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.BatchMLPredictionRequest.FromString,
+                    response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.MLSignalInsight.SerializeToString,
             ),
             'StoreFeatures': grpc.unary_unary_rpc_method_handler(
                     servicer.StoreFeatures,
-                    request_deserializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.FeatureStoreRequest.FromString,
-                    response_serializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.FeatureStoreResponse.SerializeToString,
+                    request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.FeatureStoreRequest.FromString,
+                    response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.FeatureStoreResponse.SerializeToString,
             ),
             'HealthCheck': grpc.unary_unary_rpc_method_handler(
                     servicer.HealthCheck,
-                    request_deserializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.HealthCheckRequest.FromString,
-                    response_serializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.HealthCheckResponse.SerializeToString,
+                    request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.HealthCheckRequest.FromString,
+                    response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.HealthCheckResponse.SerializeToString,
             ),
             'AnalyzeMLBacktestPerformance': grpc.unary_unary_rpc_method_handler(
                     servicer.AnalyzeMLBacktestPerformance,
-                    request_deserializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeMLBacktestPerformanceRequest.FromString,
-                    response_serializer=protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeMLBacktestPerformanceResponse.SerializeToString,
+                    request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeMLBacktestPerformanceRequest.FromString,
+                    response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeMLBacktestPerformanceResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -175,8 +173,8 @@ class MLService(object):
             request,
             target,
             '/ml.MLService/OptimizeParameters',
-            protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.OptimizeRequest.SerializeToString,
-            protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.OptimizeProgress.FromString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.OptimizeRequest.SerializeToString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.OptimizeProgress.FromString,
             options,
             channel_credentials,
             insecure,
@@ -202,8 +200,8 @@ class MLService(object):
             request,
             target,
             '/ml.MLService/AnalyzeWalkForward',
-            protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeRequest.SerializeToString,
-            protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeResponse.FromString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeRequest.SerializeToString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -229,8 +227,8 @@ class MLService(object):
             request,
             target,
             '/ml.MLService/PredictSignal',
-            protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.MLPredictionRequest.SerializeToString,
-            protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.MLSignalInsight.FromString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.MLPredictionRequest.SerializeToString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.MLSignalInsight.FromString,
             options,
             channel_credentials,
             insecure,
@@ -256,8 +254,8 @@ class MLService(object):
             request,
             target,
             '/ml.MLService/PredictSignalsBatch',
-            protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.BatchMLPredictionRequest.SerializeToString,
-            protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.MLSignalInsight.FromString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.BatchMLPredictionRequest.SerializeToString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.MLSignalInsight.FromString,
             options,
             channel_credentials,
             insecure,
@@ -283,8 +281,8 @@ class MLService(object):
             request,
             target,
             '/ml.MLService/StoreFeatures',
-            protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.FeatureStoreRequest.SerializeToString,
-            protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.FeatureStoreResponse.FromString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.FeatureStoreRequest.SerializeToString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.FeatureStoreResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -310,8 +308,8 @@ class MLService(object):
             request,
             target,
             '/ml.MLService/HealthCheck',
-            protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.HealthCheckRequest.SerializeToString,
-            protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.HealthCheckResponse.FromString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.HealthCheckRequest.SerializeToString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.HealthCheckResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -337,8 +335,8 @@ class MLService(object):
             request,
             target,
             '/ml.MLService/AnalyzeMLBacktestPerformance',
-            protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeMLBacktestPerformanceRequest.SerializeToString,
-            protos_dot_services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeMLBacktestPerformanceResponse.FromString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeMLBacktestPerformanceRequest.SerializeToString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeMLBacktestPerformanceResponse.FromString,
             options,
             channel_credentials,
             insecure,

@@ -2,9 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from mysingle.protos.services.strategy.v1 import (
-    strategy_service_pb2 as protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2,
-)
+from services.strategy.v1 import strategy_service_pb2 as services_dot_strategy_dot_v1_dot_strategy__service__pb2
 
 
 class StrategyServiceStub(object):
@@ -21,68 +19,68 @@ class StrategyServiceStub(object):
         """
         self.GetStrategyVersion = channel.unary_unary(
                 '/strategy.v1.StrategyService/GetStrategyVersion',
-                request_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyVersionRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionResponse.FromString,
+                request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyVersionRequest.SerializeToString,
+                response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionResponse.FromString,
                 _registered_method=True)
         self.BatchGetStrategyVersions = channel.unary_stream(
                 '/strategy.v1.StrategyService/BatchGetStrategyVersions',
-                request_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.BatchGetStrategyVersionsRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionResponse.FromString,
+                request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.BatchGetStrategyVersionsRequest.SerializeToString,
+                response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionResponse.FromString,
                 _registered_method=True)
         self.HealthCheck = channel.unary_unary(
                 '/strategy.v1.StrategyService/HealthCheck',
-                request_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.HealthCheckRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.HealthCheckResponse.FromString,
+                request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.HealthCheckRequest.SerializeToString,
+                response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.HealthCheckResponse.FromString,
                 _registered_method=True)
         self.ValidateStrategyIR = channel.unary_unary(
                 '/strategy.v1.StrategyService/ValidateStrategyIR',
-                request_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateIRRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidationResponse.FromString,
+                request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateIRRequest.SerializeToString,
+                response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidationResponse.FromString,
                 _registered_method=True)
         self.GetStrategyTemplate = channel.unary_unary(
                 '/strategy.v1.StrategyService/GetStrategyTemplate',
-                request_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetTemplateRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.TemplateResponse.FromString,
+                request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetTemplateRequest.SerializeToString,
+                response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.TemplateResponse.FromString,
                 _registered_method=True)
         self.ListStrategyTemplates = channel.unary_stream(
                 '/strategy.v1.StrategyService/ListStrategyTemplates',
-                request_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListTemplatesRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.TemplateResponse.FromString,
+                request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListTemplatesRequest.SerializeToString,
+                response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.TemplateResponse.FromString,
                 _registered_method=True)
         self.BatchGetStrategies = channel.unary_stream(
                 '/strategy.v1.StrategyService/BatchGetStrategies',
-                request_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.BatchGetStrategiesRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyResponse.FromString,
+                request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.BatchGetStrategiesRequest.SerializeToString,
+                response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyResponse.FromString,
                 _registered_method=True)
         self.ListUserStrategies = channel.unary_stream(
                 '/strategy.v1.StrategyService/ListUserStrategies',
-                request_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListUserStrategiesRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyResponse.FromString,
+                request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListUserStrategiesRequest.SerializeToString,
+                response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyResponse.FromString,
                 _registered_method=True)
         self.ArchiveStrategy = channel.unary_unary(
                 '/strategy.v1.StrategyService/ArchiveStrategy',
-                request_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ArchiveStrategyRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ArchiveStrategyResponse.FromString,
+                request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ArchiveStrategyRequest.SerializeToString,
+                response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ArchiveStrategyResponse.FromString,
                 _registered_method=True)
         self.GetStrategy = channel.unary_unary(
                 '/strategy.v1.StrategyService/GetStrategy',
-                request_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyResponse.FromString,
+                request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyRequest.SerializeToString,
+                response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyResponse.FromString,
                 _registered_method=True)
         self.ListStrategies = channel.unary_unary(
                 '/strategy.v1.StrategyService/ListStrategies',
-                request_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListStrategiesRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListStrategiesResponse.FromString,
+                request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListStrategiesRequest.SerializeToString,
+                response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListStrategiesResponse.FromString,
                 _registered_method=True)
         self.ValidateStrategy = channel.unary_unary(
                 '/strategy.v1.StrategyService/ValidateStrategy',
-                request_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateStrategyRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateStrategyResponse.FromString,
+                request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateStrategyRequest.SerializeToString,
+                response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateStrategyResponse.FromString,
                 _registered_method=True)
         self.GetPortfolioSummary = channel.unary_unary(
                 '/strategy.v1.StrategyService/GetPortfolioSummary',
-                request_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryResponse.FromString,
+                request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryRequest.SerializeToString,
+                response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryResponse.FromString,
                 _registered_method=True)
 
 
@@ -201,68 +199,68 @@ def add_StrategyServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GetStrategyVersion': grpc.unary_unary_rpc_method_handler(
                     servicer.GetStrategyVersion,
-                    request_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyVersionRequest.FromString,
-                    response_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionResponse.SerializeToString,
+                    request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyVersionRequest.FromString,
+                    response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionResponse.SerializeToString,
             ),
             'BatchGetStrategyVersions': grpc.unary_stream_rpc_method_handler(
                     servicer.BatchGetStrategyVersions,
-                    request_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.BatchGetStrategyVersionsRequest.FromString,
-                    response_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionResponse.SerializeToString,
+                    request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.BatchGetStrategyVersionsRequest.FromString,
+                    response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionResponse.SerializeToString,
             ),
             'HealthCheck': grpc.unary_unary_rpc_method_handler(
                     servicer.HealthCheck,
-                    request_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.HealthCheckRequest.FromString,
-                    response_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.HealthCheckResponse.SerializeToString,
+                    request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.HealthCheckRequest.FromString,
+                    response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.HealthCheckResponse.SerializeToString,
             ),
             'ValidateStrategyIR': grpc.unary_unary_rpc_method_handler(
                     servicer.ValidateStrategyIR,
-                    request_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateIRRequest.FromString,
-                    response_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidationResponse.SerializeToString,
+                    request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateIRRequest.FromString,
+                    response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidationResponse.SerializeToString,
             ),
             'GetStrategyTemplate': grpc.unary_unary_rpc_method_handler(
                     servicer.GetStrategyTemplate,
-                    request_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetTemplateRequest.FromString,
-                    response_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.TemplateResponse.SerializeToString,
+                    request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetTemplateRequest.FromString,
+                    response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.TemplateResponse.SerializeToString,
             ),
             'ListStrategyTemplates': grpc.unary_stream_rpc_method_handler(
                     servicer.ListStrategyTemplates,
-                    request_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListTemplatesRequest.FromString,
-                    response_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.TemplateResponse.SerializeToString,
+                    request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListTemplatesRequest.FromString,
+                    response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.TemplateResponse.SerializeToString,
             ),
             'BatchGetStrategies': grpc.unary_stream_rpc_method_handler(
                     servicer.BatchGetStrategies,
-                    request_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.BatchGetStrategiesRequest.FromString,
-                    response_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyResponse.SerializeToString,
+                    request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.BatchGetStrategiesRequest.FromString,
+                    response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyResponse.SerializeToString,
             ),
             'ListUserStrategies': grpc.unary_stream_rpc_method_handler(
                     servicer.ListUserStrategies,
-                    request_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListUserStrategiesRequest.FromString,
-                    response_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyResponse.SerializeToString,
+                    request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListUserStrategiesRequest.FromString,
+                    response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyResponse.SerializeToString,
             ),
             'ArchiveStrategy': grpc.unary_unary_rpc_method_handler(
                     servicer.ArchiveStrategy,
-                    request_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ArchiveStrategyRequest.FromString,
-                    response_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ArchiveStrategyResponse.SerializeToString,
+                    request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ArchiveStrategyRequest.FromString,
+                    response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ArchiveStrategyResponse.SerializeToString,
             ),
             'GetStrategy': grpc.unary_unary_rpc_method_handler(
                     servicer.GetStrategy,
-                    request_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyRequest.FromString,
-                    response_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyResponse.SerializeToString,
+                    request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyRequest.FromString,
+                    response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyResponse.SerializeToString,
             ),
             'ListStrategies': grpc.unary_unary_rpc_method_handler(
                     servicer.ListStrategies,
-                    request_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListStrategiesRequest.FromString,
-                    response_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListStrategiesResponse.SerializeToString,
+                    request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListStrategiesRequest.FromString,
+                    response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListStrategiesResponse.SerializeToString,
             ),
             'ValidateStrategy': grpc.unary_unary_rpc_method_handler(
                     servicer.ValidateStrategy,
-                    request_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateStrategyRequest.FromString,
-                    response_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateStrategyResponse.SerializeToString,
+                    request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateStrategyRequest.FromString,
+                    response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateStrategyResponse.SerializeToString,
             ),
             'GetPortfolioSummary': grpc.unary_unary_rpc_method_handler(
                     servicer.GetPortfolioSummary,
-                    request_deserializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryRequest.FromString,
-                    response_serializer=protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryResponse.SerializeToString,
+                    request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryRequest.FromString,
+                    response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -293,8 +291,8 @@ class StrategyService(object):
             request,
             target,
             '/strategy.v1.StrategyService/GetStrategyVersion',
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyVersionRequest.SerializeToString,
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionResponse.FromString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyVersionRequest.SerializeToString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -320,8 +318,8 @@ class StrategyService(object):
             request,
             target,
             '/strategy.v1.StrategyService/BatchGetStrategyVersions',
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.BatchGetStrategyVersionsRequest.SerializeToString,
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionResponse.FromString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.BatchGetStrategyVersionsRequest.SerializeToString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -347,8 +345,8 @@ class StrategyService(object):
             request,
             target,
             '/strategy.v1.StrategyService/HealthCheck',
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.HealthCheckRequest.SerializeToString,
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.HealthCheckResponse.FromString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.HealthCheckRequest.SerializeToString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.HealthCheckResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -374,8 +372,8 @@ class StrategyService(object):
             request,
             target,
             '/strategy.v1.StrategyService/ValidateStrategyIR',
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateIRRequest.SerializeToString,
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidationResponse.FromString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateIRRequest.SerializeToString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidationResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -401,8 +399,8 @@ class StrategyService(object):
             request,
             target,
             '/strategy.v1.StrategyService/GetStrategyTemplate',
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetTemplateRequest.SerializeToString,
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.TemplateResponse.FromString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetTemplateRequest.SerializeToString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.TemplateResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -428,8 +426,8 @@ class StrategyService(object):
             request,
             target,
             '/strategy.v1.StrategyService/ListStrategyTemplates',
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListTemplatesRequest.SerializeToString,
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.TemplateResponse.FromString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListTemplatesRequest.SerializeToString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.TemplateResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -455,8 +453,8 @@ class StrategyService(object):
             request,
             target,
             '/strategy.v1.StrategyService/BatchGetStrategies',
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.BatchGetStrategiesRequest.SerializeToString,
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyResponse.FromString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.BatchGetStrategiesRequest.SerializeToString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -482,8 +480,8 @@ class StrategyService(object):
             request,
             target,
             '/strategy.v1.StrategyService/ListUserStrategies',
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListUserStrategiesRequest.SerializeToString,
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyResponse.FromString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListUserStrategiesRequest.SerializeToString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -509,8 +507,8 @@ class StrategyService(object):
             request,
             target,
             '/strategy.v1.StrategyService/ArchiveStrategy',
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ArchiveStrategyRequest.SerializeToString,
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ArchiveStrategyResponse.FromString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.ArchiveStrategyRequest.SerializeToString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.ArchiveStrategyResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -536,8 +534,8 @@ class StrategyService(object):
             request,
             target,
             '/strategy.v1.StrategyService/GetStrategy',
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyRequest.SerializeToString,
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyResponse.FromString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyRequest.SerializeToString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -563,8 +561,8 @@ class StrategyService(object):
             request,
             target,
             '/strategy.v1.StrategyService/ListStrategies',
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListStrategiesRequest.SerializeToString,
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListStrategiesResponse.FromString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListStrategiesRequest.SerializeToString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListStrategiesResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -590,8 +588,8 @@ class StrategyService(object):
             request,
             target,
             '/strategy.v1.StrategyService/ValidateStrategy',
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateStrategyRequest.SerializeToString,
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateStrategyResponse.FromString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateStrategyRequest.SerializeToString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateStrategyResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -617,8 +615,8 @@ class StrategyService(object):
             request,
             target,
             '/strategy.v1.StrategyService/GetPortfolioSummary',
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryRequest.SerializeToString,
-            protos_dot_services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryResponse.FromString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryRequest.SerializeToString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryResponse.FromString,
             options,
             channel_credentials,
             insecure,

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package genai.narrative;
 
-import "protos/common/metadata.proto";
+import "common/metadata.proto";
 
 // Narrative Report 서비스
 service NarrativeService {

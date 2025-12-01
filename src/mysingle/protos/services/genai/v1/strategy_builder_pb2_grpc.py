@@ -2,9 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from mysingle.protos.services.genai.v1 import (
-    strategy_builder_pb2 as protos_dot_services_dot_genai_dot_v1_dot_strategy__builder__pb2,
-)
+from services.genai.v1 import strategy_builder_pb2 as services_dot_genai_dot_v1_dot_strategy__builder__pb2
 
 
 class StrategyBuilderServiceStub(object):
@@ -19,18 +17,18 @@ class StrategyBuilderServiceStub(object):
         """
         self.GenerateStrategy = channel.unary_unary(
                 '/genai.strategy_builder.StrategyBuilderService/GenerateStrategy',
-                request_serializer=protos_dot_services_dot_genai_dot_v1_dot_strategy__builder__pb2.GenerateStrategyRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_genai_dot_v1_dot_strategy__builder__pb2.GenerateStrategyResponse.FromString,
+                request_serializer=services_dot_genai_dot_v1_dot_strategy__builder__pb2.GenerateStrategyRequest.SerializeToString,
+                response_deserializer=services_dot_genai_dot_v1_dot_strategy__builder__pb2.GenerateStrategyResponse.FromString,
                 _registered_method=True)
         self.ValidateProposal = channel.unary_unary(
                 '/genai.strategy_builder.StrategyBuilderService/ValidateProposal',
-                request_serializer=protos_dot_services_dot_genai_dot_v1_dot_strategy__builder__pb2.ValidateProposalRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_genai_dot_v1_dot_strategy__builder__pb2.ValidateProposalResponse.FromString,
+                request_serializer=services_dot_genai_dot_v1_dot_strategy__builder__pb2.ValidateProposalRequest.SerializeToString,
+                response_deserializer=services_dot_genai_dot_v1_dot_strategy__builder__pb2.ValidateProposalResponse.FromString,
                 _registered_method=True)
         self.CustomizeTemplate = channel.unary_unary(
                 '/genai.strategy_builder.StrategyBuilderService/CustomizeTemplate',
-                request_serializer=protos_dot_services_dot_genai_dot_v1_dot_strategy__builder__pb2.CustomizeTemplateRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_genai_dot_v1_dot_strategy__builder__pb2.CustomizeTemplateResponse.FromString,
+                request_serializer=services_dot_genai_dot_v1_dot_strategy__builder__pb2.CustomizeTemplateRequest.SerializeToString,
+                response_deserializer=services_dot_genai_dot_v1_dot_strategy__builder__pb2.CustomizeTemplateResponse.FromString,
                 _registered_method=True)
 
 
@@ -64,18 +62,18 @@ def add_StrategyBuilderServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GenerateStrategy': grpc.unary_unary_rpc_method_handler(
                     servicer.GenerateStrategy,
-                    request_deserializer=protos_dot_services_dot_genai_dot_v1_dot_strategy__builder__pb2.GenerateStrategyRequest.FromString,
-                    response_serializer=protos_dot_services_dot_genai_dot_v1_dot_strategy__builder__pb2.GenerateStrategyResponse.SerializeToString,
+                    request_deserializer=services_dot_genai_dot_v1_dot_strategy__builder__pb2.GenerateStrategyRequest.FromString,
+                    response_serializer=services_dot_genai_dot_v1_dot_strategy__builder__pb2.GenerateStrategyResponse.SerializeToString,
             ),
             'ValidateProposal': grpc.unary_unary_rpc_method_handler(
                     servicer.ValidateProposal,
-                    request_deserializer=protos_dot_services_dot_genai_dot_v1_dot_strategy__builder__pb2.ValidateProposalRequest.FromString,
-                    response_serializer=protos_dot_services_dot_genai_dot_v1_dot_strategy__builder__pb2.ValidateProposalResponse.SerializeToString,
+                    request_deserializer=services_dot_genai_dot_v1_dot_strategy__builder__pb2.ValidateProposalRequest.FromString,
+                    response_serializer=services_dot_genai_dot_v1_dot_strategy__builder__pb2.ValidateProposalResponse.SerializeToString,
             ),
             'CustomizeTemplate': grpc.unary_unary_rpc_method_handler(
                     servicer.CustomizeTemplate,
-                    request_deserializer=protos_dot_services_dot_genai_dot_v1_dot_strategy__builder__pb2.CustomizeTemplateRequest.FromString,
-                    response_serializer=protos_dot_services_dot_genai_dot_v1_dot_strategy__builder__pb2.CustomizeTemplateResponse.SerializeToString,
+                    request_deserializer=services_dot_genai_dot_v1_dot_strategy__builder__pb2.CustomizeTemplateRequest.FromString,
+                    response_serializer=services_dot_genai_dot_v1_dot_strategy__builder__pb2.CustomizeTemplateResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -104,8 +102,8 @@ class StrategyBuilderService(object):
             request,
             target,
             '/genai.strategy_builder.StrategyBuilderService/GenerateStrategy',
-            protos_dot_services_dot_genai_dot_v1_dot_strategy__builder__pb2.GenerateStrategyRequest.SerializeToString,
-            protos_dot_services_dot_genai_dot_v1_dot_strategy__builder__pb2.GenerateStrategyResponse.FromString,
+            services_dot_genai_dot_v1_dot_strategy__builder__pb2.GenerateStrategyRequest.SerializeToString,
+            services_dot_genai_dot_v1_dot_strategy__builder__pb2.GenerateStrategyResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -131,8 +129,8 @@ class StrategyBuilderService(object):
             request,
             target,
             '/genai.strategy_builder.StrategyBuilderService/ValidateProposal',
-            protos_dot_services_dot_genai_dot_v1_dot_strategy__builder__pb2.ValidateProposalRequest.SerializeToString,
-            protos_dot_services_dot_genai_dot_v1_dot_strategy__builder__pb2.ValidateProposalResponse.FromString,
+            services_dot_genai_dot_v1_dot_strategy__builder__pb2.ValidateProposalRequest.SerializeToString,
+            services_dot_genai_dot_v1_dot_strategy__builder__pb2.ValidateProposalResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -158,8 +156,8 @@ class StrategyBuilderService(object):
             request,
             target,
             '/genai.strategy_builder.StrategyBuilderService/CustomizeTemplate',
-            protos_dot_services_dot_genai_dot_v1_dot_strategy__builder__pb2.CustomizeTemplateRequest.SerializeToString,
-            protos_dot_services_dot_genai_dot_v1_dot_strategy__builder__pb2.CustomizeTemplateResponse.FromString,
+            services_dot_genai_dot_v1_dot_strategy__builder__pb2.CustomizeTemplateRequest.SerializeToString,
+            services_dot_genai_dot_v1_dot_strategy__builder__pb2.CustomizeTemplateResponse.FromString,
             options,
             channel_credentials,
             insecure,

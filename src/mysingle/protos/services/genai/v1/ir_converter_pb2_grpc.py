@@ -2,9 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from mysingle.protos.services.genai.v1 import (
-    ir_converter_pb2 as protos_dot_services_dot_genai_dot_v1_dot_ir__converter__pb2,
-)
+from services.genai.v1 import ir_converter_pb2 as services_dot_genai_dot_v1_dot_ir__converter__pb2
 
 
 class IRConverterServiceStub(object):
@@ -19,18 +17,18 @@ class IRConverterServiceStub(object):
         """
         self.PreviewConversion = channel.unary_unary(
                 '/genai.ir_converter.IRConverterService/PreviewConversion',
-                request_serializer=protos_dot_services_dot_genai_dot_v1_dot_ir__converter__pb2.PreviewConversionRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_genai_dot_v1_dot_ir__converter__pb2.PreviewConversionResponse.FromString,
+                request_serializer=services_dot_genai_dot_v1_dot_ir__converter__pb2.PreviewConversionRequest.SerializeToString,
+                response_deserializer=services_dot_genai_dot_v1_dot_ir__converter__pb2.PreviewConversionResponse.FromString,
                 _registered_method=True)
         self.ExecuteConversion = channel.unary_unary(
                 '/genai.ir_converter.IRConverterService/ExecuteConversion',
-                request_serializer=protos_dot_services_dot_genai_dot_v1_dot_ir__converter__pb2.ExecuteConversionRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_genai_dot_v1_dot_ir__converter__pb2.ExecuteConversionResponse.FromString,
+                request_serializer=services_dot_genai_dot_v1_dot_ir__converter__pb2.ExecuteConversionRequest.SerializeToString,
+                response_deserializer=services_dot_genai_dot_v1_dot_ir__converter__pb2.ExecuteConversionResponse.FromString,
                 _registered_method=True)
         self.CheckConvertibility = channel.unary_unary(
                 '/genai.ir_converter.IRConverterService/CheckConvertibility',
-                request_serializer=protos_dot_services_dot_genai_dot_v1_dot_ir__converter__pb2.CheckConvertibilityRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_genai_dot_v1_dot_ir__converter__pb2.CheckConvertibilityResponse.FromString,
+                request_serializer=services_dot_genai_dot_v1_dot_ir__converter__pb2.CheckConvertibilityRequest.SerializeToString,
+                response_deserializer=services_dot_genai_dot_v1_dot_ir__converter__pb2.CheckConvertibilityResponse.FromString,
                 _registered_method=True)
 
 
@@ -64,18 +62,18 @@ def add_IRConverterServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'PreviewConversion': grpc.unary_unary_rpc_method_handler(
                     servicer.PreviewConversion,
-                    request_deserializer=protos_dot_services_dot_genai_dot_v1_dot_ir__converter__pb2.PreviewConversionRequest.FromString,
-                    response_serializer=protos_dot_services_dot_genai_dot_v1_dot_ir__converter__pb2.PreviewConversionResponse.SerializeToString,
+                    request_deserializer=services_dot_genai_dot_v1_dot_ir__converter__pb2.PreviewConversionRequest.FromString,
+                    response_serializer=services_dot_genai_dot_v1_dot_ir__converter__pb2.PreviewConversionResponse.SerializeToString,
             ),
             'ExecuteConversion': grpc.unary_unary_rpc_method_handler(
                     servicer.ExecuteConversion,
-                    request_deserializer=protos_dot_services_dot_genai_dot_v1_dot_ir__converter__pb2.ExecuteConversionRequest.FromString,
-                    response_serializer=protos_dot_services_dot_genai_dot_v1_dot_ir__converter__pb2.ExecuteConversionResponse.SerializeToString,
+                    request_deserializer=services_dot_genai_dot_v1_dot_ir__converter__pb2.ExecuteConversionRequest.FromString,
+                    response_serializer=services_dot_genai_dot_v1_dot_ir__converter__pb2.ExecuteConversionResponse.SerializeToString,
             ),
             'CheckConvertibility': grpc.unary_unary_rpc_method_handler(
                     servicer.CheckConvertibility,
-                    request_deserializer=protos_dot_services_dot_genai_dot_v1_dot_ir__converter__pb2.CheckConvertibilityRequest.FromString,
-                    response_serializer=protos_dot_services_dot_genai_dot_v1_dot_ir__converter__pb2.CheckConvertibilityResponse.SerializeToString,
+                    request_deserializer=services_dot_genai_dot_v1_dot_ir__converter__pb2.CheckConvertibilityRequest.FromString,
+                    response_serializer=services_dot_genai_dot_v1_dot_ir__converter__pb2.CheckConvertibilityResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -104,8 +102,8 @@ class IRConverterService(object):
             request,
             target,
             '/genai.ir_converter.IRConverterService/PreviewConversion',
-            protos_dot_services_dot_genai_dot_v1_dot_ir__converter__pb2.PreviewConversionRequest.SerializeToString,
-            protos_dot_services_dot_genai_dot_v1_dot_ir__converter__pb2.PreviewConversionResponse.FromString,
+            services_dot_genai_dot_v1_dot_ir__converter__pb2.PreviewConversionRequest.SerializeToString,
+            services_dot_genai_dot_v1_dot_ir__converter__pb2.PreviewConversionResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -131,8 +129,8 @@ class IRConverterService(object):
             request,
             target,
             '/genai.ir_converter.IRConverterService/ExecuteConversion',
-            protos_dot_services_dot_genai_dot_v1_dot_ir__converter__pb2.ExecuteConversionRequest.SerializeToString,
-            protos_dot_services_dot_genai_dot_v1_dot_ir__converter__pb2.ExecuteConversionResponse.FromString,
+            services_dot_genai_dot_v1_dot_ir__converter__pb2.ExecuteConversionRequest.SerializeToString,
+            services_dot_genai_dot_v1_dot_ir__converter__pb2.ExecuteConversionResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -158,8 +156,8 @@ class IRConverterService(object):
             request,
             target,
             '/genai.ir_converter.IRConverterService/CheckConvertibility',
-            protos_dot_services_dot_genai_dot_v1_dot_ir__converter__pb2.CheckConvertibilityRequest.SerializeToString,
-            protos_dot_services_dot_genai_dot_v1_dot_ir__converter__pb2.CheckConvertibilityResponse.FromString,
+            services_dot_genai_dot_v1_dot_ir__converter__pb2.CheckConvertibilityRequest.SerializeToString,
+            services_dot_genai_dot_v1_dot_ir__converter__pb2.CheckConvertibilityResponse.FromString,
             options,
             channel_credentials,
             insecure,

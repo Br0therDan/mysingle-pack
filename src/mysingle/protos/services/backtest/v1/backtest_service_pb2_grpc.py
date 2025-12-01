@@ -2,9 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from mysingle.protos.services.backtest.v1 import (
-    backtest_service_pb2 as protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2,
-)
+from services.backtest.v1 import backtest_service_pb2 as services_dot_backtest_dot_v1_dot_backtest__service__pb2
 
 
 class BacktestServiceStub(object):
@@ -19,38 +17,38 @@ class BacktestServiceStub(object):
         """
         self.ExecuteBacktest = channel.unary_unary(
                 '/backtest.BacktestService/ExecuteBacktest',
-                request_serializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.ExecuteBacktestRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.ExecuteBacktestResponse.FromString,
+                request_serializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.ExecuteBacktestRequest.SerializeToString,
+                response_deserializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.ExecuteBacktestResponse.FromString,
                 _registered_method=True)
         self.GetBacktestResult = channel.unary_unary(
                 '/backtest.BacktestService/GetBacktestResult',
-                request_serializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.GetBacktestResultRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.BacktestResultResponse.FromString,
+                request_serializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.GetBacktestResultRequest.SerializeToString,
+                response_deserializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.BacktestResultResponse.FromString,
                 _registered_method=True)
         self.StreamBacktestProgress = channel.unary_stream(
                 '/backtest.BacktestService/StreamBacktestProgress',
-                request_serializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.StreamProgressRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.ProgressUpdate.FromString,
+                request_serializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.StreamProgressRequest.SerializeToString,
+                response_deserializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.ProgressUpdate.FromString,
                 _registered_method=True)
         self.GetBacktestMetrics = channel.unary_unary(
                 '/backtest.BacktestService/GetBacktestMetrics',
-                request_serializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.GetMetricsRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.MetricsResponse.FromString,
+                request_serializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.GetMetricsRequest.SerializeToString,
+                response_deserializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.MetricsResponse.FromString,
                 _registered_method=True)
         self.ListBacktests = channel.unary_unary(
                 '/backtest.BacktestService/ListBacktests',
-                request_serializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.ListBacktestsRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.ListBacktestsResponse.FromString,
+                request_serializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.ListBacktestsRequest.SerializeToString,
+                response_deserializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.ListBacktestsResponse.FromString,
                 _registered_method=True)
         self.CancelBacktest = channel.unary_unary(
                 '/backtest.BacktestService/CancelBacktest',
-                request_serializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.CancelBacktestRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.CancelBacktestResponse.FromString,
+                request_serializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.CancelBacktestRequest.SerializeToString,
+                response_deserializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.CancelBacktestResponse.FromString,
                 _registered_method=True)
         self.HealthCheck = channel.unary_unary(
                 '/backtest.BacktestService/HealthCheck',
-                request_serializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.HealthCheckRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.HealthCheckResponse.FromString,
+                request_serializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.HealthCheckRequest.SerializeToString,
+                response_deserializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.HealthCheckResponse.FromString,
                 _registered_method=True)
 
 
@@ -112,38 +110,38 @@ def add_BacktestServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'ExecuteBacktest': grpc.unary_unary_rpc_method_handler(
                     servicer.ExecuteBacktest,
-                    request_deserializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.ExecuteBacktestRequest.FromString,
-                    response_serializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.ExecuteBacktestResponse.SerializeToString,
+                    request_deserializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.ExecuteBacktestRequest.FromString,
+                    response_serializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.ExecuteBacktestResponse.SerializeToString,
             ),
             'GetBacktestResult': grpc.unary_unary_rpc_method_handler(
                     servicer.GetBacktestResult,
-                    request_deserializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.GetBacktestResultRequest.FromString,
-                    response_serializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.BacktestResultResponse.SerializeToString,
+                    request_deserializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.GetBacktestResultRequest.FromString,
+                    response_serializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.BacktestResultResponse.SerializeToString,
             ),
             'StreamBacktestProgress': grpc.unary_stream_rpc_method_handler(
                     servicer.StreamBacktestProgress,
-                    request_deserializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.StreamProgressRequest.FromString,
-                    response_serializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.ProgressUpdate.SerializeToString,
+                    request_deserializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.StreamProgressRequest.FromString,
+                    response_serializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.ProgressUpdate.SerializeToString,
             ),
             'GetBacktestMetrics': grpc.unary_unary_rpc_method_handler(
                     servicer.GetBacktestMetrics,
-                    request_deserializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.GetMetricsRequest.FromString,
-                    response_serializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.MetricsResponse.SerializeToString,
+                    request_deserializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.GetMetricsRequest.FromString,
+                    response_serializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.MetricsResponse.SerializeToString,
             ),
             'ListBacktests': grpc.unary_unary_rpc_method_handler(
                     servicer.ListBacktests,
-                    request_deserializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.ListBacktestsRequest.FromString,
-                    response_serializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.ListBacktestsResponse.SerializeToString,
+                    request_deserializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.ListBacktestsRequest.FromString,
+                    response_serializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.ListBacktestsResponse.SerializeToString,
             ),
             'CancelBacktest': grpc.unary_unary_rpc_method_handler(
                     servicer.CancelBacktest,
-                    request_deserializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.CancelBacktestRequest.FromString,
-                    response_serializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.CancelBacktestResponse.SerializeToString,
+                    request_deserializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.CancelBacktestRequest.FromString,
+                    response_serializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.CancelBacktestResponse.SerializeToString,
             ),
             'HealthCheck': grpc.unary_unary_rpc_method_handler(
                     servicer.HealthCheck,
-                    request_deserializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.HealthCheckRequest.FromString,
-                    response_serializer=protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.HealthCheckResponse.SerializeToString,
+                    request_deserializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.HealthCheckRequest.FromString,
+                    response_serializer=services_dot_backtest_dot_v1_dot_backtest__service__pb2.HealthCheckResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -172,8 +170,8 @@ class BacktestService(object):
             request,
             target,
             '/backtest.BacktestService/ExecuteBacktest',
-            protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.ExecuteBacktestRequest.SerializeToString,
-            protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.ExecuteBacktestResponse.FromString,
+            services_dot_backtest_dot_v1_dot_backtest__service__pb2.ExecuteBacktestRequest.SerializeToString,
+            services_dot_backtest_dot_v1_dot_backtest__service__pb2.ExecuteBacktestResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -199,8 +197,8 @@ class BacktestService(object):
             request,
             target,
             '/backtest.BacktestService/GetBacktestResult',
-            protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.GetBacktestResultRequest.SerializeToString,
-            protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.BacktestResultResponse.FromString,
+            services_dot_backtest_dot_v1_dot_backtest__service__pb2.GetBacktestResultRequest.SerializeToString,
+            services_dot_backtest_dot_v1_dot_backtest__service__pb2.BacktestResultResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -226,8 +224,8 @@ class BacktestService(object):
             request,
             target,
             '/backtest.BacktestService/StreamBacktestProgress',
-            protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.StreamProgressRequest.SerializeToString,
-            protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.ProgressUpdate.FromString,
+            services_dot_backtest_dot_v1_dot_backtest__service__pb2.StreamProgressRequest.SerializeToString,
+            services_dot_backtest_dot_v1_dot_backtest__service__pb2.ProgressUpdate.FromString,
             options,
             channel_credentials,
             insecure,
@@ -253,8 +251,8 @@ class BacktestService(object):
             request,
             target,
             '/backtest.BacktestService/GetBacktestMetrics',
-            protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.GetMetricsRequest.SerializeToString,
-            protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.MetricsResponse.FromString,
+            services_dot_backtest_dot_v1_dot_backtest__service__pb2.GetMetricsRequest.SerializeToString,
+            services_dot_backtest_dot_v1_dot_backtest__service__pb2.MetricsResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -280,8 +278,8 @@ class BacktestService(object):
             request,
             target,
             '/backtest.BacktestService/ListBacktests',
-            protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.ListBacktestsRequest.SerializeToString,
-            protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.ListBacktestsResponse.FromString,
+            services_dot_backtest_dot_v1_dot_backtest__service__pb2.ListBacktestsRequest.SerializeToString,
+            services_dot_backtest_dot_v1_dot_backtest__service__pb2.ListBacktestsResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -307,8 +305,8 @@ class BacktestService(object):
             request,
             target,
             '/backtest.BacktestService/CancelBacktest',
-            protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.CancelBacktestRequest.SerializeToString,
-            protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.CancelBacktestResponse.FromString,
+            services_dot_backtest_dot_v1_dot_backtest__service__pb2.CancelBacktestRequest.SerializeToString,
+            services_dot_backtest_dot_v1_dot_backtest__service__pb2.CancelBacktestResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -334,8 +332,8 @@ class BacktestService(object):
             request,
             target,
             '/backtest.BacktestService/HealthCheck',
-            protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.HealthCheckRequest.SerializeToString,
-            protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2.HealthCheckResponse.FromString,
+            services_dot_backtest_dot_v1_dot_backtest__service__pb2.HealthCheckRequest.SerializeToString,
+            services_dot_backtest_dot_v1_dot_backtest__service__pb2.HealthCheckResponse.FromString,
             options,
             channel_credentials,
             insecure,

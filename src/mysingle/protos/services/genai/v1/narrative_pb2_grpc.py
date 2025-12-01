@@ -2,9 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from mysingle.protos.services.genai.v1 import (
-    narrative_pb2 as protos_dot_services_dot_genai_dot_v1_dot_narrative__pb2,
-)
+from services.genai.v1 import narrative_pb2 as services_dot_genai_dot_v1_dot_narrative__pb2
 
 
 class NarrativeServiceStub(object):
@@ -19,18 +17,18 @@ class NarrativeServiceStub(object):
         """
         self.GenerateReport = channel.unary_stream(
                 '/genai.narrative.NarrativeService/GenerateReport',
-                request_serializer=protos_dot_services_dot_genai_dot_v1_dot_narrative__pb2.GenerateReportRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_genai_dot_v1_dot_narrative__pb2.GenerateReportProgress.FromString,
+                request_serializer=services_dot_genai_dot_v1_dot_narrative__pb2.GenerateReportRequest.SerializeToString,
+                response_deserializer=services_dot_genai_dot_v1_dot_narrative__pb2.GenerateReportProgress.FromString,
                 _registered_method=True)
         self.GetReportStatus = channel.unary_unary(
                 '/genai.narrative.NarrativeService/GetReportStatus',
-                request_serializer=protos_dot_services_dot_genai_dot_v1_dot_narrative__pb2.GetReportStatusRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_genai_dot_v1_dot_narrative__pb2.GetReportStatusResponse.FromString,
+                request_serializer=services_dot_genai_dot_v1_dot_narrative__pb2.GetReportStatusRequest.SerializeToString,
+                response_deserializer=services_dot_genai_dot_v1_dot_narrative__pb2.GetReportStatusResponse.FromString,
                 _registered_method=True)
         self.GenerateComparisonReport = channel.unary_stream(
                 '/genai.narrative.NarrativeService/GenerateComparisonReport',
-                request_serializer=protos_dot_services_dot_genai_dot_v1_dot_narrative__pb2.GenerateComparisonReportRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_genai_dot_v1_dot_narrative__pb2.GenerateReportProgress.FromString,
+                request_serializer=services_dot_genai_dot_v1_dot_narrative__pb2.GenerateComparisonReportRequest.SerializeToString,
+                response_deserializer=services_dot_genai_dot_v1_dot_narrative__pb2.GenerateReportProgress.FromString,
                 _registered_method=True)
 
 
@@ -64,18 +62,18 @@ def add_NarrativeServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GenerateReport': grpc.unary_stream_rpc_method_handler(
                     servicer.GenerateReport,
-                    request_deserializer=protos_dot_services_dot_genai_dot_v1_dot_narrative__pb2.GenerateReportRequest.FromString,
-                    response_serializer=protos_dot_services_dot_genai_dot_v1_dot_narrative__pb2.GenerateReportProgress.SerializeToString,
+                    request_deserializer=services_dot_genai_dot_v1_dot_narrative__pb2.GenerateReportRequest.FromString,
+                    response_serializer=services_dot_genai_dot_v1_dot_narrative__pb2.GenerateReportProgress.SerializeToString,
             ),
             'GetReportStatus': grpc.unary_unary_rpc_method_handler(
                     servicer.GetReportStatus,
-                    request_deserializer=protos_dot_services_dot_genai_dot_v1_dot_narrative__pb2.GetReportStatusRequest.FromString,
-                    response_serializer=protos_dot_services_dot_genai_dot_v1_dot_narrative__pb2.GetReportStatusResponse.SerializeToString,
+                    request_deserializer=services_dot_genai_dot_v1_dot_narrative__pb2.GetReportStatusRequest.FromString,
+                    response_serializer=services_dot_genai_dot_v1_dot_narrative__pb2.GetReportStatusResponse.SerializeToString,
             ),
             'GenerateComparisonReport': grpc.unary_stream_rpc_method_handler(
                     servicer.GenerateComparisonReport,
-                    request_deserializer=protos_dot_services_dot_genai_dot_v1_dot_narrative__pb2.GenerateComparisonReportRequest.FromString,
-                    response_serializer=protos_dot_services_dot_genai_dot_v1_dot_narrative__pb2.GenerateReportProgress.SerializeToString,
+                    request_deserializer=services_dot_genai_dot_v1_dot_narrative__pb2.GenerateComparisonReportRequest.FromString,
+                    response_serializer=services_dot_genai_dot_v1_dot_narrative__pb2.GenerateReportProgress.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -104,8 +102,8 @@ class NarrativeService(object):
             request,
             target,
             '/genai.narrative.NarrativeService/GenerateReport',
-            protos_dot_services_dot_genai_dot_v1_dot_narrative__pb2.GenerateReportRequest.SerializeToString,
-            protos_dot_services_dot_genai_dot_v1_dot_narrative__pb2.GenerateReportProgress.FromString,
+            services_dot_genai_dot_v1_dot_narrative__pb2.GenerateReportRequest.SerializeToString,
+            services_dot_genai_dot_v1_dot_narrative__pb2.GenerateReportProgress.FromString,
             options,
             channel_credentials,
             insecure,
@@ -131,8 +129,8 @@ class NarrativeService(object):
             request,
             target,
             '/genai.narrative.NarrativeService/GetReportStatus',
-            protos_dot_services_dot_genai_dot_v1_dot_narrative__pb2.GetReportStatusRequest.SerializeToString,
-            protos_dot_services_dot_genai_dot_v1_dot_narrative__pb2.GetReportStatusResponse.FromString,
+            services_dot_genai_dot_v1_dot_narrative__pb2.GetReportStatusRequest.SerializeToString,
+            services_dot_genai_dot_v1_dot_narrative__pb2.GetReportStatusResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -158,8 +156,8 @@ class NarrativeService(object):
             request,
             target,
             '/genai.narrative.NarrativeService/GenerateComparisonReport',
-            protos_dot_services_dot_genai_dot_v1_dot_narrative__pb2.GenerateComparisonReportRequest.SerializeToString,
-            protos_dot_services_dot_genai_dot_v1_dot_narrative__pb2.GenerateReportProgress.FromString,
+            services_dot_genai_dot_v1_dot_narrative__pb2.GenerateComparisonReportRequest.SerializeToString,
+            services_dot_genai_dot_v1_dot_narrative__pb2.GenerateReportProgress.FromString,
             options,
             channel_credentials,
             insecure,

@@ -37,10 +37,12 @@ class ProtoConfig:
         if services_root is None:
             services_root = repo_root.parent / "services"
 
+        proto_root = repo_root / "protos"
+
         return cls(
             repo_root=repo_root,
             services_root=services_root,
-            proto_root=repo_root / "protos",
-            generated_root=repo_root / "generated",
-            buf_template=repo_root / "buf.gen.yaml",
+            proto_root=proto_root,
+            generated_root=repo_root / "src" / "mysingle" / "protos",
+            buf_template=proto_root / "buf.gen.yaml",
         )

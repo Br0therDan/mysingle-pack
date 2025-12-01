@@ -2,9 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from mysingle.protos.services.genai.v1 import (
-    chatops_pb2 as protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2,
-)
+from services.genai.v1 import chatops_pb2 as services_dot_genai_dot_v1_dot_chatops__pb2
 
 
 class ChatOpsServiceStub(object):
@@ -19,23 +17,23 @@ class ChatOpsServiceStub(object):
         """
         self.CreateSession = channel.unary_unary(
                 '/genai.chatops.ChatOpsService/CreateSession',
-                request_serializer=protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.CreateSessionRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.CreateSessionResponse.FromString,
+                request_serializer=services_dot_genai_dot_v1_dot_chatops__pb2.CreateSessionRequest.SerializeToString,
+                response_deserializer=services_dot_genai_dot_v1_dot_chatops__pb2.CreateSessionResponse.FromString,
                 _registered_method=True)
         self.ChatStream = channel.stream_stream(
                 '/genai.chatops.ChatOpsService/ChatStream',
-                request_serializer=protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.ChatMessage.SerializeToString,
-                response_deserializer=protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.ChatResponse.FromString,
+                request_serializer=services_dot_genai_dot_v1_dot_chatops__pb2.ChatMessage.SerializeToString,
+                response_deserializer=services_dot_genai_dot_v1_dot_chatops__pb2.ChatResponse.FromString,
                 _registered_method=True)
         self.GetSessionHistory = channel.unary_unary(
                 '/genai.chatops.ChatOpsService/GetSessionHistory',
-                request_serializer=protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.GetSessionHistoryRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.GetSessionHistoryResponse.FromString,
+                request_serializer=services_dot_genai_dot_v1_dot_chatops__pb2.GetSessionHistoryRequest.SerializeToString,
+                response_deserializer=services_dot_genai_dot_v1_dot_chatops__pb2.GetSessionHistoryResponse.FromString,
                 _registered_method=True)
         self.CloseSession = channel.unary_unary(
                 '/genai.chatops.ChatOpsService/CloseSession',
-                request_serializer=protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.CloseSessionRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.CloseSessionResponse.FromString,
+                request_serializer=services_dot_genai_dot_v1_dot_chatops__pb2.CloseSessionRequest.SerializeToString,
+                response_deserializer=services_dot_genai_dot_v1_dot_chatops__pb2.CloseSessionResponse.FromString,
                 _registered_method=True)
 
 
@@ -76,23 +74,23 @@ def add_ChatOpsServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'CreateSession': grpc.unary_unary_rpc_method_handler(
                     servicer.CreateSession,
-                    request_deserializer=protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.CreateSessionRequest.FromString,
-                    response_serializer=protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.CreateSessionResponse.SerializeToString,
+                    request_deserializer=services_dot_genai_dot_v1_dot_chatops__pb2.CreateSessionRequest.FromString,
+                    response_serializer=services_dot_genai_dot_v1_dot_chatops__pb2.CreateSessionResponse.SerializeToString,
             ),
             'ChatStream': grpc.stream_stream_rpc_method_handler(
                     servicer.ChatStream,
-                    request_deserializer=protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.ChatMessage.FromString,
-                    response_serializer=protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.ChatResponse.SerializeToString,
+                    request_deserializer=services_dot_genai_dot_v1_dot_chatops__pb2.ChatMessage.FromString,
+                    response_serializer=services_dot_genai_dot_v1_dot_chatops__pb2.ChatResponse.SerializeToString,
             ),
             'GetSessionHistory': grpc.unary_unary_rpc_method_handler(
                     servicer.GetSessionHistory,
-                    request_deserializer=protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.GetSessionHistoryRequest.FromString,
-                    response_serializer=protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.GetSessionHistoryResponse.SerializeToString,
+                    request_deserializer=services_dot_genai_dot_v1_dot_chatops__pb2.GetSessionHistoryRequest.FromString,
+                    response_serializer=services_dot_genai_dot_v1_dot_chatops__pb2.GetSessionHistoryResponse.SerializeToString,
             ),
             'CloseSession': grpc.unary_unary_rpc_method_handler(
                     servicer.CloseSession,
-                    request_deserializer=protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.CloseSessionRequest.FromString,
-                    response_serializer=protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.CloseSessionResponse.SerializeToString,
+                    request_deserializer=services_dot_genai_dot_v1_dot_chatops__pb2.CloseSessionRequest.FromString,
+                    response_serializer=services_dot_genai_dot_v1_dot_chatops__pb2.CloseSessionResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -121,8 +119,8 @@ class ChatOpsService(object):
             request,
             target,
             '/genai.chatops.ChatOpsService/CreateSession',
-            protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.CreateSessionRequest.SerializeToString,
-            protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.CreateSessionResponse.FromString,
+            services_dot_genai_dot_v1_dot_chatops__pb2.CreateSessionRequest.SerializeToString,
+            services_dot_genai_dot_v1_dot_chatops__pb2.CreateSessionResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -148,8 +146,8 @@ class ChatOpsService(object):
             request_iterator,
             target,
             '/genai.chatops.ChatOpsService/ChatStream',
-            protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.ChatMessage.SerializeToString,
-            protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.ChatResponse.FromString,
+            services_dot_genai_dot_v1_dot_chatops__pb2.ChatMessage.SerializeToString,
+            services_dot_genai_dot_v1_dot_chatops__pb2.ChatResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -175,8 +173,8 @@ class ChatOpsService(object):
             request,
             target,
             '/genai.chatops.ChatOpsService/GetSessionHistory',
-            protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.GetSessionHistoryRequest.SerializeToString,
-            protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.GetSessionHistoryResponse.FromString,
+            services_dot_genai_dot_v1_dot_chatops__pb2.GetSessionHistoryRequest.SerializeToString,
+            services_dot_genai_dot_v1_dot_chatops__pb2.GetSessionHistoryResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -202,8 +200,8 @@ class ChatOpsService(object):
             request,
             target,
             '/genai.chatops.ChatOpsService/CloseSession',
-            protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.CloseSessionRequest.SerializeToString,
-            protos_dot_services_dot_genai_dot_v1_dot_chatops__pb2.CloseSessionResponse.FromString,
+            services_dot_genai_dot_v1_dot_chatops__pb2.CloseSessionRequest.SerializeToString,
+            services_dot_genai_dot_v1_dot_chatops__pb2.CloseSessionResponse.FromString,
             options,
             channel_credentials,
             insecure,

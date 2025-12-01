@@ -2,9 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from mysingle.protos.services.genai.v1 import (
-    dsl_validator_pb2 as protos_dot_services_dot_genai_dot_v1_dot_dsl__validator__pb2,
-)
+from services.genai.v1 import dsl_validator_pb2 as services_dot_genai_dot_v1_dot_dsl__validator__pb2
 
 
 class DSLValidatorServiceStub(object):
@@ -19,18 +17,18 @@ class DSLValidatorServiceStub(object):
         """
         self.ValidateDSL = channel.unary_unary(
                 '/genai.dsl_validator.DSLValidatorService/ValidateDSL',
-                request_serializer=protos_dot_services_dot_genai_dot_v1_dot_dsl__validator__pb2.ValidateDSLRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_genai_dot_v1_dot_dsl__validator__pb2.ValidateDSLResponse.FromString,
+                request_serializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.ValidateDSLRequest.SerializeToString,
+                response_deserializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.ValidateDSLResponse.FromString,
                 _registered_method=True)
         self.AutocompleteDSL = channel.unary_unary(
                 '/genai.dsl_validator.DSLValidatorService/AutocompleteDSL',
-                request_serializer=protos_dot_services_dot_genai_dot_v1_dot_dsl__validator__pb2.AutocompleteDSLRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_genai_dot_v1_dot_dsl__validator__pb2.AutocompleteDSLResponse.FromString,
+                request_serializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.AutocompleteDSLRequest.SerializeToString,
+                response_deserializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.AutocompleteDSLResponse.FromString,
                 _registered_method=True)
         self.GetSyntaxHelp = channel.unary_unary(
                 '/genai.dsl_validator.DSLValidatorService/GetSyntaxHelp',
-                request_serializer=protos_dot_services_dot_genai_dot_v1_dot_dsl__validator__pb2.GetSyntaxHelpRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_genai_dot_v1_dot_dsl__validator__pb2.GetSyntaxHelpResponse.FromString,
+                request_serializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.GetSyntaxHelpRequest.SerializeToString,
+                response_deserializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.GetSyntaxHelpResponse.FromString,
                 _registered_method=True)
 
 
@@ -64,18 +62,18 @@ def add_DSLValidatorServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'ValidateDSL': grpc.unary_unary_rpc_method_handler(
                     servicer.ValidateDSL,
-                    request_deserializer=protos_dot_services_dot_genai_dot_v1_dot_dsl__validator__pb2.ValidateDSLRequest.FromString,
-                    response_serializer=protos_dot_services_dot_genai_dot_v1_dot_dsl__validator__pb2.ValidateDSLResponse.SerializeToString,
+                    request_deserializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.ValidateDSLRequest.FromString,
+                    response_serializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.ValidateDSLResponse.SerializeToString,
             ),
             'AutocompleteDSL': grpc.unary_unary_rpc_method_handler(
                     servicer.AutocompleteDSL,
-                    request_deserializer=protos_dot_services_dot_genai_dot_v1_dot_dsl__validator__pb2.AutocompleteDSLRequest.FromString,
-                    response_serializer=protos_dot_services_dot_genai_dot_v1_dot_dsl__validator__pb2.AutocompleteDSLResponse.SerializeToString,
+                    request_deserializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.AutocompleteDSLRequest.FromString,
+                    response_serializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.AutocompleteDSLResponse.SerializeToString,
             ),
             'GetSyntaxHelp': grpc.unary_unary_rpc_method_handler(
                     servicer.GetSyntaxHelp,
-                    request_deserializer=protos_dot_services_dot_genai_dot_v1_dot_dsl__validator__pb2.GetSyntaxHelpRequest.FromString,
-                    response_serializer=protos_dot_services_dot_genai_dot_v1_dot_dsl__validator__pb2.GetSyntaxHelpResponse.SerializeToString,
+                    request_deserializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.GetSyntaxHelpRequest.FromString,
+                    response_serializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.GetSyntaxHelpResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -104,8 +102,8 @@ class DSLValidatorService(object):
             request,
             target,
             '/genai.dsl_validator.DSLValidatorService/ValidateDSL',
-            protos_dot_services_dot_genai_dot_v1_dot_dsl__validator__pb2.ValidateDSLRequest.SerializeToString,
-            protos_dot_services_dot_genai_dot_v1_dot_dsl__validator__pb2.ValidateDSLResponse.FromString,
+            services_dot_genai_dot_v1_dot_dsl__validator__pb2.ValidateDSLRequest.SerializeToString,
+            services_dot_genai_dot_v1_dot_dsl__validator__pb2.ValidateDSLResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -131,8 +129,8 @@ class DSLValidatorService(object):
             request,
             target,
             '/genai.dsl_validator.DSLValidatorService/AutocompleteDSL',
-            protos_dot_services_dot_genai_dot_v1_dot_dsl__validator__pb2.AutocompleteDSLRequest.SerializeToString,
-            protos_dot_services_dot_genai_dot_v1_dot_dsl__validator__pb2.AutocompleteDSLResponse.FromString,
+            services_dot_genai_dot_v1_dot_dsl__validator__pb2.AutocompleteDSLRequest.SerializeToString,
+            services_dot_genai_dot_v1_dot_dsl__validator__pb2.AutocompleteDSLResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -158,8 +156,8 @@ class DSLValidatorService(object):
             request,
             target,
             '/genai.dsl_validator.DSLValidatorService/GetSyntaxHelp',
-            protos_dot_services_dot_genai_dot_v1_dot_dsl__validator__pb2.GetSyntaxHelpRequest.SerializeToString,
-            protos_dot_services_dot_genai_dot_v1_dot_dsl__validator__pb2.GetSyntaxHelpResponse.FromString,
+            services_dot_genai_dot_v1_dot_dsl__validator__pb2.GetSyntaxHelpRequest.SerializeToString,
+            services_dot_genai_dot_v1_dot_dsl__validator__pb2.GetSyntaxHelpResponse.FromString,
             options,
             channel_credentials,
             insecure,

@@ -2,9 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from mysingle.protos.services.indicator.v1 import (
-    indicator_service_pb2 as protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2,
-)
+from services.indicator.v1 import indicator_service_pb2 as services_dot_indicator_dot_v1_dot_indicator__service__pb2
 
 
 class IndicatorServiceStub(object):
@@ -19,28 +17,28 @@ class IndicatorServiceStub(object):
         """
         self.GetIndicatorMetadata = channel.unary_unary(
                 '/indicator.IndicatorService/GetIndicatorMetadata',
-                request_serializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.GetIndicatorMetadataRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.IndicatorMetadataResponse.FromString,
+                request_serializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.GetIndicatorMetadataRequest.SerializeToString,
+                response_deserializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.IndicatorMetadataResponse.FromString,
                 _registered_method=True)
         self.BatchGetIndicatorMetadata = channel.unary_unary(
                 '/indicator.IndicatorService/BatchGetIndicatorMetadata',
-                request_serializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchGetIndicatorMetadataRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchGetIndicatorMetadataResponse.FromString,
+                request_serializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchGetIndicatorMetadataRequest.SerializeToString,
+                response_deserializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchGetIndicatorMetadataResponse.FromString,
                 _registered_method=True)
         self.CalculateIndicator = channel.unary_unary(
                 '/indicator.IndicatorService/CalculateIndicator',
-                request_serializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.CalculateIndicatorRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.CalculateIndicatorResponse.FromString,
+                request_serializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.CalculateIndicatorRequest.SerializeToString,
+                response_deserializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.CalculateIndicatorResponse.FromString,
                 _registered_method=True)
         self.BatchCalculateIndicators = channel.unary_unary(
                 '/indicator.IndicatorService/BatchCalculateIndicators',
-                request_serializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchCalculateIndicatorsRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchCalculateIndicatorsResponse.FromString,
+                request_serializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchCalculateIndicatorsRequest.SerializeToString,
+                response_deserializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchCalculateIndicatorsResponse.FromString,
                 _registered_method=True)
         self.HealthCheck = channel.unary_unary(
                 '/indicator.IndicatorService/HealthCheck',
-                request_serializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.HealthCheckRequest.SerializeToString,
-                response_deserializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.HealthCheckResponse.FromString,
+                request_serializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.HealthCheckRequest.SerializeToString,
+                response_deserializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.HealthCheckResponse.FromString,
                 _registered_method=True)
 
 
@@ -88,28 +86,28 @@ def add_IndicatorServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GetIndicatorMetadata': grpc.unary_unary_rpc_method_handler(
                     servicer.GetIndicatorMetadata,
-                    request_deserializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.GetIndicatorMetadataRequest.FromString,
-                    response_serializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.IndicatorMetadataResponse.SerializeToString,
+                    request_deserializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.GetIndicatorMetadataRequest.FromString,
+                    response_serializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.IndicatorMetadataResponse.SerializeToString,
             ),
             'BatchGetIndicatorMetadata': grpc.unary_unary_rpc_method_handler(
                     servicer.BatchGetIndicatorMetadata,
-                    request_deserializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchGetIndicatorMetadataRequest.FromString,
-                    response_serializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchGetIndicatorMetadataResponse.SerializeToString,
+                    request_deserializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchGetIndicatorMetadataRequest.FromString,
+                    response_serializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchGetIndicatorMetadataResponse.SerializeToString,
             ),
             'CalculateIndicator': grpc.unary_unary_rpc_method_handler(
                     servicer.CalculateIndicator,
-                    request_deserializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.CalculateIndicatorRequest.FromString,
-                    response_serializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.CalculateIndicatorResponse.SerializeToString,
+                    request_deserializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.CalculateIndicatorRequest.FromString,
+                    response_serializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.CalculateIndicatorResponse.SerializeToString,
             ),
             'BatchCalculateIndicators': grpc.unary_unary_rpc_method_handler(
                     servicer.BatchCalculateIndicators,
-                    request_deserializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchCalculateIndicatorsRequest.FromString,
-                    response_serializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchCalculateIndicatorsResponse.SerializeToString,
+                    request_deserializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchCalculateIndicatorsRequest.FromString,
+                    response_serializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchCalculateIndicatorsResponse.SerializeToString,
             ),
             'HealthCheck': grpc.unary_unary_rpc_method_handler(
                     servicer.HealthCheck,
-                    request_deserializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.HealthCheckRequest.FromString,
-                    response_serializer=protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.HealthCheckResponse.SerializeToString,
+                    request_deserializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.HealthCheckRequest.FromString,
+                    response_serializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.HealthCheckResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -138,8 +136,8 @@ class IndicatorService(object):
             request,
             target,
             '/indicator.IndicatorService/GetIndicatorMetadata',
-            protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.GetIndicatorMetadataRequest.SerializeToString,
-            protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.IndicatorMetadataResponse.FromString,
+            services_dot_indicator_dot_v1_dot_indicator__service__pb2.GetIndicatorMetadataRequest.SerializeToString,
+            services_dot_indicator_dot_v1_dot_indicator__service__pb2.IndicatorMetadataResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -165,8 +163,8 @@ class IndicatorService(object):
             request,
             target,
             '/indicator.IndicatorService/BatchGetIndicatorMetadata',
-            protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchGetIndicatorMetadataRequest.SerializeToString,
-            protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchGetIndicatorMetadataResponse.FromString,
+            services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchGetIndicatorMetadataRequest.SerializeToString,
+            services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchGetIndicatorMetadataResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -192,8 +190,8 @@ class IndicatorService(object):
             request,
             target,
             '/indicator.IndicatorService/CalculateIndicator',
-            protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.CalculateIndicatorRequest.SerializeToString,
-            protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.CalculateIndicatorResponse.FromString,
+            services_dot_indicator_dot_v1_dot_indicator__service__pb2.CalculateIndicatorRequest.SerializeToString,
+            services_dot_indicator_dot_v1_dot_indicator__service__pb2.CalculateIndicatorResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -219,8 +217,8 @@ class IndicatorService(object):
             request,
             target,
             '/indicator.IndicatorService/BatchCalculateIndicators',
-            protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchCalculateIndicatorsRequest.SerializeToString,
-            protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchCalculateIndicatorsResponse.FromString,
+            services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchCalculateIndicatorsRequest.SerializeToString,
+            services_dot_indicator_dot_v1_dot_indicator__service__pb2.BatchCalculateIndicatorsResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -246,8 +244,8 @@ class IndicatorService(object):
             request,
             target,
             '/indicator.IndicatorService/HealthCheck',
-            protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.HealthCheckRequest.SerializeToString,
-            protos_dot_services_dot_indicator_dot_v1_dot_indicator__service__pb2.HealthCheckResponse.FromString,
+            services_dot_indicator_dot_v1_dot_indicator__service__pb2.HealthCheckRequest.SerializeToString,
+            services_dot_indicator_dot_v1_dot_indicator__service__pb2.HealthCheckResponse.FromString,
             options,
             channel_credentials,
             insecure,

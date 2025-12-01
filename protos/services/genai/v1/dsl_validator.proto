@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package genai.dsl_validator;
 
-import "protos/common/error.proto";
-import "protos/common/metadata.proto";
+import "common/error.proto";
+import "common/metadata.proto";
 
 // DSL Validator 서비스
 service DSLValidatorService {
