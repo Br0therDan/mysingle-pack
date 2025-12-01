@@ -21,7 +21,26 @@ __all__ = [
     "settings",
     "get_settings",
     "CommonSettings",
+    # Core: Logging (consolidated)
     "get_logger",
+    "setup_logging",
+    # Core: Base (consolidated)
+    "BaseDoc",
+    "BaseTimeDoc",
+    "BaseTimeDocWithUserId",
+    "BaseResponseSchema",
+    # Core: Metrics (consolidated)
+    "MetricsCollector",
+    "get_metrics_collector",
+    # Core: Health (consolidated)
+    "HealthChecker",
+    "register_health_routes",
+    # Core: Email (consolidated)
+    "EmailService",
+    "send_email",
+    # Core: Audit (consolidated)
+    "AuditLogger",
+    "log_audit_event",
     # Core: Database
     "init_mongo",
     "get_mongodb_url",
@@ -63,8 +82,26 @@ _EXPORTS = {
     "init_mongo": ("mysingle.core", "init_mongo"),
     "get_mongodb_url": ("mysingle.core", "get_mongodb_url"),
     "get_database_name": ("mysingle.core", "get_database_name"),
-    # Logging
-    "get_logger": ("mysingle.logging", "get_logger"),
+    # Logging (consolidated to core)
+    "get_logger": ("mysingle.core.logging", "get_logger"),
+    "setup_logging": ("mysingle.core.logging", "setup_logging"),
+    # Base (consolidated to core)
+    "BaseDoc": ("mysingle.core.base", "BaseDoc"),
+    "BaseTimeDoc": ("mysingle.core.base", "BaseTimeDoc"),
+    "BaseTimeDocWithUserId": ("mysingle.core.base", "BaseTimeDocWithUserId"),
+    "BaseResponseSchema": ("mysingle.core.base", "BaseResponseSchema"),
+    # Metrics (consolidated to core)
+    "MetricsCollector": ("mysingle.core.metrics", "MetricsCollector"),
+    "get_metrics_collector": ("mysingle.core.metrics", "get_metrics_collector"),
+    # Health (consolidated to core)
+    "HealthChecker": ("mysingle.core.health", "HealthChecker"),
+    "register_health_routes": ("mysingle.core.health", "register_health_routes"),
+    # Email (consolidated to core)
+    "EmailService": ("mysingle.core.email", "EmailService"),
+    "send_email": ("mysingle.core.email", "send_email"),
+    # Audit (consolidated to core)
+    "AuditLogger": ("mysingle.core.audit", "AuditLogger"),
+    "log_audit_event": ("mysingle.core.audit", "log_audit_event"),
     # Database
     "BaseDuckDBManager": ("mysingle.database", "BaseDuckDBManager"),
     # Clients: gRPC

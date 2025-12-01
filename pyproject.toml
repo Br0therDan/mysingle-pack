@@ -1,46 +1,59 @@
 
 [project]
 name = "mysingle"
-version = "1.6.1"
-description = "Common utilities and configurations for MySingle Platform microservices"
+version = "2.0.0-alpha"
+description = "Unified utilities and gRPC protocols for MySingle Platform"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    # 핵심 공통 의존성만 포함
+    # Pydantic (기본)
     "pydantic>=2.5.0",
     "pydantic-settings>=2.1.0",
-    "httpx-oauth>=0.16.1",
-    "pyjwt>=2.10.1",
-    "pwdlib[argon2,bcrypt]>=0.2.1",
-    "duckdb>=1.1.0",
-    "emails>=0.6",
-    "jinja2>=3.1.6",
-    "fastapi>=0.104.1",
-    "uvicorn[standard]>=0.24.0",
-    "python-multipart>=0.0.6",
-    "motor>=3.3.2",
-    "beanie>=1.23.6",
-    "redis>=6.4.0",
-    "prometheus-client>=0.19.0",
-    "structlog>=23.2.0",
-    "httpx>=0.25.2",
-    "aiohttp>=3.9.4",
-    "makefun>=1.16.0",
-    "colorlog>=6.9.0",
-    "email-validator>=2.2.0",
-    "RestrictedPython>=7.0",
-    "pandas>=2.2.0",
-    "numpy>=1.26.0",
-    "grpcio>=1.60.0",
+    # Core 통합 모듈 의존성
+    "structlog>=23.2.0",         # logging
+    "colorlog>=6.9.0",           # logging
+    "prometheus-client>=0.19.0", # metrics
+    "motor>=3.3.2",              # base (Beanie)
+    "beanie>=1.23.6",            # base (Beanie)
+    "emails>=0.6",               # email
+    "jinja2>=3.1.6",             # email
+    "httpx>=0.25.2",             # audit
+    "fastapi>=0.104.1",          # core.app_factory
+    "uvicorn[standard]>=0.24.0", # core.app_factory
 ]
 
 [project.optional-dependencies]
+# 인증
+auth = ["pyjwt>=2.10.1", "pwdlib[argon2,bcrypt]>=0.2.1", "httpx-oauth>=0.16.1"]
+
+# 웹 (FastAPI) - 이미 core에 포함되어 있으므로 빈 배열
+web = []
+
+# 데이터베이스 (추가 도구)
+database = ["duckdb>=1.1.0", "redis>=6.4.0"]
+
+# DSL
+dsl = ["RestrictedPython>=7.0", "pandas>=2.2.0", "numpy>=1.26.0"]
+
+# gRPC
+grpc = ["grpcio>=1.60.0"]
+
+# 클라이언트
+clients = ["aiohttp>=3.9.4"]
+
+# 조합형 (자주 사용)
+common = ["mysingle[auth,database,web]"]
+common-grpc = ["mysingle[auth,database,web,grpc,clients]"]
+full = ["mysingle[auth,web,database,dsl,grpc,clients]"]
+
+# 개발 도구
 dev = [
     "pytest>=7.4.3",
     "pytest-asyncio>=0.21.1",
     "httpx>=0.26.0",
     "ruff>=0.1.9",
     "mypy>=1.8.0",
+    "pre-commit>=4.3.0",
 ]
 
 [build-system]
