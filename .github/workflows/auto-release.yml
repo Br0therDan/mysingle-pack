@@ -99,26 +99,26 @@ jobs:
           else
             echo "## 🔄 Changes since $PREV_TAG" >> RELEASE.md
             echo "" >> RELEASE.md
-            
+
             # Categorize commits
             echo "### ✨ Features" >> RELEASE.md
-            git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- (feat|feature)" || echo "- No new features" >> RELEASE.md
+            git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- (feat|feature)" >> RELEASE.md || echo "- No new features" >> RELEASE.md
             echo "" >> RELEASE.md
-            
+
             echo "### 🐛 Bug Fixes" >> RELEASE.md
-            git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- fix" || echo "- No bug fixes" >> RELEASE.md
+            git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- fix" >> RELEASE.md || echo "- No bug fixes" >> RELEASE.md
             echo "" >> RELEASE.md
-            
+
             echo "### ♻️ Refactoring" >> RELEASE.md
-            git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- refactor" || echo "- No refactoring" >> RELEASE.md
+            git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- refactor" >> RELEASE.md || echo "- No refactoring" >> RELEASE.md
             echo "" >> RELEASE.md
-            
+
             echo "### 📝 Documentation" >> RELEASE.md
-            git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- docs?" || echo "- No documentation changes" >> RELEASE.md
+            git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- docs?" >> RELEASE.md || echo "- No documentation changes" >> RELEASE.md
             echo "" >> RELEASE.md
-            
+
             echo "### 🔧 Chores" >> RELEASE.md
-            git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- chore" || echo "- No chores" >> RELEASE.md
+            git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- chore" >> RELEASE.md || echo "- No chores" >> RELEASE.md
           fi
 
           cat RELEASE.md
