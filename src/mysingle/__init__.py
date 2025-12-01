@@ -15,8 +15,11 @@ from __future__ import annotations
 import importlib
 from typing import TYPE_CHECKING
 
+__version__ = "2.0.0-alpha"
+
 # 공개 심볼 목록(동일 유지)
 __all__ = [
+    "__version__",
     # Core: Config
     "settings",
     "get_settings",
