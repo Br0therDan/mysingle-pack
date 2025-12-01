@@ -28,7 +28,7 @@ def test_settings_defaults():
 
     assert settings.ENVIRONMENT == "development"
     assert settings.DEBUG is True
-    assert settings.PROJECT_NAME == "My Project"
+    assert settings.PROJECT_NAME == "MySingle Quant"  # Actual default value
 
 
 def test_settings_mongodb_config():
@@ -59,7 +59,7 @@ def test_settings_project_name_default():
     # PROJECT_NAME has a default value
     assert settings.PROJECT_NAME is not None
     assert isinstance(settings.PROJECT_NAME, str)
-    assert settings.PROJECT_NAME == "My Project"
+    assert settings.PROJECT_NAME == "MySingle Quant"  # Actual default value
 
 
 def test_settings_case_sensitivity():

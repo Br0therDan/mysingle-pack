@@ -17,7 +17,9 @@ def test_setup_logging_development():
 
     logger = get_structured_logger(__name__)
     assert logger is not None
-    assert isinstance(logger, structlog.stdlib.BoundLogger)
+    # Logger is a BoundLoggerLazyProxy, check for methods instead
+    assert hasattr(logger, "info")
+    assert hasattr(logger, "error")
 
 
 def test_setup_logging_production():

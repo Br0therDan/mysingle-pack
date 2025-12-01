@@ -174,6 +174,40 @@ def bbands(series: pd.Series, window: int = 20, num_std: float = 2.0) -> pd.Data
     )
 
 
+def RSI(series: pd.Series, period: int = 14) -> pd.Series:
+    """
+    Relative Strength Index
+
+    Args:
+        series: 입력 시리즈 (보통 close 가격)
+        period: RSI 기간 (기본 14)
+
+    Returns:
+        pd.Series: RSI 값 (0-100 범위)
+    """
+    if period <= 0:
+        raise ValueError("Period must be greater than 0")
+
+    # 가격 변화 계산
+    delta = series.diff().astype(float)
+
+    # 상승/하락 분리
+    gain = delta.where(delta > 0, 0.0)
+    loss = -delta.where(delta < 0, 0.0)
+
+    # 평균 상승/하락 (EMA 사용)
+    avg_gain = gain.ewm(span=period, adjust=False).mean()
+    avg_loss = loss.ewm(span=period, adjust=False).mean()
+
+    # RS 계산
+    rs = avg_gain / avg_loss
+
+    # RSI 계산
+    rsi = 100 - (100 / (1 + rs))
+
+    return rsi
+
+
 def atr(
     high: pd.Series, low: pd.Series, close: pd.Series, window: int = 14
 ) -> pd.Series:
@@ -286,6 +320,8 @@ def get_stdlib_functions() -> dict[str, Callable[..., Any]]:
         "SMA": SMA,
         "EMA": EMA,
         "WMA": WMA,
+        # 기술적 지표
+        "RSI": RSI,
         # 크로스오버
         "crossover": crossover,
         "crossunder": crossunder,

@@ -57,8 +57,8 @@ async def test_audit_logs_on_request():
         return {"ok": True}
 
     with override_settings(ENVIRONMENT="development", AUDIT_LOGGING_ENABLED=True):
-        # Patch AuditLog in the middleware module
-        with patch("mysingle.audit.middleware.AuditLog", MockAuditLog):
+        # Patch AuditLog in the correct module
+        with patch("mysingle.core.audit.middleware.AuditLog", MockAuditLog):
             with TestClient(app) as client:
                 resp = client.get("/ping")
                 assert resp.status_code == 200
@@ -95,7 +95,7 @@ async def test_audit_skipped_in_test_env():
 
     # ENVIRONMENT=test should skip logging regardless of enabled flag
     with override_settings(ENVIRONMENT="test", AUDIT_LOGGING_ENABLED=True):
-        with patch("mysingle.audit.middleware.AuditLog", MockAuditLog):
+        with patch("mysingle.core.audit.middleware.AuditLog", MockAuditLog):
             with TestClient(app) as client:
                 resp = client.get("/pong")
                 assert resp.status_code == 200

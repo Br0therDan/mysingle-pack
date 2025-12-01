@@ -8,8 +8,8 @@ from beanie import Document
 from mysingle.core.service_types import ServiceConfig, ServiceType
 
 
-class TestModel(Document):
-    """Test model for testing"""
+class SampleDocument(Document):
+    """Sample document model for testing (renamed to avoid pytest collection warning)"""
 
     name: str
 
@@ -60,12 +60,12 @@ async def test_service_with_custom_models_only():
         enable_audit_logging=False,  # Disable audit to test only custom models
     )
 
-    custom_models = [TestModel]
+    custom_models = [SampleDocument]
 
     # If this was an actual lifespan run, NON_IAM should not add User/OAuthAccount
     # IAM service would add them
     assert len(custom_models) == 1
-    assert TestModel in custom_models
+    assert SampleDocument in custom_models
 
 
 def test_model_initialization_logic():

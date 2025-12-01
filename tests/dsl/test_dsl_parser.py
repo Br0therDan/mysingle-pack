@@ -46,46 +46,58 @@ class TestDSLParser:
 class TestDSLExecutor:
     """Tests for DSL executor."""
 
-    def test_dsl_executor_initialization(self, sample_dataframe):
+    def test_dsl_executor_initialization(self):
         """Test DSL executor initialization."""
-        executor = DSLExecutor(data=sample_dataframe)
+        executor = DSLExecutor()
 
         assert executor is not None
+        assert executor.parser is not None
 
     def test_execute_simple_condition(self, sample_dataframe):
         """Test executing simple condition."""
-        executor = DSLExecutor(data=sample_dataframe)
+        parser = DSLParser()
+        executor = DSLExecutor(parser=parser)
 
-        # Execute simple condition
-        result = executor.execute("close > 100")
+        # Parse and compile
+        code = "result = data['close'] > 100"
+        compiled = parser.parse(code)
+
+        # Execute
+        result = executor.execute(compiled, data=sample_dataframe, params={})
 
         assert result is not None
-        assert isinstance(result, (pd.Series, pd.DataFrame, bool))
+        assert isinstance(result, (pd.Series, pd.DataFrame))
 
     def test_execute_with_indicators(self, sample_dataframe):
         """Test executing with indicators."""
-        executor = DSLExecutor(data=sample_dataframe)
+        parser = DSLParser()
+        executor = DSLExecutor(parser=parser)
 
-        # Test with indicator (if available)
-        # This is a placeholder - actual implementation may vary
-        try:
-            result = executor.execute("SMA(close, 3) > 100")
-            assert result is not None
-        except Exception:
-            # Indicators may not be implemented yet
-            pytest.skip("Indicators not available")
+        # Test with indicator using stdlib (simpler version without import)
+        code = """
+result = data['close'].rolling(window=3).mean() > 100
+"""
+        compiled = parser.parse(code)
+
+        result = executor.execute(compiled, data=sample_dataframe, params={})
+        assert result is not None
+        assert isinstance(result, pd.Series)
 
 
 @pytest.mark.skipif(not DSL_AVAILABLE, reason="DSL not installed")
 def test_dsl_integration(sample_dataframe):
     """Test DSL parser and executor integration."""
     parser = DSLParser()
-    executor = DSLExecutor(data=sample_dataframe)
+    executor = DSLExecutor(parser=parser)
 
     # Parse expression
-    parsed = parser.parse("close > 100")
+    code = "result = data['close'] > 100"
+    parsed = parser.parse(code)
 
     # Execute parsed expression
-    result = executor.execute(parsed)
+    result = executor.execute(parsed, data=sample_dataframe, params={})
+
+    assert result is not None
+    assert isinstance(result, (pd.Series, pd.DataFrame))
 
     assert result is not None

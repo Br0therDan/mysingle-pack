@@ -36,27 +36,33 @@ def mock_mongodb_client():
 @pytest.fixture
 def mock_user():
     """Mock user for auth testing."""
-    # Create a mock User-like object without requiring Beanie
-    user = Mock()
-    user.id = PydanticObjectId("507f1f77bcf86cd799439011")
-    user.email = "test@example.com"
-    user.hashed_password = "$2b$12$test_hashed_password"
-    user.is_active = True
-    user.is_verified = True
-    user.is_superuser = False
+    from mysingle.auth.models import User
+
+    # Use model_construct to bypass Beanie initialization
+    user = User.model_construct(
+        id=PydanticObjectId("507f1f77bcf86cd799439011"),
+        email="test@example.com",
+        hashed_password="$2b$12$test_hashed_password",
+        is_active=True,
+        is_verified=True,
+        is_superuser=False,
+    )
     return user
 
 
 @pytest.fixture
 def mock_admin_user():
     """Mock admin user for auth testing."""
-    user = Mock()
-    user.id = PydanticObjectId("507f1f77bcf86cd799439012")
-    user.email = "admin@example.com"
-    user.hashed_password = "$2b$12$test_admin_hashed_password"
-    user.is_active = True
-    user.is_verified = True
-    user.is_superuser = True
+    from mysingle.auth.models import User
+
+    user = User.model_construct(
+        id=PydanticObjectId("507f1f77bcf86cd799439012"),
+        email="admin@example.com",
+        hashed_password="$2b$12$test_admin_hashed_password",
+        is_active=True,
+        is_verified=True,
+        is_superuser=True,
+    )
     return user
 
 

@@ -29,7 +29,7 @@ async def test_get_current_user_with_bypass(mock_request, mock_user):
     # Auth bypass is enabled in conftest.py
     mock_request.state.user = mock_user
 
-    user = await get_current_user(mock_request)
+    user = get_current_user(mock_request)
 
     assert user is not None
     assert user.email == mock_user.email
@@ -40,7 +40,7 @@ async def test_get_current_active_user_with_bypass(mock_request, mock_user):
     """Test get_current_active_user with auth bypass."""
     mock_request.state.user = mock_user
 
-    user = await get_current_active_user(mock_request)
+    user = get_current_active_user(mock_request)
 
     assert user is not None
     assert user.is_active is True
@@ -51,7 +51,7 @@ async def test_get_current_active_verified_user_with_bypass(mock_request, mock_u
     """Test get_current_active_verified_user with auth bypass."""
     mock_request.state.user = mock_user
 
-    user = await get_current_active_verified_user(mock_request)
+    user = get_current_active_verified_user(mock_request)
 
     assert user is not None
     assert user.is_active is True

@@ -15,9 +15,12 @@ echo -e "${GREEN}Running mysingle package tests...${NC}\n"
 export MYSINGLE_AUTH_BYPASS=true
 export ENVIRONMENT=development
 
-# Run tests with coverage
+# Unset VIRTUAL_ENV to avoid path conflicts
+unset VIRTUAL_ENV
+
+# Run tests with coverage using project's venv
 echo -e "${YELLOW}Running pytest with coverage...${NC}"
-uv run python -m pytest tests/ \
+.venv/bin/python -m pytest tests/ \
     -v \
     --cov=mysingle \
     --cov-report=term-missing \

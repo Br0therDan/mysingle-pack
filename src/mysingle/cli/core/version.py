@@ -14,16 +14,26 @@ class Version:
     major: int
     minor: int
     patch: int
+    prerelease: str | None = None
 
     def __str__(self) -> str:
-        return f"{self.major}.{self.minor}.{self.patch}"
+        base = f"{self.major}.{self.minor}.{self.patch}"
+        if self.prerelease:
+            return f"{base}-{self.prerelease}"
+        return base
 
     @classmethod
     def parse(cls, s: str) -> "Version":
-        m = re.match(r"^(\d+)\.(\d+)\.(\d+)", s.strip())
+        # Match version with optional prerelease (e.g., 2.0.0-alpha)
+        m = re.match(r"^(\d+)\.(\d+)\.(\d+)(?:-([a-zA-Z0-9.]+))?", s.strip())
         if not m:
             raise ValueError(f"Invalid version: {s}")
-        return cls(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        return cls(
+            int(m.group(1)),
+            int(m.group(2)),
+            int(m.group(3)),
+            m.group(4) if m.group(4) else None,
+        )
 
     def bump(self, kind: str) -> "Version":
         if kind == "major":
@@ -62,6 +72,19 @@ def read_current_version(pyproject_path: Path) -> Version:
         if m:
             return Version.parse(m.group(1))
         return Version(0, 0, 0)
+
+
+def get_current_version() -> Version:
+    """Get current version from pyproject.toml.
+
+    Returns:
+        Version: Current version
+
+    Raises:
+        FileNotFoundError: If pyproject.toml not found
+    """
+    pyproject_path = find_pyproject()
+    return read_current_version(pyproject_path)
 
 
 def write_version(pyproject_path: Path, new_version: Version) -> None:

@@ -2,7 +2,6 @@
 Tests for mysingle.cli.protos module.
 """
 
-
 import pytest
 
 try:
@@ -19,19 +18,23 @@ class TestProtoCLI:
 
     def test_init_command_structure(self):
         """Test init command structure."""
-        assert hasattr(init, "init_command") or callable(init)
+        # init is a module, check for setup_parser function
+        assert hasattr(init, "setup_parser") and callable(init.setup_parser)
 
     def test_status_command_structure(self):
         """Test status command structure."""
-        assert hasattr(status, "status_command") or callable(status)
+        # status is a module, check for setup_parser function
+        assert hasattr(status, "setup_parser") and callable(status.setup_parser)
 
     def test_validate_command_structure(self):
         """Test validate command structure."""
-        assert hasattr(validate, "validate_command") or callable(validate)
+        # validate is a module, check for setup_parser function
+        assert hasattr(validate, "setup_parser") and callable(validate.setup_parser)
 
     def test_generate_command_structure(self):
         """Test generate command structure."""
-        assert hasattr(generate, "generate_command") or callable(generate)
+        # generate is a module, check for setup_parser function
+        assert hasattr(generate, "setup_parser") and callable(generate.setup_parser)
 
 
 @pytest.mark.skipif(not CLI_AVAILABLE, reason="CLI not installed")

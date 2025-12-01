@@ -2,6 +2,7 @@
 Tests for mysingle.core.metrics module.
 """
 
+import pytest
 
 from mysingle.core.metrics import MetricsCollector, get_metrics_collector
 
@@ -11,86 +12,97 @@ def test_metrics_collector_initialization():
     collector = MetricsCollector(service_name="test-service")
 
     assert collector is not None
-    assert hasattr(collector, "counter")
-    assert hasattr(collector, "histogram")
-    assert hasattr(collector, "gauge")
+    assert collector.service_name == "test-service"
+    assert hasattr(collector, "routes")
+    assert hasattr(collector, "total_requests")
 
 
 def test_get_metrics_collector():
     """Test get_metrics_collector singleton."""
-    collector1 = get_metrics_collector()
-    collector2 = get_metrics_collector()
+    # Reset the global collector first
+    from mysingle.core.metrics import middleware as middleware_module
 
-    assert collector1 is collector2  # Should be the same instance
+    # Initialize the global collector
+    middleware_module._metrics_collector = MetricsCollector(service_name="test-service")
+
+    # First call returns the initialized instance
+    collector1 = get_metrics_collector()
+    assert collector1 is not None
+    assert collector1.service_name == "test-service"
+
+    # Second call returns same instance (singleton)
+    collector2 = get_metrics_collector()
+    assert collector2 is collector1
+
+    # Clean up
+    middleware_module._metrics_collector = None
 
 
 def test_metrics_counter():
     """Test counter metric."""
     collector = MetricsCollector(service_name="test-service")
 
-    # Create counter
-    counter = collector.counter(
-        name="test_counter",
-        description="Test counter",
-    )
-
-    assert counter is not None
-
-    # Increment counter
-    counter.inc()
-    counter.inc(2)
+    # MetricsCollector doesn't have counter() method
+    # It tracks metrics via record_request
+    assert collector.total_requests == 0
+    assert collector.total_errors == 0
 
 
-def test_metrics_histogram():
-    """Test histogram metric."""
+async def test_metrics_histogram():
+    """Test histogram-like behavior via record_request."""
     collector = MetricsCollector(service_name="test-service")
 
-    # Create histogram
-    histogram = collector.histogram(
-        name="test_histogram",
-        description="Test histogram",
-    )
+    # Record multiple requests with different durations (histogram-like data)
+    await collector.record_request("GET", "/api/items", 200, 0.5)
+    await collector.record_request("GET", "/api/items", 200, 1.0)
+    await collector.record_request("GET", "/api/items", 200, 2.5)
 
-    assert histogram is not None
+    # Verify metrics are recorded
+    route_key = "GET:/api/items"
+    assert route_key in collector.routes
+    metrics = collector.routes[route_key]
+    assert metrics.request_count == 3
+    assert len(metrics.durations) == 3
+    assert 0.5 in metrics.durations
+    assert 1.0 in metrics.durations
+    assert 2.5 in metrics.durations
 
-    # Observe values
-    histogram.observe(0.5)
-    histogram.observe(1.0)
-    histogram.observe(2.5)
 
-
-def test_metrics_gauge():
-    """Test gauge metric."""
+async def test_metrics_gauge():
+    """Test gauge-like behavior via request and error counts."""
     collector = MetricsCollector(service_name="test-service")
 
-    # Create gauge
-    gauge = collector.gauge(
-        name="test_gauge",
-        description="Test gauge",
-    )
+    # Gauge-like metrics: total requests and errors
+    initial_requests = collector.total_requests
+    initial_errors = collector.total_errors
 
-    assert gauge is not None
+    # Record successful requests
+    await collector.record_request("GET", "/api/health", 200, 0.01)
+    await collector.record_request("GET", "/api/health", 200, 0.02)
 
-    # Set gauge values
-    gauge.set(10)
-    gauge.inc()
-    gauge.dec()
-    gauge.set(5)
+    # Record error request
+    await collector.record_request("GET", "/api/data", 500, 0.5)
+
+    # Verify counts increased (gauge-like behavior)
+    assert collector.total_requests == initial_requests + 3
+    assert collector.total_errors == initial_errors + 1
 
 
-def test_metrics_with_labels():
-    """Test metrics with labels."""
+async def test_metrics_with_labels():
+    """Test metrics with labels (method+path as label)."""
     collector = MetricsCollector(service_name="test-service")
 
-    # Create counter with labels
-    counter = collector.counter(
-        name="test_labeled_counter",
-        description="Test counter with labels",
-        labels=["method", "endpoint"],
-    )
+    # Labels are represented by method:path route keys
+    await collector.record_request("GET", "/api/users", 200, 0.1)
+    await collector.record_request("POST", "/api/users", 201, 0.2)
+    await collector.record_request("GET", "/api/items", 200, 0.15)
 
-    assert counter is not None
+    # Verify different route keys (labels) are tracked separately
+    assert "GET:/api/users" in collector.routes
+    assert "POST:/api/users" in collector.routes
+    assert "GET:/api/items" in collector.routes
 
-    # Increment with labels
-    counter.labels(method="GET", endpoint="/api/test").inc()
-    counter.labels(method="POST", endpoint="/api/test").inc(2)
+    # Each route has independent metrics
+    assert collector.routes["GET:/api/users"].request_count == 1
+    assert collector.routes["POST:/api/users"].request_count == 1
+    assert collector.routes["GET:/api/items"].request_count == 1

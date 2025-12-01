@@ -9,6 +9,7 @@ from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
+
 _runtime_version.ValidateProtobufRuntimeVersion(
     _runtime_version.Domain.PUBLIC,
     6,
@@ -22,7 +23,6 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
-from google.protobuf import struct_pb2 as google_dot_protobuf_dot_struct__pb2
 
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x12\x63ommon/error.proto\x12\x0cgenai.common\x1a\x1cgoogle/protobuf/struct.proto\"\xa9\x02\n\x0b\x45rrorDetail\x12\x12\n\x04\x63ode\x18\x01 \x01(\tR\x04\x63ode\x12\x18\n\x07message\x18\x02 \x01(\tR\x07message\x12\x37\n\x08severity\x18\x03 \x01(\x0e\x32\x1b.genai.common.ErrorSeverityR\x08severity\x12\x43\n\x08metadata\x18\x04 \x03(\x0b\x32\'.genai.common.ErrorDetail.MetadataEntryR\x08metadata\x12\x31\n\x07\x63ontext\x18\x05 \x01(\x0b\x32\x17.google.protobuf.StructR\x07\x63ontext\x1a;\n\rMetadataEntry\x12\x10\n\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n\x05value\x18\x02 \x01(\tR\x05value:\x02\x38\x01\"\xb2\x01\n\x11ValidationWarning\x12\x18\n\x07message\x18\x01 \x01(\tR\x07message\x12\x12\n\x04line\x18\x02 \x01(\x05R\x04line\x12\x16\n\x06\x63olumn\x18\x03 \x01(\x05R\x06\x63olumn\x12\x37\n\x08severity\x18\x04 \x01(\x0e\x32\x1b.genai.common.ErrorSeverityR\x08severity\x12\x1e\n\nsuggestion\x18\x05 \x01(\tR\nsuggestion\"\x86\x01\n\x11\x43onversionWarning\x12\x18\n\x07message\x18\x01 \x01(\tR\x07message\x12\x37\n\x08severity\x18\x02 \x01(\x0e\x32\x1b.genai.common.ErrorSeverityR\x08severity\x12\x1e\n\nreversible\x18\x03 \x01(\x08R\nreversible*\x9b\x01\n\rErrorSeverity\x12\x1e\n\x1a\x45RROR_SEVERITY_UNSPECIFIED\x10\x00\x12\x17\n\x13\x45RROR_SEVERITY_INFO\x10\x01\x12\x1a\n\x16\x45RROR_SEVERITY_WARNING\x10\x02\x12\x18\n\x14\x45RROR_SEVERITY_ERROR\x10\x03\x12\x1b\n\x17\x45RROR_SEVERITY_CRITICAL\x10\x04\x62\x06proto3')

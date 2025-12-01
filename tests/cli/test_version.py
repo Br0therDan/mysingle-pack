@@ -67,7 +67,7 @@ def test_get_current_version_from_pyproject():
     """Test reading version from pyproject.toml."""
     # This test requires actual pyproject.toml
     # Should be run in package root
-    version = get_current_version(Path(__file__).parent.parent.parent)
+    version = get_current_version()
     assert version is not None
     assert isinstance(version, Version)
 

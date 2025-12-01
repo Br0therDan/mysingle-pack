@@ -13,20 +13,14 @@ from typing import Any, Optional
 
 from fastapi import APIRouter, Depends
 
+from . import checker
 from .checker import HealthStatus
 from .schemas import HealthResponse
-
-_health_checker: Optional[HealthStatus] = None
 
 
 def get_health_checker() -> HealthStatus:
     """Get the global health checker instance."""
-    global _health_checker
-    if _health_checker is None:
-        raise RuntimeError(
-            "Health checker not initialized. Call create_health_router first."
-        )
-    return _health_checker
+    return checker.get_health_checker()
 
 
 async def basic_health_check():
@@ -61,18 +55,19 @@ def create_health_router(
     Returns:
         APIRouter with health check endpoints
     """
-    global _health_checker
+    # Set the global _health_checker in checker module
+    checker._health_checker = HealthStatus(service_name, service_version)
 
     router = APIRouter(prefix="/health", tags=["Health"])
 
     # Initialize health checker
-    _health_checker = HealthStatus(service_name, service_version)
+    health_checker = checker._health_checker
 
     # Add basic checks
-    _health_checker.add_check("basic", basic_health_check, critical=True)
+    health_checker.add_check("basic", basic_health_check, critical=True)
 
     if include_database_check:
-        _health_checker.add_check("database", database_health_check, critical=True)
+        health_checker.add_check("database", database_health_check, critical=True)
 
     @router.get("/", response_model=HealthResponse)
     async def health_check(

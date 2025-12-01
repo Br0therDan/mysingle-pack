@@ -2,7 +2,6 @@
 Tests for mysingle.clients.base_grpc_client module.
 """
 
-
 import pytest
 
 try:
@@ -47,7 +46,8 @@ class TestGrpcClient:
             user_id="test-user-123",
         )
 
-        metadata = client.get_metadata()
+        # metadata is a property, not get_metadata() method
+        metadata = client.metadata
 
         assert metadata is not None
         # Check that user_id is in metadata

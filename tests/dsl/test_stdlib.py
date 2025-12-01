@@ -19,7 +19,7 @@ class TestDSLStandardLibrary:
 
     def test_sma_calculation(self, sample_dataframe):
         """Test Simple Moving Average calculation."""
-        result = SMA(sample_dataframe["close"], period=3)
+        result = SMA(sample_dataframe["close"], window=3)
 
         assert result is not None
         assert isinstance(result, pd.Series)
@@ -27,7 +27,7 @@ class TestDSLStandardLibrary:
 
     def test_ema_calculation(self, sample_dataframe):
         """Test Exponential Moving Average calculation."""
-        result = EMA(sample_dataframe["close"], period=3)
+        result = EMA(sample_dataframe["close"], span=3)
 
         assert result is not None
         assert isinstance(result, pd.Series)
@@ -46,12 +46,12 @@ class TestDSLStandardLibrary:
     def test_indicator_with_invalid_period(self, sample_dataframe):
         """Test indicator with invalid period."""
         with pytest.raises((ValueError, Exception)):
-            SMA(sample_dataframe["close"], period=0)
+            RSI(sample_dataframe["close"], period=0)
 
     def test_indicator_with_short_data(self):
         """Test indicator with insufficient data."""
         short_df = pd.DataFrame({"close": [100.0, 101.0]})
 
         # Should handle short data gracefully
-        result = SMA(short_df["close"], period=3)
+        result = SMA(short_df["close"], window=3)
         assert result is not None

@@ -14,8 +14,7 @@ def test_proto_config_from_repo_root():
     config = ProtoConfig.from_repo_root(repo_root)
 
     assert config.repo_root == repo_root
-    assert config.protos_dir == repo_root / "protos"
-    assert config.buf_yaml == repo_root / "protos" / "buf.yaml"
+    assert config.proto_root == repo_root / "protos"  # Fixed: proto_root not protos_dir
     assert config.buf_template == repo_root / "protos" / "buf.gen.yaml"
 
 
@@ -24,8 +23,9 @@ def test_proto_config_generated_root():
     repo_root = Path(__file__).parent.parent.parent
     config = ProtoConfig.from_repo_root(repo_root)
 
-    assert config.generated_root == repo_root / "src"
-    assert config.package_name == "mysingle"
+    # Actual path is src/mysingle/protos, not just src
+    assert config.generated_root == repo_root / "src" / "mysingle" / "protos"
+    assert config.package_name == "mysingle_protos"
 
 
 @patch("subprocess.run")

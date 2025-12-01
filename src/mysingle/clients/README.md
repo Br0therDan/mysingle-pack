@@ -11,7 +11,7 @@ HTTP 및 gRPC 클라이언트 베이스 클래스
 
 ```python
 from mysingle.clients import BaseGrpcClient
-from mysingle_protos.services.strategy.v1 import strategy_service_pb2_grpc
+from mysingle.protos.services.strategy.v1 import strategy_service_pb2_grpc
 
 class StrategyClient(BaseGrpcClient):
     def __init__(self, user_id=None, correlation_id=None):

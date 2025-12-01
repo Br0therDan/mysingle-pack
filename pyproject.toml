@@ -21,6 +21,7 @@ dependencies = [
     "fastapi>=0.104.1",          # core.app_factory
     "uvicorn[standard]>=0.24.0", # core.app_factory
     "email-validator>=2.0.0",    # config (EmailStr validation)
+    "pandas>=2.3.3",
 ]
 
 [project.optional-dependencies]
@@ -80,6 +81,18 @@ dev = [
     "mypy>=1.8.0",
     "pre-commit>=4.3.0",
     "bandit[toml]>=1.8.6",
+    # gRPC and protobuf for testing
+    "grpcio>=1.60.0",
+    "grpcio-tools>=1.60.0",
+    "protobuf>=4.25.0",
+    "googleapis-common-protos>=1.63.0",
+    # Additional testing dependencies
+    "pyjwt>=2.10.1",
+    "pwdlib[argon2,bcrypt]>=0.2.1",
+    "duckdb>=1.1.0",
+    "RestrictedPython>=7.0",
+    "numpy>=1.26.0",
+    "mongomock-motor>=0.0.36",
 ]
 
 # Ruff configuration (replaces Black + Flake8 + isort)
