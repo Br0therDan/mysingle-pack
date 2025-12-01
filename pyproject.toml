@@ -26,6 +26,9 @@ dependencies = [
     "pwdlib[argon2,bcrypt]>=0.2.1",
     "pyjwt>=2.10.1",
     "httpx-oauth>=0.16.1",
+    "restrictedpython>=7.0",
+    "pandas>=2.2.0",
+    "numpy>=1.26.0",
 ]
 
 [project.optional-dependencies]
