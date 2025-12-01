@@ -56,6 +56,10 @@ dev = [
     "pre-commit>=4.3.0",
 ]
 
+[project.scripts]
+mysingle-cli = "mysingle.cli.__main__:main"
+mysingle-proto = "mysingle.cli.protos.__main__:main"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
