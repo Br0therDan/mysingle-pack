@@ -129,9 +129,9 @@ def setup_parser(parser: argparse.ArgumentParser) -> None:
     """버전 명령 파서를 설정합니다."""
     parser.add_argument(
         "bump_type",
-        choices=["major", "minor", "patch", "show"],
+        choices=["major", "minor", "patch", "show", "auto"],
         nargs="?",
-        help="버전 범프 유형 또는 'show'로 현재 버전 표시",
+        help="버전 범프 유형, 'show'로 현재 버전 표시, 또는 'auto'로 자동 분석",
     )
     parser.add_argument(
         "--custom",
@@ -152,6 +152,11 @@ def setup_parser(parser: argparse.ArgumentParser) -> None:
         action="store_true",
         help="커밋과 태그를 origin에 푸시",
     )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="변경하지 않고 분석만 수행 (auto 모드에서만 사용)",
+    )
 
 
 def execute_interactive() -> int:
@@ -168,8 +173,8 @@ def execute_interactive() -> int:
     # Ask for bump type
     bump_type = ask_choice(
         "버전 업데이트 유형을 선택하세요",
-        ["major", "minor", "patch", "show", "cancel"],
-        default="patch",
+        ["auto", "major", "minor", "patch", "show", "cancel"],
+        default="auto",
     )
 
     if bump_type == "cancel":
@@ -180,6 +185,14 @@ def execute_interactive() -> int:
         console.print(f"\n[bold green]현재 버전:[/bold green] {current}\n")
         return 0
 
+    # Auto mode
+    if bump_type == "auto":
+        from .auto_version import auto_bump
+
+        print_info("커밋 메시지를 분석하여 자동으로 버전을 결정합니다...")
+        return auto_bump(dry_run=False, push=False, no_commit=False, no_tag=False)
+
+    # Manual bump
     # Calculate new version
     new_version = current.bump(bump_type)
     console.print(
@@ -231,6 +244,17 @@ def execute(args: argparse.Namespace) -> int:
     # If no bump_type specified, go interactive
     if not args.bump_type:
         return execute_interactive()
+
+    # Auto mode
+    if args.bump_type == "auto":
+        from .auto_version import auto_bump
+
+        return auto_bump(
+            dry_run=args.dry_run,
+            push=args.push,
+            no_commit=args.no_commit,
+            no_tag=args.no_tag,
+        )
 
     try:
         pyproject_path = find_pyproject()

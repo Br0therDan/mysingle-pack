@@ -1,0 +1,108 @@
+# Conventional Commits Validation
+# Validates PR and commit messages follow Conventional Commits rules
+name: Validate Commits
+
+on:
+    pull_request:
+        types: [opened, edited, synchronize, reopened]
+
+jobs:
+    validate:
+        name: Validate Conventional Commits
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Validate PR title
+              uses: amannn/action-semantic-pull-request@v5
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  # Types allowed (feat, fix, docs, style, refactor, test, chore, proto)
+                  types: |
+                      feat
+                      fix
+                      docs
+                      style
+                      refactor
+                      test
+                      chore
+                      build
+                      ci
+                      perf
+                      proto
+                  # Require scope (optional)
+                  requireScope: false
+                  # Subject pattern (no uppercase first letter)
+                  subjectPattern: ^(?![A-Z]).+$
+                  subjectPatternError: |
+                      The subject "{subject}" found in the pull request title "{title}"
+                      didn't match the configured pattern. Please ensure that the subject
+                      doesn't start with an uppercase character.
+
+            - name: Validate commit messages
+              run: |
+                  echo "Checking commit messages since base branch..."
+
+                  # Get base branch
+                  BASE_SHA="${{ github.event.pull_request.base.sha }}"
+                  HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+                  # Get all commits in PR
+                  COMMITS=$(git log --format="%H %s" $BASE_SHA..$HEAD_SHA)
+
+                  # Valid types
+                  VALID_TYPES="feat|fix|docs|style|refactor|test|chore|build|ci|perf|proto"
+
+                  INVALID_COMMITS=()
+
+                  while IFS= read -r line; do
+                    COMMIT_SHA=$(echo "$line" | cut -d' ' -f1)
+                    COMMIT_MSG=$(echo "$line" | cut -d' ' -f2-)
+
+                    # Check if commit message matches conventional commits pattern
+                    if ! echo "$COMMIT_MSG" | grep -qE "^($VALID_TYPES)(\(.+\))?!?: .+"; then
+                      INVALID_COMMITS+=("$COMMIT_SHA: $COMMIT_MSG")
+                    fi
+                  done <<< "$COMMITS"
+
+                  if [ ${#INVALID_COMMITS[@]} -gt 0 ]; then
+                    echo "❌ Invalid commit messages found:"
+                    printf '%s\n' "${INVALID_COMMITS[@]}"
+                    echo ""
+                    echo "Commit messages must follow Conventional Commits format:"
+                    echo "  <type>(<scope>): <subject>"
+                    echo ""
+                    echo "Valid types: $VALID_TYPES"
+                    echo ""
+                    echo "Examples:"
+                    echo "  feat: add new feature"
+                    echo "  fix: resolve bug"
+                    echo "  feat(auth): add OAuth support"
+                    echo "  feat!: breaking change"
+                    echo "  proto: update user service proto"
+                    exit 1
+                  fi
+
+                  echo "✅ All commit messages are valid!"
+
+            - name: Check for breaking changes
+              run: |
+                  echo "Checking for breaking changes..."
+
+                  BASE_SHA="${{ github.event.pull_request.base.sha }}"
+                  HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+                  # Check for breaking changes in commits
+                  if git log --format="%s" $BASE_SHA..$HEAD_SHA | grep -qE "^[a-z]+!:"; then
+                    echo "⚠️  Breaking change detected (! in commit type)"
+                    echo "::warning::This PR contains breaking changes"
+                  elif git log --format="%b" $BASE_SHA..$HEAD_SHA | grep -q "BREAKING CHANGE:"; then
+                    echo "⚠️  Breaking change detected (BREAKING CHANGE in body)"
+                    echo "::warning::This PR contains breaking changes"
+                  else
+                    echo "✅ No breaking changes detected"
+                  fi

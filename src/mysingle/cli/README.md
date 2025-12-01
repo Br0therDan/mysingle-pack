@@ -59,13 +59,18 @@ mysingle version --help
 # 현재 버전 확인
 mysingle version show
 
-# 버전 업그레이드
+# 자동 버전 관리 (Conventional Commits 기반) ⭐ NEW
+mysingle version auto              # 커밋 분석하여 자동 결정
+mysingle version auto --dry-run    # 분석만 수행 (변경 안함)
+mysingle version auto --push       # 분석 후 바로 푸시
+
+# 수동 버전 업그레이드
 mysingle version patch   # 2.0.0 → 2.0.1
 mysingle version minor   # 2.0.0 → 2.1.0
 mysingle version major   # 2.0.0 → 3.0.0
 
 # 대화형 모드로 버전 관리
-mysingle version         # 단계별 선택 메뉴 제공
+mysingle version         # 단계별 선택 메뉴 제공 (auto 옵션 포함)
 
 # 커스텀 버전 설정
 mysingle version patch --custom 2.1.0-beta
@@ -78,15 +83,96 @@ mysingle version patch --no-tag
 mysingle version patch --push
 ```
 
+#### 자동 버전 관리 (Conventional Commits)
+
+**Conventional Commits** 형식의 커밋 메시지를 분석하여 자동으로 버전을 결정합니다.
+
+**커밋 메시지 규칙:**
+```bash
+# Major 버전 증가 (2.0.0 → 3.0.0)
+git commit -m "feat!: breaking change"
+git commit -m "feat: new feature\n\nBREAKING CHANGE: API changed"
+
+# Minor 버전 증가 (2.0.0 → 2.1.0)
+git commit -m "feat: add new feature"
+git commit -m "feat(auth): implement OAuth"
+
+# Patch 버전 증가 (2.0.0 → 2.0.1)
+git commit -m "fix: resolve bug"
+git commit -m "fix(api): handle edge case"
+
+# 버전 변경 없음
+git commit -m "docs: update README"
+git commit -m "chore: update dependencies"
+git commit -m "style: format code"
+git commit -m "refactor: restructure module"
+git commit -m "test: add unit tests"
+```
+
+**Proto 변경 특수 처리:**
+```bash
+# Proto 파일만 변경된 경우 → 메인 버전 유지
+git commit -m "proto: update user service"
+git commit -m "feat: add user field" # protos/ 파일만 변경
+
+# Proto + 일반 코드 변경 → 일반 규칙 적용
+git commit -m "feat: integrate new proto fields"
+```
+
+**사용 예시:**
+```bash
+# 1. 커밋 메시지 분석만 수행 (실제 변경 안함)
+$ mysingle version auto --dry-run
+현재 버전: 2.0.1
+분석된 커밋 수: 5
+
+✨ Features: 2개
+🐛 Bug Fixes: 1개
+📦 Proto Changes: 3개
+
+권장 버전: 2.0.1 → 2.1.0 (minor)
+
+생성될 CHANGELOG:
+## [2.1.0] - 2025-12-02
+
+### ✨ Features
+- feat: add authentication module (a1b2c3d)
+- feat(api): implement rate limiting (d4e5f6g)
+
+### 🐛 Bug Fixes
+- fix: resolve memory leak (g7h8i9j)
+
+### 📦 Proto Changes
+- proto: update user service schema (j1k2l3m)
+
+# 2. 자동 버전 업데이트 및 푸시
+$ mysingle version auto --push
+현재 버전: 2.0.1
+분석된 커밋 수: 5
+
+✨ Features: 2개
+🐛 Bug Fixes: 1개
+
+권장 버전: 2.0.1 → 2.1.0 (minor)
+
+✅ pyproject.toml 업데이트 완료
+✅ 커밋 생성 완료: v2.1.0
+✅ 태그 생성 완료: v2.1.0
+✅ 커밋 푸시 완료
+✅ 태그 푸시 완료
+```
+
 #### 주요 기능
 
 1. **show**: 현재 패키지 버전 표시
-2. **major/minor/patch**: 시맨틱 버전 업그레이드
-3. **대화형 모드**: 인자 없이 실행 시 단계별 선택
-4. **--custom**: 커스텀 버전 문자열 설정 (prerelease 포함)
-5. **--no-commit**: Git 커밋 생성 건너뛰기
-6. **--no-tag**: Git 태그 생성 건너뛰기
-7. **--push**: 변경사항을 원격 저장소에 푸시
+2. **auto**: Conventional Commits 분석으로 자동 버전 결정 ⭐
+3. **major/minor/patch**: 시맨틱 버전 수동 업그레이드
+4. **대화형 모드**: 인자 없이 실행 시 단계별 선택
+5. **--custom**: 커스텀 버전 문자열 설정 (prerelease 포함)
+6. **--dry-run**: 분석만 수행 (auto 모드 전용)
+7. **--no-commit**: Git 커밋 생성 건너뛰기
+8. **--no-tag**: Git 태그 생성 건너뛰기
+9. **--push**: 변경사항을 원격 저장소에 푸시
 
 #### 예시
 
