@@ -1,0 +1,188 @@
+name: Auto Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**/*.py'
+      - 'pyproject.toml'
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: 'Version bump type'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  check-version-bump:
+    name: Check if version bump is needed
+    runs-on: ubuntu-latest
+    outputs:
+      should_release: ${{ steps.check.outputs.should_release }}
+      bump_type: ${{ steps.analyze.outputs.bump_type }}
+      new_version: ${{ steps.analyze.outputs.new_version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Check for version changes
+        id: check
+        run: |
+          # Check if version was manually changed in recent commits
+          if git diff HEAD~1 HEAD -- pyproject.toml | grep -q "^+version"; then
+            echo "should_release=true" >> $GITHUB_OUTPUT
+            echo "Version manually bumped, will create release"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "should_release=true" >> $GITHUB_OUTPUT
+            echo "Manual trigger, will bump version and release"
+          else
+            echo "should_release=false" >> $GITHUB_OUTPUT
+            echo "No version bump needed"
+          fi
+
+      - name: Analyze commits for bump type
+        id: analyze
+        if: steps.check.outputs.should_release == 'true'
+        run: |
+          # Get bump type from conventional commits or manual input
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            BUMP_TYPE="${{ github.event.inputs.bump_type }}"
+          else
+            # Analyze commits since last tag
+            LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+            if [ -n "$LAST_TAG" ]; then
+              COMMITS=$(git log $LAST_TAG..HEAD --pretty=format:"%s%n%b")
+            else
+              COMMITS=$(git log --pretty=format:"%s%n%b")
+            fi
+
+            # Determine bump type
+            if echo "$COMMITS" | grep -qiE 'BREAKING CHANGE|feat!|refactor!'; then
+              BUMP_TYPE="major"
+            elif echo "$COMMITS" | grep -qiE '^feat(\(|:)'; then
+              BUMP_TYPE="minor"
+            else
+              BUMP_TYPE="patch"
+            fi
+          fi
+
+          echo "bump_type=$BUMP_TYPE" >> $GITHUB_OUTPUT
+
+          # Calculate new version
+          CURRENT_VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          IFS='.' read -r major minor patch <<< "$CURRENT_VERSION"
+
+          if [ "$BUMP_TYPE" = "major" ]; then
+            NEW_VERSION="$((major+1)).0.0"
+          elif [ "$BUMP_TYPE" = "minor" ]; then
+            NEW_VERSION="${major}.$((minor+1)).0"
+          else
+            NEW_VERSION="${major}.${minor}.$((patch+1))"
+          fi
+
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "Will bump from $CURRENT_VERSION to $NEW_VERSION ($BUMP_TYPE)"
+
+  build-and-release:
+    name: Build and Release
+    needs: check-version-bump
+    if: needs.check-version-bump.outputs.should_release == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: false
+          version: "latest"
+
+      - name: Bump version if needed
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          # Update version in pyproject.toml
+          CURRENT_VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          NEW_VERSION="${{ needs.check-version-bump.outputs.new_version }}"
+          
+          sed -i "s/version = \"$CURRENT_VERSION\"/version = \"$NEW_VERSION\"/" pyproject.toml
+          
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Commit and tag
+          git add pyproject.toml
+          git commit -m "chore(release): v$NEW_VERSION (bump ${{ needs.check-version-bump.outputs.bump_type }})"
+          git tag "v$NEW_VERSION"
+          git push origin main
+          git push origin "v$NEW_VERSION"
+
+      - name: Build package
+        run: |
+          rm -rf dist/
+          uv build --wheel --out-dir dist
+
+      - name: Publish to PyPI
+        if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+        run: |
+          uv publish --token ${{ secrets.PYPI_TOKEN }}
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
+          if [ -n "$LAST_TAG" ]; then
+            CHANGELOG=$(git log $LAST_TAG..HEAD --pretty=format:"- %s" --no-merges)
+          else
+            CHANGELOG=$(git log --pretty=format:"- %s" --no-merges | head -20)
+          fi
+          
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.check-version-bump.outputs.new_version }}
+          name: Release v${{ needs.check-version-bump.outputs.new_version }}
+          body: |
+            ## Changes
+            ${{ steps.changelog.outputs.changelog }}
+
+            ## Installation
+            ```bash
+            pip install mysingle==${{ needs.check-version-bump.outputs.new_version }}
+            ```
+
+            ## PyPI
+            https://pypi.org/project/mysingle/${{ needs.check-version-bump.outputs.new_version }}/
+          draft: false
+          prerelease: false

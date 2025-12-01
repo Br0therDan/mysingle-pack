@@ -25,19 +25,26 @@ jobs:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Lint proto files
-              run: buf lint
+              run: |
+                  cd protos
+                  buf lint
 
             - name: Format check
-              run: buf format --diff --exit-code
+              run: |
+                  cd protos
+                  buf format --diff --exit-code
 
             - name: Check for breaking changes
               if: github.event_name == 'pull_request'
               run: |
-                  buf breaking --against "https://github.com/${{ github.repository }}.git#branch=${{ github.base_ref }}"
+                  cd protos
+                  buf breaking --against "https://github.com/${{ github.repository }}.git#branch=${{ github.base_ref }},subdir=protos"
               continue-on-error: true
 
             - name: Generate proto stubs (validation)
-              run: buf generate
+              run: |
+                  cd protos
+                  buf generate
 
             - name: Verify generation success
               run: |

@@ -15,6 +15,9 @@ if ! command -v buf &> /dev/null; then
     exit 1
 fi
 
+# Change to protos directory for buf generate
+cd protos
+
 # Generate Python stubs
 echo "Generating Python stubs..."
 buf generate

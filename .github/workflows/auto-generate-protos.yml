@@ -4,16 +4,16 @@ on:
     push:
         paths:
             - "protos/**/*.proto"
-            - "buf.yaml"
-            - "buf.gen.yaml"
+            - "protos/buf.yaml"
+            - "protos/buf.gen.yaml"
         branches:
             - main
             - develop
     pull_request:
         paths:
             - "protos/**/*.proto"
-            - "buf.yaml"
-            - "buf.gen.yaml"
+            - "protos/buf.yaml"
+            - "protos/buf.gen.yaml"
 
 jobs:
     generate-protos:
@@ -31,15 +31,20 @@ jobs:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Lint proto files
-              run: buf lint
+              run: |
+                  cd protos
+                  buf lint
 
             - name: Check for breaking changes
               if: github.event_name == 'pull_request'
               run: |
-                  buf breaking --against "https://github.com/${{ github.repository }}.git#branch=${{ github.base_ref }}"
+                  cd protos
+                  buf breaking --against "https://github.com/${{ github.repository }}.git#branch=${{ github.base_ref }},subdir=protos"
 
             - name: Generate Python stubs
-              run: buf generate
+              run: |
+                  cd protos
+                  buf generate
 
             - name: Fix nested protos directory
               run: |
