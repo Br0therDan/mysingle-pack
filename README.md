@@ -1,6 +1,6 @@
 # MySingle - Unified Platform Package
 
-**Version**: 2.2.0
+**Version**: 2.2.1
 **Repository**: https://github.com/Br0therDan/mysingle-pack.git
 
 MySingle 플랫폼 통합 유틸리티 패키지
