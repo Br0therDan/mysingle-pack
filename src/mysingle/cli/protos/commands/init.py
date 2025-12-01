@@ -148,6 +148,15 @@ def execute(args: argparse.Namespace, config: ProtoConfig) -> int:
     return 0
 
 
+def execute_interactive(config: ProtoConfig) -> int:
+    """대화형 모드로 init 명령 실행"""
+    log_header("MySingle Proto 패키지 초기화")
+
+    # 기본 실행 (--check-only 없이)
+    args = argparse.Namespace(check_only=False)
+    return execute(args, config)
+
+
 def setup_parser(parser: argparse.ArgumentParser) -> None:
     """Init 명령 파서 설정"""
     parser.add_argument(

@@ -9,6 +9,7 @@ import re
 import subprocess
 from pathlib import Path
 
+from ...utils import ask_confirm, print_success
 from ..models import ProtoConfig
 from ..utils import Color, LogLevel, colorize, log, log_header
 
@@ -156,6 +157,21 @@ def execute(args: argparse.Namespace, config: ProtoConfig) -> int:
     log("\n✅ 모든 작업 완료!", LogLevel.SUCCESS)
 
     return 0
+
+
+def execute_interactive(config: ProtoConfig) -> int:
+    """대화형 모드로 generate 명령 실행"""
+    log_header("Python gRPC 스텁 생성")
+
+    print_success("Proto 파일로부터 Python 코드를 생성합니다.")
+
+    if not ask_confirm("계속하시겠습니까?", default=True):
+        log("취소되었습니다.", LogLevel.INFO)
+        return 0
+
+    # 기본값으로 실행
+    args = argparse.Namespace(skip_rewrite=False, skip_init=False)
+    return execute(args, config)
 
 
 def setup_parser(parser: argparse.ArgumentParser) -> None:

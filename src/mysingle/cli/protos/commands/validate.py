@@ -7,6 +7,7 @@ from __future__ import annotations
 import argparse
 import subprocess
 
+from ...utils import ask_choice, ask_confirm
 from ..models import ProtoConfig
 from ..utils import Color, LogLevel, colorize, log, log_header
 
@@ -137,6 +138,41 @@ def execute(args: argparse.Namespace, config: ProtoConfig) -> int:
     else:
         log("\n⚠️  일부 검증 실패", LogLevel.WARNING)
         return 1
+
+
+def execute_interactive(config: ProtoConfig) -> int:
+    """대화형 모드로 validate 명령 실행"""
+    log_header("Proto 파일 검증")
+
+    # 검사 옵션 선택
+    skip_lint = not ask_confirm("Lint 검사를 수행하시겠습니까?", default=True)
+    skip_format = not ask_confirm("Format 검사를 수행하시겠습니까?", default=True)
+
+    fix = False
+    if not skip_format:
+        fix = ask_confirm("Format 오류를 자동으로 수정하시겠습니까?", default=False)
+
+    breaking = ask_confirm("Breaking change 검사를 수행하시겠습니까?", default=False)
+    against = "main"
+    if breaking:
+        against = ask_choice(
+            "비교 대상 브랜치를 선택하세요",
+            ["main", "develop", "custom"],
+            default="main",
+        )
+        if against == "custom":
+            from ...utils import ask_text
+
+            against = ask_text("브랜치 이름을 입력하세요", default="main")
+
+    args = argparse.Namespace(
+        skip_lint=skip_lint,
+        skip_format=skip_format,
+        fix=fix,
+        breaking=breaking,
+        against=against,
+    )
+    return execute(args, config)
 
 
 def setup_parser(parser: argparse.ArgumentParser) -> None:

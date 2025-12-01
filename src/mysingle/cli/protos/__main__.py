@@ -2,12 +2,13 @@
 Proto CLI - gRPC Proto 파일 관리 도구.
 
 사용법:
-    proto-cli init              # 저장소 초기화 및 submodule 구성
-    proto-cli status            # 서비스별 proto 파일 현황
-    proto-cli generate          # 코드 생성
-    proto-cli validate          # Proto 파일 검증
-    proto-cli info              # 패키지 버전 및 상태 정보
-    proto-cli --help            # 도움말
+    mysingle-proto init              # 저장소 초기화 및 submodule 구성
+    mysingle-proto status            # 서비스별 proto 파일 현황
+    mysingle-proto generate          # 코드 생성
+    mysingle-proto validate          # Proto 파일 검증
+    mysingle-proto info              # 패키지 버전 및 상태 정보
+    mysingle-proto                   # 대화형 모드
+    mysingle-proto --help            # 도움말
 """
 
 from __future__ import annotations
@@ -16,6 +17,7 @@ import argparse
 import sys
 from pathlib import Path
 
+from ..utils import console, print_error, print_header, print_info
 from .commands import generate, info, init, status, validate
 from .models import ProtoConfig
 from .utils import LogLevel, log
@@ -33,6 +35,54 @@ def get_repo_root() -> Path:
 
     # 찾지 못한 경우 현재 디렉터리 사용
     return current
+
+
+def show_interactive_menu(config: ProtoConfig) -> int:
+    """대화형 메뉴를 표시하고 사용자 선택을 처리합니다."""
+    from rich.prompt import Prompt
+
+    print_header("🔧 MySingle Proto CLI")
+
+    console.print("[cyan]사용 가능한 명령:[/cyan]\n")
+    console.print("  [green]1.[/green] init      - 저장소 초기화 및 환경 확인")
+    console.print("  [green]2.[/green] status    - 서비스별 proto 파일 현황")
+    console.print("  [green]3.[/green] generate  - Python gRPC 스텁 생성")
+    console.print("  [green]4.[/green] validate  - Proto 파일 검증")
+    console.print("  [green]5.[/green] info      - 패키지 버전 및 상태 정보")
+    console.print("  [green]h.[/green] help      - 도움말 표시")
+    console.print("  [green]q.[/green] quit      - 종료\n")
+
+    choice = Prompt.ask(
+        "명령을 선택하세요", choices=["1", "2", "3", "4", "5", "h", "q"], default="q"
+    )
+
+    if choice == "q":
+        print_info("종료합니다.")
+        return 0
+    elif choice == "h":
+        # Show help
+        build_parser().print_help()
+        return 0
+    elif choice == "1":
+        # init command
+        return init.execute_interactive(config)
+    elif choice == "2":
+        # status command
+        return status.execute_interactive(config)
+    elif choice == "3":
+        # generate command
+        return generate.execute_interactive(config)
+    elif choice == "4":
+        # validate command
+        return validate.execute_interactive(config)
+    elif choice == "5":
+        # info command
+        import argparse
+
+        args = argparse.Namespace()
+        return info.execute(args, config)
+
+    return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -115,11 +165,6 @@ def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
 
-    # 명령이 지정되지 않은 경우 도움말 출력
-    if not args.command:
-        parser.print_help()
-        return 0
-
     # 저장소 설정
     try:
         repo_root = get_repo_root()
@@ -127,6 +172,10 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as e:
         log(f"설정 로드 실패: {e}", LogLevel.ERROR)
         return 1
+
+    # 명령이 지정되지 않은 경우 대화형 모드
+    if not args.command:
+        return show_interactive_menu(config)
 
     # 명령 실행
     try:
@@ -145,10 +194,10 @@ def main(argv: list[str] | None = None) -> int:
             parser.print_help()
             return 1
     except KeyboardInterrupt:
-        log("\n\n작업이 사용자에 의해 중단되었습니다.", LogLevel.WARNING)
+        print_error("\n작업이 사용자에 의해 중단되었습니다.")
         return 130
     except Exception as e:
-        log(f"오류 발생: {e}", LogLevel.ERROR)
+        print_error(f"오류 발생: {e}")
         if "--debug" in sys.argv:
             raise
         return 1

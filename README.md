@@ -200,8 +200,6 @@ uv add "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.0"
 | 워크플로우                 | 트리거                     | 동작                     |
 | -------------------------- | -------------------------- | ------------------------ |
 | `auto-release.yml`         | pyproject.toml 변경 (main) | GitHub Release + Git Tag |
-| `build-test.yml`           | Push/PR                    | 빌드 + 테스트 실행       |
-| `validate-code.yml`        | Python 파일 변경           | Ruff lint + mypy         |
 | `validate-protos.yml`      | Proto 파일 변경            | Buf lint + format check  |
 | `auto-generate-protos.yml` | Proto 파일 변경            | Proto stub 자동 생성     |
 
@@ -264,4 +262,3 @@ MIT License
 
 **Last Updated**: 2025-12-01
 **Phase**: 0 (Package Restructure) - COMPLETED ✅
-

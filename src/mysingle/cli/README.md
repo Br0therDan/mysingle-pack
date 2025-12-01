@@ -9,12 +9,39 @@ MySingle 플랫폼을 위한 통합 명령줄 도구입니다.
 pip install mysingle
 
 # CLI 스크립트 확인
-which mysingle-cli mysingle-proto
+which mysingle mysingle-proto
+```
+
+## 🎨 새로운 기능 (v2.0.1+)
+
+### ✨ 주요 개선사항
+
+1. **명령어 간소화**: `mysingle-cli` → `mysingle`
+2. **한국어 인터페이스**: 모든 메시지가 한국어로 제공
+3. **컬러 출력**: Rich 라이브러리 기반의 시각적 개선
+4. **대화형 모드**: 인자 없이 실행 시 단계별 메뉴 제공
+
+### 🚀 대화형 모드
+
+```bash
+# 옵션 없이 실행하면 대화형 메뉴 표시
+$ mysingle
+
+🚀 MySingle CLI
+
+사용 가능한 명령:
+
+  1. version  - 패키지 버전 관리
+  2. proto    - Proto 파일 관리
+  3. help     - 도움말 표시
+  q. quit     - 종료
+
+명령을 선택하세요 [1/2/3/q] (기본: q):
 ```
 
 ## 🔧 사용 가능한 도구
 
-### 1. mysingle-cli - 패키지 버전 관리
+### 1. mysingle - 패키지 버전 관리
 
 패키지 버전을 관리하고 Git 태그를 생성하는 도구입니다.
 
@@ -22,62 +49,107 @@ which mysingle-cli mysingle-proto
 
 ```bash
 # 도움말
-mysingle-cli --help
-mysingle-cli version --help
+mysingle --help
+mysingle version --help
 
 # 현재 버전 확인
-mysingle-cli version show
+mysingle version show
 
 # 버전 업그레이드
-mysingle-cli version patch   # 2.0.0 → 2.0.1
-mysingle-cli version minor   # 2.0.0 → 2.1.0
-mysingle-cli version major   # 2.0.0 → 3.0.0
+mysingle version patch   # 2.0.0 → 2.0.1
+mysingle version minor   # 2.0.0 → 2.1.0
+mysingle version major   # 2.0.0 → 3.0.0
+
+# 대화형 모드로 버전 관리
+mysingle version         # 단계별 선택 메뉴 제공
 
 # 커스텀 버전 설정
-mysingle-cli version --custom 2.1.0-beta
+mysingle version patch --custom 2.1.0-beta
 
 # Git 커밋/태그 없이 버전만 변경
-mysingle-cli version patch --no-commit
-mysingle-cli version patch --no-tag
+mysingle version patch --no-commit
+mysingle version patch --no-tag
 
 # 변경사항을 원격에 푸시
-mysingle-cli version patch --push
+mysingle version patch --push
 ```
 
 #### 주요 기능
 
 1. **show**: 현재 패키지 버전 표시
 2. **major/minor/patch**: 시맨틱 버전 업그레이드
-3. **--custom**: 커스텀 버전 문자열 설정 (prerelease 포함)
-4. **--no-commit**: Git 커밋 생성 건너뛰기
-5. **--no-tag**: Git 태그 생성 건너뛰기
-6. **--push**: 변경사항을 원격 저장소에 푸시
+3. **대화형 모드**: 인자 없이 실행 시 단계별 선택
+4. **--custom**: 커스텀 버전 문자열 설정 (prerelease 포함)
+5. **--no-commit**: Git 커밋 생성 건너뛰기
+6. **--no-tag**: Git 태그 생성 건너뛰기
+7. **--push**: 변경사항을 원격 저장소에 푸시
 
 #### 예시
 
 ```bash
-# 현재 버전 확인
-$ mysingle-cli version show
-Current version: 2.0.0-alpha
+# 현재 버전 확인 (컬러 출력)
+$ mysingle version show
+현재 버전: 2.0.1
 
-# Patch 버전 업그레이드 (2.0.0 → 2.0.1)
-$ mysingle-cli version patch
-Updated version: 2.0.0-alpha → 2.0.1
-Created commit: 4a3b2c1
-Created tag: v2.0.1
+# Patch 버전 업그레이드 (2.0.1 → 2.0.2)
+$ mysingle version patch
+버전 변경: 2.0.1 → 2.0.2
+✅ pyproject.toml 업데이트 완료
+✅ 커밋 생성 완료: chore(release): v2.0.2 (bump patch)
+✅ 태그 생성 완료: v2.0.2
+
+# 대화형 모드
+$ mysingle version
+
+현재 버전: 2.0.2
+
+버전 업데이트 유형을 선택하세요 [major/minor/patch/show/cancel] (기본: patch): patch
+
+버전 변경: 2.0.2 → 2.0.3
+
+계속하시겠습니까? [y/n] (y): y
+✅ pyproject.toml 업데이트 완료
+Git 커밋을 생성하시겠습니까? [y/n] (y): y
+✅ 커밋 생성 완료: chore(release): v2.0.3 (bump patch)
+Git 태그를 생성하시겠습니까? [y/n] (y): y
+✅ 태그 생성 완료: v2.0.3
+origin에 푸시하시겠습니까? [y/n] (n): n
 
 # Git 작업 없이 버전만 변경
-$ mysingle-cli version minor --no-commit --no-tag
-Updated version: 2.0.1 → 2.1.0
+$ mysingle version minor --no-commit --no-tag
+버전 변경: 2.0.3 → 2.1.0
+✅ pyproject.toml 업데이트 완료
 
 # 커스텀 prerelease 버전
-$ mysingle-cli version --custom 2.1.0-rc.1
-Updated version: 2.1.0 → 2.1.0-rc.1
+$ mysingle version patch --custom 2.1.0-rc.1
+버전 변경: 2.1.0 → 2.1.0-rc.1
+✅ pyproject.toml 업데이트 완료
 ```
 
 ### 2. mysingle-proto - Proto 파일 관리
 
 gRPC Proto 파일의 생성, 검증, 상태 확인을 위한 도구입니다.
+
+#### 🆕 대화형 모드 (v2.0.2+)
+
+```bash
+# 옵션 없이 실행하면 대화형 메뉴 표시
+$ mysingle-proto
+
+🔧 MySingle Proto CLI
+
+사용 가능한 명령:
+
+  1. init      - 저장소 초기화 및 환경 확인
+  2. status    - 서비스별 proto 파일 현황
+  3. generate  - Python gRPC 스텁 생성
+  4. validate  - Proto 파일 검증
+  5. info      - 패키지 버전 및 상태 정보
+  h. help      - 도움말 표시
+  q. quit      - 종료
+
+명령을 선택하세요 [1/2/3/4/5/h/q] (기본: q):
+```
 
 #### 명령어
 
@@ -458,6 +530,6 @@ mysingle-proto validate
 - ✅ `info --check-git`: Git 브랜치 및 작업 트리 상태 표시
 - ✅ Entry point 설치 확인: `/Users/donghakim/mysingle-quant/.venv/bin/mysingle-proto`
 
-**테스트 환경**: macOS, Python 3.12.8, Buf 1.60.0, Git 2.39+  
-**테스트 날짜**: 2025년 12월 1일  
+**테스트 환경**: macOS, Python 3.12.8, Buf 1.60.0, Git 2.39+
+**테스트 날짜**: 2025년 12월 1일
 **패키지 버전**: v2.0.0-alpha

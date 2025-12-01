@@ -90,6 +90,17 @@ def execute(args: argparse.Namespace, config: ProtoConfig) -> int:
     return 0
 
 
+def execute_interactive(config: ProtoConfig) -> int:
+    """대화형 모드로 status 명령 실행"""
+    from ...utils import ask_confirm
+
+    # 상세 모드 선택
+    verbose = ask_confirm("Proto 파일 상세 목록을 표시하시겠습니까?", default=False)
+
+    args = argparse.Namespace(verbose=verbose)
+    return execute(args, config)
+
+
 def setup_parser(parser: argparse.ArgumentParser) -> None:
     """Status 명령 파서 설정"""
     parser.add_argument(
