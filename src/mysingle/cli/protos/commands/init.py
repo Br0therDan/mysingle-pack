@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import argparse
 import subprocess
-from pathlib import Path
 
 from ..models import ProtoConfig
 from ..utils import Color, LogLevel, colorize, log, log_header
