@@ -38,14 +38,14 @@ pip install mysingle[full]          # 전체
 
 ## 📚 모듈 구조
 
-| 모듈       | 설명                                         | 설치          |
-| ---------- | -------------------------------------------- | ------------- |
-| **core**   | 핵심 유틸리티 (설정, 로깅, 메트릭, 헬스 등) | 기본 포함     |
-| auth       | 인증/인가 (JWT, Kong Gateway)                | `[auth]`      |
-| database   | MongoDB, DuckDB, Redis                       | `[database]`  |
-| dsl        | 전략 DSL 파서                                | `[dsl]`       |
-| clients    | HTTP/gRPC 클라이언트                         | `[clients]`   |
-| grpc       | gRPC Interceptors                            | `[grpc]`      |
+| 모듈     | 설명                                        | 설치         |
+| -------- | ------------------------------------------- | ------------ |
+| **core** | 핵심 유틸리티 (설정, 로깅, 메트릭, 헬스 등) | 기본 포함    |
+| auth     | 인증/인가 (JWT, Kong Gateway)               | `[auth]`     |
+| database | MongoDB, DuckDB, Redis                      | `[database]` |
+| dsl      | 전략 DSL 파서                               | `[dsl]`      |
+| clients  | HTTP/gRPC 클라이언트                        | `[clients]`  |
+| grpc     | gRPC Interceptors                           | `[grpc]`     |
 
 각 모듈의 상세 문서는 해당 디렉터리의 `README.md` 참조.
 
@@ -147,25 +147,111 @@ src/mysingle/
 
 ---
 
+## 🚀 배포 가이드
+
+### Git-based 설치 방식
+
+MySingle 패키지는 **Git 저장소를 통해 직접 설치**하는 방식으로 배포됩니다.
+
+#### 서비스에서 사용하기
+
+**pyproject.toml:**
+```toml
+dependencies = [
+    "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.0",
+    # 또는 최신 main 브랜치
+    "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@main",
+]
+```
+
+**또는 uv로 직접 설치:**
+```bash
+uv add "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.0"
+```
+
+### 릴리즈 프로세스
+
+1. **버전 업데이트**:
+   ```bash
+   # pyproject.toml에서 version 변경
+   version = "2.0.0"  # alpha 제거
+   ```
+
+2. **변경사항 커밋 및 푸시**:
+   ```bash
+   git add pyproject.toml
+   git commit -m "chore: bump version to 2.0.0"
+   git push origin main
+   ```
+
+3. **자동 배포 실행**:
+   - `auto-release.yml` 워크플로우가 자동 실행됨
+   - GitHub Release 생성 (dist 파일 첨부)
+   - Git tag 생성 (`v2.0.0`)
+
+4. **서비스 업데이트**:
+   ```bash
+   # 각 서비스에서
+   uv add "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.0"
+   ```
+
+### 워크플로우 설명
+
+| 워크플로우                 | 트리거                     | 동작                     |
+| -------------------------- | -------------------------- | ------------------------ |
+| `auto-release.yml`         | pyproject.toml 변경 (main) | GitHub Release + Git Tag |
+| `build-test.yml`           | Push/PR                    | 빌드 + 테스트 실행       |
+| `validate-code.yml`        | Python 파일 변경           | Ruff lint + mypy         |
+| `validate-protos.yml`      | Proto 파일 변경            | Buf lint + format check  |
+| `auto-generate-protos.yml` | Proto 파일 변경            | Proto stub 자동 생성     |
+
+---
+
 ## 🛠️ 개발
 
 ### 설치 (개발 모드)
 ```bash
 git clone https://github.com/Br0therDan/mysingle-pack.git
 cd mysingle-pack
-uv venv
-source .venv/bin/activate
-uv pip install -e ".[dev,full]"
+uv sync --all-extras
+```
+
+### Proto 생성
+```bash
+uv run mysingle-proto generate
 ```
 
 ### 테스트
 ```bash
-pytest tests/
+# 전체 테스트
+uv run python -m pytest tests/ -v
+
+# 커버리지 포함
+uv run python -m pytest tests/ --cov=mysingle --cov-report=term-missing
+
+# 특정 모듈만
+uv run python -m pytest tests/core/ -v
 ```
 
 ### 린트
 ```bash
-ruff check src/
+# 체크
+uv run ruff check src/ tests/
+
+# 자동 수정
+uv run ruff check --fix src/ tests/
+
+# 포맷
+uv run ruff format src/ tests/
+```
+
+### 빌드
+```bash
+# 로컬 빌드
+uv build --out-dir dist
+
+# 설치 테스트
+pip install dist/mysingle-*.whl
 ```
 
 ---

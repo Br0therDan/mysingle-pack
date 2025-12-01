@@ -3,125 +3,125 @@
 name: Auto Release
 
 on:
-    push:
-        branches:
-            - main
-        paths:
-            - "pyproject.toml"
+  push:
+    branches:
+      - main
+    paths:
+      - "pyproject.toml"
 
 jobs:
-    release:
-        name: Create GitHub Release
-        runs-on: ubuntu-latest
-        permissions:
-            contents: write
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-            - name: Setup Python
-              uses: actions/setup-python@v5
-              with:
-                  python-version: "3.12"
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-            - name: Install uv
-              uses: astral-sh/setup-uv@v5
-              with:
-                  enable-cache: true
-                  cache-dependency-glob: "uv.lock"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
-            - name: Setup Buf
-              uses: bufbuild/buf-setup-action@v1
-              with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Extract version from pyproject.toml
-              id: version
-              run: |
-                  VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
-                  echo "version=$VERSION" >> $GITHUB_OUTPUT
-                  echo "tag=v$VERSION" >> $GITHUB_OUTPUT
-                  echo "📦 Version: $VERSION"
+      - name: Extract version from pyproject.toml
+        id: version
+        run: |
+          VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+          echo "📦 Version: $VERSION"
 
-            - name: Check if tag exists
-              id: check_tag
-              run: |
-                  if git rev-parse "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
-                    echo "exists=true" >> $GITHUB_OUTPUT
-                    echo "⚠️ Tag v${{ steps.version.outputs.version }} already exists"
-                  else
-                    echo "exists=false" >> $GITHUB_OUTPUT
-                    echo "✅ Tag v${{ steps.version.outputs.version }} does not exist"
-                  fi
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          if git rev-parse "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "⚠️ Tag v${{ steps.version.outputs.version }} already exists"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "✅ Tag v${{ steps.version.outputs.version }} does not exist"
+          fi
 
-            - name: Generate proto stubs
-              if: steps.check_tag.outputs.exists == 'false'
-              run: uv run mysingle-proto generate
+      - name: Generate proto stubs
+        if: steps.check_tag.outputs.exists == 'false'
+        run: uv run mysingle-proto generate
 
-            - name: Install dependencies
-              if: steps.check_tag.outputs.exists == 'false'
-              run: uv sync --frozen
+      - name: Install dependencies
+        if: steps.check_tag.outputs.exists == 'false'
+        run: uv sync --frozen
 
-            - name: Build package
-              if: steps.check_tag.outputs.exists == 'false'
-              run: |
-                  rm -rf dist/
-                  uv build --out-dir dist
+      - name: Build package
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          rm -rf dist/
+          uv build --out-dir dist
 
-            - name: Generate release notes
-              if: steps.check_tag.outputs.exists == 'false'
-              id: release_notes
-              run: |
-                  PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+      - name: Generate release notes
+        if: steps.check_tag.outputs.exists == 'false'
+        id: release_notes
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
 
-                  echo "## 📦 Package Information" > RELEASE.md
-                  echo "" >> RELEASE.md
-                  echo "**Version**: ${{ steps.version.outputs.version }}" >> RELEASE.md
-                  echo "" >> RELEASE.md
-                  echo "## 📥 Installation" >> RELEASE.md
-                  echo "" >> RELEASE.md
-                  echo '```bash' >> RELEASE.md
-                  echo "# Git-based installation (recommended)" >> RELEASE.md
-                  echo "pip install git+https://github.com/Br0therDan/mysingle-pack.git@v${{ steps.version.outputs.version }}" >> RELEASE.md
-                  echo "" >> RELEASE.md
-                  echo "# Or with uv" >> RELEASE.md
-                  echo "uv add git+https://github.com/Br0therDan/mysingle-pack.git@v${{ steps.version.outputs.version }}" >> RELEASE.md
-                  echo '```' >> RELEASE.md
-                  echo "" >> RELEASE.md
+          echo "## 📦 Package Information" > RELEASE.md
+          echo "" >> RELEASE.md
+          echo "**Version**: ${{ steps.version.outputs.version }}" >> RELEASE.md
+          echo "" >> RELEASE.md
+          echo "## 📥 Installation" >> RELEASE.md
+          echo "" >> RELEASE.md
+          echo '```bash' >> RELEASE.md
+          echo "# Git-based installation (recommended)" >> RELEASE.md
+          echo "pip install git+https://github.com/Br0therDan/mysingle-pack.git@v${{ steps.version.outputs.version }}" >> RELEASE.md
+          echo "" >> RELEASE.md
+          echo "# Or with uv" >> RELEASE.md
+          echo "uv add git+https://github.com/Br0therDan/mysingle-pack.git@v${{ steps.version.outputs.version }}" >> RELEASE.md
+          echo '```' >> RELEASE.md
+          echo "" >> RELEASE.md
 
-                  if [ -z "$PREV_TAG" ]; then
-                    echo "## 🎉 Initial Release" >> RELEASE.md
-                    echo "" >> RELEASE.md
-                    echo "### All Commits" >> RELEASE.md
-                    git log --oneline --pretty=format:"- %s (%h)" >> RELEASE.md
-                  else
-                    echo "## 🔄 Changes since $PREV_TAG" >> RELEASE.md
-                    echo "" >> RELEASE.md
-                    
-                    # Categorize commits
-                    echo "### ✨ Features" >> RELEASE.md
-                    git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- (feat|feature)" || echo "- No new features" >> RELEASE.md
-                    echo "" >> RELEASE.md
-                    
-                    echo "### 🐛 Bug Fixes" >> RELEASE.md
-                    git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- fix" || echo "- No bug fixes" >> RELEASE.md
-                    echo "" >> RELEASE.md
-                    
-                    echo "### ♻️ Refactoring" >> RELEASE.md
-                    git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- refactor" || echo "- No refactoring" >> RELEASE.md
-                    echo "" >> RELEASE.md
-                    
-                    echo "### 📝 Documentation" >> RELEASE.md
-                    git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- docs?" || echo "- No documentation changes" >> RELEASE.md
-                    echo "" >> RELEASE.md
-                    
-                    echo "### 🔧 Chores" >> RELEASE.md
-                    git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- chore" || echo "- No chores" >> RELEASE.md
-                  fi
+          if [ -z "$PREV_TAG" ]; then
+            echo "## 🎉 Initial Release" >> RELEASE.md
+            echo "" >> RELEASE.md
+            echo "### All Commits" >> RELEASE.md
+            git log --oneline --pretty=format:"- %s (%h)" >> RELEASE.md
+          else
+            echo "## 🔄 Changes since $PREV_TAG" >> RELEASE.md
+            echo "" >> RELEASE.md
+            
+            # Categorize commits
+            echo "### ✨ Features" >> RELEASE.md
+            git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- (feat|feature)" || echo "- No new features" >> RELEASE.md
+            echo "" >> RELEASE.md
+            
+            echo "### 🐛 Bug Fixes" >> RELEASE.md
+            git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- fix" || echo "- No bug fixes" >> RELEASE.md
+            echo "" >> RELEASE.md
+            
+            echo "### ♻️ Refactoring" >> RELEASE.md
+            git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- refactor" || echo "- No refactoring" >> RELEASE.md
+            echo "" >> RELEASE.md
+            
+            echo "### 📝 Documentation" >> RELEASE.md
+            git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- docs?" || echo "- No documentation changes" >> RELEASE.md
+            echo "" >> RELEASE.md
+            
+            echo "### 🔧 Chores" >> RELEASE.md
+            git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- chore" || echo "- No chores" >> RELEASE.md
+          fi
 
-                  cat RELEASE.md
+          cat RELEASE.md
 
             - name: Create GitHub Release
               if: steps.check_tag.outputs.exists == 'false'

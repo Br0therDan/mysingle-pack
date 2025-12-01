@@ -1,53 +1,52 @@
 name: Validate Code
 
 on:
-    pull_request:
-        paths:
-            - "src/**/*.py"
-            - "tests/**/*.py"
-            - "pyproject.toml"
-    push:
-        branches:
-            - main
-            - develop
-        paths:
-            - "src/**/*.py"
-            - "tests/**/*.py"
-            - "pyproject.toml"
+  pull_request:
+    paths:
+      - "src/**/*.py"
+      - "tests/**/*.py"
+      - "pyproject.toml"
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - "src/**/*.py"
+      - "tests/**/*.py"
+      - "pyproject.toml"
 
 env:
-    PYTHON_VERSION: "3.12"
+  PYTHON_VERSION: "3.12"
 
 jobs:
-    lint-and-type-check:
-        name: Lint and Type Check
-        runs-on: ubuntu-latest
+  lint-and-type-check:
+    name: Lint and Type Check
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-            - name: Setup Python
-              uses: actions/setup-python@v5
-              with:
-                  python-version: ${{ env.PYTHON_VERSION }}
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
 
-            - name: Install uv
-              uses: astral-sh/setup-uv@v5
-              with:
-                  enable-cache: true
-                  cache-dependency-glob: "uv.lock"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
-            - name: Install dependencies
-              run: uv sync --frozen --all-extras
+      - name: Install dependencies
+        run: uv sync --frozen --all-extras
 
-            - name: Run Ruff lint
-              run: uv run ruff check src/ tests/
-              continue-on-error: true
+      - name: Run Ruff lint
+        run: uv run ruff check src/ tests/
 
-            - name: Run Ruff format check
-              run: uv run ruff format --check src/ tests/
+      - name: Run Ruff format check
+        run: uv run ruff format --check src/ tests/
 
-            - name: Run mypy
-              run: uv run mypy src/
-              continue-on-error: true
+      - name: Run mypy
+        run: uv run mypy src/
+        continue-on-error: true
