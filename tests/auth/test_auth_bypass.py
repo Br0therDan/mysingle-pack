@@ -7,7 +7,6 @@ from unittest.mock import Mock, patch
 
 import pytest
 from fastapi import FastAPI, Request
-from fastapi.testclient import TestClient
 
 from mysingle.auth.middleware import AuthMiddleware
 from mysingle.auth.models import User

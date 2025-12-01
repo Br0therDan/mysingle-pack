@@ -2,7 +2,6 @@
 Tests for mysingle.core.metrics module.
 """
 
-import pytest
 
 from mysingle.core.metrics import MetricsCollector, get_metrics_collector
 

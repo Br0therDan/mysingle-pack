@@ -2,7 +2,6 @@
 Tests for mysingle.cli.core.version module.
 """
 
-from pathlib import Path
 from unittest.mock import Mock, patch
 
 import pytest

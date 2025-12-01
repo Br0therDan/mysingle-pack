@@ -383,11 +383,6 @@ def _configure_external_loggers():
         logging.getLogger(logger_name).setLevel(level)
 
 
-def get_logger(name: str) -> logging.Logger:
-    """전통적인 로거 인스턴스 획득"""
-    return logging.getLogger(name)
-
-
 # =============================================================================
 # 통합 로깅 설정 (권장)
 # =============================================================================

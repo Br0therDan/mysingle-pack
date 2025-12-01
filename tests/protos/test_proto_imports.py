@@ -2,7 +2,6 @@
 Tests for mysingle.protos module (gRPC stubs).
 """
 
-import pytest
 
 
 def test_proto_imports():

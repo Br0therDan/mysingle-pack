@@ -6,8 +6,6 @@ gRPC Interceptor 테스트
 
 from __future__ import annotations
 
-import pytest
-
 from mysingle.grpc import (
     AuthInterceptor,
     ClientAuthInterceptor,

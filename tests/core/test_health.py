@@ -6,7 +6,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from mysingle.core.health import HealthStatus, create_health_router, get_health_checker
+from mysingle.core.health import create_health_router, get_health_checker
 
 
 @pytest.fixture

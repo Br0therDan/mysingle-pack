@@ -9,7 +9,7 @@ These endpoints are configured as public in Kong API Gateway.
 """
 
 from datetime import UTC, datetime
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends
 

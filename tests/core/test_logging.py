@@ -2,7 +2,6 @@
 Tests for mysingle.core.logging module.
 """
 
-import structlog
 
 from mysingle.core.logging import get_structured_logger, setup_logging
 
