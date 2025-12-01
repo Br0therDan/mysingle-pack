@@ -1,0 +1,354 @@
+syntax = "proto3";
+
+package backtest;
+
+import "google/protobuf/timestamp.proto";
+
+// BacktestService service definition for executing and monitoring strategy backtests.
+service BacktestService {
+  // Execute backtest for a strategy
+  rpc ExecuteBacktest(ExecuteBacktestRequest) returns (ExecuteBacktestResponse);
+
+  // Get backtest result by ID
+  rpc GetBacktestResult(GetBacktestResultRequest) returns (BacktestResultResponse);
+
+  // Stream backtest progress updates
+  rpc StreamBacktestProgress(StreamProgressRequest) returns (stream ProgressUpdate);
+
+  // Get backtest metrics
+  rpc GetBacktestMetrics(GetMetricsRequest) returns (MetricsResponse);
+
+  // List backtests for a user
+  rpc ListBacktests(ListBacktestsRequest) returns (ListBacktestsResponse);
+
+  // Cancel a running backtest
+  rpc CancelBacktest(CancelBacktestRequest) returns (CancelBacktestResponse);
+
+  // Health check
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+// ============================================================================
+// Request Messages
+// ============================================================================
+
+// ExecuteBacktestRequest defines the request payload for ExecuteBacktest.
+message ExecuteBacktestRequest {
+  // User ID for authorization
+  string user_id = 1;
+  // Strategy ID to backtest
+  string strategy_id = 2;
+  // Optional: specific version (default: latest)
+  optional int32 strategy_version_seq = 3;
+  // Backtest configuration
+  BacktestConfig config = 4;
+}
+
+// BacktestConfig message definition.
+message BacktestConfig {
+  // Trading symbol (e.g., "BTCUSDT")
+  string symbol = 1;
+  // Time interval (e.g., "1d", "1h", "5m")
+  string interval = 2;
+  // Start date (ISO 8601 format: "2024-01-01")
+  string start_date = 3;
+  // End date (ISO 8601 format: "2024-12-31")
+  string end_date = 4;
+  // Initial capital amount
+  double initial_capital = 5;
+
+  // Slippage & Commission
+  // Slippage in basis points (default from config)
+  optional double slippage_bps = 6;
+  // Commission per trade (default from config)
+  optional double commission_per_trade = 7;
+
+  // Risk Management
+  // Stop loss percentage
+  optional double stop_loss_pct = 8;
+  // Take profit percentage
+  optional double take_profit_pct = 9;
+  // Max position size as % of equity
+  optional double max_position_size = 10;
+
+  // Additional parameters
+  // Additional strategy parameters
+  map<string, string> params = 11;
+
+  // Snapshot settings
+  // Portfolio snapshot interval
+  optional int32 snapshot_interval_seconds = 12;
+}
+
+// GetBacktestResultRequest defines the request payload for GetBacktestResult.
+message GetBacktestResultRequest {
+  // Backtest job ID
+  string backtest_id = 1;
+  // User ID for authorization
+  string user_id = 2;
+}
+
+// StreamProgressRequest defines the request payload for StreamProgress.
+message StreamProgressRequest {
+  // Backtest job ID
+  string backtest_id = 1;
+  // User ID for authorization
+  string user_id = 2;
+}
+
+// GetMetricsRequest defines the request payload for GetMetrics.
+message GetMetricsRequest {
+  // Backtest job ID
+  string backtest_id = 1;
+  // User ID for authorization
+  string user_id = 2;
+}
+
+// ListBacktestsRequest defines the request payload for ListBacktests.
+message ListBacktestsRequest {
+  // User ID for authorization
+  string user_id = 1;
+  // Optional: filter by strategy
+  optional string strategy_id = 2;
+  // Optional: filter by status (pending, running, completed, failed)
+  optional string status = 3;
+  // Optional: max results (default: 50)
+  optional int32 limit = 4;
+  // Optional: skip N results (pagination)
+  optional int32 skip = 5;
+}
+
+// CancelBacktestRequest defines the request payload for CancelBacktest.
+message CancelBacktestRequest {
+  // Backtest job ID
+  string backtest_id = 1;
+  // User ID for authorization
+  string user_id = 2;
+}
+
+// HealthCheckRequest defines the request payload for HealthCheck.
+message HealthCheckRequest {
+  // Empty for now - can add service version, timestamp, etc.
+}
+
+// ============================================================================
+// Response Messages
+// ============================================================================
+
+// ExecuteBacktestResponse defines the response payload for ExecuteBacktest.
+message ExecuteBacktestResponse {
+  // Created backtest job ID
+  string backtest_id = 1;
+  // Job status: "pending", "queued", "running"
+  string status = 2;
+  // Status message
+  string message = 3;
+  // Job creation timestamp
+  google.protobuf.Timestamp created_at = 4;
+}
+
+// BacktestResultResponse defines the response payload for BacktestResult.
+message BacktestResultResponse {
+  // Backtest job ID
+  string backtest_id = 1;
+  // Strategy ID
+  string strategy_id = 2;
+  // Strategy version sequence
+  optional int32 strategy_version_seq = 3;
+  // Job status: "completed", "failed", "running", etc.
+  string status = 4;
+
+  // Results (only available when status = "completed")
+  // Performance metrics
+  optional PerformanceMetrics metrics = 5;
+  // Trade history
+  repeated Trade trades = 6;
+  // Equity curve data
+  repeated EquityPoint equity_curve = 7;
+
+  // Metadata
+  // Original backtest configuration
+  BacktestConfig config = 8;
+  // Job creation time
+  google.protobuf.Timestamp created_at = 9;
+  // Job completion time
+  optional google.protobuf.Timestamp completed_at = 10;
+  // Error message (if failed)
+  optional string error_message = 11;
+}
+
+// ProgressUpdate message definition.
+message ProgressUpdate {
+  // Backtest job ID
+  string backtest_id = 1;
+  // Current status
+  string status = 2;
+  // Progress percentage (0-100)
+  double progress_pct = 3;
+  // Progress message
+  string message = 4;
+  // Update timestamp
+  google.protobuf.Timestamp timestamp = 5;
+
+  // Optional: current metrics snapshot
+  optional PerformanceMetrics current_metrics = 6;
+}
+
+// MetricsResponse defines the response payload for Metrics.
+message MetricsResponse {
+  // Backtest job ID
+  string backtest_id = 1;
+  // Performance metrics
+  PerformanceMetrics metrics = 2;
+  // Calculation timestamp
+  google.protobuf.Timestamp calculated_at = 3;
+}
+
+// ListBacktestsResponse defines the response payload for ListBacktests.
+message ListBacktestsResponse {
+  // List of backtest summaries
+  repeated BacktestSummary backtests = 1;
+  // Total number of backtests (for pagination)
+  int32 total_count = 2;
+}
+
+// BacktestSummary message definition.
+message BacktestSummary {
+  // Backtest job ID
+  string backtest_id = 1;
+  // Strategy ID
+  string strategy_id = 2;
+  // Strategy version
+  optional int32 strategy_version_seq = 3;
+  // Job status
+  string status = 4;
+  // Trading symbol
+  string symbol = 5;
+  // Time interval
+  string interval = 6;
+  // Creation time
+  google.protobuf.Timestamp created_at = 7;
+  // Completion time
+  optional google.protobuf.Timestamp completed_at = 8;
+  // Metrics (if completed)
+  optional PerformanceMetrics metrics = 9;
+}
+
+// CancelBacktestResponse defines the response payload for CancelBacktest.
+message CancelBacktestResponse {
+  // Backtest job ID
+  string backtest_id = 1;
+  // New status (should be "cancelled")
+  string status = 2;
+  // Cancellation message
+  string message = 3;
+}
+
+// HealthCheckResponse defines the response payload for HealthCheck.
+message HealthCheckResponse {
+  // "healthy" or "unhealthy"
+  string status = 1;
+  // "backtest-service"
+  string service_name = 2;
+  // Service version
+  string version = 3;
+  // Response timestamp
+  google.protobuf.Timestamp timestamp = 4;
+  // Additional health details
+  map<string, string> details = 5;
+}
+
+// ============================================================================
+// Data Models
+// ============================================================================
+
+// PerformanceMetrics message definition.
+message PerformanceMetrics {
+  // Returns
+  // Total return (%)
+  double total_return = 1;
+  // Annualized return (%)
+  double annual_return = 2;
+
+  // Risk metrics
+  // Sharpe ratio
+  double sharpe_ratio = 3;
+  // Sortino ratio
+  double sortino_ratio = 4;
+  // Maximum drawdown (%)
+  double max_drawdown = 5;
+  // Volatility (annualized)
+  double volatility = 6;
+
+  // Trade statistics
+  // Total number of trades
+  int32 total_trades = 7;
+  // Number of winning trades
+  int32 winning_trades = 8;
+  // Number of losing trades
+  int32 losing_trades = 9;
+  // Win rate (%)
+  double win_rate = 10;
+
+  // Profit metrics
+  // Profit factor (gross profit / gross loss)
+  double profit_factor = 11;
+  // Average winning trade amount
+  double average_win = 12;
+  // Average losing trade amount
+  double average_loss = 13;
+  // Largest winning trade
+  double largest_win = 14;
+  // Largest losing trade
+  double largest_loss = 15;
+
+  // Exposure
+  // Average holding period in hours
+  double average_holding_period_hours = 16;
+  // Max consecutive winning trades
+  double max_consecutive_wins = 17;
+  // Max consecutive losing trades
+  double max_consecutive_losses = 18;
+
+  // Final values
+  // Final portfolio equity
+  double final_equity = 19;
+  // Total fees/commissions paid
+  double total_fees = 20;
+}
+
+// Trade message definition.
+message Trade {
+  // Trade execution time
+  google.protobuf.Timestamp timestamp = 1;
+  // Trading symbol
+  string symbol = 2;
+  // "BUY" or "SELL"
+  string side = 3;
+  // Quantity traded
+  double quantity = 4;
+  // Execution price
+  double price = 5;
+  // Profit/Loss for this trade (for SELL only)
+  double pnl = 6;
+  // Commission paid
+  double commission = 7;
+  // Internal trade ID
+  optional string trade_id = 8;
+  // Portfolio value after trade
+  optional double portfolio_value = 9;
+}
+
+// EquityPoint message definition.
+message EquityPoint {
+  // Data point timestamp
+  google.protobuf.Timestamp timestamp = 1;
+  // Portfolio equity at this time
+  double equity = 2;
+  // Drawdown percentage at this time
+  double drawdown = 3;
+  // Cash balance
+  double cash = 4;
+  // Total value of open positions
+  double positions_value = 5;
+}

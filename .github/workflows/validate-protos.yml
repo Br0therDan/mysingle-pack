@@ -1,0 +1,56 @@
+name: Validate Proto Files
+
+on:
+    pull_request:
+        paths:
+            - "protos/**/*.proto"
+    push:
+        branches:
+            - main
+            - develop
+        paths:
+            - "protos/**/*.proto"
+
+jobs:
+    validate:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup buf
+              uses: bufbuild/buf-setup-action@v1
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Lint proto files
+              run: buf lint
+
+            - name: Format check
+              run: buf format --diff --exit-code
+
+            - name: Check for breaking changes
+              if: github.event_name == 'pull_request'
+              run: |
+                  buf breaking --against "https://github.com/${{ github.repository }}.git#branch=${{ github.base_ref }}"
+              continue-on-error: true
+
+            - name: Generate proto stubs (validation)
+              run: buf generate
+
+            - name: Verify generation success
+              run: |
+                  echo "Checking generated files..."
+                  if [ ! -d "src/mysingle/protos" ]; then
+                    echo "❌ Failed to generate protos"
+                    exit 1
+                  fi
+
+                  proto_count=$(find src/mysingle/protos -name "*_pb2.py" | wc -l)
+                  echo "✅ Generated $proto_count proto modules"
+
+                  if [ "$proto_count" -eq 0 ]; then
+                    echo "❌ No proto files generated"
+                    exit 1
+                  fi

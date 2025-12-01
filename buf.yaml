@@ -1,0 +1,22 @@
+version: v1
+name: buf.build/mysingle/protos
+deps:
+  - buf.build/googleapis/googleapis
+
+lint:
+  use:
+    - STANDARD
+    - COMMENTS
+  except:
+    - PACKAGE_VERSION_SUFFIX  # Allow v1, v2 suffixes
+    - PACKAGE_DIRECTORY_MATCH  # Services live under protos/services/*
+    - DIRECTORY_SAME_PACKAGE  # Allow multiple packages in shared directories
+    - PACKAGE_SAME_DIRECTORY  # Allow multiple packages per directory for legacy layout
+    - RPC_REQUEST_STANDARD_NAME  # Shared request messages across RPCs
+    - RPC_RESPONSE_STANDARD_NAME  # Shared response messages across RPCs
+    - RPC_REQUEST_RESPONSE_UNIQUE  # Intentional reuse of messages across RPCs
+  
+breaking:
+  use:
+    - FILE
+  ignore_unstable_packages: true

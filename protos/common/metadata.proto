@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package genai.common;
+
+// 메타데이터 (요청 추적용)
+message Metadata {
+  // 요청 ID (UUID)
+  string request_id = 1;
+  // 사용자 ID
+  string user_id = 2;
+  // 세션 ID (해당 시)
+  string session_id = 3;
+  // Unix timestamp (밀리초)
+  int64 timestamp = 4;
+  // 요청 출처 (예: "frontend", "strategy-service")
+  string source = 5;
+}
+
+// 신뢰도 점수
+message ConfidenceScore {
+  // 신뢰도 점수 (0.0 ~ 1.0)
+  double score = 1;
+  // 점수에 대한 설명
+  string explanation = 2;
+}

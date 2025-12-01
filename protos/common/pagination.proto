@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package genai.common;
+
+// 페이지네이션 요청
+message PaginationRequest {
+  // 페이지 번호 (1부터 시작)
+  int32 page = 1;
+  // 페이지당 항목 수 (기본: 20, 최대: 100)
+  int32 page_size = 2;
+}
+
+// 페이지네이션 응답
+message PaginationResponse {
+  // 전체 항목 수
+  int32 total_count = 1;
+  // 현재 페이지
+  int32 page = 2;
+  // 페이지당 항목 수
+  int32 page_size = 3;
+  // 전체 페이지 수
+  int32 total_pages = 4;
+  // 다음 페이지 존재 여부
+  bool has_next = 5;
+  // 이전 페이지 존재 여부
+  bool has_previous = 6;
+}
+
+// 정렬 옵션
+message SortOption {
+  // 정렬 필드명
+  string field = 1;
+  // 내림차순 여부 (기본: false)
+  bool descending = 2;
+}

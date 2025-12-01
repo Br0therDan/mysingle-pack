@@ -1,0 +1,80 @@
+name: Auto-Generate Proto Stubs
+
+on:
+    push:
+        paths:
+            - "protos/**/*.proto"
+            - "buf.yaml"
+            - "buf.gen.yaml"
+        branches:
+            - main
+            - develop
+    pull_request:
+        paths:
+            - "protos/**/*.proto"
+            - "buf.yaml"
+            - "buf.gen.yaml"
+
+jobs:
+    generate-protos:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Setup buf
+              uses: bufbuild/buf-setup-action@v1
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Lint proto files
+              run: buf lint
+
+            - name: Check for breaking changes
+              if: github.event_name == 'pull_request'
+              run: |
+                  buf breaking --against "https://github.com/${{ github.repository }}.git#branch=${{ github.base_ref }}"
+
+            - name: Generate Python stubs
+              run: buf generate
+
+            - name: Fix nested protos directory
+              run: |
+                  if [ -d "src/mysingle/protos/protos" ]; then
+                    mv src/mysingle/protos/protos/* src/mysingle/protos/
+                    rmdir src/mysingle/protos/protos
+                  fi
+
+            - name: Setup Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.12"
+
+            - name: Fix import paths
+              run: python scripts/fix_proto_imports.py
+
+            - name: Ensure __init__.py files
+              run: find src/mysingle/protos -type d -exec touch {}/__init__.py \;
+
+            - name: Check for changes
+              id: git-check
+              run: |
+                  git diff --exit-code src/mysingle/protos || echo "changed=true" >> $GITHUB_OUTPUT
+
+            - name: Commit and push changes
+              if: steps.git-check.outputs.changed == 'true' && github.event_name == 'push'
+              run: |
+                  git config --local user.email "github-actions[bot]@users.noreply.github.com"
+                  git config --local user.name "github-actions[bot]"
+                  git add src/mysingle/protos
+                  git commit -m "chore: auto-generate proto stubs [skip ci]"
+                  git push
+
+            - name: Fail if changes detected in PR
+              if: steps.git-check.outputs.changed == 'true' && github.event_name == 'pull_request'
+              run: |
+                  echo "❌ Proto stubs are out of sync. Run 'scripts/generate_protos.sh' locally."
+                  exit 1
