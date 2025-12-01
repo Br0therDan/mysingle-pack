@@ -6,13 +6,17 @@ MySingle 플랫폼을 위한 통합 명령줄 도구입니다.
 
 ```bash
 # mysingle 패키지와 함께 자동 설치됨
-pip install mysingle
+uv add mysingle
+# 또는
+uv pip install mysingle
 
 # CLI 스크립트 확인
 which mysingle mysingle-proto
 ```
 
 ## 🎨 새로운 기능 (v2.0.1+)
+
+**업데이트**: 2025-12-02
 
 ### ✨ 주요 개선사항
 
@@ -335,15 +339,15 @@ mysingle-proto generate
 
 ```bash
 # 서비스 스캐폴딩
-mysingle-cli new service <name>
+mysingle new service <name>
 
 # 패키지 관리
-mysingle-cli package install <name>
-mysingle-cli package list
+mysingle package install <name>
+mysingle package list
 
 # 환경 관리
-mysingle-cli env setup
-mysingle-cli env validate
+mysingle env setup
+mysingle env validate
 ```
 
 ## 📁 디렉터리 구조
@@ -477,9 +481,9 @@ buf --version
 # Import 경로 자동 수정
 mysingle-proto generate
 
-# 수동 수정이 필요한 경우
-cd packages/quant-pack
-python scripts/fix_proto_imports.py
+# 수동 수정이 필요한 경우 (대화형 모드)
+mysingle-proto
+# 메뉴에서 3. generate 선택
 ```
 
 #### Proto 생성 실패
@@ -513,23 +517,32 @@ mysingle-proto validate
 
 모든 CLI 명령어는 다음과 같이 테스트되었습니다:
 
-### mysingle-cli
+### mysingle (v2.0.1+)
+- ✅ 대화형 모드: 메뉴 표시 및 명령 선택
 - ✅ `--help`: 도움말 표시
 - ✅ `version --help`: 버전 명령어 도움말
-- ✅ `version show`: 현재 버전 출력 (2.0.0-alpha)
-- ✅ Entry point 설치 확인: `/Users/donghakim/mysingle-quant/.venv/bin/mysingle-cli`
+- ✅ `version show`: 현재 버전 출력 (한국어 메시지)
+- ✅ `version`: 대화형 버전 관리 (bump type 선택, Git 작업 확인)
+- ✅ `version patch`: 패치 버전 업그레이드 (컬러 출력)
+- ✅ Entry point 설치 확인: `/Users/donghakim/mysingle-quant/.venv/bin/mysingle`
 
-### mysingle-proto
+### mysingle-proto (v2.0.1+)
+- ✅ 대화형 모드: 메뉴 표시 및 명령 선택
 - ✅ `--help`: 도움말 표시
 - ✅ `init --help`: 초기화 명령어 도움말
 - ✅ `init --check-only`: 환경 검증 (Git, Buf, 디렉터리 확인)
-- ✅ `status`: 메인 저장소 검증 경고 표시
-- ✅ `validate --help`: 검증 명령어 도움말
-- ✅ `generate --help`: 생성 명령어 도움말
+- ✅ `status`: 대화형 상세 모드 선택
+- ✅ `validate`: 대화형 검증 옵션 선택 (lint/format/breaking)
+- ✅ `generate`: 대화형 확인 프롬프트
 - ✅ `info`: 버전 및 릴리즈 정보 표시
-- ✅ `info --check-git`: Git 브랜치 및 작업 트리 상태 표시
 - ✅ Entry point 설치 확인: `/Users/donghakim/mysingle-quant/.venv/bin/mysingle-proto`
 
-**테스트 환경**: macOS, Python 3.12.8, Buf 1.60.0, Git 2.39+
-**테스트 날짜**: 2025년 12월 1일
-**패키지 버전**: v2.0.0-alpha
+**새로운 기능**:
+- 🎨 Rich 라이브러리 기반 컬러 출력
+- 🇰🇷 전체 한국어 인터페이스
+- 🤝 대화형 프롬프트 (ask_choice, ask_confirm)
+- ✨ 단계별 진행 안내
+
+**테스트 환경**: macOS, Python 3.12.8, Buf 1.60.0, Git 2.39+, Rich 13.9.0
+**테스트 날짜**: 2025년 12월 2일
+**패키지 버전**: v2.0.1

@@ -1,6 +1,6 @@
 # MySingle - Unified Platform Package
 
-**Version**: 2.0.0-alpha
+**Version**: 2.0.1
 **Repository**: https://github.com/Br0therDan/mysingle-pack.git
 
 MySingle 플랫폼 통합 유틸리티 패키지
@@ -11,27 +11,29 @@ MySingle 플랫폼 통합 유틸리티 패키지
 
 ### 최소 설치 (core만)
 ```bash
-pip install mysingle
+uv add mysingle
+# 또는
+uv pip install mysingle
 ```
 
 ### 선택적 설치
 ```bash
 # 인증 필요
-pip install mysingle[auth]
+uv add "mysingle[auth]"
 
 # 데이터베이스 추가 도구
-pip install mysingle[database]
+uv add "mysingle[database]"
 
 # DSL 파서
-pip install mysingle[dsl]
+uv add "mysingle[dsl]"
 
 # gRPC 지원
-pip install mysingle[grpc]
+uv add "mysingle[grpc]"
 
 # 조합형 (추천)
-pip install mysingle[common]        # auth + database + web
-pip install mysingle[common-grpc]   # common + grpc + clients
-pip install mysingle[full]          # 전체
+uv add "mysingle[common]"        # auth + database + web
+uv add "mysingle[common-grpc]"   # common + grpc + clients
+uv add "mysingle[full]"          # 전체
 ```
 
 ---
@@ -48,6 +50,38 @@ pip install mysingle[full]          # 전체
 | grpc     | gRPC Interceptors                           | `[grpc]`     |
 
 각 모듈의 상세 문서는 해당 디렉터리의 `README.md` 참조.
+
+---
+
+## 🔧 CLI 도구
+
+### mysingle - 패키지 관리
+
+```bash
+# 대화형 모드
+mysingle
+
+# 버전 관리
+mysingle version show        # 현재 버전 확인
+mysingle version patch       # 패치 버전 업그레이드
+mysingle version minor       # 마이너 버전 업그레이드
+mysingle version major       # 메이저 버전 업그레이드
+```
+
+### mysingle-proto - Proto 파일 관리
+
+```bash
+# 대화형 모드
+mysingle-proto
+
+# Proto 관리
+mysingle-proto init          # 환경 초기화
+mysingle-proto generate      # Python 스텁 생성
+mysingle-proto validate      # Proto 검증
+mysingle-proto status        # Proto 현황
+```
+
+**상세 문서**: [CLI 사용 가이드](src/mysingle/cli/README.md)
 
 ---
 
@@ -158,7 +192,7 @@ MySingle 패키지는 **Git 저장소를 통해 직접 설치**하는 방식으�
 **pyproject.toml:**
 ```toml
 dependencies = [
-    "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.0",
+    "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1",
     # 또는 최신 main 브랜치
     "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@main",
 ]
@@ -166,33 +200,38 @@ dependencies = [
 
 **또는 uv로 직접 설치:**
 ```bash
-uv add "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.0"
+uv add "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1"
 ```
 
 ### 릴리즈 프로세스
 
-1. **버전 업데이트**:
+1. **버전 업데이트** (CLI 사용):
    ```bash
-   # pyproject.toml에서 version 변경
-   version = "2.0.0"  # alpha 제거
+   # 대화형 모드
+   mysingle version
+
+   # 또는 직접 지정
+   mysingle version patch  # 2.0.1 → 2.0.2
+   mysingle version minor  # 2.0.1 → 2.1.0
+   mysingle version major  # 2.0.1 → 3.0.0
    ```
 
-2. **변경사항 커밋 및 푸시**:
+2. **변경사항 푸시**:
    ```bash
-   git add pyproject.toml
-   git commit -m "chore: bump version to 2.0.0"
-   git push origin main
+   # CLI가 자동으로 커밋/태그 생성
+   # --push 옵션으로 자동 푸시 가능
+   mysingle version patch --push
    ```
 
 3. **자동 배포 실행**:
    - `auto-release.yml` 워크플로우가 자동 실행됨
    - GitHub Release 생성 (dist 파일 첨부)
-   - Git tag 생성 (`v2.0.0`)
+   - Git tag 생성 (예: `v2.0.2`)
 
 4. **서비스 업데이트**:
    ```bash
    # 각 서비스에서
-   uv add "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.0"
+   uv add "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.2"
    ```
 
 ### 워크플로우 설명
@@ -249,7 +288,7 @@ uv run ruff format src/ tests/
 uv build --out-dir dist
 
 # 설치 테스트
-pip install dist/mysingle-*.whl
+uv pip install dist/mysingle-*.whl
 ```
 
 ---
@@ -260,5 +299,6 @@ MIT License
 
 ---
 
-**Last Updated**: 2025-12-01
-**Phase**: 0 (Package Restructure) - COMPLETED ✅
+**Last Updated**: 2025-12-02
+**Version**: 2.0.1
+**Phase**: CLI Upgrade - Interactive Mode & Korean UI ✅
