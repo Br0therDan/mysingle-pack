@@ -10,19 +10,20 @@ dependencies = [
     "pydantic>=2.5.0",
     "pydantic-settings>=2.1.0",
     # Core 통합 모듈 의존성
-    "structlog>=23.2.0",         # logging
-    "colorlog>=6.9.0",           # logging
-    "rich>=13.9.0",              # CLI colors and interactive
+    "structlog>=23.2.0", # logging
+    "colorlog>=6.9.0", # logging
+    "rich>=13.9.0", # CLI colors and interactive
     "prometheus-client>=0.19.0", # metrics
-    "motor>=3.3.2",              # base (Beanie)
-    "beanie>=1.23.6",            # base (Beanie)
-    "emails>=0.6",               # email
-    "jinja2>=3.1.6",             # email
-    "httpx>=0.25.2",             # audit
-    "fastapi>=0.104.1",          # core.app_factory
+    "motor>=3.3.2", # base (Beanie)
+    "beanie>=1.23.6", # base (Beanie)
+    "emails>=0.6", # email
+    "jinja2>=3.1.6", # email
+    "httpx>=0.25.2", # audit
+    "fastapi>=0.104.1", # core.app_factory
     "uvicorn[standard]>=0.24.0", # core.app_factory
-    "email-validator>=2.0.0",    # config (EmailStr validation)
+    "email-validator>=2.0.0", # config (EmailStr validation)
     "pandas>=2.3.3",
+    "pwdlib>=0.3.0",
 ]
 
 [project.optional-dependencies]
