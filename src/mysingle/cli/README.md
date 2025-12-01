@@ -14,16 +14,18 @@ uv pip install mysingle
 which mysingle mysingle-proto
 ```
 
-## 🎨 새로운 기능 (v2.0.1+)
+## 🎨 새로운 기능 (v2.2.0)
 
 **업데이트**: 2025-12-02
 
-### ✨ 주요 개선사항
+### ✨ 주요 기능
 
-1. **명령어 간소화**: `mysingle-cli` → `mysingle`
-2. **한국어 인터페이스**: 모든 메시지가 한국어로 제공
-3. **컬러 출력**: Rich 라이브러리 기반의 시각적 개선
-4. **대화형 모드**: 인자 없이 실행 시 단계별 메뉴 제공
+1. **Git Submodule 관리**: 마이크로서비스에서 MySingle을 submodule로 관리 ⭐ NEW
+2. **자동 버전 관리**: Conventional Commits 분석 기반 자동 버전 결정 ⭐ NEW
+3. **명령어 간소화**: `mysingle-cli` → `mysingle`
+4. **한국어 인터페이스**: 모든 메시지가 한국어로 제공
+5. **컬러 출력**: Rich 라이브러리 기반의 시각적 개선
+6. **대화형 모드**: 인자 없이 실행 시 단계별 메뉴 제공
 
 ### 🚀 대화형 모드
 
@@ -765,4 +767,20 @@ mysingle-proto validate
 
 **테스트 환경**: macOS, Python 3.12.8, Buf 1.60.0, Git 2.39+, Rich 13.9.0
 **테스트 날짜**: 2025년 12월 2일
-**패키지 버전**: v2.0.1
+**패키지 버전**: v2.2.0
+
+### 추가된 기능 (v2.2.0)
+
+#### Git Submodule 관리
+- ✅ `mysingle submodule add`: Submodule 추가 (대화형 경로/브랜치 선택)
+- ✅ `mysingle submodule status`: 상태 확인 (브랜치, 버전, 변경사항, 업스트림 차이)
+- ✅ `mysingle submodule update`: 업데이트 (원격/기록된 커밋)
+- ✅ `mysingle submodule sync`: PR 준비 (브랜치 생성, 커밋, 푸시)
+- ✅ Fork 자동 감지 및 설정 안내
+
+#### Conventional Commits 자동 버전 관리
+- ✅ `mysingle version auto`: 커밋 메시지 분석으로 자동 버전 결정
+- ✅ `--dry-run`: 분석만 수행 (실제 변경 안함)
+- ✅ Proto-only 변경 특수 처리 (메인 버전 유지)
+- ✅ CHANGELOG 자동 생성
+- ✅ GitHub Actions 커밋 검증 워크플로우

@@ -1,6 +1,6 @@
 # MySingle - Unified Platform Package
 
-**Version**: 2.0.1
+**Version**: 2.2.0
 **Repository**: https://github.com/Br0therDan/mysingle-pack.git
 
 MySingle 플랫폼 통합 유틸리티 패키지
@@ -12,27 +12,27 @@ MySingle 플랫폼 통합 유틸리티 패키지
 ### 기본 설치 (core만)
 ```bash
 # Git 저장소에서 직접 설치 (권장)
-uv pip install git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1
+uv pip install git+https://github.com/Br0therDan/mysingle-pack.git@v2.2.0
 ```
 
 ### 선택적 설치 (extras)
 ```bash
 # 인증 필요
-uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1#egg=mysingle[auth]"
+uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.2.0#egg=mysingle[auth]"
 
 # 데이터베이스 추가 도구
-uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1#egg=mysingle[database]"
+uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.2.0#egg=mysingle[database]"
 
 # DSL 파서
-uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1#egg=mysingle[dsl]"
+uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.2.0#egg=mysingle[dsl]"
 
 # gRPC 지원
-uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1#egg=mysingle[grpc]"
+uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.2.0#egg=mysingle[grpc]"
 
 # 조합형 (추천)
-uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1#egg=mysingle[common]"        # auth + database + web
-uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1#egg=mysingle[common-grpc]"   # common + grpc + clients
-uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1#egg=mysingle[full]"          # 전체
+uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.2.0#egg=mysingle[common]"        # auth + database + web
+uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.2.0#egg=mysingle[common-grpc]"   # common + grpc + clients
+uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.2.0#egg=mysingle[full]"          # 전체
 ```
 
 ---
@@ -56,15 +56,24 @@ uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1#egg=m
 
 ### mysingle - 패키지 관리
 
+MySingle 패키지와 마이크로서비스 협업을 위한 통합 CLI 도구입니다.
+
 ```bash
 # 대화형 모드
 mysingle
 
-# 버전 관리
+# 버전 관리 (Conventional Commits 자동 분석)
+mysingle version auto        # 커밋 분석하여 자동 버전 결정
 mysingle version show        # 현재 버전 확인
 mysingle version patch       # 패치 버전 업그레이드
 mysingle version minor       # 마이너 버전 업그레이드
 mysingle version major       # 메이저 버전 업그레이드
+
+# Git Submodule 관리 (마이크로서비스에서 사용)
+mysingle submodule add       # MySingle을 submodule로 추가
+mysingle submodule status    # Submodule 상태 확인
+mysingle submodule update    # 최신 버전으로 업데이트
+mysingle submodule sync      # 변경사항 PR 준비
 ```
 
 ### mysingle-proto - Proto 파일 관리
@@ -191,7 +200,7 @@ MySingle 패키지는 **Git 저장소를 통해 직접 설치**하는 방식으�
 **pyproject.toml:**
 ```toml
 dependencies = [
-    "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1",
+    "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.2.0",
     # 또는 최신 main 브랜치
     "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@main",
 ]
@@ -199,23 +208,39 @@ dependencies = [
 
 **또는 uv로 직접 설치:**
 ```bash
-uv pip install git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1
+uv pip install git+https://github.com/Br0therDan/mysingle-pack.git@v2.2.0
 
 # extras와 함께 설치
-uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1#egg=mysingle[full]"
+uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.2.0#egg=mysingle[full]"
+```
+
+**마이크로서비스에서 Git Submodule로 사용:**
+```bash
+# 1. 마이크로서비스 저장소에 submodule 추가
+cd ~/my-service
+mysingle submodule add
+
+# 2. Proto/공통 코드 수정 후 PR
+cd libs/mysingle
+vim protos/services/user/v1/user_service.proto
+mysingle submodule sync
+
+# 3. PR 머지 후 업데이트
+mysingle submodule update
 ```
 
 ### 릴리즈 프로세스
 
-1. **버전 업데이트** (CLI 사용):
+1. **버전 업데이트** (Conventional Commits 자동 분석):
    ```bash
-   # 대화형 모드
-   mysingle version
+   # 자동 분석 (권장)
+   mysingle version auto --push     # 커밋 분석 → 버전 업데이트 → 푸시
+   mysingle version auto --dry-run  # 분석만 수행 (변경 안함)
 
-   # 또는 직접 지정
-   mysingle version patch  # 2.0.1 → 2.0.2
-   mysingle version minor  # 2.0.1 → 2.1.0
-   mysingle version major  # 2.0.1 → 3.0.0
+   # 수동 지정
+   mysingle version patch  # 2.2.0 → 2.2.1
+   mysingle version minor  # 2.2.0 → 2.3.0
+   mysingle version major  # 2.2.0 → 3.0.0
    ```
 
 2. **변경사항 푸시**:
@@ -232,17 +257,21 @@ uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1#egg=m
 
 4. **서비스 업데이트**:
    ```bash
-   # 각 서비스에서
-   uv pip install --upgrade git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.2
+   # 직접 설치 방식
+   uv pip install --upgrade git+https://github.com/Br0therDan/mysingle-pack.git@v2.2.1
+
+   # Submodule 방식 (권장)
+   mysingle submodule update
    ```
 
 ### 워크플로우 설명
 
-| 워크플로우                 | 트리거                     | 동작                     |
-| -------------------------- | -------------------------- | ------------------------ |
-| `auto-release.yml`         | pyproject.toml 변경 (main) | GitHub Release + Git Tag |
-| `validate-protos.yml`      | Proto 파일 변경            | Buf lint + format check  |
-| `auto-generate-protos.yml` | Proto 파일 변경            | Proto stub 자동 생성     |
+| 워크플로우                 | 트리거                     | 동작                      |
+| -------------------------- | -------------------------- | ------------------------- |
+| `auto-release.yml`         | pyproject.toml 변경 (main) | GitHub Release + Git Tag  |
+| `validate-commits.yml`     | Pull Request               | Conventional Commits 검증 |
+| `validate-protos.yml`      | Proto 파일 변경            | Buf lint + format check   |
+| `auto-generate-protos.yml` | Proto 파일 변경            | Proto stub 자동 생성      |
 
 ---
 
@@ -302,5 +331,5 @@ MIT License
 ---
 
 **Last Updated**: 2025-12-02
-**Version**: 2.0.1
-**Phase**: CLI Upgrade - Interactive Mode & Korean UI ✅
+**Version**: 2.2.0
+**Phase**: Git Submodule Management & Auto Versioning ✅
