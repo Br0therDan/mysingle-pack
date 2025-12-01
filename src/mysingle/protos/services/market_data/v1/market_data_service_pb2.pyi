@@ -30,7 +30,18 @@ class OHLCVBar(_message.Message):
     adjusted_close: float
     dividend_amount: float
     split_coefficient: float
-    def __init__(self, timestamp: _Optional[str] = ..., open: _Optional[float] = ..., high: _Optional[float] = ..., low: _Optional[float] = ..., close: _Optional[float] = ..., volume: _Optional[int] = ..., adjusted_close: _Optional[float] = ..., dividend_amount: _Optional[float] = ..., split_coefficient: _Optional[float] = ...) -> None: ...
+    def __init__(
+        self,
+        timestamp: _Optional[str] = ...,
+        open: _Optional[float] = ...,
+        high: _Optional[float] = ...,
+        low: _Optional[float] = ...,
+        close: _Optional[float] = ...,
+        volume: _Optional[int] = ...,
+        adjusted_close: _Optional[float] = ...,
+        dividend_amount: _Optional[float] = ...,
+        split_coefficient: _Optional[float] = ...,
+    ) -> None: ...
 
 class Pagination(_message.Message):
     __slots__ = ()
@@ -42,7 +53,13 @@ class Pagination(_message.Message):
     page_size: int
     total: int
     total_pages: int
-    def __init__(self, page: _Optional[int] = ..., page_size: _Optional[int] = ..., total: _Optional[int] = ..., total_pages: _Optional[int] = ...) -> None: ...
+    def __init__(
+        self,
+        page: _Optional[int] = ...,
+        page_size: _Optional[int] = ...,
+        total: _Optional[int] = ...,
+        total_pages: _Optional[int] = ...,
+    ) -> None: ...
 
 class GetDailyOHLCVRequest(_message.Message):
     __slots__ = ()
@@ -56,7 +73,14 @@ class GetDailyOHLCVRequest(_message.Message):
     end_date: str
     outputsize: str
     adjusted: bool
-    def __init__(self, symbol: _Optional[str] = ..., start_date: _Optional[str] = ..., end_date: _Optional[str] = ..., outputsize: _Optional[str] = ..., adjusted: _Optional[bool] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+        outputsize: _Optional[str] = ...,
+        adjusted: _Optional[bool] = ...,
+    ) -> None: ...
 
 class GetIntradayOHLCVRequest(_message.Message):
     __slots__ = ()
@@ -74,7 +98,16 @@ class GetIntradayOHLCVRequest(_message.Message):
     outputsize: str
     adjusted: bool
     month: str
-    def __init__(self, symbol: _Optional[str] = ..., interval: _Optional[str] = ..., start_date: _Optional[str] = ..., end_date: _Optional[str] = ..., outputsize: _Optional[str] = ..., adjusted: _Optional[bool] = ..., month: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        interval: _Optional[str] = ...,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+        outputsize: _Optional[str] = ...,
+        adjusted: _Optional[bool] = ...,
+        month: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetWeeklyOHLCVRequest(_message.Message):
     __slots__ = ()
@@ -86,7 +119,13 @@ class GetWeeklyOHLCVRequest(_message.Message):
     start_date: str
     end_date: str
     adjusted: bool
-    def __init__(self, symbol: _Optional[str] = ..., start_date: _Optional[str] = ..., end_date: _Optional[str] = ..., adjusted: _Optional[bool] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+        adjusted: _Optional[bool] = ...,
+    ) -> None: ...
 
 class GetMonthlyOHLCVRequest(_message.Message):
     __slots__ = ()
@@ -98,7 +137,13 @@ class GetMonthlyOHLCVRequest(_message.Message):
     start_date: str
     end_date: str
     adjusted: bool
-    def __init__(self, symbol: _Optional[str] = ..., start_date: _Optional[str] = ..., end_date: _Optional[str] = ..., adjusted: _Optional[bool] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+        adjusted: _Optional[bool] = ...,
+    ) -> None: ...
 
 class OHLCVResponse(_message.Message):
     __slots__ = ()
@@ -116,7 +161,16 @@ class OHLCVResponse(_message.Message):
     cached: bool
     source: str
     cache_timestamp: str
-    def __init__(self, symbol: _Optional[str] = ..., interval: _Optional[str] = ..., bars: _Optional[_Iterable[_Union[OHLCVBar, _Mapping]]] = ..., count: _Optional[int] = ..., cached: _Optional[bool] = ..., source: _Optional[str] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        interval: _Optional[str] = ...,
+        bars: _Optional[_Iterable[_Union[OHLCVBar, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+        cached: _Optional[bool] = ...,
+        source: _Optional[str] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetQuoteRequest(_message.Message):
     __slots__ = ()
@@ -146,7 +200,19 @@ class QuoteData(_message.Message):
     previous_close: float
     change: float
     change_percent: float
-    def __init__(self, symbol: _Optional[str] = ..., open: _Optional[float] = ..., high: _Optional[float] = ..., low: _Optional[float] = ..., price: _Optional[float] = ..., volume: _Optional[int] = ..., latest_trading_day: _Optional[str] = ..., previous_close: _Optional[float] = ..., change: _Optional[float] = ..., change_percent: _Optional[float] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        open: _Optional[float] = ...,
+        high: _Optional[float] = ...,
+        low: _Optional[float] = ...,
+        price: _Optional[float] = ...,
+        volume: _Optional[int] = ...,
+        latest_trading_day: _Optional[str] = ...,
+        previous_close: _Optional[float] = ...,
+        change: _Optional[float] = ...,
+        change_percent: _Optional[float] = ...,
+    ) -> None: ...
 
 class QuoteResponse(_message.Message):
     __slots__ = ()
@@ -156,7 +222,12 @@ class QuoteResponse(_message.Message):
     quote: QuoteData
     cached: bool
     cache_timestamp: str
-    def __init__(self, quote: _Optional[_Union[QuoteData, _Mapping]] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        quote: _Optional[_Union[QuoteData, _Mapping]] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class SearchSymbolsRequest(_message.Message):
     __slots__ = ()
@@ -184,7 +255,18 @@ class SymbolSearchResult(_message.Message):
     timezone: str
     currency: str
     match_score: float
-    def __init__(self, symbol: _Optional[str] = ..., name: _Optional[str] = ..., type: _Optional[str] = ..., region: _Optional[str] = ..., market_open: _Optional[str] = ..., market_close: _Optional[str] = ..., timezone: _Optional[str] = ..., currency: _Optional[str] = ..., match_score: _Optional[float] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        name: _Optional[str] = ...,
+        type: _Optional[str] = ...,
+        region: _Optional[str] = ...,
+        market_open: _Optional[str] = ...,
+        market_close: _Optional[str] = ...,
+        timezone: _Optional[str] = ...,
+        currency: _Optional[str] = ...,
+        match_score: _Optional[float] = ...,
+    ) -> None: ...
 
 class SearchSymbolsResponse(_message.Message):
     __slots__ = ()
@@ -192,7 +274,11 @@ class SearchSymbolsResponse(_message.Message):
     COUNT_FIELD_NUMBER: _ClassVar[int]
     results: _containers.RepeatedCompositeFieldContainer[SymbolSearchResult]
     count: int
-    def __init__(self, results: _Optional[_Iterable[_Union[SymbolSearchResult, _Mapping]]] = ..., count: _Optional[int] = ...) -> None: ...
+    def __init__(
+        self,
+        results: _Optional[_Iterable[_Union[SymbolSearchResult, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+    ) -> None: ...
 
 class BatchGetDailyOHLCVRequest(_message.Message):
     __slots__ = ()
@@ -204,7 +290,13 @@ class BatchGetDailyOHLCVRequest(_message.Message):
     start_date: str
     end_date: str
     adjusted: bool
-    def __init__(self, symbols: _Optional[_Iterable[str]] = ..., start_date: _Optional[str] = ..., end_date: _Optional[str] = ..., adjusted: _Optional[bool] = ...) -> None: ...
+    def __init__(
+        self,
+        symbols: _Optional[_Iterable[str]] = ...,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+        adjusted: _Optional[bool] = ...,
+    ) -> None: ...
 
 class SymbolOHLCVData(_message.Message):
     __slots__ = ()
@@ -218,7 +310,14 @@ class SymbolOHLCVData(_message.Message):
     count: int
     cached: bool
     error: str
-    def __init__(self, symbol: _Optional[str] = ..., bars: _Optional[_Iterable[_Union[OHLCVBar, _Mapping]]] = ..., count: _Optional[int] = ..., cached: _Optional[bool] = ..., error: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        bars: _Optional[_Iterable[_Union[OHLCVBar, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+        cached: _Optional[bool] = ...,
+        error: _Optional[str] = ...,
+    ) -> None: ...
 
 class BatchGetDailyOHLCVResponse(_message.Message):
     __slots__ = ()
@@ -230,7 +329,13 @@ class BatchGetDailyOHLCVResponse(_message.Message):
     total_symbols: int
     success_count: int
     error_count: int
-    def __init__(self, data: _Optional[_Iterable[_Union[SymbolOHLCVData, _Mapping]]] = ..., total_symbols: _Optional[int] = ..., success_count: _Optional[int] = ..., error_count: _Optional[int] = ...) -> None: ...
+    def __init__(
+        self,
+        data: _Optional[_Iterable[_Union[SymbolOHLCVData, _Mapping]]] = ...,
+        total_symbols: _Optional[int] = ...,
+        success_count: _Optional[int] = ...,
+        error_count: _Optional[int] = ...,
+    ) -> None: ...
 
 class BatchGetQuoteRequest(_message.Message):
     __slots__ = ()
@@ -248,7 +353,13 @@ class SymbolQuoteData(_message.Message):
     quote: QuoteData
     cached: bool
     error: str
-    def __init__(self, symbol: _Optional[str] = ..., quote: _Optional[_Union[QuoteData, _Mapping]] = ..., cached: _Optional[bool] = ..., error: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        quote: _Optional[_Union[QuoteData, _Mapping]] = ...,
+        cached: _Optional[bool] = ...,
+        error: _Optional[str] = ...,
+    ) -> None: ...
 
 class BatchGetQuoteResponse(_message.Message):
     __slots__ = ()
@@ -260,7 +371,13 @@ class BatchGetQuoteResponse(_message.Message):
     total_symbols: int
     success_count: int
     error_count: int
-    def __init__(self, data: _Optional[_Iterable[_Union[SymbolQuoteData, _Mapping]]] = ..., total_symbols: _Optional[int] = ..., success_count: _Optional[int] = ..., error_count: _Optional[int] = ...) -> None: ...
+    def __init__(
+        self,
+        data: _Optional[_Iterable[_Union[SymbolQuoteData, _Mapping]]] = ...,
+        total_symbols: _Optional[int] = ...,
+        success_count: _Optional[int] = ...,
+        error_count: _Optional[int] = ...,
+    ) -> None: ...
 
 class GetForexDailyRequest(_message.Message):
     __slots__ = ()
@@ -274,7 +391,14 @@ class GetForexDailyRequest(_message.Message):
     start_date: str
     end_date: str
     outputsize: str
-    def __init__(self, from_symbol: _Optional[str] = ..., to_symbol: _Optional[str] = ..., start_date: _Optional[str] = ..., end_date: _Optional[str] = ..., outputsize: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        from_symbol: _Optional[str] = ...,
+        to_symbol: _Optional[str] = ...,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+        outputsize: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetForexIntradayRequest(_message.Message):
     __slots__ = ()
@@ -290,7 +414,15 @@ class GetForexIntradayRequest(_message.Message):
     start_date: str
     end_date: str
     outputsize: str
-    def __init__(self, from_symbol: _Optional[str] = ..., to_symbol: _Optional[str] = ..., interval: _Optional[str] = ..., start_date: _Optional[str] = ..., end_date: _Optional[str] = ..., outputsize: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        from_symbol: _Optional[str] = ...,
+        to_symbol: _Optional[str] = ...,
+        interval: _Optional[str] = ...,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+        outputsize: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetForexWeeklyRequest(_message.Message):
     __slots__ = ()
@@ -302,7 +434,13 @@ class GetForexWeeklyRequest(_message.Message):
     to_symbol: str
     start_date: str
     end_date: str
-    def __init__(self, from_symbol: _Optional[str] = ..., to_symbol: _Optional[str] = ..., start_date: _Optional[str] = ..., end_date: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        from_symbol: _Optional[str] = ...,
+        to_symbol: _Optional[str] = ...,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetForexMonthlyRequest(_message.Message):
     __slots__ = ()
@@ -314,7 +452,13 @@ class GetForexMonthlyRequest(_message.Message):
     to_symbol: str
     start_date: str
     end_date: str
-    def __init__(self, from_symbol: _Optional[str] = ..., to_symbol: _Optional[str] = ..., start_date: _Optional[str] = ..., end_date: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        from_symbol: _Optional[str] = ...,
+        to_symbol: _Optional[str] = ...,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+    ) -> None: ...
 
 class ForexResponse(_message.Message):
     __slots__ = ()
@@ -332,7 +476,16 @@ class ForexResponse(_message.Message):
     count: int
     cached: bool
     cache_timestamp: str
-    def __init__(self, from_symbol: _Optional[str] = ..., to_symbol: _Optional[str] = ..., interval: _Optional[str] = ..., bars: _Optional[_Iterable[_Union[OHLCVBar, _Mapping]]] = ..., count: _Optional[int] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        from_symbol: _Optional[str] = ...,
+        to_symbol: _Optional[str] = ...,
+        interval: _Optional[str] = ...,
+        bars: _Optional[_Iterable[_Union[OHLCVBar, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetForexRateRequest(_message.Message):
     __slots__ = ()
@@ -340,7 +493,9 @@ class GetForexRateRequest(_message.Message):
     TO_CURRENCY_FIELD_NUMBER: _ClassVar[int]
     from_currency: str
     to_currency: str
-    def __init__(self, from_currency: _Optional[str] = ..., to_currency: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self, from_currency: _Optional[str] = ..., to_currency: _Optional[str] = ...
+    ) -> None: ...
 
 class ForexRateData(_message.Message):
     __slots__ = ()
@@ -362,7 +517,18 @@ class ForexRateData(_message.Message):
     time_zone: str
     bid_price: float
     ask_price: float
-    def __init__(self, from_currency_code: _Optional[str] = ..., from_currency_name: _Optional[str] = ..., to_currency_code: _Optional[str] = ..., to_currency_name: _Optional[str] = ..., exchange_rate: _Optional[float] = ..., last_refreshed: _Optional[str] = ..., time_zone: _Optional[str] = ..., bid_price: _Optional[float] = ..., ask_price: _Optional[float] = ...) -> None: ...
+    def __init__(
+        self,
+        from_currency_code: _Optional[str] = ...,
+        from_currency_name: _Optional[str] = ...,
+        to_currency_code: _Optional[str] = ...,
+        to_currency_name: _Optional[str] = ...,
+        exchange_rate: _Optional[float] = ...,
+        last_refreshed: _Optional[str] = ...,
+        time_zone: _Optional[str] = ...,
+        bid_price: _Optional[float] = ...,
+        ask_price: _Optional[float] = ...,
+    ) -> None: ...
 
 class ForexRateResponse(_message.Message):
     __slots__ = ()
@@ -372,7 +538,12 @@ class ForexRateResponse(_message.Message):
     rate: ForexRateData
     cached: bool
     cache_timestamp: str
-    def __init__(self, rate: _Optional[_Union[ForexRateData, _Mapping]] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        rate: _Optional[_Union[ForexRateData, _Mapping]] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class ListForexPairsRequest(_message.Message):
     __slots__ = ()
@@ -386,7 +557,12 @@ class ForexPair(_message.Message):
     from_symbol: str
     to_symbol: str
     name: str
-    def __init__(self, from_symbol: _Optional[str] = ..., to_symbol: _Optional[str] = ..., name: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        from_symbol: _Optional[str] = ...,
+        to_symbol: _Optional[str] = ...,
+        name: _Optional[str] = ...,
+    ) -> None: ...
 
 class ListForexPairsResponse(_message.Message):
     __slots__ = ()
@@ -394,7 +570,11 @@ class ListForexPairsResponse(_message.Message):
     COUNT_FIELD_NUMBER: _ClassVar[int]
     pairs: _containers.RepeatedCompositeFieldContainer[ForexPair]
     count: int
-    def __init__(self, pairs: _Optional[_Iterable[_Union[ForexPair, _Mapping]]] = ..., count: _Optional[int] = ...) -> None: ...
+    def __init__(
+        self,
+        pairs: _Optional[_Iterable[_Union[ForexPair, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+    ) -> None: ...
 
 class GetCryptoDailyRequest(_message.Message):
     __slots__ = ()
@@ -406,7 +586,13 @@ class GetCryptoDailyRequest(_message.Message):
     market: str
     start_date: str
     end_date: str
-    def __init__(self, symbol: _Optional[str] = ..., market: _Optional[str] = ..., start_date: _Optional[str] = ..., end_date: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        market: _Optional[str] = ...,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetCryptoIntradayRequest(_message.Message):
     __slots__ = ()
@@ -422,7 +608,15 @@ class GetCryptoIntradayRequest(_message.Message):
     start_date: str
     end_date: str
     outputsize: str
-    def __init__(self, symbol: _Optional[str] = ..., market: _Optional[str] = ..., interval: _Optional[str] = ..., start_date: _Optional[str] = ..., end_date: _Optional[str] = ..., outputsize: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        market: _Optional[str] = ...,
+        interval: _Optional[str] = ...,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+        outputsize: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetCryptoWeeklyRequest(_message.Message):
     __slots__ = ()
@@ -434,7 +628,13 @@ class GetCryptoWeeklyRequest(_message.Message):
     market: str
     start_date: str
     end_date: str
-    def __init__(self, symbol: _Optional[str] = ..., market: _Optional[str] = ..., start_date: _Optional[str] = ..., end_date: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        market: _Optional[str] = ...,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetCryptoMonthlyRequest(_message.Message):
     __slots__ = ()
@@ -446,7 +646,13 @@ class GetCryptoMonthlyRequest(_message.Message):
     market: str
     start_date: str
     end_date: str
-    def __init__(self, symbol: _Optional[str] = ..., market: _Optional[str] = ..., start_date: _Optional[str] = ..., end_date: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        market: _Optional[str] = ...,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+    ) -> None: ...
 
 class CryptoResponse(_message.Message):
     __slots__ = ()
@@ -464,7 +670,16 @@ class CryptoResponse(_message.Message):
     count: int
     cached: bool
     cache_timestamp: str
-    def __init__(self, symbol: _Optional[str] = ..., market: _Optional[str] = ..., interval: _Optional[str] = ..., bars: _Optional[_Iterable[_Union[OHLCVBar, _Mapping]]] = ..., count: _Optional[int] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        market: _Optional[str] = ...,
+        interval: _Optional[str] = ...,
+        bars: _Optional[_Iterable[_Union[OHLCVBar, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class ListCryptoSymbolsRequest(_message.Message):
     __slots__ = ()
@@ -476,7 +691,9 @@ class CryptoSymbol(_message.Message):
     NAME_FIELD_NUMBER: _ClassVar[int]
     symbol: str
     name: str
-    def __init__(self, symbol: _Optional[str] = ..., name: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self, symbol: _Optional[str] = ..., name: _Optional[str] = ...
+    ) -> None: ...
 
 class ListCryptoSymbolsResponse(_message.Message):
     __slots__ = ()
@@ -484,7 +701,11 @@ class ListCryptoSymbolsResponse(_message.Message):
     COUNT_FIELD_NUMBER: _ClassVar[int]
     symbols: _containers.RepeatedCompositeFieldContainer[CryptoSymbol]
     count: int
-    def __init__(self, symbols: _Optional[_Iterable[_Union[CryptoSymbol, _Mapping]]] = ..., count: _Optional[int] = ...) -> None: ...
+    def __init__(
+        self,
+        symbols: _Optional[_Iterable[_Union[CryptoSymbol, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+    ) -> None: ...
 
 class BatchCryptoQuoteRequest(_message.Message):
     __slots__ = ()
@@ -492,7 +713,9 @@ class BatchCryptoQuoteRequest(_message.Message):
     MARKET_FIELD_NUMBER: _ClassVar[int]
     symbols: _containers.RepeatedScalarFieldContainer[str]
     market: str
-    def __init__(self, symbols: _Optional[_Iterable[str]] = ..., market: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self, symbols: _Optional[_Iterable[str]] = ..., market: _Optional[str] = ...
+    ) -> None: ...
 
 class CryptoQuoteData(_message.Message):
     __slots__ = ()
@@ -508,7 +731,15 @@ class CryptoQuoteData(_message.Message):
     volume: int
     change_percent: float
     last_updated: str
-    def __init__(self, symbol: _Optional[str] = ..., market: _Optional[str] = ..., price: _Optional[float] = ..., volume: _Optional[int] = ..., change_percent: _Optional[float] = ..., last_updated: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        market: _Optional[str] = ...,
+        price: _Optional[float] = ...,
+        volume: _Optional[int] = ...,
+        change_percent: _Optional[float] = ...,
+        last_updated: _Optional[str] = ...,
+    ) -> None: ...
 
 class BatchCryptoQuoteResponse(_message.Message):
     __slots__ = ()
@@ -516,7 +747,11 @@ class BatchCryptoQuoteResponse(_message.Message):
     COUNT_FIELD_NUMBER: _ClassVar[int]
     quotes: _containers.RepeatedCompositeFieldContainer[CryptoQuoteData]
     count: int
-    def __init__(self, quotes: _Optional[_Iterable[_Union[CryptoQuoteData, _Mapping]]] = ..., count: _Optional[int] = ...) -> None: ...
+    def __init__(
+        self,
+        quotes: _Optional[_Iterable[_Union[CryptoQuoteData, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+    ) -> None: ...
 
 class GetCompanyOverviewRequest(_message.Message):
     __slots__ = ()
@@ -618,7 +853,55 @@ class CompanyOverview(_message.Message):
     shares_outstanding: int
     dividend_date: str
     ex_dividend_date: str
-    def __init__(self, symbol: _Optional[str] = ..., asset_type: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., cik: _Optional[str] = ..., exchange: _Optional[str] = ..., currency: _Optional[str] = ..., country: _Optional[str] = ..., sector: _Optional[str] = ..., industry: _Optional[str] = ..., address: _Optional[str] = ..., fiscal_year_end: _Optional[str] = ..., latest_quarter: _Optional[str] = ..., market_capitalization: _Optional[int] = ..., ebitda: _Optional[str] = ..., pe_ratio: _Optional[float] = ..., peg_ratio: _Optional[float] = ..., book_value: _Optional[float] = ..., dividend_per_share: _Optional[float] = ..., dividend_yield: _Optional[float] = ..., eps: _Optional[float] = ..., revenue_per_share_ttm: _Optional[float] = ..., profit_margin: _Optional[float] = ..., operating_margin_ttm: _Optional[float] = ..., return_on_assets_ttm: _Optional[float] = ..., return_on_equity_ttm: _Optional[float] = ..., revenue_ttm: _Optional[float] = ..., gross_profit_ttm: _Optional[float] = ..., diluted_eps_ttm: _Optional[float] = ..., quarterly_earnings_growth_yoy: _Optional[float] = ..., quarterly_revenue_growth_yoy: _Optional[float] = ..., analyst_target_price: _Optional[float] = ..., trailing_pe: _Optional[float] = ..., forward_pe: _Optional[float] = ..., price_to_sales_ratio_ttm: _Optional[float] = ..., price_to_book_ratio: _Optional[float] = ..., ev_to_revenue: _Optional[float] = ..., ev_to_ebitda: _Optional[float] = ..., beta: _Optional[float] = ..., week_52_high: _Optional[str] = ..., week_52_low: _Optional[str] = ..., day_50_moving_average: _Optional[str] = ..., day_200_moving_average: _Optional[str] = ..., shares_outstanding: _Optional[int] = ..., dividend_date: _Optional[str] = ..., ex_dividend_date: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        asset_type: _Optional[str] = ...,
+        name: _Optional[str] = ...,
+        description: _Optional[str] = ...,
+        cik: _Optional[str] = ...,
+        exchange: _Optional[str] = ...,
+        currency: _Optional[str] = ...,
+        country: _Optional[str] = ...,
+        sector: _Optional[str] = ...,
+        industry: _Optional[str] = ...,
+        address: _Optional[str] = ...,
+        fiscal_year_end: _Optional[str] = ...,
+        latest_quarter: _Optional[str] = ...,
+        market_capitalization: _Optional[int] = ...,
+        ebitda: _Optional[str] = ...,
+        pe_ratio: _Optional[float] = ...,
+        peg_ratio: _Optional[float] = ...,
+        book_value: _Optional[float] = ...,
+        dividend_per_share: _Optional[float] = ...,
+        dividend_yield: _Optional[float] = ...,
+        eps: _Optional[float] = ...,
+        revenue_per_share_ttm: _Optional[float] = ...,
+        profit_margin: _Optional[float] = ...,
+        operating_margin_ttm: _Optional[float] = ...,
+        return_on_assets_ttm: _Optional[float] = ...,
+        return_on_equity_ttm: _Optional[float] = ...,
+        revenue_ttm: _Optional[float] = ...,
+        gross_profit_ttm: _Optional[float] = ...,
+        diluted_eps_ttm: _Optional[float] = ...,
+        quarterly_earnings_growth_yoy: _Optional[float] = ...,
+        quarterly_revenue_growth_yoy: _Optional[float] = ...,
+        analyst_target_price: _Optional[float] = ...,
+        trailing_pe: _Optional[float] = ...,
+        forward_pe: _Optional[float] = ...,
+        price_to_sales_ratio_ttm: _Optional[float] = ...,
+        price_to_book_ratio: _Optional[float] = ...,
+        ev_to_revenue: _Optional[float] = ...,
+        ev_to_ebitda: _Optional[float] = ...,
+        beta: _Optional[float] = ...,
+        week_52_high: _Optional[str] = ...,
+        week_52_low: _Optional[str] = ...,
+        day_50_moving_average: _Optional[str] = ...,
+        day_200_moving_average: _Optional[str] = ...,
+        shares_outstanding: _Optional[int] = ...,
+        dividend_date: _Optional[str] = ...,
+        ex_dividend_date: _Optional[str] = ...,
+    ) -> None: ...
 
 class CompanyOverviewResponse(_message.Message):
     __slots__ = ()
@@ -628,7 +911,12 @@ class CompanyOverviewResponse(_message.Message):
     overview: CompanyOverview
     cached: bool
     cache_timestamp: str
-    def __init__(self, overview: _Optional[_Union[CompanyOverview, _Mapping]] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        overview: _Optional[_Union[CompanyOverview, _Mapping]] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetIncomeStatementRequest(_message.Message):
     __slots__ = ()
@@ -690,7 +978,35 @@ class IncomeStatement(_message.Message):
     ebit: int
     ebitda: int
     net_income: int
-    def __init__(self, fiscal_date_ending: _Optional[str] = ..., reported_currency: _Optional[str] = ..., gross_profit: _Optional[int] = ..., total_revenue: _Optional[int] = ..., cost_of_revenue: _Optional[int] = ..., cost_of_goods_and_services_sold: _Optional[int] = ..., operating_income: _Optional[int] = ..., selling_general_and_administrative: _Optional[int] = ..., research_and_development: _Optional[int] = ..., operating_expenses: _Optional[int] = ..., investment_income_net: _Optional[int] = ..., net_interest_income: _Optional[int] = ..., interest_income: _Optional[int] = ..., interest_expense: _Optional[int] = ..., non_interest_income: _Optional[int] = ..., other_non_operating_income: _Optional[int] = ..., depreciation: _Optional[int] = ..., depreciation_and_amortization: _Optional[int] = ..., income_before_tax: _Optional[int] = ..., income_tax_expense: _Optional[int] = ..., interest_and_debt_expense: _Optional[int] = ..., net_income_from_continuing_operations: _Optional[int] = ..., comprehensive_income_net_of_tax: _Optional[int] = ..., ebit: _Optional[int] = ..., ebitda: _Optional[int] = ..., net_income: _Optional[int] = ...) -> None: ...
+    def __init__(
+        self,
+        fiscal_date_ending: _Optional[str] = ...,
+        reported_currency: _Optional[str] = ...,
+        gross_profit: _Optional[int] = ...,
+        total_revenue: _Optional[int] = ...,
+        cost_of_revenue: _Optional[int] = ...,
+        cost_of_goods_and_services_sold: _Optional[int] = ...,
+        operating_income: _Optional[int] = ...,
+        selling_general_and_administrative: _Optional[int] = ...,
+        research_and_development: _Optional[int] = ...,
+        operating_expenses: _Optional[int] = ...,
+        investment_income_net: _Optional[int] = ...,
+        net_interest_income: _Optional[int] = ...,
+        interest_income: _Optional[int] = ...,
+        interest_expense: _Optional[int] = ...,
+        non_interest_income: _Optional[int] = ...,
+        other_non_operating_income: _Optional[int] = ...,
+        depreciation: _Optional[int] = ...,
+        depreciation_and_amortization: _Optional[int] = ...,
+        income_before_tax: _Optional[int] = ...,
+        income_tax_expense: _Optional[int] = ...,
+        interest_and_debt_expense: _Optional[int] = ...,
+        net_income_from_continuing_operations: _Optional[int] = ...,
+        comprehensive_income_net_of_tax: _Optional[int] = ...,
+        ebit: _Optional[int] = ...,
+        ebitda: _Optional[int] = ...,
+        net_income: _Optional[int] = ...,
+    ) -> None: ...
 
 class IncomeStatementResponse(_message.Message):
     __slots__ = ()
@@ -704,7 +1020,16 @@ class IncomeStatementResponse(_message.Message):
     quarterly_reports: _containers.RepeatedCompositeFieldContainer[IncomeStatement]
     cached: bool
     cache_timestamp: str
-    def __init__(self, symbol: _Optional[str] = ..., annual_reports: _Optional[_Iterable[_Union[IncomeStatement, _Mapping]]] = ..., quarterly_reports: _Optional[_Iterable[_Union[IncomeStatement, _Mapping]]] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        annual_reports: _Optional[_Iterable[_Union[IncomeStatement, _Mapping]]] = ...,
+        quarterly_reports: _Optional[
+            _Iterable[_Union[IncomeStatement, _Mapping]]
+        ] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetBalanceSheetRequest(_message.Message):
     __slots__ = ()
@@ -790,7 +1115,47 @@ class BalanceSheet(_message.Message):
     retained_earnings: int
     common_stock: int
     common_stock_shares_outstanding: int
-    def __init__(self, fiscal_date_ending: _Optional[str] = ..., reported_currency: _Optional[str] = ..., total_assets: _Optional[int] = ..., total_current_assets: _Optional[int] = ..., cash_and_cash_equivalents_at_carrying_value: _Optional[int] = ..., cash_and_short_term_investments: _Optional[int] = ..., inventory: _Optional[int] = ..., current_net_receivables: _Optional[int] = ..., total_non_current_assets: _Optional[int] = ..., property_plant_equipment: _Optional[int] = ..., accumulated_depreciation_amortization_ppe: _Optional[int] = ..., intangible_assets: _Optional[int] = ..., intangible_assets_excluding_goodwill: _Optional[int] = ..., goodwill: _Optional[int] = ..., investments: _Optional[int] = ..., long_term_investments: _Optional[int] = ..., short_term_investments: _Optional[int] = ..., other_current_assets: _Optional[int] = ..., other_non_current_assets: _Optional[int] = ..., total_liabilities: _Optional[int] = ..., total_current_liabilities: _Optional[int] = ..., current_accounts_payable: _Optional[int] = ..., deferred_revenue: _Optional[int] = ..., current_debt: _Optional[int] = ..., short_term_debt: _Optional[int] = ..., total_non_current_liabilities: _Optional[int] = ..., capital_lease_obligations: _Optional[int] = ..., long_term_debt: _Optional[int] = ..., current_long_term_debt: _Optional[int] = ..., long_term_debt_noncurrent: _Optional[int] = ..., short_long_term_debt_total: _Optional[int] = ..., other_current_liabilities: _Optional[int] = ..., other_non_current_liabilities: _Optional[int] = ..., total_shareholder_equity: _Optional[int] = ..., treasury_stock: _Optional[int] = ..., retained_earnings: _Optional[int] = ..., common_stock: _Optional[int] = ..., common_stock_shares_outstanding: _Optional[int] = ...) -> None: ...
+    def __init__(
+        self,
+        fiscal_date_ending: _Optional[str] = ...,
+        reported_currency: _Optional[str] = ...,
+        total_assets: _Optional[int] = ...,
+        total_current_assets: _Optional[int] = ...,
+        cash_and_cash_equivalents_at_carrying_value: _Optional[int] = ...,
+        cash_and_short_term_investments: _Optional[int] = ...,
+        inventory: _Optional[int] = ...,
+        current_net_receivables: _Optional[int] = ...,
+        total_non_current_assets: _Optional[int] = ...,
+        property_plant_equipment: _Optional[int] = ...,
+        accumulated_depreciation_amortization_ppe: _Optional[int] = ...,
+        intangible_assets: _Optional[int] = ...,
+        intangible_assets_excluding_goodwill: _Optional[int] = ...,
+        goodwill: _Optional[int] = ...,
+        investments: _Optional[int] = ...,
+        long_term_investments: _Optional[int] = ...,
+        short_term_investments: _Optional[int] = ...,
+        other_current_assets: _Optional[int] = ...,
+        other_non_current_assets: _Optional[int] = ...,
+        total_liabilities: _Optional[int] = ...,
+        total_current_liabilities: _Optional[int] = ...,
+        current_accounts_payable: _Optional[int] = ...,
+        deferred_revenue: _Optional[int] = ...,
+        current_debt: _Optional[int] = ...,
+        short_term_debt: _Optional[int] = ...,
+        total_non_current_liabilities: _Optional[int] = ...,
+        capital_lease_obligations: _Optional[int] = ...,
+        long_term_debt: _Optional[int] = ...,
+        current_long_term_debt: _Optional[int] = ...,
+        long_term_debt_noncurrent: _Optional[int] = ...,
+        short_long_term_debt_total: _Optional[int] = ...,
+        other_current_liabilities: _Optional[int] = ...,
+        other_non_current_liabilities: _Optional[int] = ...,
+        total_shareholder_equity: _Optional[int] = ...,
+        treasury_stock: _Optional[int] = ...,
+        retained_earnings: _Optional[int] = ...,
+        common_stock: _Optional[int] = ...,
+        common_stock_shares_outstanding: _Optional[int] = ...,
+    ) -> None: ...
 
 class BalanceSheetResponse(_message.Message):
     __slots__ = ()
@@ -804,7 +1169,14 @@ class BalanceSheetResponse(_message.Message):
     quarterly_reports: _containers.RepeatedCompositeFieldContainer[BalanceSheet]
     cached: bool
     cache_timestamp: str
-    def __init__(self, symbol: _Optional[str] = ..., annual_reports: _Optional[_Iterable[_Union[BalanceSheet, _Mapping]]] = ..., quarterly_reports: _Optional[_Iterable[_Union[BalanceSheet, _Mapping]]] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        annual_reports: _Optional[_Iterable[_Union[BalanceSheet, _Mapping]]] = ...,
+        quarterly_reports: _Optional[_Iterable[_Union[BalanceSheet, _Mapping]]] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetCashFlowRequest(_message.Message):
     __slots__ = ()
@@ -836,7 +1208,9 @@ class CashFlow(_message.Message):
     DIVIDEND_PAYOUT_COMMON_STOCK_FIELD_NUMBER: _ClassVar[int]
     DIVIDEND_PAYOUT_PREFERRED_STOCK_FIELD_NUMBER: _ClassVar[int]
     PROCEEDS_FROM_ISSUANCE_OF_COMMON_STOCK_FIELD_NUMBER: _ClassVar[int]
-    PROCEEDS_FROM_ISSUANCE_OF_LONG_TERM_DEBT_AND_CAPITAL_SECURITIES_NET_FIELD_NUMBER: _ClassVar[int]
+    PROCEEDS_FROM_ISSUANCE_OF_LONG_TERM_DEBT_AND_CAPITAL_SECURITIES_NET_FIELD_NUMBER: (
+        _ClassVar[int]
+    )
     PROCEEDS_FROM_ISSUANCE_OF_PREFERRED_STOCK_FIELD_NUMBER: _ClassVar[int]
     PROCEEDS_FROM_REPURCHASE_OF_EQUITY_FIELD_NUMBER: _ClassVar[int]
     PROCEEDS_FROM_SALE_OF_TREASURY_STOCK_FIELD_NUMBER: _ClassVar[int]
@@ -872,7 +1246,40 @@ class CashFlow(_message.Message):
     change_in_cash_and_cash_equivalents: int
     change_in_exchange_rate: int
     net_income: int
-    def __init__(self, fiscal_date_ending: _Optional[str] = ..., reported_currency: _Optional[str] = ..., operating_cashflow: _Optional[int] = ..., payments_for_operating_activities: _Optional[int] = ..., proceeds_from_operating_activities: _Optional[int] = ..., change_in_operating_liabilities: _Optional[int] = ..., change_in_operating_assets: _Optional[int] = ..., depreciation_depletion_and_amortization: _Optional[int] = ..., capital_expenditures: _Optional[int] = ..., change_in_receivables: _Optional[int] = ..., change_in_inventory: _Optional[int] = ..., profit_loss: _Optional[int] = ..., cashflow_from_investment: _Optional[int] = ..., cashflow_from_financing: _Optional[int] = ..., proceeds_from_repayments_of_short_term_debt: _Optional[int] = ..., payments_for_repurchase_of_common_stock: _Optional[int] = ..., payments_for_repurchase_of_equity: _Optional[int] = ..., payments_for_repurchase_of_preferred_stock: _Optional[int] = ..., dividend_payout: _Optional[int] = ..., dividend_payout_common_stock: _Optional[int] = ..., dividend_payout_preferred_stock: _Optional[int] = ..., proceeds_from_issuance_of_common_stock: _Optional[int] = ..., proceeds_from_issuance_of_long_term_debt_and_capital_securities_net: _Optional[int] = ..., proceeds_from_issuance_of_preferred_stock: _Optional[int] = ..., proceeds_from_repurchase_of_equity: _Optional[int] = ..., proceeds_from_sale_of_treasury_stock: _Optional[int] = ..., change_in_cash_and_cash_equivalents: _Optional[int] = ..., change_in_exchange_rate: _Optional[int] = ..., net_income: _Optional[int] = ...) -> None: ...
+    def __init__(
+        self,
+        fiscal_date_ending: _Optional[str] = ...,
+        reported_currency: _Optional[str] = ...,
+        operating_cashflow: _Optional[int] = ...,
+        payments_for_operating_activities: _Optional[int] = ...,
+        proceeds_from_operating_activities: _Optional[int] = ...,
+        change_in_operating_liabilities: _Optional[int] = ...,
+        change_in_operating_assets: _Optional[int] = ...,
+        depreciation_depletion_and_amortization: _Optional[int] = ...,
+        capital_expenditures: _Optional[int] = ...,
+        change_in_receivables: _Optional[int] = ...,
+        change_in_inventory: _Optional[int] = ...,
+        profit_loss: _Optional[int] = ...,
+        cashflow_from_investment: _Optional[int] = ...,
+        cashflow_from_financing: _Optional[int] = ...,
+        proceeds_from_repayments_of_short_term_debt: _Optional[int] = ...,
+        payments_for_repurchase_of_common_stock: _Optional[int] = ...,
+        payments_for_repurchase_of_equity: _Optional[int] = ...,
+        payments_for_repurchase_of_preferred_stock: _Optional[int] = ...,
+        dividend_payout: _Optional[int] = ...,
+        dividend_payout_common_stock: _Optional[int] = ...,
+        dividend_payout_preferred_stock: _Optional[int] = ...,
+        proceeds_from_issuance_of_common_stock: _Optional[int] = ...,
+        proceeds_from_issuance_of_long_term_debt_and_capital_securities_net: _Optional[
+            int
+        ] = ...,
+        proceeds_from_issuance_of_preferred_stock: _Optional[int] = ...,
+        proceeds_from_repurchase_of_equity: _Optional[int] = ...,
+        proceeds_from_sale_of_treasury_stock: _Optional[int] = ...,
+        change_in_cash_and_cash_equivalents: _Optional[int] = ...,
+        change_in_exchange_rate: _Optional[int] = ...,
+        net_income: _Optional[int] = ...,
+    ) -> None: ...
 
 class CashFlowResponse(_message.Message):
     __slots__ = ()
@@ -886,7 +1293,14 @@ class CashFlowResponse(_message.Message):
     quarterly_reports: _containers.RepeatedCompositeFieldContainer[CashFlow]
     cached: bool
     cache_timestamp: str
-    def __init__(self, symbol: _Optional[str] = ..., annual_reports: _Optional[_Iterable[_Union[CashFlow, _Mapping]]] = ..., quarterly_reports: _Optional[_Iterable[_Union[CashFlow, _Mapping]]] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        annual_reports: _Optional[_Iterable[_Union[CashFlow, _Mapping]]] = ...,
+        quarterly_reports: _Optional[_Iterable[_Union[CashFlow, _Mapping]]] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetEarningsRequest(_message.Message):
     __slots__ = ()
@@ -906,7 +1320,14 @@ class EarningsData(_message.Message):
     estimated_eps: float
     surprise: float
     surprise_percentage: float
-    def __init__(self, fiscal_date_ending: _Optional[str] = ..., reported_eps: _Optional[float] = ..., estimated_eps: _Optional[float] = ..., surprise: _Optional[float] = ..., surprise_percentage: _Optional[float] = ...) -> None: ...
+    def __init__(
+        self,
+        fiscal_date_ending: _Optional[str] = ...,
+        reported_eps: _Optional[float] = ...,
+        estimated_eps: _Optional[float] = ...,
+        surprise: _Optional[float] = ...,
+        surprise_percentage: _Optional[float] = ...,
+    ) -> None: ...
 
 class EarningsResponse(_message.Message):
     __slots__ = ()
@@ -920,7 +1341,14 @@ class EarningsResponse(_message.Message):
     quarterly_earnings: _containers.RepeatedCompositeFieldContainer[EarningsData]
     cached: bool
     cache_timestamp: str
-    def __init__(self, symbol: _Optional[str] = ..., annual_earnings: _Optional[_Iterable[_Union[EarningsData, _Mapping]]] = ..., quarterly_earnings: _Optional[_Iterable[_Union[EarningsData, _Mapping]]] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        annual_earnings: _Optional[_Iterable[_Union[EarningsData, _Mapping]]] = ...,
+        quarterly_earnings: _Optional[_Iterable[_Union[EarningsData, _Mapping]]] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetEarningsCalendarRequest(_message.Message):
     __slots__ = ()
@@ -928,7 +1356,9 @@ class GetEarningsCalendarRequest(_message.Message):
     HORIZON_FIELD_NUMBER: _ClassVar[int]
     symbol: str
     horizon: str
-    def __init__(self, symbol: _Optional[str] = ..., horizon: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self, symbol: _Optional[str] = ..., horizon: _Optional[str] = ...
+    ) -> None: ...
 
 class EarningsCalendarEvent(_message.Message):
     __slots__ = ()
@@ -944,7 +1374,15 @@ class EarningsCalendarEvent(_message.Message):
     fiscal_date_ending: float
     estimate: float
     currency: str
-    def __init__(self, symbol: _Optional[str] = ..., name: _Optional[str] = ..., report_date: _Optional[str] = ..., fiscal_date_ending: _Optional[float] = ..., estimate: _Optional[float] = ..., currency: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        name: _Optional[str] = ...,
+        report_date: _Optional[str] = ...,
+        fiscal_date_ending: _Optional[float] = ...,
+        estimate: _Optional[float] = ...,
+        currency: _Optional[str] = ...,
+    ) -> None: ...
 
 class EarningsCalendarResponse(_message.Message):
     __slots__ = ()
@@ -956,7 +1394,13 @@ class EarningsCalendarResponse(_message.Message):
     count: int
     cached: bool
     cache_timestamp: str
-    def __init__(self, events: _Optional[_Iterable[_Union[EarningsCalendarEvent, _Mapping]]] = ..., count: _Optional[int] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        events: _Optional[_Iterable[_Union[EarningsCalendarEvent, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetIPOCalendarRequest(_message.Message):
     __slots__ = ()
@@ -978,7 +1422,16 @@ class IPOEvent(_message.Message):
     price_range_high: str
     currency: str
     exchange: str
-    def __init__(self, symbol: _Optional[str] = ..., name: _Optional[str] = ..., ipo_date: _Optional[str] = ..., price_range_low: _Optional[str] = ..., price_range_high: _Optional[str] = ..., currency: _Optional[str] = ..., exchange: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        name: _Optional[str] = ...,
+        ipo_date: _Optional[str] = ...,
+        price_range_low: _Optional[str] = ...,
+        price_range_high: _Optional[str] = ...,
+        currency: _Optional[str] = ...,
+        exchange: _Optional[str] = ...,
+    ) -> None: ...
 
 class IPOCalendarResponse(_message.Message):
     __slots__ = ()
@@ -990,7 +1443,13 @@ class IPOCalendarResponse(_message.Message):
     count: int
     cached: bool
     cache_timestamp: str
-    def __init__(self, events: _Optional[_Iterable[_Union[IPOEvent, _Mapping]]] = ..., count: _Optional[int] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        events: _Optional[_Iterable[_Union[IPOEvent, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetETFProfileRequest(_message.Message):
     __slots__ = ()
@@ -1030,7 +1489,24 @@ class ETFProfile(_message.Message):
     inception_date: str
     data_source: str
     description: str
-    def __init__(self, symbol: _Optional[str] = ..., asset_class: _Optional[str] = ..., asset_class_size: _Optional[str] = ..., asset_class_style: _Optional[str] = ..., brand_name: _Optional[str] = ..., category: _Optional[str] = ..., focus: _Optional[str] = ..., niche: _Optional[str] = ..., strategy: _Optional[str] = ..., developer: _Optional[str] = ..., index_tracked: _Optional[str] = ..., issuer: _Optional[str] = ..., inception_date: _Optional[str] = ..., data_source: _Optional[str] = ..., description: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        asset_class: _Optional[str] = ...,
+        asset_class_size: _Optional[str] = ...,
+        asset_class_style: _Optional[str] = ...,
+        brand_name: _Optional[str] = ...,
+        category: _Optional[str] = ...,
+        focus: _Optional[str] = ...,
+        niche: _Optional[str] = ...,
+        strategy: _Optional[str] = ...,
+        developer: _Optional[str] = ...,
+        index_tracked: _Optional[str] = ...,
+        issuer: _Optional[str] = ...,
+        inception_date: _Optional[str] = ...,
+        data_source: _Optional[str] = ...,
+        description: _Optional[str] = ...,
+    ) -> None: ...
 
 class ETFProfileResponse(_message.Message):
     __slots__ = ()
@@ -1040,7 +1516,12 @@ class ETFProfileResponse(_message.Message):
     profile: ETFProfile
     cached: bool
     cache_timestamp: str
-    def __init__(self, profile: _Optional[_Union[ETFProfile, _Mapping]] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        profile: _Optional[_Union[ETFProfile, _Mapping]] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetDividendsRequest(_message.Message):
     __slots__ = ()
@@ -1060,7 +1541,14 @@ class DividendData(_message.Message):
     declaration_date: str
     record_date: str
     payment_date: str
-    def __init__(self, ex_dividend_date: _Optional[str] = ..., amount: _Optional[float] = ..., declaration_date: _Optional[str] = ..., record_date: _Optional[str] = ..., payment_date: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        ex_dividend_date: _Optional[str] = ...,
+        amount: _Optional[float] = ...,
+        declaration_date: _Optional[str] = ...,
+        record_date: _Optional[str] = ...,
+        payment_date: _Optional[str] = ...,
+    ) -> None: ...
 
 class DividendsResponse(_message.Message):
     __slots__ = ()
@@ -1074,7 +1562,14 @@ class DividendsResponse(_message.Message):
     count: int
     cached: bool
     cache_timestamp: str
-    def __init__(self, symbol: _Optional[str] = ..., dividends: _Optional[_Iterable[_Union[DividendData, _Mapping]]] = ..., count: _Optional[int] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        dividends: _Optional[_Iterable[_Union[DividendData, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetSplitsRequest(_message.Message):
     __slots__ = ()
@@ -1088,7 +1583,9 @@ class SplitData(_message.Message):
     SPLIT_COEFFICIENT_FIELD_NUMBER: _ClassVar[int]
     date: str
     split_coefficient: float
-    def __init__(self, date: _Optional[str] = ..., split_coefficient: _Optional[float] = ...) -> None: ...
+    def __init__(
+        self, date: _Optional[str] = ..., split_coefficient: _Optional[float] = ...
+    ) -> None: ...
 
 class SplitsResponse(_message.Message):
     __slots__ = ()
@@ -1102,7 +1599,14 @@ class SplitsResponse(_message.Message):
     count: int
     cached: bool
     cache_timestamp: str
-    def __init__(self, symbol: _Optional[str] = ..., splits: _Optional[_Iterable[_Union[SplitData, _Mapping]]] = ..., count: _Optional[int] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        splits: _Optional[_Iterable[_Union[SplitData, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetNewsRequest(_message.Message):
     __slots__ = ()
@@ -1118,7 +1622,15 @@ class GetNewsRequest(_message.Message):
     time_to: str
     sort: str
     limit: int
-    def __init__(self, tickers: _Optional[str] = ..., topics: _Optional[str] = ..., time_from: _Optional[str] = ..., time_to: _Optional[str] = ..., sort: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+    def __init__(
+        self,
+        tickers: _Optional[str] = ...,
+        topics: _Optional[str] = ...,
+        time_from: _Optional[str] = ...,
+        time_to: _Optional[str] = ...,
+        sort: _Optional[str] = ...,
+        limit: _Optional[int] = ...,
+    ) -> None: ...
 
 class NewsArticle(_message.Message):
     __slots__ = ()
@@ -1148,7 +1660,22 @@ class NewsArticle(_message.Message):
     overall_sentiment_score: float
     overall_sentiment_label: str
     ticker_sentiment: _containers.RepeatedCompositeFieldContainer[TickerSentiment]
-    def __init__(self, title: _Optional[str] = ..., url: _Optional[str] = ..., time_published: _Optional[str] = ..., authors: _Optional[_Iterable[str]] = ..., summary: _Optional[str] = ..., banner_image: _Optional[str] = ..., source: _Optional[str] = ..., category_within_source: _Optional[str] = ..., source_domain: _Optional[str] = ..., topics: _Optional[_Iterable[_Union[NewsTicker, _Mapping]]] = ..., overall_sentiment_score: _Optional[float] = ..., overall_sentiment_label: _Optional[str] = ..., ticker_sentiment: _Optional[_Iterable[_Union[TickerSentiment, _Mapping]]] = ...) -> None: ...
+    def __init__(
+        self,
+        title: _Optional[str] = ...,
+        url: _Optional[str] = ...,
+        time_published: _Optional[str] = ...,
+        authors: _Optional[_Iterable[str]] = ...,
+        summary: _Optional[str] = ...,
+        banner_image: _Optional[str] = ...,
+        source: _Optional[str] = ...,
+        category_within_source: _Optional[str] = ...,
+        source_domain: _Optional[str] = ...,
+        topics: _Optional[_Iterable[_Union[NewsTicker, _Mapping]]] = ...,
+        overall_sentiment_score: _Optional[float] = ...,
+        overall_sentiment_label: _Optional[str] = ...,
+        ticker_sentiment: _Optional[_Iterable[_Union[TickerSentiment, _Mapping]]] = ...,
+    ) -> None: ...
 
 class NewsTicker(_message.Message):
     __slots__ = ()
@@ -1156,7 +1683,9 @@ class NewsTicker(_message.Message):
     RELEVANCE_SCORE_FIELD_NUMBER: _ClassVar[int]
     topic: str
     relevance_score: float
-    def __init__(self, topic: _Optional[str] = ..., relevance_score: _Optional[float] = ...) -> None: ...
+    def __init__(
+        self, topic: _Optional[str] = ..., relevance_score: _Optional[float] = ...
+    ) -> None: ...
 
 class TickerSentiment(_message.Message):
     __slots__ = ()
@@ -1168,7 +1697,13 @@ class TickerSentiment(_message.Message):
     relevance_score: float
     ticker_sentiment_score: float
     ticker_sentiment_label: str
-    def __init__(self, ticker: _Optional[str] = ..., relevance_score: _Optional[float] = ..., ticker_sentiment_score: _Optional[float] = ..., ticker_sentiment_label: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        ticker: _Optional[str] = ...,
+        relevance_score: _Optional[float] = ...,
+        ticker_sentiment_score: _Optional[float] = ...,
+        ticker_sentiment_label: _Optional[str] = ...,
+    ) -> None: ...
 
 class NewsResponse(_message.Message):
     __slots__ = ()
@@ -1184,7 +1719,15 @@ class NewsResponse(_message.Message):
     relevance_score_definition: str
     cached: bool
     cache_timestamp: str
-    def __init__(self, articles: _Optional[_Iterable[_Union[NewsArticle, _Mapping]]] = ..., count: _Optional[int] = ..., sentiment_score_definition: _Optional[str] = ..., relevance_score_definition: _Optional[str] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        articles: _Optional[_Iterable[_Union[NewsArticle, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+        sentiment_score_definition: _Optional[str] = ...,
+        relevance_score_definition: _Optional[str] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetTopGainersLosersRequest(_message.Message):
     __slots__ = ()
@@ -1202,7 +1745,14 @@ class StockMover(_message.Message):
     change_amount: float
     change_percentage: float
     volume: int
-    def __init__(self, ticker: _Optional[str] = ..., price: _Optional[float] = ..., change_amount: _Optional[float] = ..., change_percentage: _Optional[float] = ..., volume: _Optional[int] = ...) -> None: ...
+    def __init__(
+        self,
+        ticker: _Optional[str] = ...,
+        price: _Optional[float] = ...,
+        change_amount: _Optional[float] = ...,
+        change_percentage: _Optional[float] = ...,
+        volume: _Optional[int] = ...,
+    ) -> None: ...
 
 class TopGainersLosersResponse(_message.Message):
     __slots__ = ()
@@ -1218,7 +1768,15 @@ class TopGainersLosersResponse(_message.Message):
     last_updated: str
     cached: bool
     cache_timestamp: str
-    def __init__(self, top_gainers: _Optional[_Iterable[_Union[StockMover, _Mapping]]] = ..., top_losers: _Optional[_Iterable[_Union[StockMover, _Mapping]]] = ..., most_actively_traded: _Optional[_Iterable[_Union[StockMover, _Mapping]]] = ..., last_updated: _Optional[str] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        top_gainers: _Optional[_Iterable[_Union[StockMover, _Mapping]]] = ...,
+        top_losers: _Optional[_Iterable[_Union[StockMover, _Mapping]]] = ...,
+        most_actively_traded: _Optional[_Iterable[_Union[StockMover, _Mapping]]] = ...,
+        last_updated: _Optional[str] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetAnalystRatingsRequest(_message.Message):
     __slots__ = ()
@@ -1236,7 +1794,13 @@ class AnalystRating(_message.Message):
     rating: str
     target_price: float
     date: str
-    def __init__(self, analyst_firm: _Optional[str] = ..., rating: _Optional[str] = ..., target_price: _Optional[float] = ..., date: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        analyst_firm: _Optional[str] = ...,
+        rating: _Optional[str] = ...,
+        target_price: _Optional[float] = ...,
+        date: _Optional[str] = ...,
+    ) -> None: ...
 
 class AnalystRatingsResponse(_message.Message):
     __slots__ = ()
@@ -1250,7 +1814,14 @@ class AnalystRatingsResponse(_message.Message):
     count: int
     cached: bool
     cache_timestamp: str
-    def __init__(self, symbol: _Optional[str] = ..., ratings: _Optional[_Iterable[_Union[AnalystRating, _Mapping]]] = ..., count: _Optional[int] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        ratings: _Optional[_Iterable[_Union[AnalystRating, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetInsiderTransactionsRequest(_message.Message):
     __slots__ = ()
@@ -1274,7 +1845,16 @@ class InsiderTransaction(_message.Message):
     shares: int
     price_per_share: float
     value: int
-    def __init__(self, insider_name: _Optional[str] = ..., position: _Optional[str] = ..., transaction_type: _Optional[str] = ..., transaction_date: _Optional[str] = ..., shares: _Optional[int] = ..., price_per_share: _Optional[float] = ..., value: _Optional[int] = ...) -> None: ...
+    def __init__(
+        self,
+        insider_name: _Optional[str] = ...,
+        position: _Optional[str] = ...,
+        transaction_type: _Optional[str] = ...,
+        transaction_date: _Optional[str] = ...,
+        shares: _Optional[int] = ...,
+        price_per_share: _Optional[float] = ...,
+        value: _Optional[int] = ...,
+    ) -> None: ...
 
 class InsiderTransactionsResponse(_message.Message):
     __slots__ = ()
@@ -1288,7 +1868,14 @@ class InsiderTransactionsResponse(_message.Message):
     count: int
     cached: bool
     cache_timestamp: str
-    def __init__(self, symbol: _Optional[str] = ..., transactions: _Optional[_Iterable[_Union[InsiderTransaction, _Mapping]]] = ..., count: _Optional[int] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        transactions: _Optional[_Iterable[_Union[InsiderTransaction, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetEarningsTranscriptRequest(_message.Message):
     __slots__ = ()
@@ -1298,7 +1885,12 @@ class GetEarningsTranscriptRequest(_message.Message):
     symbol: str
     year: str
     quarter: str
-    def __init__(self, symbol: _Optional[str] = ..., year: _Optional[str] = ..., quarter: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        year: _Optional[str] = ...,
+        quarter: _Optional[str] = ...,
+    ) -> None: ...
 
 class EarningsTranscript(_message.Message):
     __slots__ = ()
@@ -1312,7 +1904,14 @@ class EarningsTranscript(_message.Message):
     year: str
     transcript: str
     date: str
-    def __init__(self, symbol: _Optional[str] = ..., quarter: _Optional[str] = ..., year: _Optional[str] = ..., transcript: _Optional[str] = ..., date: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        quarter: _Optional[str] = ...,
+        year: _Optional[str] = ...,
+        transcript: _Optional[str] = ...,
+        date: _Optional[str] = ...,
+    ) -> None: ...
 
 class EarningsTranscriptResponse(_message.Message):
     __slots__ = ()
@@ -1322,7 +1921,12 @@ class EarningsTranscriptResponse(_message.Message):
     data: EarningsTranscript
     cached: bool
     cache_timestamp: str
-    def __init__(self, data: _Optional[_Union[EarningsTranscript, _Mapping]] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        data: _Optional[_Union[EarningsTranscript, _Mapping]] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetGDPRequest(_message.Message):
     __slots__ = ()
@@ -1336,7 +1940,9 @@ class EconomicDataPoint(_message.Message):
     VALUE_FIELD_NUMBER: _ClassVar[int]
     date: str
     value: float
-    def __init__(self, date: _Optional[str] = ..., value: _Optional[float] = ...) -> None: ...
+    def __init__(
+        self, date: _Optional[str] = ..., value: _Optional[float] = ...
+    ) -> None: ...
 
 class EconomicIndicatorResponse(_message.Message):
     __slots__ = ()
@@ -1354,7 +1960,16 @@ class EconomicIndicatorResponse(_message.Message):
     count: int
     cached: bool
     cache_timestamp: str
-    def __init__(self, name: _Optional[str] = ..., interval: _Optional[str] = ..., unit: _Optional[str] = ..., data: _Optional[_Iterable[_Union[EconomicDataPoint, _Mapping]]] = ..., count: _Optional[int] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        name: _Optional[str] = ...,
+        interval: _Optional[str] = ...,
+        unit: _Optional[str] = ...,
+        data: _Optional[_Iterable[_Union[EconomicDataPoint, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetGDPPerCapitaRequest(_message.Message):
     __slots__ = ()
@@ -1382,7 +1997,9 @@ class GetTreasuryYieldRequest(_message.Message):
     MATURITY_FIELD_NUMBER: _ClassVar[int]
     interval: str
     maturity: str
-    def __init__(self, interval: _Optional[str] = ..., maturity: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self, interval: _Optional[str] = ..., maturity: _Optional[str] = ...
+    ) -> None: ...
 
 class GetRetailSalesRequest(_message.Message):
     __slots__ = ()
@@ -1406,7 +2023,9 @@ class GetCommodityRequest(_message.Message):
     INTERVAL_FIELD_NUMBER: _ClassVar[int]
     commodity: str
     interval: str
-    def __init__(self, commodity: _Optional[str] = ..., interval: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self, commodity: _Optional[str] = ..., interval: _Optional[str] = ...
+    ) -> None: ...
 
 class CommodityResponse(_message.Message):
     __slots__ = ()
@@ -1424,7 +2043,16 @@ class CommodityResponse(_message.Message):
     count: int
     cached: bool
     cache_timestamp: str
-    def __init__(self, name: _Optional[str] = ..., interval: _Optional[str] = ..., unit: _Optional[str] = ..., data: _Optional[_Iterable[_Union[EconomicDataPoint, _Mapping]]] = ..., count: _Optional[int] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        name: _Optional[str] = ...,
+        interval: _Optional[str] = ...,
+        unit: _Optional[str] = ...,
+        data: _Optional[_Iterable[_Union[EconomicDataPoint, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetAllCommoditiesRequest(_message.Message):
     __slots__ = ()
@@ -1440,7 +2068,12 @@ class AllCommoditiesResponse(_message.Message):
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
         value: CommodityResponse
-        def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[CommodityResponse, _Mapping]] = ...) -> None: ...
+        def __init__(
+            self,
+            key: _Optional[str] = ...,
+            value: _Optional[_Union[CommodityResponse, _Mapping]] = ...,
+        ) -> None: ...
+
     COMMODITIES_FIELD_NUMBER: _ClassVar[int]
     COUNT_FIELD_NUMBER: _ClassVar[int]
     CACHED_FIELD_NUMBER: _ClassVar[int]
@@ -1449,7 +2082,13 @@ class AllCommoditiesResponse(_message.Message):
     count: int
     cached: bool
     cache_timestamp: str
-    def __init__(self, commodities: _Optional[_Mapping[str, CommodityResponse]] = ..., count: _Optional[int] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        commodities: _Optional[_Mapping[str, CommodityResponse]] = ...,
+        count: _Optional[int] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetOptionsChainRequest(_message.Message):
     __slots__ = ()
@@ -1457,7 +2096,9 @@ class GetOptionsChainRequest(_message.Message):
     DATE_FIELD_NUMBER: _ClassVar[int]
     symbol: str
     date: str
-    def __init__(self, symbol: _Optional[str] = ..., date: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self, symbol: _Optional[str] = ..., date: _Optional[str] = ...
+    ) -> None: ...
 
 class OptionContract(_message.Message):
     __slots__ = ()
@@ -1501,7 +2142,29 @@ class OptionContract(_message.Message):
     theta: float
     vega: float
     rho: float
-    def __init__(self, contract_id: _Optional[str] = ..., symbol: _Optional[str] = ..., expiration: _Optional[str] = ..., strike: _Optional[float] = ..., type: _Optional[str] = ..., last: _Optional[float] = ..., mark: _Optional[float] = ..., bid: _Optional[float] = ..., bid_size: _Optional[float] = ..., ask: _Optional[float] = ..., ask_size: _Optional[float] = ..., volume: _Optional[int] = ..., open_interest: _Optional[int] = ..., date: _Optional[str] = ..., implied_volatility: _Optional[float] = ..., delta: _Optional[float] = ..., gamma: _Optional[float] = ..., theta: _Optional[float] = ..., vega: _Optional[float] = ..., rho: _Optional[float] = ...) -> None: ...
+    def __init__(
+        self,
+        contract_id: _Optional[str] = ...,
+        symbol: _Optional[str] = ...,
+        expiration: _Optional[str] = ...,
+        strike: _Optional[float] = ...,
+        type: _Optional[str] = ...,
+        last: _Optional[float] = ...,
+        mark: _Optional[float] = ...,
+        bid: _Optional[float] = ...,
+        bid_size: _Optional[float] = ...,
+        ask: _Optional[float] = ...,
+        ask_size: _Optional[float] = ...,
+        volume: _Optional[int] = ...,
+        open_interest: _Optional[int] = ...,
+        date: _Optional[str] = ...,
+        implied_volatility: _Optional[float] = ...,
+        delta: _Optional[float] = ...,
+        gamma: _Optional[float] = ...,
+        theta: _Optional[float] = ...,
+        vega: _Optional[float] = ...,
+        rho: _Optional[float] = ...,
+    ) -> None: ...
 
 class OptionsChainResponse(_message.Message):
     __slots__ = ()
@@ -1515,7 +2178,14 @@ class OptionsChainResponse(_message.Message):
     count: int
     cached: bool
     cache_timestamp: str
-    def __init__(self, symbol: _Optional[str] = ..., contracts: _Optional[_Iterable[_Union[OptionContract, _Mapping]]] = ..., count: _Optional[int] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        contracts: _Optional[_Iterable[_Union[OptionContract, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetHistoricalOptionsRequest(_message.Message):
     __slots__ = ()
@@ -1523,7 +2193,9 @@ class GetHistoricalOptionsRequest(_message.Message):
     DATE_FIELD_NUMBER: _ClassVar[int]
     symbol: str
     date: str
-    def __init__(self, symbol: _Optional[str] = ..., date: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self, symbol: _Optional[str] = ..., date: _Optional[str] = ...
+    ) -> None: ...
 
 class HistoricalOptionsResponse(_message.Message):
     __slots__ = ()
@@ -1539,7 +2211,15 @@ class HistoricalOptionsResponse(_message.Message):
     count: int
     cached: bool
     cache_timestamp: str
-    def __init__(self, symbol: _Optional[str] = ..., date: _Optional[str] = ..., contracts: _Optional[_Iterable[_Union[OptionContract, _Mapping]]] = ..., count: _Optional[int] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        date: _Optional[str] = ...,
+        contracts: _Optional[_Iterable[_Union[OptionContract, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class GetOptionContractRequest(_message.Message):
     __slots__ = ()
@@ -1555,7 +2235,12 @@ class OptionContractResponse(_message.Message):
     contract: OptionContract
     cached: bool
     cache_timestamp: str
-    def __init__(self, contract: _Optional[_Union[OptionContract, _Mapping]] = ..., cached: _Optional[bool] = ..., cache_timestamp: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        contract: _Optional[_Union[OptionContract, _Mapping]] = ...,
+        cached: _Optional[bool] = ...,
+        cache_timestamp: _Optional[str] = ...,
+    ) -> None: ...
 
 class HealthCheckRequest(_message.Message):
     __slots__ = ()
@@ -1569,7 +2254,10 @@ class HealthCheckResponse(_message.Message):
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
         value: int
-        def __init__(self, key: _Optional[str] = ..., value: _Optional[int] = ...) -> None: ...
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[int] = ...
+        ) -> None: ...
+
     STATUS_FIELD_NUMBER: _ClassVar[int]
     SERVICE_FIELD_NUMBER: _ClassVar[int]
     VERSION_FIELD_NUMBER: _ClassVar[int]
@@ -1582,7 +2270,15 @@ class HealthCheckResponse(_message.Message):
     uptime_seconds: int
     cache_size: int
     data_sources: _containers.ScalarMap[str, int]
-    def __init__(self, status: _Optional[str] = ..., service: _Optional[str] = ..., version: _Optional[str] = ..., uptime_seconds: _Optional[int] = ..., cache_size: _Optional[int] = ..., data_sources: _Optional[_Mapping[str, int]] = ...) -> None: ...
+    def __init__(
+        self,
+        status: _Optional[str] = ...,
+        service: _Optional[str] = ...,
+        version: _Optional[str] = ...,
+        uptime_seconds: _Optional[int] = ...,
+        cache_size: _Optional[int] = ...,
+        data_sources: _Optional[_Mapping[str, int]] = ...,
+    ) -> None: ...
 
 class GetServiceInfoRequest(_message.Message):
     __slots__ = ()
@@ -1596,7 +2292,10 @@ class ServiceInfo(_message.Message):
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
         value: str
-        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[str] = ...
+        ) -> None: ...
+
     SERVICE_NAME_FIELD_NUMBER: _ClassVar[int]
     VERSION_FIELD_NUMBER: _ClassVar[int]
     ENVIRONMENT_FIELD_NUMBER: _ClassVar[int]
@@ -1609,7 +2308,15 @@ class ServiceInfo(_message.Message):
     supported_assets: _containers.RepeatedScalarFieldContainer[str]
     data_providers: _containers.RepeatedScalarFieldContainer[str]
     features: _containers.ScalarMap[str, str]
-    def __init__(self, service_name: _Optional[str] = ..., version: _Optional[str] = ..., environment: _Optional[str] = ..., supported_assets: _Optional[_Iterable[str]] = ..., data_providers: _Optional[_Iterable[str]] = ..., features: _Optional[_Mapping[str, str]] = ...) -> None: ...
+    def __init__(
+        self,
+        service_name: _Optional[str] = ...,
+        version: _Optional[str] = ...,
+        environment: _Optional[str] = ...,
+        supported_assets: _Optional[_Iterable[str]] = ...,
+        data_providers: _Optional[_Iterable[str]] = ...,
+        features: _Optional[_Mapping[str, str]] = ...,
+    ) -> None: ...
 
 class GetCacheStatsRequest(_message.Message):
     __slots__ = ()
@@ -1623,7 +2330,10 @@ class CacheStats(_message.Message):
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
         value: int
-        def __init__(self, key: _Optional[str] = ..., value: _Optional[int] = ...) -> None: ...
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[int] = ...
+        ) -> None: ...
+
     TOTAL_ENTRIES_FIELD_NUMBER: _ClassVar[int]
     TOTAL_SIZE_BYTES_FIELD_NUMBER: _ClassVar[int]
     HIT_RATE_FIELD_NUMBER: _ClassVar[int]
@@ -1636,4 +2346,12 @@ class CacheStats(_message.Message):
     hits: int
     misses: int
     entries_by_domain: _containers.ScalarMap[str, int]
-    def __init__(self, total_entries: _Optional[int] = ..., total_size_bytes: _Optional[int] = ..., hit_rate: _Optional[float] = ..., hits: _Optional[int] = ..., misses: _Optional[int] = ..., entries_by_domain: _Optional[_Mapping[str, int]] = ...) -> None: ...
+    def __init__(
+        self,
+        total_entries: _Optional[int] = ...,
+        total_size_bytes: _Optional[int] = ...,
+        hit_rate: _Optional[float] = ...,
+        hits: _Optional[int] = ...,
+        misses: _Optional[int] = ...,
+        entries_by_domain: _Optional[_Mapping[str, int]] = ...,
+    ) -> None: ...

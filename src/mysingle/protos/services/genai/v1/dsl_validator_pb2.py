@@ -4,6 +4,7 @@
 # source: services/genai/v1/dsl_validator.proto
 # Protobuf Python Version: 6.33.1
 """Generated protocol buffer code."""
+
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
@@ -15,45 +16,47 @@ _runtime_version.ValidateProtobufRuntimeVersion(
     6,
     33,
     1,
-    '',
-    'services/genai/v1/dsl_validator.proto'
+    "",
+    "services/genai/v1/dsl_validator.proto",
 )
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
 
 
-
-
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n%services/genai/v1/dsl_validator.proto\x12\x13genai.dsl_validator\x1a\x12\x63ommon/error.proto\x1a\x15\x63ommon/metadata.proto\"\xb1\x01\n\x12ValidateDSLRequest\x12\x19\n\x08\x64sl_code\x18\x01 \x01(\tR\x07\x64slCode\x12L\n\x0fvalidation_type\x18\x02 \x01(\x0e\x32#.genai.dsl_validator.ValidationTypeR\x0evalidationType\x12\x32\n\x08metadata\x18\x03 \x01(\x0b\x32\x16.genai.common.MetadataR\x08metadata\"\xe7\x01\n\x13ValidateDSLResponse\x12\x19\n\x08is_valid\x18\x01 \x01(\x08R\x07isValid\x12\x45\n\rsyntax_errors\x18\x02 \x03(\x0b\x32 .genai.dsl_validator.SyntaxErrorR\x0csyntaxErrors\x12L\n\x11semantic_warnings\x18\x03 \x03(\x0b\x32\x1f.genai.common.ValidationWarningR\x10semanticWarnings\x12 \n\x0bsuggestions\x18\x04 \x03(\tR\x0bsuggestions\"\x87\x01\n\x0bSyntaxError\x12\x12\n\x04line\x18\x01 \x01(\x05R\x04line\x12\x16\n\x06\x63olumn\x18\x02 \x01(\x05R\x06\x63olumn\x12\x18\n\x07message\x18\x03 \x01(\tR\x07message\x12\x1a\n\x08\x65xpected\x18\x04 \x01(\tR\x08\x65xpected\x12\x16\n\x06\x61\x63tual\x18\x05 \x01(\tR\x06\x61\x63tual\"\xda\x01\n\x16\x41utocompleteDSLRequest\x12\x1f\n\x0bpartial_dsl\x18\x01 \x01(\tR\npartialDsl\x12\'\n\x0f\x63ursor_position\x18\x02 \x01(\x05R\x0e\x63ursorPosition\x12\x42\n\x07\x63ontext\x18\x03 \x01(\x0b\x32(.genai.dsl_validator.AutocompleteContextR\x07\x63ontext\x12\x32\n\x08metadata\x18\x04 \x01(\x0b\x32\x16.genai.common.MetadataR\x08metadata\"P\n\x13\x41utocompleteContext\x12\x18\n\x07section\x18\x01 \x01(\tR\x07section\x12\x1f\n\x0bparent_node\x18\x02 \x01(\tR\nparentNode\"h\n\x17\x41utocompleteDSLResponse\x12M\n\x0bsuggestions\x18\x01 \x03(\x0b\x32+.genai.dsl_validator.AutocompleteSuggestionR\x0bsuggestions\"\xee\x01\n\x16\x41utocompleteSuggestion\x12\x14\n\x05value\x18\x01 \x01(\tR\x05value\x12 \n\x0b\x64\x65scription\x18\x02 \x01(\tR\x0b\x64\x65scription\x12\x37\n\x04type\x18\x03 \x01(\x0e\x32#.genai.dsl_validator.SuggestionTypeR\x04type\x12=\n\nconfidence\x18\x04 \x01(\x0b\x32\x1d.genai.common.ConfidenceScoreR\nconfidence\x12$\n\rdocumentation\x18\x05 \x01(\tR\rdocumentation\"`\n\x14GetSyntaxHelpRequest\x12\x14\n\x05topic\x18\x01 \x01(\tR\x05topic\x12\x32\n\x08metadata\x18\x02 \x01(\x0b\x32\x16.genai.common.MetadataR\x08metadata\"\x92\x01\n\x15GetSyntaxHelpResponse\x12\x14\n\x05title\x18\x01 \x01(\tR\x05title\x12 \n\x0b\x64\x65scription\x18\x02 \x01(\tR\x0b\x64\x65scription\x12\x1a\n\x08\x65xamples\x18\x03 \x03(\tR\x08\x65xamples\x12%\n\x0erelated_topics\x18\x04 \x03(\tR\rrelatedTopics*\x85\x01\n\x0eValidationType\x12\x1f\n\x1bVALIDATION_TYPE_UNSPECIFIED\x10\x00\x12\x1a\n\x16VALIDATION_TYPE_SYNTAX\x10\x01\x12\x1c\n\x18VALIDATION_TYPE_SEMANTIC\x10\x02\x12\x18\n\x14VALIDATION_TYPE_FULL\x10\x03*\xc6\x01\n\x0eSuggestionType\x12\x1f\n\x1bSUGGESTION_TYPE_UNSPECIFIED\x10\x00\x12\x1b\n\x17SUGGESTION_TYPE_KEYWORD\x10\x01\x12\x1c\n\x18SUGGESTION_TYPE_FUNCTION\x10\x02\x12\x1d\n\x19SUGGESTION_TYPE_PARAMETER\x10\x03\x12\x1c\n\x18SUGGESTION_TYPE_VARIABLE\x10\x04\x12\x1b\n\x17SUGGESTION_TYPE_SECTION\x10\x05\x32\xcd\x02\n\x13\x44SLValidatorService\x12`\n\x0bValidateDSL\x12\'.genai.dsl_validator.ValidateDSLRequest\x1a(.genai.dsl_validator.ValidateDSLResponse\x12l\n\x0f\x41utocompleteDSL\x12+.genai.dsl_validator.AutocompleteDSLRequest\x1a,.genai.dsl_validator.AutocompleteDSLResponse\x12\x66\n\rGetSyntaxHelp\x12).genai.dsl_validator.GetSyntaxHelpRequest\x1a*.genai.dsl_validator.GetSyntaxHelpResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
+    b'\n%services/genai/v1/dsl_validator.proto\x12\x13genai.dsl_validator\x1a\x12\x63ommon/error.proto\x1a\x15\x63ommon/metadata.proto"\xb1\x01\n\x12ValidateDSLRequest\x12\x19\n\x08\x64sl_code\x18\x01 \x01(\tR\x07\x64slCode\x12L\n\x0fvalidation_type\x18\x02 \x01(\x0e\x32#.genai.dsl_validator.ValidationTypeR\x0evalidationType\x12\x32\n\x08metadata\x18\x03 \x01(\x0b\x32\x16.genai.common.MetadataR\x08metadata"\xe7\x01\n\x13ValidateDSLResponse\x12\x19\n\x08is_valid\x18\x01 \x01(\x08R\x07isValid\x12\x45\n\rsyntax_errors\x18\x02 \x03(\x0b\x32 .genai.dsl_validator.SyntaxErrorR\x0csyntaxErrors\x12L\n\x11semantic_warnings\x18\x03 \x03(\x0b\x32\x1f.genai.common.ValidationWarningR\x10semanticWarnings\x12 \n\x0bsuggestions\x18\x04 \x03(\tR\x0bsuggestions"\x87\x01\n\x0bSyntaxError\x12\x12\n\x04line\x18\x01 \x01(\x05R\x04line\x12\x16\n\x06\x63olumn\x18\x02 \x01(\x05R\x06\x63olumn\x12\x18\n\x07message\x18\x03 \x01(\tR\x07message\x12\x1a\n\x08\x65xpected\x18\x04 \x01(\tR\x08\x65xpected\x12\x16\n\x06\x61\x63tual\x18\x05 \x01(\tR\x06\x61\x63tual"\xda\x01\n\x16\x41utocompleteDSLRequest\x12\x1f\n\x0bpartial_dsl\x18\x01 \x01(\tR\npartialDsl\x12\'\n\x0f\x63ursor_position\x18\x02 \x01(\x05R\x0e\x63ursorPosition\x12\x42\n\x07\x63ontext\x18\x03 \x01(\x0b\x32(.genai.dsl_validator.AutocompleteContextR\x07\x63ontext\x12\x32\n\x08metadata\x18\x04 \x01(\x0b\x32\x16.genai.common.MetadataR\x08metadata"P\n\x13\x41utocompleteContext\x12\x18\n\x07section\x18\x01 \x01(\tR\x07section\x12\x1f\n\x0bparent_node\x18\x02 \x01(\tR\nparentNode"h\n\x17\x41utocompleteDSLResponse\x12M\n\x0bsuggestions\x18\x01 \x03(\x0b\x32+.genai.dsl_validator.AutocompleteSuggestionR\x0bsuggestions"\xee\x01\n\x16\x41utocompleteSuggestion\x12\x14\n\x05value\x18\x01 \x01(\tR\x05value\x12 \n\x0b\x64\x65scription\x18\x02 \x01(\tR\x0b\x64\x65scription\x12\x37\n\x04type\x18\x03 \x01(\x0e\x32#.genai.dsl_validator.SuggestionTypeR\x04type\x12=\n\nconfidence\x18\x04 \x01(\x0b\x32\x1d.genai.common.ConfidenceScoreR\nconfidence\x12$\n\rdocumentation\x18\x05 \x01(\tR\rdocumentation"`\n\x14GetSyntaxHelpRequest\x12\x14\n\x05topic\x18\x01 \x01(\tR\x05topic\x12\x32\n\x08metadata\x18\x02 \x01(\x0b\x32\x16.genai.common.MetadataR\x08metadata"\x92\x01\n\x15GetSyntaxHelpResponse\x12\x14\n\x05title\x18\x01 \x01(\tR\x05title\x12 \n\x0b\x64\x65scription\x18\x02 \x01(\tR\x0b\x64\x65scription\x12\x1a\n\x08\x65xamples\x18\x03 \x03(\tR\x08\x65xamples\x12%\n\x0erelated_topics\x18\x04 \x03(\tR\rrelatedTopics*\x85\x01\n\x0eValidationType\x12\x1f\n\x1bVALIDATION_TYPE_UNSPECIFIED\x10\x00\x12\x1a\n\x16VALIDATION_TYPE_SYNTAX\x10\x01\x12\x1c\n\x18VALIDATION_TYPE_SEMANTIC\x10\x02\x12\x18\n\x14VALIDATION_TYPE_FULL\x10\x03*\xc6\x01\n\x0eSuggestionType\x12\x1f\n\x1bSUGGESTION_TYPE_UNSPECIFIED\x10\x00\x12\x1b\n\x17SUGGESTION_TYPE_KEYWORD\x10\x01\x12\x1c\n\x18SUGGESTION_TYPE_FUNCTION\x10\x02\x12\x1d\n\x19SUGGESTION_TYPE_PARAMETER\x10\x03\x12\x1c\n\x18SUGGESTION_TYPE_VARIABLE\x10\x04\x12\x1b\n\x17SUGGESTION_TYPE_SECTION\x10\x05\x32\xcd\x02\n\x13\x44SLValidatorService\x12`\n\x0bValidateDSL\x12\'.genai.dsl_validator.ValidateDSLRequest\x1a(.genai.dsl_validator.ValidateDSLResponse\x12l\n\x0f\x41utocompleteDSL\x12+.genai.dsl_validator.AutocompleteDSLRequest\x1a,.genai.dsl_validator.AutocompleteDSLResponse\x12\x66\n\rGetSyntaxHelp\x12).genai.dsl_validator.GetSyntaxHelpRequest\x1a*.genai.dsl_validator.GetSyntaxHelpResponseb\x06proto3'
+)
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
-_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'services.genai.v1.dsl_validator_pb2', _globals)
+_builder.BuildTopDescriptorsAndMessages(
+    DESCRIPTOR, "services.genai.v1.dsl_validator_pb2", _globals
+)
 if not _descriptor._USE_C_DESCRIPTORS:
-  DESCRIPTOR._loaded_options = None
-  _globals['_VALIDATIONTYPE']._serialized_start=1555
-  _globals['_VALIDATIONTYPE']._serialized_end=1688
-  _globals['_SUGGESTIONTYPE']._serialized_start=1691
-  _globals['_SUGGESTIONTYPE']._serialized_end=1889
-  _globals['_VALIDATEDSLREQUEST']._serialized_start=106
-  _globals['_VALIDATEDSLREQUEST']._serialized_end=283
-  _globals['_VALIDATEDSLRESPONSE']._serialized_start=286
-  _globals['_VALIDATEDSLRESPONSE']._serialized_end=517
-  _globals['_SYNTAXERROR']._serialized_start=520
-  _globals['_SYNTAXERROR']._serialized_end=655
-  _globals['_AUTOCOMPLETEDSLREQUEST']._serialized_start=658
-  _globals['_AUTOCOMPLETEDSLREQUEST']._serialized_end=876
-  _globals['_AUTOCOMPLETECONTEXT']._serialized_start=878
-  _globals['_AUTOCOMPLETECONTEXT']._serialized_end=958
-  _globals['_AUTOCOMPLETEDSLRESPONSE']._serialized_start=960
-  _globals['_AUTOCOMPLETEDSLRESPONSE']._serialized_end=1064
-  _globals['_AUTOCOMPLETESUGGESTION']._serialized_start=1067
-  _globals['_AUTOCOMPLETESUGGESTION']._serialized_end=1305
-  _globals['_GETSYNTAXHELPREQUEST']._serialized_start=1307
-  _globals['_GETSYNTAXHELPREQUEST']._serialized_end=1403
-  _globals['_GETSYNTAXHELPRESPONSE']._serialized_start=1406
-  _globals['_GETSYNTAXHELPRESPONSE']._serialized_end=1552
-  _globals['_DSLVALIDATORSERVICE']._serialized_start=1892
-  _globals['_DSLVALIDATORSERVICE']._serialized_end=2225
+    DESCRIPTOR._loaded_options = None
+    _globals["_VALIDATIONTYPE"]._serialized_start = 1555
+    _globals["_VALIDATIONTYPE"]._serialized_end = 1688
+    _globals["_SUGGESTIONTYPE"]._serialized_start = 1691
+    _globals["_SUGGESTIONTYPE"]._serialized_end = 1889
+    _globals["_VALIDATEDSLREQUEST"]._serialized_start = 106
+    _globals["_VALIDATEDSLREQUEST"]._serialized_end = 283
+    _globals["_VALIDATEDSLRESPONSE"]._serialized_start = 286
+    _globals["_VALIDATEDSLRESPONSE"]._serialized_end = 517
+    _globals["_SYNTAXERROR"]._serialized_start = 520
+    _globals["_SYNTAXERROR"]._serialized_end = 655
+    _globals["_AUTOCOMPLETEDSLREQUEST"]._serialized_start = 658
+    _globals["_AUTOCOMPLETEDSLREQUEST"]._serialized_end = 876
+    _globals["_AUTOCOMPLETECONTEXT"]._serialized_start = 878
+    _globals["_AUTOCOMPLETECONTEXT"]._serialized_end = 958
+    _globals["_AUTOCOMPLETEDSLRESPONSE"]._serialized_start = 960
+    _globals["_AUTOCOMPLETEDSLRESPONSE"]._serialized_end = 1064
+    _globals["_AUTOCOMPLETESUGGESTION"]._serialized_start = 1067
+    _globals["_AUTOCOMPLETESUGGESTION"]._serialized_end = 1305
+    _globals["_GETSYNTAXHELPREQUEST"]._serialized_start = 1307
+    _globals["_GETSYNTAXHELPREQUEST"]._serialized_end = 1403
+    _globals["_GETSYNTAXHELPRESPONSE"]._serialized_start = 1406
+    _globals["_GETSYNTAXHELPRESPONSE"]._serialized_end = 1552
+    _globals["_DSLVALIDATORSERVICE"]._serialized_start = 1892
+    _globals["_DSLVALIDATORSERVICE"]._serialized_end = 2225
 # @@protoc_insertion_point(module_scope)

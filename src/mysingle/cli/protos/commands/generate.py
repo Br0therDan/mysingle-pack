@@ -57,10 +57,23 @@ def rewrite_generated_imports(
 
     log("생성된 파일의 import 경로 수정 중...", LogLevel.STEP)
 
-    patterns = ("*_pb2.py", "*_pb2_grpc.py")
+    # .py 파일과 .pyi 타입 스텁 파일 모두 처리
+    patterns = ("*_pb2.py", "*_pb2_grpc.py", "*_pb2.pyi", "*_pb2_grpc.pyi")
     replacements = [
+        # Pattern 1: from protos.xxx -> from mysingle.protos.xxx
         (re.compile(r"from protos\."), f"from {package_name}.protos."),
+        # Pattern 2: import protos.xxx -> import mysingle.protos.xxx
         (re.compile(r"import protos\."), f"import {package_name}.protos."),
+        # Pattern 3: from common import xxx -> from mysingle.protos.common import xxx
+        (
+            re.compile(r"^from common import ", re.MULTILINE),
+            f"from {package_name}.protos.common import ",
+        ),
+        # Pattern 4: from services.xxx import -> from mysingle.protos.services.xxx import
+        (
+            re.compile(r"^from services\.", re.MULTILINE),
+            f"from {package_name}.protos.services.",
+        ),
     ]
 
     modified: list[Path] = []
@@ -133,13 +146,12 @@ def execute(args: argparse.Namespace, config: ProtoConfig) -> int:
 
     # 2. Import 경로 수정
     if not args.skip_rewrite:
-        package_dir = config.generated_root / config.package_name
-        rewrite_generated_imports(package_dir, config.package_name)
+        # generated_root는 이미 src/mysingle/protos를 가리킴
+        rewrite_generated_imports(config.generated_root, "mysingle")
 
     # 3. __init__.py 파일 생성
     if not args.skip_init:
-        package_dir = config.generated_root / config.package_name
-        ensure_init_files(package_dir)
+        ensure_init_files(config.generated_root)
 
     log("\n✅ 모든 작업 완료!", LogLevel.SUCCESS)
 

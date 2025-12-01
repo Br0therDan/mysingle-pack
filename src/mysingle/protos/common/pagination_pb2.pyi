@@ -12,7 +12,9 @@ class PaginationRequest(_message.Message):
     PAGE_SIZE_FIELD_NUMBER: _ClassVar[int]
     page: int
     page_size: int
-    def __init__(self, page: _Optional[int] = ..., page_size: _Optional[int] = ...) -> None: ...
+    def __init__(
+        self, page: _Optional[int] = ..., page_size: _Optional[int] = ...
+    ) -> None: ...
 
 class PaginationResponse(_message.Message):
     __slots__ = ()
@@ -28,7 +30,15 @@ class PaginationResponse(_message.Message):
     total_pages: int
     has_next: bool
     has_previous: bool
-    def __init__(self, total_count: _Optional[int] = ..., page: _Optional[int] = ..., page_size: _Optional[int] = ..., total_pages: _Optional[int] = ..., has_next: _Optional[bool] = ..., has_previous: _Optional[bool] = ...) -> None: ...
+    def __init__(
+        self,
+        total_count: _Optional[int] = ...,
+        page: _Optional[int] = ...,
+        page_size: _Optional[int] = ...,
+        total_pages: _Optional[int] = ...,
+        has_next: _Optional[bool] = ...,
+        has_previous: _Optional[bool] = ...,
+    ) -> None: ...
 
 class SortOption(_message.Message):
     __slots__ = ()
@@ -36,4 +46,6 @@ class SortOption(_message.Message):
     DESCENDING_FIELD_NUMBER: _ClassVar[int]
     field: str
     descending: bool
-    def __init__(self, field: _Optional[str] = ..., descending: _Optional[bool] = ...) -> None: ...
+    def __init__(
+        self, field: _Optional[str] = ..., descending: _Optional[bool] = ...
+    ) -> None: ...

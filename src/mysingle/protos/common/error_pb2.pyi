@@ -18,6 +18,7 @@ class ErrorSeverity(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     ERROR_SEVERITY_WARNING: _ClassVar[ErrorSeverity]
     ERROR_SEVERITY_ERROR: _ClassVar[ErrorSeverity]
     ERROR_SEVERITY_CRITICAL: _ClassVar[ErrorSeverity]
+
 ERROR_SEVERITY_UNSPECIFIED: ErrorSeverity
 ERROR_SEVERITY_INFO: ErrorSeverity
 ERROR_SEVERITY_WARNING: ErrorSeverity
@@ -32,7 +33,10 @@ class ErrorDetail(_message.Message):
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
         value: str
-        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[str] = ...
+        ) -> None: ...
+
     CODE_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
     SEVERITY_FIELD_NUMBER: _ClassVar[int]
@@ -43,7 +47,14 @@ class ErrorDetail(_message.Message):
     severity: ErrorSeverity
     metadata: _containers.ScalarMap[str, str]
     context: _struct_pb2.Struct
-    def __init__(self, code: _Optional[str] = ..., message: _Optional[str] = ..., severity: _Optional[_Union[ErrorSeverity, str]] = ..., metadata: _Optional[_Mapping[str, str]] = ..., context: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ...) -> None: ...
+    def __init__(
+        self,
+        code: _Optional[str] = ...,
+        message: _Optional[str] = ...,
+        severity: _Optional[_Union[ErrorSeverity, str]] = ...,
+        metadata: _Optional[_Mapping[str, str]] = ...,
+        context: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ...,
+    ) -> None: ...
 
 class ValidationWarning(_message.Message):
     __slots__ = ()
@@ -57,7 +68,14 @@ class ValidationWarning(_message.Message):
     column: int
     severity: ErrorSeverity
     suggestion: str
-    def __init__(self, message: _Optional[str] = ..., line: _Optional[int] = ..., column: _Optional[int] = ..., severity: _Optional[_Union[ErrorSeverity, str]] = ..., suggestion: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        message: _Optional[str] = ...,
+        line: _Optional[int] = ...,
+        column: _Optional[int] = ...,
+        severity: _Optional[_Union[ErrorSeverity, str]] = ...,
+        suggestion: _Optional[str] = ...,
+    ) -> None: ...
 
 class ConversionWarning(_message.Message):
     __slots__ = ()
@@ -67,4 +85,9 @@ class ConversionWarning(_message.Message):
     message: str
     severity: ErrorSeverity
     reversible: bool
-    def __init__(self, message: _Optional[str] = ..., severity: _Optional[_Union[ErrorSeverity, str]] = ..., reversible: _Optional[bool] = ...) -> None: ...
+    def __init__(
+        self,
+        message: _Optional[str] = ...,
+        severity: _Optional[_Union[ErrorSeverity, str]] = ...,
+        reversible: _Optional[bool] = ...,
+    ) -> None: ...

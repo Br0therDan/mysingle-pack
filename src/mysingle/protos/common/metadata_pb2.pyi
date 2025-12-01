@@ -18,7 +18,14 @@ class Metadata(_message.Message):
     session_id: str
     timestamp: int
     source: str
-    def __init__(self, request_id: _Optional[str] = ..., user_id: _Optional[str] = ..., session_id: _Optional[str] = ..., timestamp: _Optional[int] = ..., source: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        request_id: _Optional[str] = ...,
+        user_id: _Optional[str] = ...,
+        session_id: _Optional[str] = ...,
+        timestamp: _Optional[int] = ...,
+        source: _Optional[str] = ...,
+    ) -> None: ...
 
 class ConfidenceScore(_message.Message):
     __slots__ = ()
@@ -26,4 +33,6 @@ class ConfidenceScore(_message.Message):
     EXPLANATION_FIELD_NUMBER: _ClassVar[int]
     score: float
     explanation: str
-    def __init__(self, score: _Optional[float] = ..., explanation: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self, score: _Optional[float] = ..., explanation: _Optional[str] = ...
+    ) -> None: ...

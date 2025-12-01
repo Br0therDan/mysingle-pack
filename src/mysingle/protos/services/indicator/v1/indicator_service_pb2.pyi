@@ -16,7 +16,9 @@ class GetIndicatorMetadataRequest(_message.Message):
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     name: str
     user_id: str
-    def __init__(self, name: _Optional[str] = ..., user_id: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self, name: _Optional[str] = ..., user_id: _Optional[str] = ...
+    ) -> None: ...
 
 class BatchGetIndicatorMetadataRequest(_message.Message):
     __slots__ = ()
@@ -24,7 +26,9 @@ class BatchGetIndicatorMetadataRequest(_message.Message):
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     names: _containers.RepeatedScalarFieldContainer[str]
     user_id: str
-    def __init__(self, names: _Optional[_Iterable[str]] = ..., user_id: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self, names: _Optional[_Iterable[str]] = ..., user_id: _Optional[str] = ...
+    ) -> None: ...
 
 class BatchGetIndicatorMetadataResponse(_message.Message):
     __slots__ = ()
@@ -32,7 +36,13 @@ class BatchGetIndicatorMetadataResponse(_message.Message):
     NOT_FOUND_FIELD_NUMBER: _ClassVar[int]
     indicators: _containers.RepeatedCompositeFieldContainer[IndicatorMetadataResponse]
     not_found: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, indicators: _Optional[_Iterable[_Union[IndicatorMetadataResponse, _Mapping]]] = ..., not_found: _Optional[_Iterable[str]] = ...) -> None: ...
+    def __init__(
+        self,
+        indicators: _Optional[
+            _Iterable[_Union[IndicatorMetadataResponse, _Mapping]]
+        ] = ...,
+        not_found: _Optional[_Iterable[str]] = ...,
+    ) -> None: ...
 
 class Parameter(_message.Message):
     __slots__ = ()
@@ -50,7 +60,16 @@ class Parameter(_message.Message):
     default_value: str
     constraints: ParameterConstraints
     enum_values: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, name: _Optional[str] = ..., type: _Optional[str] = ..., description: _Optional[str] = ..., required: _Optional[bool] = ..., default_value: _Optional[str] = ..., constraints: _Optional[_Union[ParameterConstraints, _Mapping]] = ..., enum_values: _Optional[_Iterable[str]] = ...) -> None: ...
+    def __init__(
+        self,
+        name: _Optional[str] = ...,
+        type: _Optional[str] = ...,
+        description: _Optional[str] = ...,
+        required: _Optional[bool] = ...,
+        default_value: _Optional[str] = ...,
+        constraints: _Optional[_Union[ParameterConstraints, _Mapping]] = ...,
+        enum_values: _Optional[_Iterable[str]] = ...,
+    ) -> None: ...
 
 class ParameterConstraints(_message.Message):
     __slots__ = ()
@@ -64,7 +83,14 @@ class ParameterConstraints(_message.Message):
     min_length: int
     max_length: int
     pattern: str
-    def __init__(self, min: _Optional[float] = ..., max: _Optional[float] = ..., min_length: _Optional[int] = ..., max_length: _Optional[int] = ..., pattern: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        min: _Optional[float] = ...,
+        max: _Optional[float] = ...,
+        min_length: _Optional[int] = ...,
+        max_length: _Optional[int] = ...,
+        pattern: _Optional[str] = ...,
+    ) -> None: ...
 
 class OutputColumn(_message.Message):
     __slots__ = ()
@@ -74,7 +100,12 @@ class OutputColumn(_message.Message):
     name: str
     type: str
     description: str
-    def __init__(self, name: _Optional[str] = ..., type: _Optional[str] = ..., description: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        name: _Optional[str] = ...,
+        type: _Optional[str] = ...,
+        description: _Optional[str] = ...,
+    ) -> None: ...
 
 class Dependency(_message.Message):
     __slots__ = ()
@@ -84,7 +115,12 @@ class Dependency(_message.Message):
     indicator_name: str
     reason: str
     is_optional: bool
-    def __init__(self, indicator_name: _Optional[str] = ..., reason: _Optional[str] = ..., is_optional: _Optional[bool] = ...) -> None: ...
+    def __init__(
+        self,
+        indicator_name: _Optional[str] = ...,
+        reason: _Optional[str] = ...,
+        is_optional: _Optional[bool] = ...,
+    ) -> None: ...
 
 class IndicatorMetadataResponse(_message.Message):
     __slots__ = ()
@@ -114,7 +150,22 @@ class IndicatorMetadataResponse(_message.Message):
     version: str
     created_at: str
     updated_at: str
-    def __init__(self, name: _Optional[str] = ..., display_name: _Optional[str] = ..., description: _Optional[str] = ..., category: _Optional[str] = ..., tags: _Optional[_Iterable[str]] = ..., parameters: _Optional[_Iterable[_Union[Parameter, _Mapping]]] = ..., outputs: _Optional[_Iterable[_Union[OutputColumn, _Mapping]]] = ..., dependencies: _Optional[_Iterable[_Union[Dependency, _Mapping]]] = ..., min_lookback: _Optional[int] = ..., is_overlay: _Optional[bool] = ..., version: _Optional[str] = ..., created_at: _Optional[str] = ..., updated_at: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        name: _Optional[str] = ...,
+        display_name: _Optional[str] = ...,
+        description: _Optional[str] = ...,
+        category: _Optional[str] = ...,
+        tags: _Optional[_Iterable[str]] = ...,
+        parameters: _Optional[_Iterable[_Union[Parameter, _Mapping]]] = ...,
+        outputs: _Optional[_Iterable[_Union[OutputColumn, _Mapping]]] = ...,
+        dependencies: _Optional[_Iterable[_Union[Dependency, _Mapping]]] = ...,
+        min_lookback: _Optional[int] = ...,
+        is_overlay: _Optional[bool] = ...,
+        version: _Optional[str] = ...,
+        created_at: _Optional[str] = ...,
+        updated_at: _Optional[str] = ...,
+    ) -> None: ...
 
 class CalculateIndicatorRequest(_message.Message):
     __slots__ = ()
@@ -124,7 +175,10 @@ class CalculateIndicatorRequest(_message.Message):
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
         value: str
-        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[str] = ...
+        ) -> None: ...
+
     INDICATOR_NAME_FIELD_NUMBER: _ClassVar[int]
     PARAMS_FIELD_NUMBER: _ClassVar[int]
     SYMBOL_FIELD_NUMBER: _ClassVar[int]
@@ -139,7 +193,16 @@ class CalculateIndicatorRequest(_message.Message):
     start_date: str
     end_date: str
     user_id: str
-    def __init__(self, indicator_name: _Optional[str] = ..., params: _Optional[_Mapping[str, str]] = ..., symbol: _Optional[str] = ..., interval: _Optional[str] = ..., start_date: _Optional[str] = ..., end_date: _Optional[str] = ..., user_id: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        indicator_name: _Optional[str] = ...,
+        params: _Optional[_Mapping[str, str]] = ...,
+        symbol: _Optional[str] = ...,
+        interval: _Optional[str] = ...,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+        user_id: _Optional[str] = ...,
+    ) -> None: ...
 
 class CalculateIndicatorResponse(_message.Message):
     __slots__ = ()
@@ -149,14 +212,22 @@ class CalculateIndicatorResponse(_message.Message):
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
         value: str
-        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[str] = ...
+        ) -> None: ...
+
     class MultiValuesEntry(_message.Message):
         __slots__ = ()
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
         value: DoubleArray
-        def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[DoubleArray, _Mapping]] = ...) -> None: ...
+        def __init__(
+            self,
+            key: _Optional[str] = ...,
+            value: _Optional[_Union[DoubleArray, _Mapping]] = ...,
+        ) -> None: ...
+
     INDICATOR_NAME_FIELD_NUMBER: _ClassVar[int]
     PARAMS_FIELD_NUMBER: _ClassVar[int]
     RESULT_TYPE_FIELD_NUMBER: _ClassVar[int]
@@ -177,7 +248,19 @@ class CalculateIndicatorResponse(_message.Message):
     symbol: str
     interval: str
     cached: bool
-    def __init__(self, indicator_name: _Optional[str] = ..., params: _Optional[_Mapping[str, str]] = ..., result_type: _Optional[str] = ..., values: _Optional[_Iterable[float]] = ..., multi_values: _Optional[_Mapping[str, DoubleArray]] = ..., signals: _Optional[_Iterable[str]] = ..., timestamps: _Optional[_Iterable[str]] = ..., symbol: _Optional[str] = ..., interval: _Optional[str] = ..., cached: _Optional[bool] = ...) -> None: ...
+    def __init__(
+        self,
+        indicator_name: _Optional[str] = ...,
+        params: _Optional[_Mapping[str, str]] = ...,
+        result_type: _Optional[str] = ...,
+        values: _Optional[_Iterable[float]] = ...,
+        multi_values: _Optional[_Mapping[str, DoubleArray]] = ...,
+        signals: _Optional[_Iterable[str]] = ...,
+        timestamps: _Optional[_Iterable[str]] = ...,
+        symbol: _Optional[str] = ...,
+        interval: _Optional[str] = ...,
+        cached: _Optional[bool] = ...,
+    ) -> None: ...
 
 class DoubleArray(_message.Message):
     __slots__ = ()
@@ -193,12 +276,17 @@ class IndicatorSpec(_message.Message):
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
         value: str
-        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[str] = ...
+        ) -> None: ...
+
     NAME_FIELD_NUMBER: _ClassVar[int]
     PARAMS_FIELD_NUMBER: _ClassVar[int]
     name: str
     params: _containers.ScalarMap[str, str]
-    def __init__(self, name: _Optional[str] = ..., params: _Optional[_Mapping[str, str]] = ...) -> None: ...
+    def __init__(
+        self, name: _Optional[str] = ..., params: _Optional[_Mapping[str, str]] = ...
+    ) -> None: ...
 
 class BatchCalculateIndicatorsRequest(_message.Message):
     __slots__ = ()
@@ -214,7 +302,15 @@ class BatchCalculateIndicatorsRequest(_message.Message):
     end_date: str
     indicators: _containers.RepeatedCompositeFieldContainer[IndicatorSpec]
     user_id: str
-    def __init__(self, symbol: _Optional[str] = ..., interval: _Optional[str] = ..., start_date: _Optional[str] = ..., end_date: _Optional[str] = ..., indicators: _Optional[_Iterable[_Union[IndicatorSpec, _Mapping]]] = ..., user_id: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        interval: _Optional[str] = ...,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+        indicators: _Optional[_Iterable[_Union[IndicatorSpec, _Mapping]]] = ...,
+        user_id: _Optional[str] = ...,
+    ) -> None: ...
 
 class BatchCalculateIndicatorsResponse(_message.Message):
     __slots__ = ()
@@ -222,7 +318,13 @@ class BatchCalculateIndicatorsResponse(_message.Message):
     TIMESTAMPS_FIELD_NUMBER: _ClassVar[int]
     results: _containers.RepeatedCompositeFieldContainer[CalculateIndicatorResponse]
     timestamps: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, results: _Optional[_Iterable[_Union[CalculateIndicatorResponse, _Mapping]]] = ..., timestamps: _Optional[_Iterable[str]] = ...) -> None: ...
+    def __init__(
+        self,
+        results: _Optional[
+            _Iterable[_Union[CalculateIndicatorResponse, _Mapping]]
+        ] = ...,
+        timestamps: _Optional[_Iterable[str]] = ...,
+    ) -> None: ...
 
 class HealthCheckRequest(_message.Message):
     __slots__ = ()
@@ -240,4 +342,11 @@ class HealthCheckResponse(_message.Message):
     version: str
     uptime_seconds: int
     cache_size: int
-    def __init__(self, status: _Optional[str] = ..., service: _Optional[str] = ..., version: _Optional[str] = ..., uptime_seconds: _Optional[int] = ..., cache_size: _Optional[int] = ...) -> None: ...
+    def __init__(
+        self,
+        status: _Optional[str] = ...,
+        service: _Optional[str] = ...,
+        version: _Optional[str] = ...,
+        uptime_seconds: _Optional[int] = ...,
+        cache_size: _Optional[int] = ...,
+    ) -> None: ...
