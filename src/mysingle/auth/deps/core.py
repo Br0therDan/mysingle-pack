@@ -2,7 +2,7 @@ from typing import Any, Dict, Optional
 
 from fastapi import HTTPException, Request, status
 
-from ...logging import get_structured_logger
+from ...core.logging import get_structured_logger
 from ..models import User
 from .kong import (
     get_kong_correlation_id,

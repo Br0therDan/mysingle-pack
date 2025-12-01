@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import Request
 
-from ...logging import get_structured_logger
+from ...core.logging import get_structured_logger
 from ..exceptions import AuthorizationFailed
 from ..models import User
 from .core import get_current_active_verified_user

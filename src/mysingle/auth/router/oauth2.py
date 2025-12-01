@@ -2,7 +2,7 @@ from urllib.parse import unquote
 
 from fastapi import APIRouter, HTTPException, Query, Request, Response, status
 
-from ...logging import get_structured_logger
+from ...core.logging import get_structured_logger
 from ..authenticate import authenticator
 from ..exceptions import AuthenticationFailed
 from ..oauth_manager import oauth_manager

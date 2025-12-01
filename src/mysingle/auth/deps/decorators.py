@@ -6,7 +6,7 @@ from typing import Any, Callable
 
 from fastapi import Request
 
-from ...logging import get_structured_logger
+from ...core.logging import get_structured_logger
 from ..exceptions import AuthorizationFailed
 from .core import (
     get_current_active_superuser,

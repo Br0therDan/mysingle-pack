@@ -33,7 +33,7 @@ from typing import Any, Literal, Optional
 import jwt
 
 from ...core.config import settings
-from ...logging import get_structured_logger
+from ...core.logging import get_structured_logger
 
 logger = get_structured_logger(__name__)
 

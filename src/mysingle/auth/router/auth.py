@@ -16,7 +16,7 @@ from fastapi import (
 from fastapi.security import OAuth2PasswordRequestForm
 
 from ...core.config import settings
-from ...logging import get_structured_logger
+from ...core.logging import get_structured_logger
 from ..authenticate import authenticator
 from ..deps import get_current_user, get_current_user_optional, verified_only
 from ..exceptions import AuthenticationFailed
