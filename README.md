@@ -35,6 +35,7 @@ uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.2.0#egg=m
 uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.2.0#egg=mysingle[full]"          # 전체
 ```
 
+
 ---
 
 ## 📚 모듈 구조
