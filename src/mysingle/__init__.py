@@ -57,7 +57,6 @@ __all__ = [
     "HEADER_USER_ID",
     "HEADER_CORRELATION_ID",
     "HEADER_KONG_USER_ID",
-    "HEADER_KONG_CONSUMER_ID",
     "HEADER_KONG_REQUEST_ID",
     # Constants: gRPC Metadata
     "GRPC_METADATA_USER_ID",
@@ -111,7 +110,6 @@ _EXPORTS = {
     "HEADER_USER_ID": ("mysingle.constants", "HEADER_USER_ID"),
     "HEADER_CORRELATION_ID": ("mysingle.constants", "HEADER_CORRELATION_ID"),
     "HEADER_KONG_USER_ID": ("mysingle.constants", "HEADER_KONG_USER_ID"),
-    "HEADER_KONG_CONSUMER_ID": ("mysingle.constants", "HEADER_KONG_CONSUMER_ID"),
     "HEADER_KONG_REQUEST_ID": ("mysingle.constants", "HEADER_KONG_REQUEST_ID"),
     # Constants: gRPC Metadata
     "GRPC_METADATA_USER_ID": ("mysingle.constants", "GRPC_METADATA_USER_ID"),
@@ -160,7 +158,6 @@ if TYPE_CHECKING:  # 타입체커를 위한 정적 import (런타임에는 지�
     from .constants import GRPC_METADATA_USER_ID as GRPC_METADATA_USER_ID
     from .constants import HEADER_AUTHORIZATION as HEADER_AUTHORIZATION
     from .constants import HEADER_CORRELATION_ID as HEADER_CORRELATION_ID
-    from .constants import HEADER_KONG_CONSUMER_ID as HEADER_KONG_CONSUMER_ID
     from .constants import HEADER_KONG_REQUEST_ID as HEADER_KONG_REQUEST_ID
     from .constants import HEADER_KONG_USER_ID as HEADER_KONG_USER_ID
     from .constants import HEADER_USER_ID as HEADER_USER_ID

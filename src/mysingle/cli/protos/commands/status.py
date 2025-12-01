@@ -5,7 +5,6 @@ Status 명령 - 서비스별 proto 파일 상태 확인.
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 
 from ..models import ProtoConfig, ServiceProtoInfo
 from ..utils import Color, LogLevel, colorize, log, log_header, log_table

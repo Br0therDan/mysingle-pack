@@ -4,7 +4,7 @@ import logging
 
 from jwt.exceptions import InvalidTokenError
 
-from ..auth.security.jwt import get_jwt_manager
+from mysingle.auth.security.jwt import get_jwt_manager
 
 logger = logging.getLogger()
 jwt_manager = get_jwt_manager()

@@ -2,7 +2,9 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from mysingle.protos.services.backtest.v1 import backtest_service_pb2 as protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2
+from mysingle.protos.services.backtest.v1 import (
+    backtest_service_pb2 as protos_dot_services_dot_backtest_dot_v1_dot_backtest__service__pb2,
+)
 
 
 class BacktestServiceStub(object):

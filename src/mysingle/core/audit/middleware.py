@@ -14,7 +14,7 @@ from fastapi import Request
 from fastapi.responses import Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from ..core.config import settings
+from ..config import settings
 from ..logging import get_structured_logger
 from .models import AuditLog
 

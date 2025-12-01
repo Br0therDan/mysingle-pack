@@ -11,11 +11,10 @@ from fastapi.routing import APIRoute
 
 from ..auth.exception_handlers import register_auth_exception_handlers
 from ..auth.init_data import create_first_super_admin, create_test_users
-from ..health import create_health_router
-from ..logging import get_structured_logger
-from ..logging.structured_logging import setup_logging
 from .config import settings
 from .db import init_mongo
+from .health import create_health_router
+from .logging import get_structured_logger, setup_logging
 from .service_types import ServiceConfig, ServiceType
 
 if TYPE_CHECKING:
@@ -52,7 +51,7 @@ def create_lifespan(
 
             # Ensure AuditLog is included when audit logging is enabled
             if service_config.enable_audit_logging:
-                from ..audit import AuditLog
+                from .audit import AuditLog
 
                 if AuditLog not in models_to_init:
                     models_to_init.append(AuditLog)
@@ -81,9 +80,11 @@ def create_lifespan(
                 try:
                     client = await init_mongo(
                         models_to_init,
-                        service_config.database_name
-                        if service_config.database_name
-                        else service_config.service_name,
+                        (
+                            service_config.database_name
+                            if service_config.database_name
+                            else service_config.service_name
+                        ),
                     )
                     startup_tasks.append(("mongodb_client", client))
                     logger.info(
@@ -228,7 +229,7 @@ def create_fastapi_app(
     # Add metrics middleware with graceful fallback
     if service_config.enable_metrics:
         try:
-            from ..metrics import (
+            from .metrics import (
                 MetricsConfig,
                 MetricsMiddleware,
                 create_metrics_middleware,
@@ -300,7 +301,7 @@ def create_fastapi_app(
     # Add audit logging middleware (shared)
     if service_config.enable_audit_logging:
         try:
-            from ..audit.middleware import AuditLoggingMiddleware
+            from .audit.middleware import AuditLoggingMiddleware
 
             enabled_flag = getattr(settings, "AUDIT_LOGGING_ENABLED", True)
             app.add_middleware(

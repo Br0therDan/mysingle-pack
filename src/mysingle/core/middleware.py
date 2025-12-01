@@ -9,7 +9,7 @@ from typing import Callable, Optional
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from ..logging.structured_logging import (
+from .logging import (
     clear_logging_context,
     get_structured_logger,
     set_correlation_id,

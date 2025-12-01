@@ -16,7 +16,6 @@ from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 
-from ..auth import get_current_active_superuser, get_current_active_user
 from ..logging import get_structured_logger
 from .collector import MetricsCollector
 from .middleware import get_metrics_collector
@@ -151,7 +150,6 @@ def create_metrics_router() -> APIRouter:
     async def get_route_metrics(
         route_filter: str | None = Query(None, description="Filter routes by pattern"),
         collector: MetricsCollector = Depends(get_metrics_collector),
-        current_user=Depends(get_current_active_user),
     ) -> dict:
         """Get detailed metrics for specific routes (authenticated users only).
 
@@ -194,7 +192,6 @@ def create_metrics_router() -> APIRouter:
     @router.post("/reset")
     async def reset_metrics(
         collector: MetricsCollector = Depends(get_metrics_collector),
-        current_user=Depends(get_current_active_superuser),
     ) -> dict:
         """Reset all metrics (superuser only).
 

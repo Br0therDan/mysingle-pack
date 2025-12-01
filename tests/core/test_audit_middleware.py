@@ -5,7 +5,7 @@ import pytest
 from fastapi import FastAPI
 from starlette.testclient import TestClient
 
-from mysingle.audit.middleware import AuditLoggingMiddleware
+from mysingle.core.audit.middleware import AuditLoggingMiddleware
 from mysingle.core.config import settings
 
 

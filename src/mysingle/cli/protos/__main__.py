@@ -18,7 +18,7 @@ from pathlib import Path
 
 from .commands import generate, info, init, status, validate
 from .models import ProtoConfig
-from .utils import Color, LogLevel, colorize, log
+from .utils import LogLevel, log
 
 
 def get_repo_root() -> Path:

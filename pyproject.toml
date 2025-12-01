@@ -20,6 +20,7 @@ dependencies = [
     "httpx>=0.25.2",             # audit
     "fastapi>=0.104.1",          # core.app_factory
     "uvicorn[standard]>=0.24.0", # core.app_factory
+    "email-validator>=2.0.0",    # config (EmailStr validation)
 ]
 
 [project.optional-dependencies]
@@ -71,6 +72,9 @@ packages = ["src/mysingle"]
 dev-dependencies = [
     "pytest>=7.4.3",
     "pytest-asyncio>=0.21.1",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.12.0",
+    "mongomock>=4.1.2",
     "httpx>=0.26.0",
     "ruff>=0.1.9",
     "mypy>=1.8.0",

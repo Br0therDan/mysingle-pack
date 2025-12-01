@@ -8,7 +8,7 @@ from typing import Any
 import emails
 from jinja2 import Template
 
-from ..core.config import settings
+from ..config import settings
 
 logger = logging.getLogger()
 
