@@ -23,12 +23,14 @@ dependencies = [
     "uvicorn[standard]>=0.24.0", # core.app_factory
     "email-validator>=2.0.0", # config (EmailStr validation)
     "pandas>=2.3.3",
-    "pwdlib>=0.3.0",
+    "pwdlib[argon2,bcrypt]>=0.2.1",
+    "pyjwt>=2.10.1",
+    "httpx-oauth>=0.16.1",
 ]
 
 [project.optional-dependencies]
 # 인증
-auth = ["pyjwt>=2.10.1", "pwdlib[argon2,bcrypt]>=0.2.1", "httpx-oauth>=0.16.1"]
+auth = ["pyjwt>=2.10.1", "pwdlib[argon2,bcrypt]>=0.2.1", "httpx-oauth>=0.16.1", "argon2-cffi>=23.1.0"]
 
 # 웹 (FastAPI) - 이미 core에 포함되어 있으므로 빈 배열
 web = []

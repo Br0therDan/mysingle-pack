@@ -1331,7 +1331,7 @@ wheels = [
 
 [[package]]
 name = "mysingle"
-version = "2.2.0"
+version = "2.3.0"
 source = { editable = "." }
 dependencies = [
     { name = "beanie" },
@@ -1340,13 +1340,15 @@ dependencies = [
     { name = "emails" },
     { name = "fastapi" },
     { name = "httpx" },
+    { name = "httpx-oauth" },
     { name = "jinja2" },
     { name = "motor" },
     { name = "pandas" },
     { name = "prometheus-client" },
-    { name = "pwdlib" },
+    { name = "pwdlib", extra = ["argon2", "bcrypt"] },
     { name = "pydantic" },
     { name = "pydantic-settings" },
+    { name = "pyjwt" },
     { name = "rich" },
     { name = "structlog" },
     { name = "uvicorn", extra = ["standard"] },
@@ -1354,6 +1356,7 @@ dependencies = [
 
 [package.optional-dependencies]
 auth = [
+    { name = "argon2-cffi" },
     { name = "httpx-oauth" },
     { name = "pwdlib", extra = ["argon2", "bcrypt"] },
     { name = "pyjwt" },
@@ -1362,6 +1365,7 @@ clients = [
     { name = "aiohttp" },
 ]
 common = [
+    { name = "argon2-cffi" },
     { name = "duckdb" },
     { name = "httpx-oauth" },
     { name = "pwdlib", extra = ["argon2", "bcrypt"] },
@@ -1370,6 +1374,7 @@ common = [
 ]
 common-grpc = [
     { name = "aiohttp" },
+    { name = "argon2-cffi" },
     { name = "duckdb" },
     { name = "grpcio" },
     { name = "grpcio-tools" },
@@ -1398,6 +1403,7 @@ dsl = [
 ]
 full = [
     { name = "aiohttp" },
+    { name = "argon2-cffi" },
     { name = "duckdb" },
     { name = "grpcio" },
     { name = "grpcio-tools" },
@@ -1443,6 +1449,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "aiohttp", marker = "extra == 'clients'", specifier = ">=3.9.4" },
+    { name = "argon2-cffi", marker = "extra == 'auth'", specifier = ">=23.1.0" },
     { name = "beanie", specifier = ">=1.23.6" },
     { name = "colorlog", specifier = ">=6.9.0" },
     { name = "duckdb", marker = "extra == 'database'", specifier = ">=1.1.0" },
@@ -1453,6 +1460,7 @@ requires-dist = [
     { name = "grpcio-tools", marker = "extra == 'grpc'", specifier = ">=1.60.0" },
     { name = "httpx", specifier = ">=0.25.2" },
     { name = "httpx", marker = "extra == 'dev'", specifier = ">=0.26.0" },
+    { name = "httpx-oauth", specifier = ">=0.16.1" },
     { name = "httpx-oauth", marker = "extra == 'auth'", specifier = ">=0.16.1" },
     { name = "jinja2", specifier = ">=3.1.6" },
     { name = "motor", specifier = ">=3.3.2" },
@@ -1466,10 +1474,11 @@ requires-dist = [
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=4.3.0" },
     { name = "prometheus-client", specifier = ">=0.19.0" },
     { name = "protobuf", marker = "extra == 'grpc'", specifier = ">=6.33.1" },
-    { name = "pwdlib", specifier = ">=0.3.0" },
+    { name = "pwdlib", extras = ["argon2", "bcrypt"], specifier = ">=0.2.1" },
     { name = "pwdlib", extras = ["argon2", "bcrypt"], marker = "extra == 'auth'", specifier = ">=0.2.1" },
     { name = "pydantic", specifier = ">=2.5.0" },
     { name = "pydantic-settings", specifier = ">=2.1.0" },
+    { name = "pyjwt", specifier = ">=2.10.1" },
     { name = "pyjwt", marker = "extra == 'auth'", specifier = ">=2.10.1" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.4.3" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.21.1" },
