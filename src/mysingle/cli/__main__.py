@@ -23,12 +23,15 @@ def show_interactive_menu() -> int:
     print_header("🚀 MySingle CLI")
 
     console.print("[cyan]사용 가능한 명령:[/cyan]\n")
-    console.print("  [green]1.[/green] version  - 패키지 버전 관리")
-    console.print("  [green]2.[/green] proto    - Proto 파일 관리")
-    console.print("  [green]3.[/green] help     - 도움말 표시")
-    console.print("  [green]q.[/green] quit     - 종료\n")
+    console.print("  [green]1.[/green] version    - 패키지 버전 관리")
+    console.print("  [green]2.[/green] submodule  - Git Submodule 관리")
+    console.print("  [green]3.[/green] proto      - Proto 파일 관리")
+    console.print("  [green]4.[/green] help       - 도움말 표시")
+    console.print("  [green]q.[/green] quit       - 종료\n")
 
-    choice = Prompt.ask("명령을 선택하세요", choices=["1", "2", "3", "q"], default="q")
+    choice = Prompt.ask(
+        "명령을 선택하세요", choices=["1", "2", "3", "4", "q"], default="q"
+    )
 
     if choice == "q":
         print_info("종료합니다.")
@@ -39,6 +42,36 @@ def show_interactive_menu() -> int:
 
         return version_cmd.execute_interactive()
     elif choice == "2":
+        # Submodule management
+        from rich.prompt import Prompt
+
+        from .submodule.commands import (
+            execute_add_interactive,
+            execute_update_interactive,
+            status_submodule,
+            sync_submodule,
+        )
+
+        console.print("\n[bold]Submodule 관리[/bold]\n")
+        console.print("  [green]1.[/green] add     - MySingle을 submodule로 추가")
+        console.print("  [green]2.[/green] status  - Submodule 상태 확인")
+        console.print("  [green]3.[/green] update  - Submodule 업데이트")
+        console.print("  [green]4.[/green] sync    - 변경사항 PR 준비\n")
+
+        sub_choice = Prompt.ask(
+            "명령을 선택하세요", choices=["1", "2", "3", "4"], default="2"
+        )
+
+        if sub_choice == "1":
+            return execute_add_interactive()
+        elif sub_choice == "2":
+            return status_submodule()
+        elif sub_choice == "3":
+            return execute_update_interactive()
+        elif sub_choice == "4":
+            return sync_submodule()
+
+    elif choice == "3":
         # Proto subcommand - redirect to mysingle-proto
         print_info("Proto 관리는 'mysingle-proto' 명령을 사용하세요.")
         console.print("\n예시:")
@@ -46,7 +79,7 @@ def show_interactive_menu() -> int:
         console.print("  mysingle-proto generate")
         console.print("  mysingle-proto status\n")
         return 0
-    elif choice == "3":
+    elif choice == "4":
         # Show help
         main_with_args(["--help"])
         return 0
@@ -74,6 +107,45 @@ def main_with_args(argv: list[str] | None = None) -> int:
     )
     version_cmd.setup_parser(version_parser)
 
+    # Submodule command
+    from .submodule import commands as submodule_cmd
+
+    submodule_parser = subparsers.add_parser(
+        "submodule",
+        help="Git Submodule 관리",
+        description="MySingle 패키지를 submodule로 관리합니다",
+    )
+    submodule_subparsers = submodule_parser.add_subparsers(
+        dest="submodule_command",
+        help="Submodule 명령",
+    )
+
+    # submodule add
+    add_parser = submodule_subparsers.add_parser(
+        "add",
+        help="MySingle을 submodule로 추가",
+    )
+    submodule_cmd.setup_add_parser(add_parser)
+
+    # submodule status
+    submodule_subparsers.add_parser(
+        "status",
+        help="Submodule 상태 확인",
+    )
+
+    # submodule update
+    update_parser = submodule_subparsers.add_parser(
+        "update",
+        help="Submodule 업데이트",
+    )
+    submodule_cmd.setup_update_parser(update_parser)
+
+    # submodule sync
+    submodule_subparsers.add_parser(
+        "sync",
+        help="로컬 변경사항 PR 준비",
+    )
+
     # Parse arguments
     args = parser.parse_args(argv)
 
@@ -83,6 +155,19 @@ def main_with_args(argv: list[str] | None = None) -> int:
     # Execute command
     if args.command == "version":
         return version_cmd.execute(args)
+    elif args.command == "submodule":
+        if not args.submodule_command:
+            # Interactive mode
+            return show_interactive_menu()
+
+        if args.submodule_command == "add":
+            return submodule_cmd.execute_add(args)
+        elif args.submodule_command == "status":
+            return submodule_cmd.execute_status(args)
+        elif args.submodule_command == "update":
+            return submodule_cmd.execute_update(args)
+        elif args.submodule_command == "sync":
+            return submodule_cmd.execute_sync(args)
 
     return 0
 
