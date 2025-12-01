@@ -6,9 +6,8 @@ mysingle.logging → mysingle.core.logging
 등으로 일괄 변경
 """
 
-import re
 from pathlib import Path
-from typing import Dict, List
+from typing import List
 
 # Import 매핑 테이블
 IMPORT_MAPPINGS = {
@@ -92,7 +91,7 @@ def main():
             print(f"  ✓ {py_file.relative_to(package_root)} ({changes} changes)")
 
     print()
-    print(f"=== Summary ===")
+    print("=== Summary ===")
     print(f"Updated {len(updated_files)} files")
     print(f"Total {total_changes} import statements changed")
     print()

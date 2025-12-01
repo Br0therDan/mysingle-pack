@@ -3,15 +3,14 @@ Test configuration and fixtures for mysingle package tests.
 """
 
 import os
-from typing import AsyncGenerator
 from unittest.mock import Mock
 
 import pytest
-from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient
+from beanie import PydanticObjectId
 
 # Enable auth bypass for testing
 os.environ["MYSINGLE_AUTH_BYPASS"] = "true"
+os.environ["ENVIRONMENT"] = "development"
 
 
 @pytest.fixture(scope="session")
@@ -25,37 +24,18 @@ def event_loop():
 
 
 @pytest.fixture
-async def mongodb_client() -> AsyncGenerator[AsyncIOMotorClient, None]:
+def mock_mongodb_client():
     """
-    MongoDB client fixture for testing using mongomock.
+    Mock MongoDB client fixture for testing.
     """
-    import mongomock
-
-    # Use mongomock for testing (no real MongoDB needed)
-    client = mongomock.MongoClient()
-    yield client
-    # No cleanup needed for mongomock
-    client.close()
-
-
-@pytest.fixture
-async def init_test_beanie(mongodb_client):
-    """
-    Initialize Beanie with test database.
-    Note: mongomock has limitations with Beanie, so some tests may need mocking.
-    """
-    from mysingle.base.documents import BaseDoc, BaseTimeDoc, BaseTimeDocWithUserId
-
-    # For mongomock, we skip Beanie initialization
-    # Tests should mock Beanie operations when needed
-    yield
+    client = Mock()
+    client.test_db = Mock()
+    return client
 
 
 @pytest.fixture
 def mock_user():
     """Mock user for auth testing."""
-    from beanie import PydanticObjectId
-
     # Create a mock User-like object without requiring Beanie
     user = Mock()
     user.id = PydanticObjectId("507f1f77bcf86cd799439011")
@@ -63,6 +43,20 @@ def mock_user():
     user.hashed_password = "$2b$12$test_hashed_password"
     user.is_active = True
     user.is_verified = True
+    user.is_superuser = False
+    return user
+
+
+@pytest.fixture
+def mock_admin_user():
+    """Mock admin user for auth testing."""
+    user = Mock()
+    user.id = PydanticObjectId("507f1f77bcf86cd799439012")
+    user.email = "admin@example.com"
+    user.hashed_password = "$2b$12$test_admin_hashed_password"
+    user.is_active = True
+    user.is_verified = True
+    user.is_superuser = True
     return user
 
 
@@ -72,15 +66,14 @@ def test_settings():
     from mysingle.core.config import CommonSettings
 
     return CommonSettings(
-        SERVICE_NAME="test-service",
-        ENVIRONMENT="test",
-        LOG_LEVEL="DEBUG",
+        ENVIRONMENT="development",
+        DEBUG=True,
         # MongoDB settings
-        MONGODB_URL="mongodb://localhost:27017",
-        MONGODB_DATABASE="test_db",
-        # Redis settings (optional)
-        REDIS_HOST="localhost",
-        REDIS_PORT=6379,
+        MONGODB_SERVER="localhost:27017",
+        MONGODB_USERNAME="test",
+        MONGODB_PASSWORD="test",
+        # Redis settings
+        REDIS_URL="redis://localhost:6379/0",
     )
 
 
@@ -91,10 +84,10 @@ def sample_dataframe():
 
     return pd.DataFrame(
         {
-            "close": [100, 101, 102, 103, 104, 105],
-            "open": [99, 100, 101, 102, 103, 104],
-            "high": [101, 102, 103, 104, 105, 106],
-            "low": [98, 99, 100, 101, 102, 103],
+            "close": [100.0, 101.0, 102.0, 103.0, 104.0, 105.0],
+            "open": [99.0, 100.0, 101.0, 102.0, 103.0, 104.0],
+            "high": [101.0, 102.0, 103.0, 104.0, 105.0, 106.0],
+            "low": [98.0, 99.0, 100.0, 101.0, 102.0, 103.0],
             "volume": [1000, 1100, 1200, 1300, 1400, 1500],
         }
     )

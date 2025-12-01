@@ -4,7 +4,6 @@
 """
 
 from pathlib import Path
-from typing import Dict
 
 README_TEMPLATES = {
     "core": """# mysingle.core
@@ -270,7 +269,7 @@ def generate_readmes(package_root: Path):
         created += 1
 
     print()
-    print(f"=== Summary ===")
+    print("=== Summary ===")
     print(f"Created {created} README.md files")
     print()
     print("Next: Update root README.md")

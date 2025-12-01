@@ -1,5 +1,5 @@
 """
-Tests for mysingle.core.base.documents module.
+Tests for mysingle.core.base module.
 """
 
 from datetime import UTC, datetime
@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 import pytest
 from beanie import PydanticObjectId
 
-from mysingle.core import BaseDoc, BaseTimeDoc, BaseTimeDocWithUserId
+from mysingle.core.base import BaseDoc, BaseTimeDoc, BaseTimeDocWithUserId
 
 
 class TestDocument(BaseDoc):

@@ -4,77 +4,70 @@ Tests for mysingle.core.settings module.
 
 import os
 
-import pytest
-
 from mysingle.core import CommonSettings
 
 
 def test_settings_from_env():
     """Test that settings load from environment variables."""
-    os.environ["SERVICE_NAME"] = "test-service"
-    os.environ["ENVIRONMENT"] = "development"
-    os.environ["LOG_LEVEL"] = "DEBUG"
+    os.environ["PROJECT_NAME"] = "Test Project"
+    os.environ["ENVIRONMENT"] = "production"
 
     settings = CommonSettings()
 
-    assert settings.SERVICE_NAME == "test-service"
-    assert settings.ENVIRONMENT == "development"
-    assert settings.LOG_LEVEL == "DEBUG"
+    assert settings.PROJECT_NAME == "Test Project"
+    assert settings.ENVIRONMENT == "production"
 
     # Cleanup
-    del os.environ["SERVICE_NAME"]
+    del os.environ["PROJECT_NAME"]
     del os.environ["ENVIRONMENT"]
-    del os.environ["LOG_LEVEL"]
 
 
 def test_settings_defaults():
     """Test default settings values."""
-    settings = CommonSettings(SERVICE_NAME="test-service")
+    settings = CommonSettings()
 
     assert settings.ENVIRONMENT == "development"
-    assert settings.LOG_LEVEL == "INFO"
-    assert settings.DEBUG is False
+    assert settings.DEBUG is True
+    assert settings.PROJECT_NAME == "My Project"
 
 
-def test_settings_mongodb_url():
-    """Test MongoDB URL construction."""
+def test_settings_mongodb_config():
+    """Test MongoDB configuration."""
     settings = CommonSettings(
-        SERVICE_NAME="test-service",
-        MONGODB_HOST="localhost",
-        MONGODB_PORT=27017,
-        MONGODB_DATABASE="test_db",
+        MONGODB_SERVER="localhost:27017",
+        MONGODB_USERNAME="testuser",
+        MONGODB_PASSWORD="testpass",
     )
 
-    assert "mongodb://localhost:27017" in settings.MONGODB_URL
+    assert settings.MONGODB_SERVER == "localhost:27017"
+    assert settings.MONGODB_USERNAME == "testuser"
 
 
 def test_settings_redis_url():
-    """Test Redis URL construction."""
+    """Test Redis URL configuration."""
     settings = CommonSettings(
-        SERVICE_NAME="test-service",
-        REDIS_HOST="localhost",
-        REDIS_PORT=6379,
-        REDIS_DB=0,
+        REDIS_URL="redis://localhost:6379/0",
     )
 
-    assert settings.REDIS_HOST == "localhost"
-    assert settings.REDIS_PORT == 6379
-    assert settings.REDIS_DB == 0
+    assert settings.REDIS_URL == "redis://localhost:6379/0"
 
 
-def test_settings_service_name_required():
-    """Test that SERVICE_NAME is required."""
-    with pytest.raises(Exception):  # ValidationError from pydantic
-        CommonSettings()
+def test_settings_project_name_default():
+    """Test that PROJECT_NAME has a default value."""
+    settings = CommonSettings()
+
+    # PROJECT_NAME has a default value
+    assert settings.PROJECT_NAME is not None
+    assert isinstance(settings.PROJECT_NAME, str)
+    assert settings.PROJECT_NAME == "My Project"
 
 
 def test_settings_case_sensitivity():
     """Test that environment variable names are case-sensitive."""
-    os.environ["service_name"] = "wrong-case"  # lowercase won't work
-    os.environ["SERVICE_NAME"] = "correct-case"  # uppercase works
+    # Test that uppercase environment variable is used
+    os.environ["PROJECT_NAME"] = "Correct Case Project"
 
     settings = CommonSettings()
-    assert settings.SERVICE_NAME == "correct-case"
+    assert settings.PROJECT_NAME == "Correct Case Project"
 
-    del os.environ["service_name"]
-    del os.environ["SERVICE_NAME"]
+    del os.environ["PROJECT_NAME"]

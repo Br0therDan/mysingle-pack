@@ -2,13 +2,12 @@
 Tests for mysingle.cli.core.version module.
 """
 
-import subprocess
 from pathlib import Path
 from unittest.mock import Mock, patch
 
 import pytest
 
-from mysingle.cli.core.version import Version, bump_version, get_current_version
+from mysingle.cli.core.version import Version, get_current_version
 
 
 def test_version_parse():
@@ -87,7 +86,7 @@ def test_bump_version_with_git(mock_run):
     with patch("mysingle.cli.core.version.get_current_version") as mock_get_version:
         mock_get_version.return_value = Version(1, 0, 0)
 
-        with patch("builtins.open", create=True) as mock_open:
+        with patch("builtins.open", create=True):
             with patch("pathlib.Path.read_text") as mock_read:
                 mock_read.return_value = 'version = "1.0.0"'
                 # bump_version(args)

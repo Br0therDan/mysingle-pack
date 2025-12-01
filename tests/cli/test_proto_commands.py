@@ -5,8 +5,6 @@ Tests for mysingle.cli.protos commands.
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-import pytest
-
 from mysingle.cli.protos.models import ProtoConfig
 
 
