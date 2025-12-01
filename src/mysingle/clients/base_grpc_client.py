@@ -56,7 +56,7 @@ from mysingle.constants import (
     GRPC_METADATA_REQUEST_ID,
     GRPC_METADATA_USER_ID,
 )
-from mysingle.logging import get_structured_logger
+from mysingle.core.logging import get_structured_logger
 
 if TYPE_CHECKING:
     from fastapi import Request

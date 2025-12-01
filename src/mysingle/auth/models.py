@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import EmailStr, Field
 from pymongo import IndexModel
 
-from mysingle.base import BaseDoc, BaseTimeDoc
+from mysingle.core.base import BaseDoc, BaseTimeDoc
 
 
 class User(BaseTimeDoc):

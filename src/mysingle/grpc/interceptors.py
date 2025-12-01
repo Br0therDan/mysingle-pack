@@ -18,7 +18,7 @@ from mysingle.constants import (
     GRPC_METADATA_REQUEST_ID,
     GRPC_METADATA_USER_ID,
 )
-from mysingle.logging import get_structured_logger
+from mysingle.core.logging import get_structured_logger
 
 logger = get_structured_logger(__name__)
 

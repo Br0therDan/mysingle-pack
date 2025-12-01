@@ -11,7 +11,7 @@ from typing import Any
 
 import duckdb
 
-from mysingle.logging import get_structured_logger
+from mysingle.core.logging import get_structured_logger
 
 logger = get_structured_logger(__name__)
 
