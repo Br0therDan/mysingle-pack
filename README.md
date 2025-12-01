@@ -9,31 +9,30 @@ MySingle 플랫폼 통합 유틸리티 패키지
 
 ## 📦 설치
 
-### 최소 설치 (core만)
+### 기본 설치 (core만)
 ```bash
-uv add mysingle
-# 또는
-uv pip install mysingle
+# Git 저장소에서 직접 설치 (권장)
+uv pip install git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1
 ```
 
-### 선택적 설치
+### 선택적 설치 (extras)
 ```bash
 # 인증 필요
-uv add "mysingle[auth]"
+uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1#egg=mysingle[auth]"
 
 # 데이터베이스 추가 도구
-uv add "mysingle[database]"
+uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1#egg=mysingle[database]"
 
 # DSL 파서
-uv add "mysingle[dsl]"
+uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1#egg=mysingle[dsl]"
 
 # gRPC 지원
-uv add "mysingle[grpc]"
+uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1#egg=mysingle[grpc]"
 
 # 조합형 (추천)
-uv add "mysingle[common]"        # auth + database + web
-uv add "mysingle[common-grpc]"   # common + grpc + clients
-uv add "mysingle[full]"          # 전체
+uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1#egg=mysingle[common]"        # auth + database + web
+uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1#egg=mysingle[common-grpc]"   # common + grpc + clients
+uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1#egg=mysingle[full]"          # 전체
 ```
 
 ---
@@ -200,7 +199,10 @@ dependencies = [
 
 **또는 uv로 직접 설치:**
 ```bash
-uv add "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1"
+uv pip install git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1
+
+# extras와 함께 설치
+uv pip install "git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1#egg=mysingle[full]"
 ```
 
 ### 릴리즈 프로세스
@@ -231,7 +233,7 @@ uv add "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.1"
 4. **서비스 업데이트**:
    ```bash
    # 각 서비스에서
-   uv add "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.2"
+   uv pip install --upgrade git+https://github.com/Br0therDan/mysingle-pack.git@v2.0.2
    ```
 
 ### 워크플로우 설명

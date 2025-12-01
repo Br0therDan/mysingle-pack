@@ -123,22 +123,22 @@ jobs:
 
           cat RELEASE.md
 
-            - name: Create GitHub Release
-              if: steps.check_tag.outputs.exists == 'false'
-              uses: softprops/action-gh-release@v2
-              with:
-                  tag_name: ${{ steps.version.outputs.tag }}
-                  name: Release ${{ steps.version.outputs.tag }}
-                  body_path: RELEASE.md
-                  draft: false
-                  prerelease: false
-                  files: |
-                      dist/*
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create GitHub Release
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Release ${{ steps.version.outputs.tag }}
+          body_path: RELEASE.md
+          draft: false
+          prerelease: false
+          files: |
+            dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Skip release (tag exists)
-              if: steps.check_tag.outputs.exists == 'true'
-              run: |
-                  echo "⏭️ Tag ${{ steps.version.outputs.tag }} already exists. Skipping release creation."
-                  echo "If you want to create a new release, update the version in pyproject.toml"
+      - name: Skip release (tag exists)
+        if: steps.check_tag.outputs.exists == 'true'
+        run: |
+          echo "⏭️ Tag ${{ steps.version.outputs.tag }} already exists. Skipping release creation."
+          echo "If you want to create a new release, update the version in pyproject.toml"

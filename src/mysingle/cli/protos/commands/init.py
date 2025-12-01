@@ -1,5 +1,5 @@
 """
-Init 명령 - mysingle 패키지 Proto 초기화.
+Init 명령 - mysingle 패키지 초기화.
 
 통합 구조에서는 더 이상 submodule이 아닌 단일 패키지로 관리됩니다.
 """
@@ -14,8 +14,8 @@ from ..utils import Color, LogLevel, colorize, log, log_header
 
 
 def execute(args: argparse.Namespace, config: ProtoConfig) -> int:
-    """Init 명령 실행"""
-    log_header("MySingle Proto 패키지 초기화")
+    """초기화 명령 실행"""
+    log_header("MySingle 패키지 초기화")
 
     # Git 저장소 확인
     try:
@@ -150,7 +150,7 @@ def execute(args: argparse.Namespace, config: ProtoConfig) -> int:
 
 def execute_interactive(config: ProtoConfig) -> int:
     """대화형 모드로 init 명령 실행"""
-    log_header("MySingle Proto 패키지 초기화")
+    log_header("MySingle 패키지 초기화")
 
     # 기본 실행 (--check-only 없이)
     args = argparse.Namespace(check_only=False)
