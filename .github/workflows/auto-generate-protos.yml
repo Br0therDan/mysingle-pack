@@ -41,28 +41,22 @@ jobs:
           cd protos
           buf breaking --against "https://github.com/${{ github.repository }}.git#branch=${{ github.base_ref }},subdir=protos"
 
-      - name: Generate Python stubs
-        run: |
-          cd protos
-          buf generate
-
-      - name: Fix nested protos directory
-        run: |
-          if [ -d "src/mysingle/protos/protos" ]; then
-            mv src/mysingle/protos/protos/* src/mysingle/protos/
-            rmdir src/mysingle/protos/protos
-          fi
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Fix import paths
-        run: python scripts/fix_proto_imports.py
+      - name: Install dependencies
+        run: uv sync --frozen
 
-      - name: Ensure __init__.py files
-        run: find src/mysingle/protos -type d -exec touch {}/__init__.py \;
+      - name: Generate Python stubs
+        run: uv run mysingle-proto generate
 
       - name: Check for changes
         id: git-check
@@ -81,5 +75,5 @@ jobs:
       - name: Fail if changes detected in PR
         if: steps.git-check.outputs.changed == 'true' && github.event_name == 'pull_request'
         run: |
-          echo "❌ Proto stubs are out of sync. Run 'scripts/generate_protos.sh' locally."
+          echo "❌ Proto stubs are out of sync. Run 'uv run mysingle-proto generate' locally."
           exit 1

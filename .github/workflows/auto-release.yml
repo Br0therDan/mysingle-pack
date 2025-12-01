@@ -1,3 +1,5 @@
+# Auto Release Workflow
+# Creates GitHub release when version is changed in pyproject.toml
 name: Auto Release
 
 on:
@@ -5,184 +7,138 @@ on:
         branches:
             - main
         paths:
-            - "src/**/*.py"
             - "pyproject.toml"
-    workflow_dispatch:
-        inputs:
-            bump_type:
-                description: "Version bump type"
-                required: true
-                type: choice
-                options:
-                    - patch
-                    - minor
-                    - major
-
-env:
-    PYTHON_VERSION: "3.12"
 
 jobs:
-    check-version-bump:
-        name: Check if version bump is needed
-        runs-on: ubuntu-latest
-        outputs:
-            should_release: ${{ steps.check.outputs.should_release }}
-            bump_type: ${{ steps.analyze.outputs.bump_type }}
-            new_version: ${{ steps.analyze.outputs.new_version }}
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
-
-            - name: Setup Python
-              uses: actions/setup-python@v5
-              with:
-                  python-version: ${{ env.PYTHON_VERSION }}
-
-            - name: Check for version changes
-              id: check
-              run: |
-                  # Check if version was manually changed in recent commits
-                  if git diff HEAD~1 HEAD -- pyproject.toml | grep -q "^+version"; then
-                    echo "should_release=true" >> $GITHUB_OUTPUT
-                    echo "Version manually bumped, will create release"
-                  elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-                    echo "should_release=true" >> $GITHUB_OUTPUT
-                    echo "Manual trigger, will bump version and release"
-                  else
-                    echo "should_release=false" >> $GITHUB_OUTPUT
-                    echo "No version bump needed"
-                  fi
-
-            - name: Analyze commits for bump type
-              id: analyze
-              if: steps.check.outputs.should_release == 'true'
-              run: |
-                  # Get bump type from conventional commits or manual input
-                  if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-                    BUMP_TYPE="${{ github.event.inputs.bump_type }}"
-                  else
-                    # Analyze commits since last tag
-                    LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-                    if [ -n "$LAST_TAG" ]; then
-                      COMMITS=$(git log $LAST_TAG..HEAD --pretty=format:"%s%n%b")
-                    else
-                      COMMITS=$(git log --pretty=format:"%s%n%b")
-                    fi
-
-                    # Determine bump type
-                    if echo "$COMMITS" | grep -qiE 'BREAKING CHANGE|feat!|refactor!'; then
-                      BUMP_TYPE="major"
-                    elif echo "$COMMITS" | grep -qiE '^feat(\(|:)'; then
-                      BUMP_TYPE="minor"
-                    else
-                      BUMP_TYPE="patch"
-                    fi
-                  fi
-
-                  echo "bump_type=$BUMP_TYPE" >> $GITHUB_OUTPUT
-
-                  # Calculate new version
-                  CURRENT_VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
-                  IFS='.' read -r major minor patch <<< "$CURRENT_VERSION"
-
-                  if [ "$BUMP_TYPE" = "major" ]; then
-                    NEW_VERSION="$((major+1)).0.0"
-                  elif [ "$BUMP_TYPE" = "minor" ]; then
-                    NEW_VERSION="${major}.$((minor+1)).0"
-                  else
-                    NEW_VERSION="${major}.${minor}.$((patch+1))"
-                  fi
-
-                  echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
-                  echo "Will bump from $CURRENT_VERSION to $NEW_VERSION ($BUMP_TYPE)"
-
-    build-and-release:
-        name: Build and Release
-        needs: check-version-bump
-        if: needs.check-version-bump.outputs.should_release == 'true'
+    release:
+        name: Create GitHub Release
         runs-on: ubuntu-latest
         permissions:
             contents: write
-            id-token: write
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
               with:
                   fetch-depth: 0
-                  token: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Setup Python
               uses: actions/setup-python@v5
               with:
-                  python-version: ${{ env.PYTHON_VERSION }}
+                  python-version: "3.12"
 
             - name: Install uv
-              uses: astral-sh/setup-uv@v3
+              uses: astral-sh/setup-uv@v5
               with:
-                  enable-cache: false
-                  version: "latest"
+                  enable-cache: true
+                  cache-dependency-glob: "uv.lock"
 
-            - name: Bump version if needed
-              if: github.event_name == 'workflow_dispatch'
+            - name: Setup Buf
+              uses: bufbuild/buf-setup-action@v1
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Extract version from pyproject.toml
+              id: version
               run: |
-                  # Update version in pyproject.toml
-                  CURRENT_VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
-                  NEW_VERSION="${{ needs.check-version-bump.outputs.new_version }}"
+                  VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+                  echo "version=$VERSION" >> $GITHUB_OUTPUT
+                  echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+                  echo "📦 Version: $VERSION"
 
-                  sed -i "s/version = \"$CURRENT_VERSION\"/version = \"$NEW_VERSION\"/" pyproject.toml
-
-                  # Configure git
-                  git config user.name "github-actions[bot]"
-                  git config user.email "github-actions[bot]@users.noreply.github.com"
-
-                  # Commit and tag
-                  git add pyproject.toml
-                  git commit -m "chore(release): v$NEW_VERSION (bump ${{ needs.check-version-bump.outputs.bump_type }})"
-                  git tag "v$NEW_VERSION"
-                  git push origin main
-                  git push origin "v$NEW_VERSION"
-
-            - name: Build package
+            - name: Check if tag exists
+              id: check_tag
               run: |
-                  rm -rf dist/
-                  uv build --wheel --out-dir dist
-
-            - name: Publish to PyPI
-              if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
-              run: |
-                  uv publish --token ${{ secrets.PYPI_TOKEN }}
-
-            - name: Generate changelog
-              id: changelog
-              run: |
-                  LAST_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
-                  if [ -n "$LAST_TAG" ]; then
-                    CHANGELOG=$(git log $LAST_TAG..HEAD --pretty=format:"- %s" --no-merges)
+                  if git rev-parse "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+                    echo "exists=true" >> $GITHUB_OUTPUT
+                    echo "⚠️ Tag v${{ steps.version.outputs.version }} already exists"
                   else
-                    CHANGELOG=$(git log --pretty=format:"- %s" --no-merges | head -20)
+                    echo "exists=false" >> $GITHUB_OUTPUT
+                    echo "✅ Tag v${{ steps.version.outputs.version }} does not exist"
                   fi
 
-                  echo "changelog<<EOF" >> $GITHUB_OUTPUT
-                  echo "$CHANGELOG" >> $GITHUB_OUTPUT
-                  echo "EOF" >> $GITHUB_OUTPUT
+            - name: Generate proto stubs
+              if: steps.check_tag.outputs.exists == 'false'
+              run: uv run mysingle-proto generate
+
+            - name: Install dependencies
+              if: steps.check_tag.outputs.exists == 'false'
+              run: uv sync --frozen
+
+            - name: Build package
+              if: steps.check_tag.outputs.exists == 'false'
+              run: |
+                  rm -rf dist/
+                  uv build --out-dir dist
+
+            - name: Generate release notes
+              if: steps.check_tag.outputs.exists == 'false'
+              id: release_notes
+              run: |
+                  PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+                  echo "## 📦 Package Information" > RELEASE.md
+                  echo "" >> RELEASE.md
+                  echo "**Version**: ${{ steps.version.outputs.version }}" >> RELEASE.md
+                  echo "" >> RELEASE.md
+                  echo "## 📥 Installation" >> RELEASE.md
+                  echo "" >> RELEASE.md
+                  echo '```bash' >> RELEASE.md
+                  echo "# Git-based installation (recommended)" >> RELEASE.md
+                  echo "pip install git+https://github.com/Br0therDan/mysingle-pack.git@v${{ steps.version.outputs.version }}" >> RELEASE.md
+                  echo "" >> RELEASE.md
+                  echo "# Or with uv" >> RELEASE.md
+                  echo "uv add git+https://github.com/Br0therDan/mysingle-pack.git@v${{ steps.version.outputs.version }}" >> RELEASE.md
+                  echo '```' >> RELEASE.md
+                  echo "" >> RELEASE.md
+
+                  if [ -z "$PREV_TAG" ]; then
+                    echo "## 🎉 Initial Release" >> RELEASE.md
+                    echo "" >> RELEASE.md
+                    echo "### All Commits" >> RELEASE.md
+                    git log --oneline --pretty=format:"- %s (%h)" >> RELEASE.md
+                  else
+                    echo "## 🔄 Changes since $PREV_TAG" >> RELEASE.md
+                    echo "" >> RELEASE.md
+                    
+                    # Categorize commits
+                    echo "### ✨ Features" >> RELEASE.md
+                    git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- (feat|feature)" || echo "- No new features" >> RELEASE.md
+                    echo "" >> RELEASE.md
+                    
+                    echo "### 🐛 Bug Fixes" >> RELEASE.md
+                    git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- fix" || echo "- No bug fixes" >> RELEASE.md
+                    echo "" >> RELEASE.md
+                    
+                    echo "### ♻️ Refactoring" >> RELEASE.md
+                    git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- refactor" || echo "- No refactoring" >> RELEASE.md
+                    echo "" >> RELEASE.md
+                    
+                    echo "### 📝 Documentation" >> RELEASE.md
+                    git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- docs?" || echo "- No documentation changes" >> RELEASE.md
+                    echo "" >> RELEASE.md
+                    
+                    echo "### 🔧 Chores" >> RELEASE.md
+                    git log $PREV_TAG..HEAD --oneline --pretty=format:"- %s (%h)" | grep -iE "^- chore" || echo "- No chores" >> RELEASE.md
+                  fi
+
+                  cat RELEASE.md
 
             - name: Create GitHub Release
+              if: steps.check_tag.outputs.exists == 'false'
               uses: softprops/action-gh-release@v2
               with:
-                  tag_name: v${{ needs.check-version-bump.outputs.new_version }}
-                  name: Release v${{ needs.check-version-bump.outputs.new_version }}
-                  body: |
-                      ## Changes
-                      ${{ steps.changelog.outputs.changelog }}
-
-                      ## Installation
-                      ```bash
-                      pip install mysingle==${{ needs.check-version-bump.outputs.new_version }}
-                      ```
-
-                      ## PyPI
-                      https://pypi.org/project/mysingle/${{ needs.check-version-bump.outputs.new_version }}/
+                  tag_name: ${{ steps.version.outputs.tag }}
+                  name: Release ${{ steps.version.outputs.tag }}
+                  body_path: RELEASE.md
                   draft: false
                   prerelease: false
+                  files: |
+                      dist/*
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Skip release (tag exists)
+              if: steps.check_tag.outputs.exists == 'true'
+              run: |
+                  echo "⏭️ Tag ${{ steps.version.outputs.tag }} already exists. Skipping release creation."
+                  echo "If you want to create a new release, update the version in pyproject.toml"

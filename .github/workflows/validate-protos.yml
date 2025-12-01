@@ -4,22 +4,29 @@ on:
   pull_request:
     paths:
       - "protos/**/*.proto"
+      - "protos/buf.yaml"
+      - "protos/buf.gen.yaml"
   push:
     branches:
       - main
       - develop
     paths:
       - "protos/**/*.proto"
+      - "protos/buf.yaml"
+      - "protos/buf.gen.yaml"
 
 jobs:
   validate:
+    name: Validate Proto Files
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Setup buf
+      - name: Setup Buf
         uses: bufbuild/buf-setup-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -40,24 +47,3 @@ jobs:
           cd protos
           buf breaking --against "https://github.com/${{ github.repository }}.git#branch=${{ github.base_ref }},subdir=protos"
         continue-on-error: true
-
-      - name: Generate proto stubs (validation)
-        run: |
-          cd protos
-          buf generate
-
-      - name: Verify generation success
-        run: |
-          echo "Checking generated files..."
-          if [ ! -d "src/mysingle/protos" ]; then
-            echo "❌ Failed to generate protos"
-            exit 1
-          fi
-
-          proto_count=$(find src/mysingle/protos -name "*_pb2.py" | wc -l)
-          echo "✅ Generated $proto_count proto modules"
-
-          if [ "$proto_count" -eq 0 ]; then
-            echo "❌ No proto files generated"
-            exit 1
-          fi

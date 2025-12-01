@@ -34,9 +34,12 @@ mysingle-proto validate --fix  # 자동 수정
 
 # Python 스텁 생성
 mysingle-proto generate
+mysingle-proto generate --skip-rewrite  # import 경로 수정 건너뛰기
+mysingle-proto generate --skip-init     # __init__.py 생성 건너뛰기
 
-# 버전 정보
-mysingle-proto version
+# 패키지 버전 및 상태 정보
+mysingle-proto info
+mysingle-proto info --check-git  # Git 상태도 함께 확인
 ```
 
 #### 주요 기능
@@ -44,8 +47,8 @@ mysingle-proto version
 1. **init**: 필수 도구 확인 (Git, Buf CLI)
 2. **status**: 서비스별 proto 파일 개수 및 경로 표시
 3. **validate**: Lint, 포맷 체크, Breaking change 감지
-4. **generate**: Python gRPC 스텁 자동 생성 및 import 경로 수정
-5. **version**: 현재 proto 버전 및 패키지 정보
+4. **generate**: Python gRPC 스텁 자동 생성, import 경로 수정, __init__.py 생성
+5. **info**: 현재 패키지 버전 및 Git 상태 정보
 
 #### 예시
 
@@ -84,17 +87,43 @@ $ mysingle-proto validate
 
 # 4. Python 스텁 생성
 $ mysingle-proto generate
-🔧 Generating Python stubs...
+🔧 Proto 코드 생성
 ✅ Generated 28 files
 ✅ Fixed import paths (15 files)
-✅ Created __init__.py files
+✅ Created __init__.py files (8 directories)
+
+# 5. 패키지 정보 확인
+$ mysingle-proto info --check-git
+📦 Proto 패키지 정보
+현재 버전: v2.0.0-alpha
+현재 브랜치: feat/phase-0-package-restructure
+Git 작업 트리: ✅ 깨끗함
+📦 GitHub 릴리즈: https://github.com/Br0therDan/mysingle-pack/releases/tag/v2.0.0-alpha
 ```
 
 ## 🔮 향후 확장 계획
 
-### mysingle-cli (메인 CLI)
+### mysingle-cli (패키지 버전 관리)
 
-현재는 proto 도구만 제공하지만, 향후 다음 기능이 추가될 예정입니다:
+현재는 패키지 버전 관리 기능을 제공합니다:
+
+```bash
+# 버전 정보 확인
+mysingle-cli version
+
+# 버전 업그레이드
+mysingle-cli version patch   # 1.0.0 → 1.0.1
+mysingle-cli version minor   # 1.0.0 → 1.1.0
+mysingle-cli version major   # 1.0.0 → 2.0.0
+
+# 커스텀 버전 설정
+mysingle-cli version 2.0.0-alpha
+
+# Git 작업 스킵 (버전 변경만)
+mysingle-cli version patch --skip-git
+```
+
+향후 다음 기능이 추가될 예정입니다:
 
 ```bash
 # 서비스 스캐폴딩
@@ -103,14 +132,10 @@ mysingle-cli new service <name>
 # 패키지 관리
 mysingle-cli package install <name>
 mysingle-cli package list
-mysingle-cli package upgrade
 
 # 환경 관리
 mysingle-cli env setup
 mysingle-cli env validate
-
-# 버전 정보
-mysingle-cli version
 ```
 
 ## 📁 디렉터리 구조
@@ -119,19 +144,20 @@ mysingle-cli version
 src/mysingle/cli/
 ├── __init__.py              # CLI 패키지 루트
 ├── __main__.py              # mysingle-cli 진입점
-├── protos/                  # Proto 관리 도구
+├── core/                    # 패키지 버전 관리
 │   ├── __init__.py
-│   ├── __main__.py          # mysingle-proto 진입점
-│   ├── models.py            # 데이터 모델
-│   ├── utils.py             # 유틸리티 함수
-│   └── commands/            # 명령어 구현
-│       ├── init.py
-│       ├── status.py
-│       ├── validate.py
-│       ├── generate.py
-│       └── version.py
-└── core/                    # 향후 확장용
-    └── __init__.py
+│   └── version.py           # 버전 bump 및 Git 태깅
+└── protos/                  # Proto 관리 도구
+    ├── __init__.py
+    ├── __main__.py          # mysingle-proto 진입점
+    ├── models.py            # 데이터 모델
+    ├── utils.py             # 유틸리티 함수
+    └── commands/            # 명령어 구현
+        ├── init.py          # 환경 초기화
+        ├── status.py        # Proto 현황
+        ├── validate.py      # Proto 검증
+        ├── generate.py      # 스텁 생성
+        └── info.py          # 패키지 정보
 ```
 
 ## 🔗 관련 문서
