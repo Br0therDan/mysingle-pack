@@ -73,7 +73,9 @@ def write_version(pyproject_path: Path, new_version: Version) -> None:
 
     pattern = re.compile(r'(?m)^(\s*version\s*=\s*")([^"]+)(")\s*$')
     if pattern.search(content):
-        content = pattern.sub(lambda m: f"{m.group(1)}{new_version}{m.group(3)}", content)
+        content = pattern.sub(
+            lambda m: f"{m.group(1)}{new_version}{m.group(3)}", content
+        )
     else:
         # Insert after name line in [project] section
         content = re.sub(

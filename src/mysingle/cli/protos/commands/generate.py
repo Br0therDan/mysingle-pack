@@ -85,6 +85,38 @@ def rewrite_generated_imports(
     return modified
 
 
+def ensure_init_files(generated_dir: Path) -> list[Path]:
+    """생성된 디렉토리에 __init__.py 파일 생성"""
+    if not generated_dir.exists():
+        return []
+
+    log("__init__.py 파일 생성 중...", LogLevel.STEP)
+
+    created: list[Path] = []
+
+    # protos 디렉토리의 모든 하위 디렉토리에 __init__.py 생성
+    for dirpath in [generated_dir] + list(generated_dir.rglob("*/")):
+        if dirpath.is_dir():
+            init_file = dirpath / "__init__.py"
+            if not init_file.exists():
+                init_file.touch()
+                created.append(init_file)
+                log(
+                    f"생성: {colorize(str(init_file.relative_to(generated_dir.parent)), Color.CYAN)}",
+                    LogLevel.DEBUG,
+                )
+
+    if created:
+        log(
+            f"총 {colorize(str(len(created)), Color.GREEN, bold=True)}개 __init__.py 파일 생성 완료",
+            LogLevel.SUCCESS,
+        )
+    else:
+        log("__init__.py 파일 생성 불필요", LogLevel.INFO)
+
+    return created
+
+
 def execute(args: argparse.Namespace, config: ProtoConfig) -> int:
     """Generate 명령 실행"""
     log_header("Proto 코드 생성")
@@ -97,6 +129,11 @@ def execute(args: argparse.Namespace, config: ProtoConfig) -> int:
         package_dir = config.generated_root / config.package_name
         rewrite_generated_imports(package_dir, config.package_name)
 
+    # 3. __init__.py 파일 생성
+    if not args.skip_init:
+        package_dir = config.generated_root / config.package_name
+        ensure_init_files(package_dir)
+
     log("\n✅ 모든 작업 완료!", LogLevel.SUCCESS)
 
     return 0
@@ -108,4 +145,9 @@ def setup_parser(parser: argparse.ArgumentParser) -> None:
         "--skip-rewrite",
         action="store_true",
         help="import 경로 수정 단계 건너뛰기",
+    )
+    parser.add_argument(
+        "--skip-init",
+        action="store_true",
+        help="__init__.py 파일 생성 단계 건너뛰기",
     )

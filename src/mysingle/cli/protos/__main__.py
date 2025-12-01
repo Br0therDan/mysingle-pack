@@ -6,7 +6,7 @@ Proto CLI - gRPC Proto 파일 관리 도구.
     proto-cli status            # 서비스별 proto 파일 현황
     proto-cli generate          # 코드 생성
     proto-cli validate          # Proto 파일 검증
-    proto-cli version           # 버전 정보
+    proto-cli info              # 패키지 버전 및 상태 정보
     proto-cli --help            # 도움말
 """
 
@@ -16,7 +16,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from .commands import generate, init, status, validate, version
+from .commands import generate, info, init, status, validate
 from .models import ProtoConfig
 from .utils import Color, LogLevel, colorize, log
 
@@ -95,13 +95,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     validate.setup_parser(validate_parser)
 
-    # version 명령
-    version_parser = subparsers.add_parser(
-        "version",
-        help="Proto 버전 정보 확인",
-        description="현재 grpc-protos 버전과 Git 상태를 확인합니다.",
+    # info 명령
+    info_parser = subparsers.add_parser(
+        "info",
+        help="패키지 버전 및 상태 정보 확인",
+        description="현재 mysingle 패키지 버전과 Git 상태를 확인합니다.",
     )
-    version.setup_parser(version_parser)
+    info.setup_parser(info_parser)
 
     # TODO: 추가 명령어 구현 예정
     # - pr: Pull Request 생성 자동화
@@ -138,8 +138,8 @@ def main(argv: list[str] | None = None) -> int:
             return generate.execute(args, config)
         elif args.command == "validate":
             return validate.execute(args, config)
-        elif args.command == "version":
-            return version.execute(args, config)
+        elif args.command == "info":
+            return info.execute(args, config)
         else:
             log(f"알 수 없는 명령: {args.command}", LogLevel.ERROR)
             parser.print_help()

@@ -1,5 +1,5 @@
 """
-Version 명령 - Proto 버전 정보 확인.
+Info 명령 - Proto 패키지 버전 및 상태 정보 확인.
 """
 
 from __future__ import annotations
@@ -66,8 +66,8 @@ def setup_parser(parser: argparse.ArgumentParser) -> None:
 
 
 def execute(args: argparse.Namespace, config: ProtoConfig) -> int:
-    """Version 명령 실행"""
-    log_header("Proto 버전 정보")
+    """Info 명령 실행"""
+    log_header("Proto 패키지 정보")
 
     # 패키지 버전
     version = get_current_proto_version(config)
@@ -98,7 +98,7 @@ def execute(args: argparse.Namespace, config: ProtoConfig) -> int:
 
     # GitHub 릴리즈 URL
     log(
-        f"\n📦 GitHub 릴리즈: {colorize(f'https://github.com/Br0therDan/grpc-protos/releases/tag/v{version}', Color.BRIGHT_BLUE)}",
+        f"\n📦 GitHub 릴리즈: {colorize(f'https://github.com/Br0therDan/mysingle-pack/releases/tag/v{version}', Color.BRIGHT_BLUE)}",
         LogLevel.INFO,
     )
 
