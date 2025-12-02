@@ -1,4 +1,139 @@
 syntax = "proto3";
 
-// Placeholder proto for iam-service. Updated by proto_orchestrator.py.
-package iam_placeholder;
+package iam.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// IAM Service - gRPC API
+// Identity and Access Management service
+// Handles user authentication, authorization, and JWT token management
+service IAMService {
+  // Get user information by user ID
+  rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoResponse);
+
+  // Verify user access to a resource
+  rpc VerifyUserAccess(VerifyUserAccessRequest) returns (VerifyUserAccessResponse);
+
+  // Batch get multiple users (streaming response)
+  rpc BatchGetUsers(BatchGetUsersRequest) returns (stream UserResponse);
+
+  // Verify JWT token and return user info
+  rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse);
+
+  // Refresh access token using refresh token
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
+
+  // Health check
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+// Request Messages
+
+// GetUserInfoRequest defines the request payload for GetUserInfo
+message GetUserInfoRequest {
+  // User ID to retrieve
+  string user_id = 1;
+}
+
+// VerifyUserAccessRequest defines the request payload for VerifyUserAccess
+message VerifyUserAccessRequest {
+  // User ID to check
+  string user_id = 1;
+  // Resource identifier (e.g., "strategy:123", "backtest:456")
+  string resource = 2;
+  // Optional: Required permission (e.g., "read", "write", "delete")
+  optional string permission = 3;
+}
+
+// BatchGetUsersRequest defines the request payload for BatchGetUsers
+message BatchGetUsersRequest {
+  // List of user IDs to retrieve
+  repeated string user_ids = 1;
+}
+
+// VerifyTokenRequest defines the request payload for VerifyToken
+message VerifyTokenRequest {
+  // JWT access token to verify
+  string access_token = 1;
+}
+
+// RefreshTokenRequest defines the request payload for RefreshToken
+message RefreshTokenRequest {
+  // JWT refresh token
+  string refresh_token = 1;
+}
+
+// HealthCheckRequest defines the request payload for HealthCheck
+message HealthCheckRequest {}
+
+// Response Messages
+
+// GetUserInfoResponse defines the response payload for GetUserInfo
+message GetUserInfoResponse {
+  // User information
+  UserInfo user = 1;
+}
+
+// UserInfo defines user information
+message UserInfo {
+  // User ID
+  string id = 1;
+  // Email address
+  string email = 2;
+  // Full name
+  optional string full_name = 3;
+  // Email verified status
+  bool is_verified = 4;
+  // Account active status
+  bool is_active = 5;
+  // Superuser status
+  bool is_superuser = 6;
+  // Account creation timestamp
+  google.protobuf.Timestamp created_at = 7;
+  // Last update timestamp
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+// VerifyUserAccessResponse defines the response payload for VerifyUserAccess
+message VerifyUserAccessResponse {
+  // Whether access is granted
+  bool allowed = 1;
+  // Optional: Reason for denial
+  optional string reason = 2;
+}
+
+// UserResponse defines the response payload for a single user
+message UserResponse {
+  // User information
+  UserInfo user = 1;
+}
+
+// VerifyTokenResponse defines the response payload for VerifyToken
+message VerifyTokenResponse {
+  // Token validation status
+  bool valid = 1;
+  // User information if token is valid
+  optional UserInfo user = 2;
+  // Optional: Reason for invalidity
+  optional string reason = 3;
+}
+
+// RefreshTokenResponse defines the response payload for RefreshToken
+message RefreshTokenResponse {
+  // New access token
+  string access_token = 1;
+  // New refresh token (optional, may reuse existing)
+  optional string refresh_token = 2;
+  // Token type (always "Bearer")
+  string token_type = 3;
+  // Expiry time in seconds
+  int32 expires_in = 4;
+}
+
+// HealthCheckResponse defines the response payload for HealthCheck
+message HealthCheckResponse {
+  // Service status
+  string status = 1;
+  // Service version
+  string version = 2;
+}

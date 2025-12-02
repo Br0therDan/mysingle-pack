@@ -4,18 +4,20 @@
 # source: services/genai/v1/chatops.proto
 # Protobuf Python Version: 6.31.1
 """Generated protocol buffer code."""
-
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
-
 _runtime_version.ValidateProtobufRuntimeVersion(
-    _runtime_version.Domain.PUBLIC, 6, 31, 1, "", "services/genai/v1/chatops.proto"
+    _runtime_version.Domain.PUBLIC,
+    6,
+    31,
+    1,
+    '',
+    'services/genai/v1/chatops.proto'
 )
 from google.protobuf import struct_pb2 as _struct_pb2  # protobuf 6.x compatibility
-
 _ = _struct_pb2.DESCRIPTOR
 
 # @@protoc_insertion_point(imports)
@@ -23,49 +25,50 @@ _ = _struct_pb2.DESCRIPTOR
 _sym_db = _symbol_database.Default()
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n\x1fservices/genai/v1/chatops.proto\x12\rgenai.chatops\x1a\x1cgoogle/protobuf/struct.proto\x1a\x15\x63ommon/metadata.proto\x1a\x17\x63ommon/pagination.proto"\x81\x01\n\x14\x43reateSessionRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12.\n\x07\x63ontext\x18\x02 \x01(\x0b\x32\x1d.genai.chatops.SessionContext\x12(\n\x08metadata\x18\x03 \x01(\x0b\x32\x16.genai.common.Metadata"\xb3\x01\n\x0eSessionContext\x12\x0e\n\x06\x64omain\x18\x01 \x01(\t\x12\x11\n\tentity_id\x18\x02 \x01(\t\x12H\n\x0e\x63ustom_context\x18\x03 \x03(\x0b\x32\x30.genai.chatops.SessionContext.CustomContextEntry\x1a\x34\n\x12\x43ustomContextEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"?\n\x15\x43reateSessionResponse\x12\x12\n\nsession_id\x18\x01 \x01(\t\x12\x12\n\ncreated_at\x18\x02 \x01(\x03"\x9f\x01\n\x0b\x43hatMessage\x12\x12\n\nsession_id\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12:\n\x08metadata\x18\x03 \x03(\x0b\x32(.genai.chatops.ChatMessage.MetadataEntry\x1a/\n\rMetadataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"\xbe\x01\n\x0c\x43hatResponse\x12\x12\n\nsession_id\x18\x01 \x01(\t\x12\x10\n\x08response\x18\x02 \x01(\t\x12\x32\n\rresponse_type\x18\x03 \x01(\x0e\x32\x1b.genai.chatops.ResponseType\x12,\n\ntools_used\x18\x04 \x03(\x0b\x32\x18.genai.chatops.ToolUsage\x12\x13\n\x0btokens_used\x18\x05 \x01(\x05\x12\x11\n\ttimestamp\x18\x06 \x01(\x03"\x8a\x01\n\tToolUsage\x12\x11\n\ttool_name\x18\x01 \x01(\t\x12&\n\x05input\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\'\n\x06output\x18\x03 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x19\n\x11\x65xecution_time_ms\x18\x04 \x01(\x03"\x8d\x01\n\x18GetSessionHistoryRequest\x12\x12\n\nsession_id\x18\x01 \x01(\t\x12\x33\n\npagination\x18\x02 \x01(\x0b\x32\x1f.genai.common.PaginationRequest\x12(\n\x08metadata\x18\x03 \x01(\x0b\x32\x16.genai.common.Metadata"\x7f\n\x19GetSessionHistoryResponse\x12,\n\x07\x65ntries\x18\x01 \x03(\x0b\x32\x1b.genai.chatops.HistoryEntry\x12\x34\n\npagination\x18\x02 \x01(\x0b\x32 .genai.common.PaginationResponse"P\n\x0cHistoryEntry\x12\x0c\n\x04role\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\t\x12\x11\n\ttimestamp\x18\x03 \x01(\x03\x12\x0e\n\x06tokens\x18\x04 \x01(\x05"S\n\x13\x43loseSessionRequest\x12\x12\n\nsession_id\x18\x01 \x01(\t\x12(\n\x08metadata\x18\x02 \x01(\x0b\x32\x16.genai.common.Metadata"Z\n\x14\x43loseSessionResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x19\n\x11total_tokens_used\x18\x02 \x01(\x05\x12\x16\n\x0etotal_messages\x18\x03 \x01(\x05*\xa5\x01\n\x0cResponseType\x12\x1d\n\x19RESPONSE_TYPE_UNSPECIFIED\x10\x00\x12\x16\n\x12RESPONSE_TYPE_TEXT\x10\x01\x12)\n%RESPONSE_TYPE_STRATEGY_RECOMMENDATION\x10\x02\x12\x1a\n\x16RESPONSE_TYPE_ANALYSIS\x10\x03\x12\x17\n\x13RESPONSE_TYPE_ERROR\x10\x04\x32\xf8\x02\n\x0e\x43hatOpsService\x12Z\n\rCreateSession\x12#.genai.chatops.CreateSessionRequest\x1a$.genai.chatops.CreateSessionResponse\x12I\n\nChatStream\x12\x1a.genai.chatops.ChatMessage\x1a\x1b.genai.chatops.ChatResponse(\x01\x30\x01\x12\x66\n\x11GetSessionHistory\x12\'.genai.chatops.GetSessionHistoryRequest\x1a(.genai.chatops.GetSessionHistoryResponse\x12W\n\x0c\x43loseSession\x12".genai.chatops.CloseSessionRequest\x1a#.genai.chatops.CloseSessionResponseb\x06proto3'
-)
+from mysingle.protos.common import metadata_pb2 as common_dot_metadata__pb2
+from mysingle.protos.common import pagination_pb2 as common_dot_pagination__pb2
+from google.protobuf import struct_pb2 as google_dot_protobuf_dot_struct__pb2
+
+
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1fservices/genai/v1/chatops.proto\x12\rgenai.chatops\x1a\x15\x63ommon/metadata.proto\x1a\x17\x63ommon/pagination.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x81\x01\n\x14\x43reateSessionRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12.\n\x07\x63ontext\x18\x02 \x01(\x0b\x32\x1d.genai.chatops.SessionContext\x12(\n\x08metadata\x18\x03 \x01(\x0b\x32\x16.genai.common.Metadata\"\xb3\x01\n\x0eSessionContext\x12\x0e\n\x06\x64omain\x18\x01 \x01(\t\x12\x11\n\tentity_id\x18\x02 \x01(\t\x12H\n\x0e\x63ustom_context\x18\x03 \x03(\x0b\x32\x30.genai.chatops.SessionContext.CustomContextEntry\x1a\x34\n\x12\x43ustomContextEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"?\n\x15\x43reateSessionResponse\x12\x12\n\nsession_id\x18\x01 \x01(\t\x12\x12\n\ncreated_at\x18\x02 \x01(\x03\"\x9f\x01\n\x0b\x43hatMessage\x12\x12\n\nsession_id\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12:\n\x08metadata\x18\x03 \x03(\x0b\x32(.genai.chatops.ChatMessage.MetadataEntry\x1a/\n\rMetadataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"\xbe\x01\n\x0c\x43hatResponse\x12\x12\n\nsession_id\x18\x01 \x01(\t\x12\x10\n\x08response\x18\x02 \x01(\t\x12\x32\n\rresponse_type\x18\x03 \x01(\x0e\x32\x1b.genai.chatops.ResponseType\x12,\n\ntools_used\x18\x04 \x03(\x0b\x32\x18.genai.chatops.ToolUsage\x12\x13\n\x0btokens_used\x18\x05 \x01(\x05\x12\x11\n\ttimestamp\x18\x06 \x01(\x03\"\x8a\x01\n\tToolUsage\x12\x11\n\ttool_name\x18\x01 \x01(\t\x12&\n\x05input\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\'\n\x06output\x18\x03 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x19\n\x11\x65xecution_time_ms\x18\x04 \x01(\x03\"\x8d\x01\n\x18GetSessionHistoryRequest\x12\x12\n\nsession_id\x18\x01 \x01(\t\x12\x33\n\npagination\x18\x02 \x01(\x0b\x32\x1f.genai.common.PaginationRequest\x12(\n\x08metadata\x18\x03 \x01(\x0b\x32\x16.genai.common.Metadata\"\x7f\n\x19GetSessionHistoryResponse\x12,\n\x07\x65ntries\x18\x01 \x03(\x0b\x32\x1b.genai.chatops.HistoryEntry\x12\x34\n\npagination\x18\x02 \x01(\x0b\x32 .genai.common.PaginationResponse\"P\n\x0cHistoryEntry\x12\x0c\n\x04role\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\t\x12\x11\n\ttimestamp\x18\x03 \x01(\x03\x12\x0e\n\x06tokens\x18\x04 \x01(\x05\"S\n\x13\x43loseSessionRequest\x12\x12\n\nsession_id\x18\x01 \x01(\t\x12(\n\x08metadata\x18\x02 \x01(\x0b\x32\x16.genai.common.Metadata\"Z\n\x14\x43loseSessionResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x19\n\x11total_tokens_used\x18\x02 \x01(\x05\x12\x16\n\x0etotal_messages\x18\x03 \x01(\x05*\xa5\x01\n\x0cResponseType\x12\x1d\n\x19RESPONSE_TYPE_UNSPECIFIED\x10\x00\x12\x16\n\x12RESPONSE_TYPE_TEXT\x10\x01\x12)\n%RESPONSE_TYPE_STRATEGY_RECOMMENDATION\x10\x02\x12\x1a\n\x16RESPONSE_TYPE_ANALYSIS\x10\x03\x12\x17\n\x13RESPONSE_TYPE_ERROR\x10\x04\x32\xf8\x02\n\x0e\x43hatOpsService\x12Z\n\rCreateSession\x12#.genai.chatops.CreateSessionRequest\x1a$.genai.chatops.CreateSessionResponse\x12I\n\nChatStream\x12\x1a.genai.chatops.ChatMessage\x1a\x1b.genai.chatops.ChatResponse(\x01\x30\x01\x12\x66\n\x11GetSessionHistory\x12\'.genai.chatops.GetSessionHistoryRequest\x1a(.genai.chatops.GetSessionHistoryResponse\x12W\n\x0c\x43loseSession\x12\".genai.chatops.CloseSessionRequest\x1a#.genai.chatops.CloseSessionResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
-_builder.BuildTopDescriptorsAndMessages(
-    DESCRIPTOR, "services.genai.v1.chatops_pb2", _globals
-)
+_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'services.genai.v1.chatops_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
-    DESCRIPTOR._loaded_options = None
-    _globals["_SESSIONCONTEXT_CUSTOMCONTEXTENTRY"]._loaded_options = None
-    _globals["_SESSIONCONTEXT_CUSTOMCONTEXTENTRY"]._serialized_options = b"8\001"
-    _globals["_CHATMESSAGE_METADATAENTRY"]._loaded_options = None
-    _globals["_CHATMESSAGE_METADATAENTRY"]._serialized_options = b"8\001"
-    _globals["_RESPONSETYPE"]._serialized_start = 1536
-    _globals["_RESPONSETYPE"]._serialized_end = 1701
-    _globals["_CREATESESSIONREQUEST"]._serialized_start = 129
-    _globals["_CREATESESSIONREQUEST"]._serialized_end = 258
-    _globals["_SESSIONCONTEXT"]._serialized_start = 261
-    _globals["_SESSIONCONTEXT"]._serialized_end = 440
-    _globals["_SESSIONCONTEXT_CUSTOMCONTEXTENTRY"]._serialized_start = 388
-    _globals["_SESSIONCONTEXT_CUSTOMCONTEXTENTRY"]._serialized_end = 440
-    _globals["_CREATESESSIONRESPONSE"]._serialized_start = 442
-    _globals["_CREATESESSIONRESPONSE"]._serialized_end = 505
-    _globals["_CHATMESSAGE"]._serialized_start = 508
-    _globals["_CHATMESSAGE"]._serialized_end = 667
-    _globals["_CHATMESSAGE_METADATAENTRY"]._serialized_start = 620
-    _globals["_CHATMESSAGE_METADATAENTRY"]._serialized_end = 667
-    _globals["_CHATRESPONSE"]._serialized_start = 670
-    _globals["_CHATRESPONSE"]._serialized_end = 860
-    _globals["_TOOLUSAGE"]._serialized_start = 863
-    _globals["_TOOLUSAGE"]._serialized_end = 1001
-    _globals["_GETSESSIONHISTORYREQUEST"]._serialized_start = 1004
-    _globals["_GETSESSIONHISTORYREQUEST"]._serialized_end = 1145
-    _globals["_GETSESSIONHISTORYRESPONSE"]._serialized_start = 1147
-    _globals["_GETSESSIONHISTORYRESPONSE"]._serialized_end = 1274
-    _globals["_HISTORYENTRY"]._serialized_start = 1276
-    _globals["_HISTORYENTRY"]._serialized_end = 1356
-    _globals["_CLOSESESSIONREQUEST"]._serialized_start = 1358
-    _globals["_CLOSESESSIONREQUEST"]._serialized_end = 1441
-    _globals["_CLOSESESSIONRESPONSE"]._serialized_start = 1443
-    _globals["_CLOSESESSIONRESPONSE"]._serialized_end = 1533
-    _globals["_CHATOPSSERVICE"]._serialized_start = 1704
-    _globals["_CHATOPSSERVICE"]._serialized_end = 2080
+  DESCRIPTOR._loaded_options = None
+  _globals['_SESSIONCONTEXT_CUSTOMCONTEXTENTRY']._loaded_options = None
+  _globals['_SESSIONCONTEXT_CUSTOMCONTEXTENTRY']._serialized_options = b'8\001'
+  _globals['_CHATMESSAGE_METADATAENTRY']._loaded_options = None
+  _globals['_CHATMESSAGE_METADATAENTRY']._serialized_options = b'8\001'
+  _globals['_RESPONSETYPE']._serialized_start=1536
+  _globals['_RESPONSETYPE']._serialized_end=1701
+  _globals['_CREATESESSIONREQUEST']._serialized_start=129
+  _globals['_CREATESESSIONREQUEST']._serialized_end=258
+  _globals['_SESSIONCONTEXT']._serialized_start=261
+  _globals['_SESSIONCONTEXT']._serialized_end=440
+  _globals['_SESSIONCONTEXT_CUSTOMCONTEXTENTRY']._serialized_start=388
+  _globals['_SESSIONCONTEXT_CUSTOMCONTEXTENTRY']._serialized_end=440
+  _globals['_CREATESESSIONRESPONSE']._serialized_start=442
+  _globals['_CREATESESSIONRESPONSE']._serialized_end=505
+  _globals['_CHATMESSAGE']._serialized_start=508
+  _globals['_CHATMESSAGE']._serialized_end=667
+  _globals['_CHATMESSAGE_METADATAENTRY']._serialized_start=620
+  _globals['_CHATMESSAGE_METADATAENTRY']._serialized_end=667
+  _globals['_CHATRESPONSE']._serialized_start=670
+  _globals['_CHATRESPONSE']._serialized_end=860
+  _globals['_TOOLUSAGE']._serialized_start=863
+  _globals['_TOOLUSAGE']._serialized_end=1001
+  _globals['_GETSESSIONHISTORYREQUEST']._serialized_start=1004
+  _globals['_GETSESSIONHISTORYREQUEST']._serialized_end=1145
+  _globals['_GETSESSIONHISTORYRESPONSE']._serialized_start=1147
+  _globals['_GETSESSIONHISTORYRESPONSE']._serialized_end=1274
+  _globals['_HISTORYENTRY']._serialized_start=1276
+  _globals['_HISTORYENTRY']._serialized_end=1356
+  _globals['_CLOSESESSIONREQUEST']._serialized_start=1358
+  _globals['_CLOSESESSIONREQUEST']._serialized_end=1441
+  _globals['_CLOSESESSIONRESPONSE']._serialized_start=1443
+  _globals['_CLOSESESSIONRESPONSE']._serialized_end=1533
+  _globals['_CHATOPSSERVICE']._serialized_start=1704
+  _globals['_CHATOPSSERVICE']._serialized_end=2080
 # @@protoc_insertion_point(module_scope)

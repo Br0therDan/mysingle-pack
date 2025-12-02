@@ -4,56 +4,58 @@
 # source: services/genai/v1/narrative.proto
 # Protobuf Python Version: 6.31.1
 """Generated protocol buffer code."""
-
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
-
 _runtime_version.ValidateProtobufRuntimeVersion(
-    _runtime_version.Domain.PUBLIC, 6, 31, 1, "", "services/genai/v1/narrative.proto"
+    _runtime_version.Domain.PUBLIC,
+    6,
+    31,
+    1,
+    '',
+    'services/genai/v1/narrative.proto'
 )
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n!services/genai/v1/narrative.proto\x12\x0fgenai.narrative\x1a\x15\x63ommon/metadata.proto"\x85\x01\n\x15GenerateReportRequest\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12-\n\x06\x63onfig\x18\x02 \x01(\x0b\x32\x1d.genai.narrative.ReportConfig\x12(\n\x08metadata\x18\x03 \x01(\x0b\x32\x16.genai.common.Metadata"\xbb\x01\n\x0cReportConfig\x12-\n\x06\x66ormat\x18\x01 \x01(\x0e\x32\x1d.genai.narrative.ReportFormat\x12\x30\n\x08sections\x18\x02 \x03(\x0e\x32\x1e.genai.narrative.ReportSection\x12\x10\n\x08language\x18\x03 \x01(\t\x12\x38\n\x0c\x64\x65tail_level\x18\x04 \x01(\x0e\x32".genai.narrative.ReportDetailLevel"\xb8\x01\n\x16GenerateReportProgress\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12-\n\x06status\x18\x02 \x01(\x0e\x32\x1d.genai.narrative.ReportStatus\x12\x18\n\x10progress_percent\x18\x03 \x01(\x05\x12\x15\n\rcurrent_stage\x18\x04 \x01(\t\x12-\n\x06result\x18\x05 \x01(\x0b\x32\x1d.genai.narrative.ReportResult"d\n\x0cReportResult\x12\x0f\n\x07\x63ontent\x18\x01 \x01(\t\x12\x31\n\x08metadata\x18\x02 \x01(\x0b\x32\x1f.genai.narrative.ReportMetadata\x12\x10\n\x08warnings\x18\x03 \x03(\t"k\n\x0eReportMetadata\x12\x14\n\x0cgenerated_at\x18\x01 \x01(\x03\x12\x13\n\x0btokens_used\x18\x02 \x01(\x05\x12\x1a\n\x12generation_time_ms\x18\x03 \x01(\x03\x12\x12\n\nmodel_used\x18\x04 \x01(\t"S\n\x16GetReportStatusRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12(\n\x08metadata\x18\x02 \x01(\x0b\x32\x16.genai.common.Metadata"\xb9\x01\n\x17GetReportStatusResponse\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12-\n\x06status\x18\x02 \x01(\x0e\x32\x1d.genai.narrative.ReportStatus\x12\x18\n\x10progress_percent\x18\x03 \x01(\x05\x12-\n\x06result\x18\x04 \x01(\x0b\x32\x1d.genai.narrative.ReportResult\x12\x15\n\rerror_message\x18\x05 \x01(\t"\x90\x01\n\x1fGenerateComparisonReportRequest\x12\x14\n\x0c\x62\x61\x63ktest_ids\x18\x01 \x03(\t\x12-\n\x06\x63onfig\x18\x02 \x01(\x0b\x32\x1d.genai.narrative.ReportConfig\x12(\n\x08metadata\x18\x03 \x01(\x0b\x32\x16.genai.common.Metadata*x\n\x0cReportFormat\x12\x1d\n\x19REPORT_FORMAT_UNSPECIFIED\x10\x00\x12\x1a\n\x16REPORT_FORMAT_MARKDOWN\x10\x01\x12\x16\n\x12REPORT_FORMAT_HTML\x10\x02\x12\x15\n\x11REPORT_FORMAT_PDF\x10\x03*\xe0\x01\n\rReportSection\x12\x1e\n\x1aREPORT_SECTION_UNSPECIFIED\x10\x00\x12\x1a\n\x16REPORT_SECTION_SUMMARY\x10\x01\x12\x1e\n\x1aREPORT_SECTION_PERFORMANCE\x10\x02\x12\x17\n\x13REPORT_SECTION_RISK\x10\x03\x12\x19\n\x15REPORT_SECTION_TRADES\x10\x04\x12\x1b\n\x17REPORT_SECTION_INSIGHTS\x10\x05\x12"\n\x1eREPORT_SECTION_RECOMMENDATIONS\x10\x06*\x9b\x01\n\x11ReportDetailLevel\x12#\n\x1fREPORT_DETAIL_LEVEL_UNSPECIFIED\x10\x00\x12\x1d\n\x19REPORT_DETAIL_LEVEL_BRIEF\x10\x01\x12 \n\x1cREPORT_DETAIL_LEVEL_STANDARD\x10\x02\x12 \n\x1cREPORT_DETAIL_LEVEL_DETAILED\x10\x03*\x9d\x01\n\x0cReportStatus\x12\x1d\n\x19REPORT_STATUS_UNSPECIFIED\x10\x00\x12\x19\n\x15REPORT_STATUS_PENDING\x10\x01\x12\x1c\n\x18REPORT_STATUS_PROCESSING\x10\x02\x12\x1b\n\x17REPORT_STATUS_COMPLETED\x10\x03\x12\x18\n\x14REPORT_STATUS_FAILED\x10\x04\x32\xd6\x02\n\x10NarrativeService\x12\x63\n\x0eGenerateReport\x12&.genai.narrative.GenerateReportRequest\x1a\'.genai.narrative.GenerateReportProgress0\x01\x12\x64\n\x0fGetReportStatus\x12\'.genai.narrative.GetReportStatusRequest\x1a(.genai.narrative.GetReportStatusResponse\x12w\n\x18GenerateComparisonReport\x12\x30.genai.narrative.GenerateComparisonReportRequest\x1a\'.genai.narrative.GenerateReportProgress0\x01\x62\x06proto3'
-)
+from mysingle.protos.common import metadata_pb2 as common_dot_metadata__pb2
+
+
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n!services/genai/v1/narrative.proto\x12\x0fgenai.narrative\x1a\x15\x63ommon/metadata.proto\"\x85\x01\n\x15GenerateReportRequest\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12-\n\x06\x63onfig\x18\x02 \x01(\x0b\x32\x1d.genai.narrative.ReportConfig\x12(\n\x08metadata\x18\x03 \x01(\x0b\x32\x16.genai.common.Metadata\"\xbb\x01\n\x0cReportConfig\x12-\n\x06\x66ormat\x18\x01 \x01(\x0e\x32\x1d.genai.narrative.ReportFormat\x12\x30\n\x08sections\x18\x02 \x03(\x0e\x32\x1e.genai.narrative.ReportSection\x12\x10\n\x08language\x18\x03 \x01(\t\x12\x38\n\x0c\x64\x65tail_level\x18\x04 \x01(\x0e\x32\".genai.narrative.ReportDetailLevel\"\xb8\x01\n\x16GenerateReportProgress\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12-\n\x06status\x18\x02 \x01(\x0e\x32\x1d.genai.narrative.ReportStatus\x12\x18\n\x10progress_percent\x18\x03 \x01(\x05\x12\x15\n\rcurrent_stage\x18\x04 \x01(\t\x12-\n\x06result\x18\x05 \x01(\x0b\x32\x1d.genai.narrative.ReportResult\"d\n\x0cReportResult\x12\x0f\n\x07\x63ontent\x18\x01 \x01(\t\x12\x31\n\x08metadata\x18\x02 \x01(\x0b\x32\x1f.genai.narrative.ReportMetadata\x12\x10\n\x08warnings\x18\x03 \x03(\t\"k\n\x0eReportMetadata\x12\x14\n\x0cgenerated_at\x18\x01 \x01(\x03\x12\x13\n\x0btokens_used\x18\x02 \x01(\x05\x12\x1a\n\x12generation_time_ms\x18\x03 \x01(\x03\x12\x12\n\nmodel_used\x18\x04 \x01(\t\"S\n\x16GetReportStatusRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12(\n\x08metadata\x18\x02 \x01(\x0b\x32\x16.genai.common.Metadata\"\xb9\x01\n\x17GetReportStatusResponse\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12-\n\x06status\x18\x02 \x01(\x0e\x32\x1d.genai.narrative.ReportStatus\x12\x18\n\x10progress_percent\x18\x03 \x01(\x05\x12-\n\x06result\x18\x04 \x01(\x0b\x32\x1d.genai.narrative.ReportResult\x12\x15\n\rerror_message\x18\x05 \x01(\t\"\x90\x01\n\x1fGenerateComparisonReportRequest\x12\x14\n\x0c\x62\x61\x63ktest_ids\x18\x01 \x03(\t\x12-\n\x06\x63onfig\x18\x02 \x01(\x0b\x32\x1d.genai.narrative.ReportConfig\x12(\n\x08metadata\x18\x03 \x01(\x0b\x32\x16.genai.common.Metadata*x\n\x0cReportFormat\x12\x1d\n\x19REPORT_FORMAT_UNSPECIFIED\x10\x00\x12\x1a\n\x16REPORT_FORMAT_MARKDOWN\x10\x01\x12\x16\n\x12REPORT_FORMAT_HTML\x10\x02\x12\x15\n\x11REPORT_FORMAT_PDF\x10\x03*\xe0\x01\n\rReportSection\x12\x1e\n\x1aREPORT_SECTION_UNSPECIFIED\x10\x00\x12\x1a\n\x16REPORT_SECTION_SUMMARY\x10\x01\x12\x1e\n\x1aREPORT_SECTION_PERFORMANCE\x10\x02\x12\x17\n\x13REPORT_SECTION_RISK\x10\x03\x12\x19\n\x15REPORT_SECTION_TRADES\x10\x04\x12\x1b\n\x17REPORT_SECTION_INSIGHTS\x10\x05\x12\"\n\x1eREPORT_SECTION_RECOMMENDATIONS\x10\x06*\x9b\x01\n\x11ReportDetailLevel\x12#\n\x1fREPORT_DETAIL_LEVEL_UNSPECIFIED\x10\x00\x12\x1d\n\x19REPORT_DETAIL_LEVEL_BRIEF\x10\x01\x12 \n\x1cREPORT_DETAIL_LEVEL_STANDARD\x10\x02\x12 \n\x1cREPORT_DETAIL_LEVEL_DETAILED\x10\x03*\x9d\x01\n\x0cReportStatus\x12\x1d\n\x19REPORT_STATUS_UNSPECIFIED\x10\x00\x12\x19\n\x15REPORT_STATUS_PENDING\x10\x01\x12\x1c\n\x18REPORT_STATUS_PROCESSING\x10\x02\x12\x1b\n\x17REPORT_STATUS_COMPLETED\x10\x03\x12\x18\n\x14REPORT_STATUS_FAILED\x10\x04\x32\xd6\x02\n\x10NarrativeService\x12\x63\n\x0eGenerateReport\x12&.genai.narrative.GenerateReportRequest\x1a\'.genai.narrative.GenerateReportProgress0\x01\x12\x64\n\x0fGetReportStatus\x12\'.genai.narrative.GetReportStatusRequest\x1a(.genai.narrative.GetReportStatusResponse\x12w\n\x18GenerateComparisonReport\x12\x30.genai.narrative.GenerateComparisonReportRequest\x1a\'.genai.narrative.GenerateReportProgress0\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
-_builder.BuildTopDescriptorsAndMessages(
-    DESCRIPTOR, "services.genai.v1.narrative_pb2", _globals
-)
+_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'services.genai.v1.narrative_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
-    DESCRIPTOR._loaded_options = None
-    _globals["_REPORTFORMAT"]._serialized_start = 1221
-    _globals["_REPORTFORMAT"]._serialized_end = 1341
-    _globals["_REPORTSECTION"]._serialized_start = 1344
-    _globals["_REPORTSECTION"]._serialized_end = 1568
-    _globals["_REPORTDETAILLEVEL"]._serialized_start = 1571
-    _globals["_REPORTDETAILLEVEL"]._serialized_end = 1726
-    _globals["_REPORTSTATUS"]._serialized_start = 1729
-    _globals["_REPORTSTATUS"]._serialized_end = 1886
-    _globals["_GENERATEREPORTREQUEST"]._serialized_start = 78
-    _globals["_GENERATEREPORTREQUEST"]._serialized_end = 211
-    _globals["_REPORTCONFIG"]._serialized_start = 214
-    _globals["_REPORTCONFIG"]._serialized_end = 401
-    _globals["_GENERATEREPORTPROGRESS"]._serialized_start = 404
-    _globals["_GENERATEREPORTPROGRESS"]._serialized_end = 588
-    _globals["_REPORTRESULT"]._serialized_start = 590
-    _globals["_REPORTRESULT"]._serialized_end = 690
-    _globals["_REPORTMETADATA"]._serialized_start = 692
-    _globals["_REPORTMETADATA"]._serialized_end = 799
-    _globals["_GETREPORTSTATUSREQUEST"]._serialized_start = 801
-    _globals["_GETREPORTSTATUSREQUEST"]._serialized_end = 884
-    _globals["_GETREPORTSTATUSRESPONSE"]._serialized_start = 887
-    _globals["_GETREPORTSTATUSRESPONSE"]._serialized_end = 1072
-    _globals["_GENERATECOMPARISONREPORTREQUEST"]._serialized_start = 1075
-    _globals["_GENERATECOMPARISONREPORTREQUEST"]._serialized_end = 1219
-    _globals["_NARRATIVESERVICE"]._serialized_start = 1889
-    _globals["_NARRATIVESERVICE"]._serialized_end = 2231
+  DESCRIPTOR._loaded_options = None
+  _globals['_REPORTFORMAT']._serialized_start=1221
+  _globals['_REPORTFORMAT']._serialized_end=1341
+  _globals['_REPORTSECTION']._serialized_start=1344
+  _globals['_REPORTSECTION']._serialized_end=1568
+  _globals['_REPORTDETAILLEVEL']._serialized_start=1571
+  _globals['_REPORTDETAILLEVEL']._serialized_end=1726
+  _globals['_REPORTSTATUS']._serialized_start=1729
+  _globals['_REPORTSTATUS']._serialized_end=1886
+  _globals['_GENERATEREPORTREQUEST']._serialized_start=78
+  _globals['_GENERATEREPORTREQUEST']._serialized_end=211
+  _globals['_REPORTCONFIG']._serialized_start=214
+  _globals['_REPORTCONFIG']._serialized_end=401
+  _globals['_GENERATEREPORTPROGRESS']._serialized_start=404
+  _globals['_GENERATEREPORTPROGRESS']._serialized_end=588
+  _globals['_REPORTRESULT']._serialized_start=590
+  _globals['_REPORTRESULT']._serialized_end=690
+  _globals['_REPORTMETADATA']._serialized_start=692
+  _globals['_REPORTMETADATA']._serialized_end=799
+  _globals['_GETREPORTSTATUSREQUEST']._serialized_start=801
+  _globals['_GETREPORTSTATUSREQUEST']._serialized_end=884
+  _globals['_GETREPORTSTATUSRESPONSE']._serialized_start=887
+  _globals['_GETREPORTSTATUSRESPONSE']._serialized_end=1072
+  _globals['_GENERATECOMPARISONREPORTREQUEST']._serialized_start=1075
+  _globals['_GENERATECOMPARISONREPORTREQUEST']._serialized_end=1219
+  _globals['_NARRATIVESERVICE']._serialized_start=1889
+  _globals['_NARRATIVESERVICE']._serialized_end=2231
 # @@protoc_insertion_point(module_scope)
