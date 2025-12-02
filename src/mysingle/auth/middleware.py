@@ -46,12 +46,14 @@ class AuthMiddleware(BaseHTTPMiddleware):
     def __init__(self, app: ASGIApp, service_config: ServiceConfig):
         super().__init__(app)
         self.service_config = service_config
-        self.public_paths = self._prepare_public_paths()
+        # Initialize settings first (required by _prepare_public_paths)
+        self.settings = get_settings()
         # User Cache (Hybrid: Redis + In-Memory)
         self.user_cache = get_user_cache()
         # Test bypass flag (only active in non-production)
         self.auth_bypass = self._check_auth_bypass()
-        self.settings = get_settings()
+        # Prepare public paths (requires self.settings)
+        self.public_paths = self._prepare_public_paths()
 
     def _check_auth_bypass(self) -> bool:
         """Check if authentication bypass is enabled for testing"""
