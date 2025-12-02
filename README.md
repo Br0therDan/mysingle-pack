@@ -184,7 +184,7 @@ src/mysingle/
 - **패키지 버전**: `mysingle.__version__` = "2.0.0-alpha"
 - **Breaking Changes**: Import 경로 변경
   - `mysingle.base` → `mysingle.core.base`
-  - `mysingle.logging` → `mysingle.core.logging`
+  - `mysingle.core` → `mysingle.core.logging`
   - `mysingle.metrics` → `mysingle.core.metrics`
   - 기타 모듈들도 core로 통합
 
@@ -201,7 +201,7 @@ MySingle 패키지는 **Git 저장소를 통해 직접 설치**하는 방식으�
 **pyproject.toml:**
 ```toml
 dependencies = [
-    "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.2.0",
+    "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.3.2",
     # 또는 최신 main 브랜치
     "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@main",
 ]

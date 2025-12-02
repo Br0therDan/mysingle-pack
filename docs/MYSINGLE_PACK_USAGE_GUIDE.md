@@ -47,7 +47,7 @@ MySingle-Quant Package는 마이크로서비스 아키텍처를 위한 통합 �
     - 루트도 가능: `from mysingle import create_fastapi_app, CommonSettings, settings, get_settings, init_mongo, get_mongodb_url, get_database_name`
 
 - Logging
-    - 권장: `from mysingle.logging import get_logger, setup_logging, configure_structured_logging`
+    - 권장: `from mysingle.core import get_logger, setup_logging, configure_structured_logging`
     - 루트도 가능: `from mysingle import get_logger`
 
 - Database
@@ -656,7 +656,7 @@ plugins:
 ### 4.3 기본 설정
 
 ```python
-from mysingle.logging import setup_logging
+from mysingle.core import setup_logging
 
 # 통합 로깅 설정 (권장)
 setup_logging(
@@ -672,7 +672,7 @@ setup_logging(
 ### 4.4 구조화된 로깅 사용법
 
 ```python
-from mysingle.logging import (
+from mysingle.core import (
     get_structured_logger,
     set_correlation_id,
     set_user_id,
@@ -728,7 +728,7 @@ async def create_strategy(request: Request, strategy_data: dict):
 ### 4.5 편의 함수들
 
 ```python
-from mysingle.logging import (
+from mysingle.core import (
     log_user_action,
     log_service_call,
     log_database_operation,
@@ -1544,7 +1544,7 @@ from mysingle.core import (
     ServiceType,
 )
 from mysingle.auth.deps import get_current_active_user
-from mysingle.logging import setup_logging, get_structured_logger, log_user_action
+from mysingle.core import setup_logging, get_structured_logger, log_user_action
 from mysingle.metrics import create_metrics_router
 
 # 로깅 설정

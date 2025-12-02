@@ -275,7 +275,7 @@ from mysingle.core import (
     create_fastapi_app,
     create_service_config,
 )
-from mysingle.logging import get_structured_logger, setup_logging
+from mysingle.core import get_structured_logger, setup_logging
 
 from app import models
 from app.api.v1.api_v1 import api_router
@@ -634,7 +634,7 @@ service_config = create_service_config(
 ### 2. 구조화된 로깅 활용
 
 ```python
-from mysingle.logging import get_structured_logger
+from mysingle.core import get_structured_logger
 
 logger = get_structured_logger(__name__)
 

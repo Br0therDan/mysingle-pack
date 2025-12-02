@@ -296,7 +296,7 @@ from mysingle.auth import (
 from mysingle.clients import BaseGrpcClient
 
 # Logging
-from mysingle.logging import get_logger
+from mysingle.core import get_logger
 
 # Constants
 from mysingle.constants import (
