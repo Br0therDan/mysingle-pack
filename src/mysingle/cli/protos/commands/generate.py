@@ -163,6 +163,73 @@ def rewrite_generated_imports(
     return modified
 
 
+def fix_wellknown_types_imports(generated_dir: Path) -> list[Path]:
+    """생성된 pb2 파일에 well-known types import 추가 (protobuf 6.x 호환성)"""
+    if not generated_dir.exists():
+        return []
+
+    log("Well-known types import 추가 중 (protobuf 6.x 호환)...", LogLevel.STEP)
+
+    modified: list[Path] = []
+
+    # _pb2.py 파일만 처리 (_grpc.py 제외)
+    for file_path in generated_dir.rglob("*_pb2.py"):
+        # _grpc 파일 제외
+        if "_grpc" in file_path.stem:
+            continue
+
+        original = file_path.read_text(encoding="utf-8")
+
+        # 이미 well-known types import가 있는지 확인
+        if "from google.protobuf import timestamp_pb2" in original:
+            continue
+
+        # timestamp.proto 또는 struct.proto 의존성이 있는지 확인
+        needs_timestamp = b"google/protobuf/timestamp.proto" in file_path.read_bytes()
+        needs_struct = b"google/protobuf/struct.proto" in file_path.read_bytes()
+
+        if not (needs_timestamp or needs_struct):
+            continue
+
+        # # @@protoc_insertion_point(imports) 바로 다음에 import 추가
+        import_lines = []
+        if needs_struct:
+            import_lines.append(
+                "from google.protobuf import struct_pb2 as google_dot_protobuf_dot_struct__pb2"
+            )
+        if needs_timestamp:
+            import_lines.append(
+                "from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2"
+            )
+
+        if import_lines:
+            # # @@protoc_insertion_point(imports) 다음에 추가
+            insertion_marker = "# @@protoc_insertion_point(imports)\n"
+            if insertion_marker in original:
+                import_block = "\n".join(import_lines) + "\n"
+                updated = original.replace(
+                    insertion_marker, insertion_marker + import_block
+                )
+
+                file_path.write_text(updated, encoding="utf-8")
+                modified.append(file_path)
+                log(
+                    f"수정: {colorize(str(file_path.relative_to(generated_dir)), Color.CYAN)} "
+                    f"(추가: {', '.join(['timestamp_pb2' if needs_timestamp else '', 'struct_pb2' if needs_struct else '']).strip(', ')})",
+                    LogLevel.DEBUG,
+                )
+
+    if modified:
+        log(
+            f"총 {colorize(str(len(modified)), Color.GREEN, bold=True)}개 파일에 well-known types import 추가 완료",
+            LogLevel.SUCCESS,
+        )
+    else:
+        log("well-known types import 추가가 필요한 파일 없음", LogLevel.INFO)
+
+    return modified
+
+
 def ensure_init_files(generated_dir: Path) -> list[Path]:
     """생성된 디렉토리에 __init__.py 파일 생성"""
     if not generated_dir.exists():
@@ -202,12 +269,16 @@ def execute(args: argparse.Namespace, config: ProtoConfig) -> int:
     # 1. Buf 코드 생성
     buf_generate(config)
 
-    # 2. Import 경로 수정
+    # 2. Well-known types import 추가 (protobuf 6.x 호환)
+    if not args.skip_fix_wellknown:
+        fix_wellknown_types_imports(config.generated_root)
+
+    # 3. Import 경로 수정
     if not args.skip_rewrite:
         # generated_root는 이미 src/mysingle/protos를 가리킴
         rewrite_generated_imports(config.generated_root, "mysingle")
 
-    # 3. __init__.py 파일 생성
+    # 4. __init__.py 파일 생성
     if not args.skip_init:
         ensure_init_files(config.generated_root)
 
@@ -227,12 +298,19 @@ def execute_interactive(config: ProtoConfig) -> int:
         return 0
 
     # 기본값으로 실행
-    args = argparse.Namespace(skip_rewrite=False, skip_init=False)
+    args = argparse.Namespace(
+        skip_rewrite=False, skip_init=False, skip_fix_wellknown=False
+    )
     return execute(args, config)
 
 
 def setup_parser(parser: argparse.ArgumentParser) -> None:
     """Generate 명령 파서 설정"""
+    parser.add_argument(
+        "--skip-fix-wellknown",
+        action="store_true",
+        help="well-known types import 추가 단계 건너뛰기 (protobuf 6.x 호환)",
+    )
     parser.add_argument(
         "--skip-rewrite",
         action="store_true",
