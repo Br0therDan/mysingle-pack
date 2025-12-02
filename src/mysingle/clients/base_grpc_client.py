@@ -168,9 +168,10 @@ class BaseGrpcClient:
         FastAPI Request 객체에서 User ID 추출
 
         Kong Gateway 헤더 우선순위:
-        1. X-User-Id (서비스 간 전파 표준)
-        2. X-Consumer-Custom-ID (Kong JWT 플러그인 원본)
-        3. request.state.user.id (AuthMiddleware가 주입한 User 객체)
+        1. X-User-Id (Kong pre-function이 JWT sub claim에서 추출)
+        2. request.state.user.id (AuthMiddleware가 주입한 User 객체)
+
+        Note: X-Consumer-Custom-ID는 Kong Consumer 이름이므로 사용하지 않음
 
         Args:
             request: FastAPI Request 객체
@@ -178,19 +179,14 @@ class BaseGrpcClient:
         Returns:
             추출된 User ID (없으면 빈 문자열)
         """
-        from mysingle.constants import HEADER_KONG_USER_ID, HEADER_USER_ID
+        from mysingle.constants import HEADER_USER_ID
 
-        # 우선순위 1: X-User-Id (서비스 간 전파 표준)
+        # 우선순위 1: X-User-Id (Kong pre-function에서 JWT sub claim 추출)
         user_id = request.headers.get(HEADER_USER_ID, "")
         if user_id:
             return user_id.strip()
 
-        # 우선순위 2: X-Consumer-Custom-ID (Kong 원본)
-        kong_user_id = request.headers.get(HEADER_KONG_USER_ID, "")
-        if kong_user_id:
-            return kong_user_id.strip()
-
-        # 우선순위 3: request.state.user (AuthMiddleware)
+        # 우선순위 2: request.state.user (AuthMiddleware)
         try:
             user = getattr(request.state, "user", None)
             if user and hasattr(user, "id"):

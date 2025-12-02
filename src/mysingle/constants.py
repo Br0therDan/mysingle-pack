@@ -19,8 +19,8 @@ Usage:
 # Kong Gateway에서 JWT 플러그인을 통해 주입하는 헤더
 # 이 헤더들은 게이트웨이 레이어에서만 생성되며, 서비스가 직접 설정하지 않음
 
-# JWT의 sub 클레임 값 (사용자 고유 ID)
-# Note: 현재 Kong 구성에서는 실제로 주입되지 않음 (향후 확장 대비 유지)
+# ⚠️ DEPRECATED: X-Consumer-Custom-ID는 Kong Consumer 이름을 담고 있어 사용하지 않음
+# 실제 사용자 ID는 X-User-Id 헤더 사용 (Kong pre-function이 JWT sub claim에서 추출)
 HEADER_KONG_USER_ID = "X-Consumer-Custom-ID"
 
 # 요청 추적을 위한 상관관계 ID (Kong에서 생성 또는 클라이언트에서 전달)
@@ -36,7 +36,7 @@ HEADER_KONG_REQUEST_ID = "X-Kong-Request-Id"
 # 다운스트림 서비스로 전파되어야 하는 헤더
 # Kong Gateway에서 받은 정보를 내부 서비스 간 통신에 사용
 
-# 사용자 ID (Kong의 X-Consumer-Custom-ID를 X-User-Id로 변환하여 전파)
+# 사용자 ID (Kong pre-function 플러그인이 JWT sub claim에서 추출하여 설정)
 # ⚠️ 대소문자 주의: X-User-Id (O), X-User-ID (X)
 HEADER_USER_ID = "X-User-Id"
 

@@ -213,7 +213,9 @@ curl -i -X POST http://localhost:8001/plugins \
   --data name=jwt \
   --data config.claims_to_verify=exp \
   --data config.key_claim_name=iss \
-  --data config.secret_is_base64=false
+  --data config.secret_is_base64=false \
+  --data 'config.header_names=authorization' \
+  --data 'config.header_names=Authorization'
 
 # 특정 라우트만 인증 제외 (공개 경로)
 curl -i -X POST http://localhost:8001/routes/iam-route/plugins \
@@ -223,6 +225,11 @@ curl -i -X POST http://localhost:8001/routes/iam-route/plugins \
   --data 'config.trigger=false'
 ```
 
+**⚠️ 중요 설정 사항:**
+- `claims_to_verify=exp`: JWT 만료 시간 검증 필수
+- `header_names`: 대소문자 모두 지원하도록 `authorization`과 `Authorization` 모두 추가
+- `key_claim_name=iss`: Issuer 클레임으로 Kong Consumer 매칭
+
 ### 3. JWT 클레임을 헤더로 변환 (Pre-function)
 
 Kong의 `pre-function` 플러그인으로 JWT `sub` 클레임을 `X-User-Id` 헤더로 추출:
@@ -230,14 +237,40 @@ Kong의 `pre-function` 플러그인으로 JWT `sub` 클레임을 `X-User-Id` 헤
 ```bash
 curl -i -X POST http://localhost:8001/plugins \
   --data name=pre-function \
-  --data 'config.access[1]=local jwt_claims = kong.ctx.shared.jwt_claims
-if jwt_claims and jwt_claims.sub then
-  kong.service.request.set_header("X-User-Id", jwt_claims.sub)
-end
-if jwt_claims and jwt_claims.email then
-  kong.service.request.set_header("X-User-Email", jwt_claims.email)
+  --data 'config.access[1]=local jwt_token = kong.ctx.shared.authenticated_jwt_token
+if jwt_token then
+  local claims = jwt_token.claims
+  if claims then
+    if claims.sub then
+      kong.service.request.set_header("X-User-Id", tostring(claims.sub))
+      kong.log.debug("X-User-Id header set to: ", tostring(claims.sub))
+    else
+      kong.log.warn("JWT token has no sub claim")
+    end
+    if claims.email then
+      kong.service.request.set_header("X-User-Email", tostring(claims.email))
+    end
+    if claims.is_verified ~= nil then
+      kong.service.request.set_header("X-User-Verified", tostring(claims.is_verified))
+    end
+    if claims.is_active ~= nil then
+      kong.service.request.set_header("X-User-Active", tostring(claims.is_active))
+    end
+    if claims.is_superuser ~= nil then
+      kong.service.request.set_header("X-User-Superuser", tostring(claims.is_superuser))
+    end
+  else
+    kong.log.warn("JWT token has no claims")
+  end
+else
+  kong.log.warn("No authenticated_jwt_token found in Kong context")
 end'
 ```
+
+**디버깅 포인트:**
+- Kong 로그에서 `JWT token has no sub claim` 경고가 나타나면 IAM Service의 JWT 생성 로직 확인
+- `No authenticated_jwt_token found` 경고가 나타나면 JWT 플러그인이 제대로 동작하지 않는 것
+- 플러그인 실행 순서: JWT 플러그인 (우선순위 1450) → Pre-function (우선순위 +inf)
 
 ### 4. Correlation ID 주입
 
@@ -550,6 +583,104 @@ plugins:
       allow:
         - 10.0.0.0/8
         - 172.16.0.0/12
+```
+
+---
+
+## 트러블슈팅
+
+### 1. X-User-Id 헤더가 전달되지 않는 문제
+
+**증상:**
+```
+[debug] No X-User-Id header found in request
+```
+
+**원인 분석:**
+1. JWT 토큰이 누락되거나 잘못된 형식
+2. Kong JWT 플러그인 설정 오류
+3. Pre-function 플러그인 미작동
+
+**해결 방법:**
+
+```bash
+# 1. JWT 플러그인 설정 확인
+curl http://localhost:8001/routes/{route-name}/plugins | jq '.data[] | select(.name=="jwt")'
+
+# claims_to_verify가 ["exp"]로 설정되어 있는지 확인
+# 없으면 추가:
+curl -X PATCH http://localhost:8001/plugins/{plugin-id} \
+  -d 'config.claims_to_verify=exp'
+
+# 2. Pre-function 플러그인 확인
+curl http://localhost:8001/routes/{route-name}/plugins | jq '.data[] | select(.name=="pre-function")'
+
+# 3. Kong 로그 확인
+docker logs kong-gateway 2>&1 | grep -i "warn\|jwt"
+
+# 4. 실제 헤더 전달 테스트
+curl -v http://localhost:8000/market-data/health \
+  -H "Authorization: Bearer {your-jwt-token}" 2>&1 | grep "X-User-Id"
+```
+
+### 2. JWT 검증 실패
+
+**증상:**
+```json
+{"message": "Unauthorized"}
+```
+
+**원인:**
+1. JWT secret 불일치
+2. Consumer와 issuer 매칭 실패
+3. JWT 만료
+
+**해결 방법:**
+
+```bash
+# Consumer의 JWT credential 확인
+curl http://localhost:8001/consumers/dashboard-frontend/jwt
+
+# IAM Service의 JWT secret과 Kong consumer의 secret이 일치하는지 확인
+# .env 파일:
+KONG_JWT_SECRET_FRONTEND={same-secret-as-iam-service}
+
+# JWT 토큰 디코딩하여 클레임 확인
+echo "your-jwt-token" | cut -d '.' -f 2 | base64 -d | jq .
+```
+
+### 3. CORS 에러
+
+**증상:**
+```
+Access to fetch at 'http://localhost:8000/...' from origin 'http://localhost:3000' has been blocked by CORS policy
+```
+
+**해결 방법:**
+
+```bash
+# CORS 플러그인 확인
+curl http://localhost:8001/plugins | jq '.data[] | select(.name=="cors")'
+
+# Origin 추가
+curl -X PATCH http://localhost:8001/plugins/{cors-plugin-id} \
+  -d 'config.origins=http://localhost:3000' \
+  -d 'config.origins=https://yourdomain.com'
+```
+
+### 4. Kong 설정 초기화
+
+문제가 지속되면 Kong 설정을 완전히 초기화:
+
+```bash
+# Kong 설정 초기화 컨테이너 재실행
+docker-compose -f docker-compose.kong.yml restart kong-config-init
+
+# 로그 확인
+docker logs kong-config-init
+
+# 필요시 Kong Gateway 재시작
+docker-compose -f docker-compose.kong.yml restart kong-gateway
 ```
 
 ---

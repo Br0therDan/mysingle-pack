@@ -5,7 +5,6 @@ from fastapi import Request
 from mysingle.constants import (
     HEADER_CORRELATION_ID,
     HEADER_KONG_REQUEST_ID,
-    HEADER_KONG_USER_ID,
     HEADER_USER_ID,
 )
 
@@ -27,21 +26,16 @@ def get_kong_user_id(request: Request) -> Optional[str]:
     """
     애플리케이션 최종 사용자 ID.
 
-    Kong Gateway에서 JWT 플러그인을 통해 주입하는 헤더:
-    - X-Consumer-Custom-ID: JWT의 sub 클레임 값 (원본)
-    - X-User-Id: 다운스트림 서비스로 전파되는 표준 헤더
+    Kong Gateway의 pre-function 플러그인이 JWT sub 클레임에서 추출하여
+    X-User-Id 헤더로 전달한 값을 사용.
 
-    우선순위:
-    1. X-User-Id (서비스 간 전파 표준)
-    2. X-Consumer-Custom-ID (Kong JWT 플러그인 원본)
+    Note: X-Consumer-Custom-ID는 Kong Consumer 이름이므로 사용하지 않음.
+
+    Returns:
+        X-User-Id 헤더 값 또는 None
     """
-    # 우선순위 1: 서비스 간 전파 표준 헤더
-    user_id = _get_header(request, HEADER_USER_ID.lower())
-    if user_id:
-        return user_id
-
-    # 우선순위 2: Kong JWT 플러그인 원본 헤더
-    return _get_header(request, HEADER_KONG_USER_ID.lower())
+    # X-User-Id 헤더 (Kong pre-function이 JWT sub claim에서 설정)
+    return _get_header(request, HEADER_USER_ID.lower())
 
 
 def is_kong_authenticated(request: Request) -> bool:
