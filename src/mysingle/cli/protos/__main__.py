@@ -94,7 +94,7 @@ def show_interactive_menu(config: ProtoConfig) -> int:
 def build_parser() -> argparse.ArgumentParser:
     """CLI 파서 생성"""
     parser = argparse.ArgumentParser(
-        prog="proto-cli",
+        prog="mysingle-proto",
         description="🔧 MySingle Quant - gRPC Proto 파일 관리 도구",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""

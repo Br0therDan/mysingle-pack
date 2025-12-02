@@ -274,13 +274,13 @@ mysingle submodule update
 
 ### 워크플로우 설명
 
-| 워크플로우                 | 트리거                     | 동작                                                    |
-| -------------------------- | -------------------------- | ------------------------------------------------------- |
-| `auto-release.yml`         | pyproject.toml 변경 (main) | GitHub Release + Git Tag                                |
-| `validate-commits.yml`     | Pull Request               | Conventional Commits 검증                               |
-| `proto-ci.yml`             | Proto 파일 변경            | **통합 워크플로우**: Validate → Generate → Auto-commit  |
-| `validate-protos.yml`      | Proto 파일 변경            | Proto 검증만 (lint + format + breaking)                 |
-| `auto-generate-protos.yml` | Proto 파일 변경            | Proto 생성 + 검증 + Auto-commit                         |
+| 워크플로우                 | 트리거                     | 동작                                                   |
+| -------------------------- | -------------------------- | ------------------------------------------------------ |
+| `auto-release.yml`         | pyproject.toml 변경 (main) | GitHub Release + Git Tag                               |
+| `validate-commits.yml`     | Pull Request               | Conventional Commits 검증                              |
+| `proto-ci.yml`             | Proto 파일 변경            | **통합 워크플로우**: Validate → Generate → Auto-commit |
+| `validate-protos.yml`      | Proto 파일 변경            | Proto 검증만 (lint + format + breaking)                |
+| `auto-generate-protos.yml` | Proto 파일 변경            | Proto 생성 + 검증 + Auto-commit                        |
 
 **권장**: `proto-ci.yml` 사용 (validate + generate 통합)
 
