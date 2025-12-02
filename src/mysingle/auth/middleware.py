@@ -14,13 +14,14 @@ Features:
 """
 
 import os
-from typing import Optional
+from typing import Optional, cast
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
+from mysingle.core.config import get_settings
 from mysingle.core.logging import get_logger
 from mysingle.core.service_types import ServiceConfig, ServiceType
 
@@ -29,6 +30,7 @@ from .exceptions import AuthorizationFailed, InvalidToken, UserInactive, UserNot
 from .models import User
 
 logger = get_logger(__name__)
+settings = get_settings()
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -50,6 +52,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
         self.user_cache = get_user_cache()
         # Test bypass flag (only active in non-production)
         self.auth_bypass = self._check_auth_bypass()
+        self.settings = settings
 
     def _check_auth_bypass(self) -> bool:
         """Check if authentication bypass is enabled for testing"""
@@ -204,7 +207,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
                 # 캐시에도 적재 시도 (최소 컨텍스트)
                 try:
-                    await self.user_cache.set_user(user)
+                    await self.user_cache.set_user(user)  # type: ignore
                 except Exception as e:
                     logger.debug(
                         "Failed to cache user from claims",
@@ -254,7 +257,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
                     user_id=str(cached_user.id),
                     source="cache",
                 )
-                return cached_user
+                # Cast to local User type to avoid cross-package typing incompatibility at type-check time
+                return cast(User, cached_user)
 
             # Gateway 헤더로부터 User 객체 구성
             try:
@@ -307,7 +311,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
             # 게이트웨이 기반 사용자도 단기 캐시 (TTL 기본값)
             try:
-                await self.user_cache.set_user(user)
+                await self.user_cache.set_user(user)  # type: ignore
             except Exception as e:
                 logger.debug(
                     "Failed to set user in cache (gateway)",
@@ -376,7 +380,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
                     user_id=user_id,
                     cache_result="hit",
                 )
-                return cached
+                return cached  # type: ignore
 
             logger.debug(
                 "Cache MISS for user - querying DB",
@@ -406,7 +410,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
                         user_id=user_id,
                         error=str(e),
                     )
-            return user
+            return user  # type: ignore
 
         except Exception as e:
             logger.debug(
