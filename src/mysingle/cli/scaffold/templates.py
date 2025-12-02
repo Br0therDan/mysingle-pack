@@ -363,44 +363,77 @@ AUDIT_LOGGING_ENABLED=true
 """
 
 
-def generate_dockerfile(service_name: str) -> str:
+def generate_dockerfile(service_name: str, grpc_port: int | None = None) -> str:
     """Generate Dockerfile content."""
-    return f"""# Multi-stage build for {service_name}
-FROM python:3.12-slim AS builder
+    service_title = service_name.replace("-", " ").title()
 
+    # gRPC port exposure (optional)
+    grpc_expose = ""
+    grpc_comment = ""
+    if grpc_port:
+        grpc_expose = f"\n# gRPC port (enabled via USE_GRPC_FOR_{service_name.replace('-', '_').upper()}=true)\nEXPOSE {grpc_port}"
+        grpc_comment = f", gRPC support (:{grpc_port})"
+
+    return f"""# ==============================================
+# {service_title} Dockerfile
+# Optimized for: Service management, data persistence{grpc_comment}
+# ==============================================
+
+FROM python:3.12-slim AS base
+
+# GitHub token for private repo access
+ARG GITHUB_TOKEN
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \\
+    curl \\
+    git \\
+    build-essential \\
+    pkg-config \\
+    libgomp1 \\
+    && rm -rf /var/lib/apt/lists/*
+
+# Set Python environment variables
+ENV PYTHONUNBUFFERED=1 \\
+    PYTHONDONTWRITEBYTECODE=1 \\
+    PIP_NO_CACHE_DIR=1 \\
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Create application user
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+# Set working directory
 WORKDIR /app
-
-# Install uv
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 # Copy dependency files
 COPY pyproject.toml ./
 
-# Install dependencies
-RUN uv pip install --system --no-cache -e .
+# Configure git credentials and install dependencies
+RUN if [ -n "$GITHUB_TOKEN" ]; then \\
+    git config --global url."https://${{GITHUB_TOKEN}}@github.com/".insteadOf "https://github.com/" ; \\
+    fi && \\
+    pip install -e . && \\
+    git config --global --unset url."https://github.com/".insteadOf || true
 
-# Final stage
-FROM python:3.12-slim
-
-WORKDIR /app
-
-# Copy installed packages from builder
-COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
-
-# Copy application code
+# Copy source code
 COPY app ./app
+COPY logs ./logs
 
-# Create non-root user
-RUN useradd -m -u 1000 appuser && \\
-    chown -R appuser:appuser /app
+# Set ownership
+RUN chown -R appuser:appuser /app
+
+# Switch to non-root user
 USER appuser
 
-# Expose port
-EXPOSE 8000
+# Expose ports
+EXPOSE 8000{grpc_expose}
 
-# Run application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Health check for {service_name}
+HEALTHCHECK --interval=20s --timeout=15s --start-period=5s --retries=3 \\
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Start with moderate worker count
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
 """
 
 

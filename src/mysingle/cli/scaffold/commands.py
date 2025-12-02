@@ -17,7 +17,6 @@ from .templates import (
     generate_api_v1_py,
     generate_config_py,
     generate_dockerfile,
-    generate_env_file,
     generate_gitignore,
     generate_health_router_py,
     generate_main_py,
@@ -380,9 +379,6 @@ def _create_config_files(
         generate_pyproject_toml(service_name, service_name_pascal, grpc_enabled)
     )
 
-    # .env
-    (base_dir / ".env").write_text(generate_env_file(service_name, service_name_snake))
-
     # .gitignore
     (base_dir / ".gitignore").write_text(generate_gitignore())
 
@@ -390,7 +386,7 @@ def _create_config_files(
     (base_dir / "pytest.ini").write_text(generate_pytest_ini())
 
     # Dockerfile
-    (base_dir / "Dockerfile").write_text(generate_dockerfile(service_name))
+    (base_dir / "Dockerfile").write_text(generate_dockerfile(service_name, grpc_port))
 
     # README.md
     (base_dir / "README.md").write_text(
