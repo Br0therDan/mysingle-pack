@@ -18,7 +18,7 @@ def buf_lint(config: ProtoConfig) -> bool:
 
     try:
         subprocess.run(
-            ["buf", "lint"],
+            ["buf", "lint", str(config.proto_root)],
             cwd=config.repo_root,
             check=True,
         )
@@ -39,7 +39,7 @@ def buf_format_check(config: ProtoConfig, fix: bool = False) -> bool:
         log("Buf format 자동 수정 중...", LogLevel.STEP)
         try:
             subprocess.run(
-                ["buf", "format", "-w"],
+                ["buf", "format", "-w", str(config.proto_root)],
                 cwd=config.repo_root,
                 check=True,
             )
@@ -55,7 +55,7 @@ def buf_format_check(config: ProtoConfig, fix: bool = False) -> bool:
         log("Buf format check 실행 중...", LogLevel.STEP)
         try:
             subprocess.run(
-                ["buf", "format", "-d", "--exit-code"],
+                ["buf", "format", "-d", "--exit-code", str(config.proto_root)],
                 cwd=config.repo_root,
                 check=True,
             )
