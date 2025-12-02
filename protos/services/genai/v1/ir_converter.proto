@@ -2,9 +2,9 @@ syntax = "proto3";
 
 package genai.ir_converter;
 
-import "google/protobuf/struct.proto";
 import "common/error.proto";
 import "common/metadata.proto";
+import "google/protobuf/struct.proto";
 
 // IR Converter 서비스
 service IRConverterService {

@@ -36,14 +36,14 @@ __all__ = [
     "MetricsCollector",
     "get_metrics_collector",
     # Core: Health (consolidated)
-    "HealthChecker",
-    "register_health_routes",
+    "HealthStatus",
+    "get_health_checker",
+    "create_health_router",
     # Core: Email (consolidated)
-    "EmailService",
     "send_email",
     # Core: Audit (consolidated)
-    "AuditLogger",
-    "log_audit_event",
+    "AuditLog",
+    "AuditLoggingMiddleware",
     # Core: Database
     "init_mongo",
     "get_mongodb_url",
@@ -79,11 +79,11 @@ _EXPORTS = {
     "settings": ("mysingle.core.config", "settings"),
     "get_settings": ("mysingle.core.config", "get_settings"),
     "CommonSettings": ("mysingle.core.config", "CommonSettings"),
-    "create_fastapi_app": ("mysingle.core", "create_fastapi_app"),
-    "create_lifespan": ("mysingle.core", "create_lifespan"),
-    "init_mongo": ("mysingle.core.database", "init_mongo"),
-    "get_mongodb_url": ("mysingle.core.database", "get_mongodb_url"),
-    "get_database_name": ("mysingle.core.database", "get_database_name"),
+    "create_fastapi_app": ("mysingle.core.app_factory", "create_fastapi_app"),
+    "create_lifespan": ("mysingle.core.app_factory", "create_lifespan"),
+    "init_mongo": ("mysingle.core.db", "init_mongo"),
+    "get_mongodb_url": ("mysingle.core.db", "get_mongodb_url"),
+    "get_database_name": ("mysingle.core.db", "get_database_name"),
     # Logging (consolidated to core)
     "get_logger": ("mysingle.core.logging", "get_logger"),
     "setup_logging": ("mysingle.core.logging", "setup_logging"),
@@ -96,14 +96,14 @@ _EXPORTS = {
     "MetricsCollector": ("mysingle.core.metrics", "MetricsCollector"),
     "get_metrics_collector": ("mysingle.core.metrics", "get_metrics_collector"),
     # Health (consolidated to core)
-    "HealthChecker": ("mysingle.core.health", "HealthChecker"),
-    "register_health_routes": ("mysingle.core.health", "register_health_routes"),
+    "HealthStatus": ("mysingle.core.health", "HealthStatus"),
+    "get_health_checker": ("mysingle.core.health", "get_health_checker"),
+    "create_health_router": ("mysingle.core.health", "create_health_router"),
     # Email (consolidated to core)
-    "EmailService": ("mysingle.core.email", "EmailService"),
     "send_email": ("mysingle.core.email", "send_email"),
     # Audit (consolidated to core)
-    "AuditLogger": ("mysingle.core.audit", "AuditLogger"),
-    "log_audit_event": ("mysingle.core.audit", "log_audit_event"),
+    "AuditLog": ("mysingle.core.audit", "AuditLog"),
+    "AuditLoggingMiddleware": ("mysingle.core.audit", "AuditLoggingMiddleware"),
     # Database
     "BaseDuckDBManager": ("mysingle.database", "BaseDuckDBManager"),
     # Clients: gRPC
@@ -164,33 +164,30 @@ if TYPE_CHECKING:  # 타입체커를 위한 정적 import (런타임에는 지�
     from .constants import HEADER_KONG_REQUEST_ID as HEADER_KONG_REQUEST_ID
     from .constants import HEADER_KONG_USER_ID as HEADER_KONG_USER_ID
     from .constants import HEADER_USER_ID as HEADER_USER_ID
-    from .core import (
-        CommonSettings as CommonSettings,
-    )
-    from .core import (
-        create_fastapi_app as create_fastapi_app,
-    )
-    from .core import (
-        create_lifespan as create_lifespan,
-    )
-    from .core import (
-        get_database_name as get_database_name,
-    )
-    from .core import (
-        get_mongodb_url as get_mongodb_url,
-    )
-    from .core import (
-        get_settings as get_settings,
-    )
-    from .core import (
-        init_mongo as init_mongo,
-    )
-    from .core import (
-        settings as settings,
-    )
+    from .core.app_factory import create_fastapi_app as create_fastapi_app
+    from .core.app_factory import create_lifespan as create_lifespan
+    from .core.audit import AuditLog as AuditLog
+    from .core.audit import AuditLoggingMiddleware as AuditLoggingMiddleware
+    from .core.base import BaseDoc as BaseDoc
+    from .core.base import BaseResponseSchema as BaseResponseSchema
+    from .core.base import BaseTimeDoc as BaseTimeDoc
+    from .core.base import BaseTimeDocWithUserId as BaseTimeDocWithUserId
+    from .core.config import CommonSettings as CommonSettings
+    from .core.config import get_settings as get_settings
+    from .core.config import settings as settings
+    from .core.db import get_database_name as get_database_name
+    from .core.db import get_mongodb_url as get_mongodb_url
+    from .core.db import init_mongo as init_mongo
+    from .core.email import send_email as send_email
+    from .core.health import HealthStatus as HealthStatus
+    from .core.health import create_health_router as create_health_router
+    from .core.health import get_health_checker as get_health_checker
+    from .core.logging import get_logger as get_logger
+    from .core.logging import setup_logging as setup_logging
+    from .core.metrics import MetricsCollector as MetricsCollector
+    from .core.metrics import get_metrics_collector as get_metrics_collector
     from .database import BaseDuckDBManager as BaseDuckDBManager
     from .grpc import AuthInterceptor as AuthInterceptor
     from .grpc import ClientAuthInterceptor as ClientAuthInterceptor
     from .grpc import LoggingInterceptor as LoggingInterceptor
     from .grpc import MetadataInterceptor as MetadataInterceptor
-    from .logging import get_logger as get_logger

@@ -2,9 +2,9 @@ syntax = "proto3";
 
 package genai.strategy_builder;
 
-import "google/protobuf/struct.proto";
 import "common/error.proto";
 import "common/metadata.proto";
+import "google/protobuf/struct.proto";
 
 // Strategy Builder 서비스
 service StrategyBuilderService {

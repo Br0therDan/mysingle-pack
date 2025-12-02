@@ -2,9 +2,9 @@ syntax = "proto3";
 
 package genai.chatops;
 
-import "google/protobuf/struct.proto";
 import "common/metadata.proto";
 import "common/pagination.proto";
+import "google/protobuf/struct.proto";
 
 // ChatOps 서비스
 service ChatOpsService {
