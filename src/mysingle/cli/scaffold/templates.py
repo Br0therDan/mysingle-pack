@@ -42,7 +42,7 @@ async def lifespan(app: FastAPI):
     - Initialize shared singletons (HTTP clients, service factory)
     - Ensure graceful shutdown of resources
     """
-    logger.info("🚀 Starting {service_name.replace("-", " ").title()}...")
+    logger.info(f"🚀 Starting {service_name.replace('-', ' ').title()}...")
 
     try:
         # Initialize service factory
@@ -54,13 +54,13 @@ async def lifespan(app: FastAPI):
         logger.error(f"❌ Startup failed: {{e}}")
         raise
 
-    logger.info("✅ {service_name.replace("-", " ").title()} started successfully")
+    logger.info(f"✅ {service_name.replace('-', ' ').title()} started successfully")
 
     yield
 
     # Shutdown
     try:
-        logger.info("🛑 Shutting down {service_name.replace("-", " ").title()}...")
+        logger.info(f"🛑 Shutting down {service_name.replace('-', ' ').title()}...")
 
         # Cleanup service factory
         factory = get_service_factory()
@@ -70,7 +70,7 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"❌ Shutdown error: {{e}}")
 
-    logger.info("👋 {service_name.replace("-", " ").title()} shutdown completed")
+    logger.info(f"👋 {service_name.replace('-', ' ').title()} shutdown completed")
 
 
 def create_app() -> FastAPI:

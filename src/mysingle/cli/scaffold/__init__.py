@@ -1,5 +1,5 @@
 """Scaffold module for MySingle CLI."""
 
-from .commands import execute_scaffold, setup_parser
+from .commands import execute, setup_parser
 
-__all__ = ["execute_scaffold", "setup_parser"]
+__all__ = ["execute", "setup_parser"]
