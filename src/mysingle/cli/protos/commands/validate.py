@@ -82,6 +82,7 @@ def buf_breaking(config: ProtoConfig, against: str = "main") -> bool:
             [
                 "buf",
                 "breaking",
+                str(config.proto_root),
                 "--against",
                 f"https://github.com/Br0therDan/grpc-protos.git#branch={against}",
             ],
