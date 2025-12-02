@@ -13,7 +13,7 @@ from google.protobuf.internal import containers as _containers
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class ExecuteBacktestRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("user_id", "strategy_id", "strategy_version_seq", "config")
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
     STRATEGY_VERSION_SEQ_FIELD_NUMBER: _ClassVar[int]
@@ -31,9 +31,22 @@ class ExecuteBacktestRequest(_message.Message):
     ) -> None: ...
 
 class BacktestConfig(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "symbol",
+        "interval",
+        "start_date",
+        "end_date",
+        "initial_capital",
+        "slippage_bps",
+        "commission_per_trade",
+        "stop_loss_pct",
+        "take_profit_pct",
+        "max_position_size",
+        "params",
+        "snapshot_interval_seconds",
+    )
     class ParamsEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -83,7 +96,7 @@ class BacktestConfig(_message.Message):
     ) -> None: ...
 
 class GetBacktestResultRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("backtest_id", "user_id")
     BACKTEST_ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     backtest_id: str
@@ -93,7 +106,7 @@ class GetBacktestResultRequest(_message.Message):
     ) -> None: ...
 
 class StreamProgressRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("backtest_id", "user_id")
     BACKTEST_ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     backtest_id: str
@@ -103,7 +116,7 @@ class StreamProgressRequest(_message.Message):
     ) -> None: ...
 
 class GetMetricsRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("backtest_id", "user_id")
     BACKTEST_ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     backtest_id: str
@@ -113,7 +126,7 @@ class GetMetricsRequest(_message.Message):
     ) -> None: ...
 
 class ListBacktestsRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("user_id", "strategy_id", "status", "limit", "skip")
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
     STATUS_FIELD_NUMBER: _ClassVar[int]
@@ -134,7 +147,7 @@ class ListBacktestsRequest(_message.Message):
     ) -> None: ...
 
 class CancelBacktestRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("backtest_id", "user_id")
     BACKTEST_ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     backtest_id: str
@@ -148,7 +161,7 @@ class HealthCheckRequest(_message.Message):
     def __init__(self) -> None: ...
 
 class ExecuteBacktestResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("backtest_id", "status", "message", "created_at")
     BACKTEST_ID_FIELD_NUMBER: _ClassVar[int]
     STATUS_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
@@ -168,7 +181,19 @@ class ExecuteBacktestResponse(_message.Message):
     ) -> None: ...
 
 class BacktestResultResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "backtest_id",
+        "strategy_id",
+        "strategy_version_seq",
+        "status",
+        "metrics",
+        "trades",
+        "equity_curve",
+        "config",
+        "created_at",
+        "completed_at",
+        "error_message",
+    )
     BACKTEST_ID_FIELD_NUMBER: _ClassVar[int]
     STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
     STRATEGY_VERSION_SEQ_FIELD_NUMBER: _ClassVar[int]
@@ -211,7 +236,14 @@ class BacktestResultResponse(_message.Message):
     ) -> None: ...
 
 class ProgressUpdate(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "backtest_id",
+        "status",
+        "progress_pct",
+        "message",
+        "timestamp",
+        "current_metrics",
+    )
     BACKTEST_ID_FIELD_NUMBER: _ClassVar[int]
     STATUS_FIELD_NUMBER: _ClassVar[int]
     PROGRESS_PCT_FIELD_NUMBER: _ClassVar[int]
@@ -237,7 +269,7 @@ class ProgressUpdate(_message.Message):
     ) -> None: ...
 
 class MetricsResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("backtest_id", "metrics", "calculated_at")
     BACKTEST_ID_FIELD_NUMBER: _ClassVar[int]
     METRICS_FIELD_NUMBER: _ClassVar[int]
     CALCULATED_AT_FIELD_NUMBER: _ClassVar[int]
@@ -254,7 +286,7 @@ class MetricsResponse(_message.Message):
     ) -> None: ...
 
 class ListBacktestsResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("backtests", "total_count")
     BACKTESTS_FIELD_NUMBER: _ClassVar[int]
     TOTAL_COUNT_FIELD_NUMBER: _ClassVar[int]
     backtests: _containers.RepeatedCompositeFieldContainer[BacktestSummary]
@@ -266,7 +298,17 @@ class ListBacktestsResponse(_message.Message):
     ) -> None: ...
 
 class BacktestSummary(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "backtest_id",
+        "strategy_id",
+        "strategy_version_seq",
+        "status",
+        "symbol",
+        "interval",
+        "created_at",
+        "completed_at",
+        "metrics",
+    )
     BACKTEST_ID_FIELD_NUMBER: _ClassVar[int]
     STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
     STRATEGY_VERSION_SEQ_FIELD_NUMBER: _ClassVar[int]
@@ -303,7 +345,7 @@ class BacktestSummary(_message.Message):
     ) -> None: ...
 
 class CancelBacktestResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("backtest_id", "status", "message")
     BACKTEST_ID_FIELD_NUMBER: _ClassVar[int]
     STATUS_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
@@ -318,9 +360,9 @@ class CancelBacktestResponse(_message.Message):
     ) -> None: ...
 
 class HealthCheckResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("status", "service_name", "version", "timestamp", "details")
     class DetailsEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -351,7 +393,28 @@ class HealthCheckResponse(_message.Message):
     ) -> None: ...
 
 class PerformanceMetrics(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "total_return",
+        "annual_return",
+        "sharpe_ratio",
+        "sortino_ratio",
+        "max_drawdown",
+        "volatility",
+        "total_trades",
+        "winning_trades",
+        "losing_trades",
+        "win_rate",
+        "profit_factor",
+        "average_win",
+        "average_loss",
+        "largest_win",
+        "largest_loss",
+        "average_holding_period_hours",
+        "max_consecutive_wins",
+        "max_consecutive_losses",
+        "final_equity",
+        "total_fees",
+    )
     TOTAL_RETURN_FIELD_NUMBER: _ClassVar[int]
     ANNUAL_RETURN_FIELD_NUMBER: _ClassVar[int]
     SHARPE_RATIO_FIELD_NUMBER: _ClassVar[int]
@@ -417,7 +480,17 @@ class PerformanceMetrics(_message.Message):
     ) -> None: ...
 
 class Trade(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "timestamp",
+        "symbol",
+        "side",
+        "quantity",
+        "price",
+        "pnl",
+        "commission",
+        "trade_id",
+        "portfolio_value",
+    )
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
     SYMBOL_FIELD_NUMBER: _ClassVar[int]
     SIDE_FIELD_NUMBER: _ClassVar[int]
@@ -452,7 +525,7 @@ class Trade(_message.Message):
     ) -> None: ...
 
 class EquityPoint(_message.Message):
-    __slots__ = ()
+    __slots__ = ("timestamp", "equity", "drawdown", "cash", "positions_value")
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
     EQUITY_FIELD_NUMBER: _ClassVar[int]
     DRAWDOWN_FIELD_NUMBER: _ClassVar[int]

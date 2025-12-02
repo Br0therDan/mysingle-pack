@@ -42,7 +42,7 @@ SUGGESTION_TYPE_VARIABLE: SuggestionType
 SUGGESTION_TYPE_SECTION: SuggestionType
 
 class ValidateDSLRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("dsl_code", "validation_type", "metadata")
     DSL_CODE_FIELD_NUMBER: _ClassVar[int]
     VALIDATION_TYPE_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]
@@ -57,7 +57,7 @@ class ValidateDSLRequest(_message.Message):
     ) -> None: ...
 
 class ValidateDSLResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("is_valid", "syntax_errors", "semantic_warnings", "suggestions")
     IS_VALID_FIELD_NUMBER: _ClassVar[int]
     SYNTAX_ERRORS_FIELD_NUMBER: _ClassVar[int]
     SEMANTIC_WARNINGS_FIELD_NUMBER: _ClassVar[int]
@@ -70,7 +70,7 @@ class ValidateDSLResponse(_message.Message):
     suggestions: _containers.RepeatedScalarFieldContainer[str]
     def __init__(
         self,
-        is_valid: _Optional[bool] = ...,
+        is_valid: bool = ...,
         syntax_errors: _Optional[_Iterable[_Union[SyntaxError, _Mapping]]] = ...,
         semantic_warnings: _Optional[
             _Iterable[_Union[_error_pb2.ValidationWarning, _Mapping]]
@@ -79,7 +79,7 @@ class ValidateDSLResponse(_message.Message):
     ) -> None: ...
 
 class SyntaxError(_message.Message):
-    __slots__ = ()
+    __slots__ = ("line", "column", "message", "expected", "actual")
     LINE_FIELD_NUMBER: _ClassVar[int]
     COLUMN_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
@@ -100,7 +100,7 @@ class SyntaxError(_message.Message):
     ) -> None: ...
 
 class AutocompleteDSLRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("partial_dsl", "cursor_position", "context", "metadata")
     PARTIAL_DSL_FIELD_NUMBER: _ClassVar[int]
     CURSOR_POSITION_FIELD_NUMBER: _ClassVar[int]
     CONTEXT_FIELD_NUMBER: _ClassVar[int]
@@ -118,7 +118,7 @@ class AutocompleteDSLRequest(_message.Message):
     ) -> None: ...
 
 class AutocompleteContext(_message.Message):
-    __slots__ = ()
+    __slots__ = ("section", "parent_node")
     SECTION_FIELD_NUMBER: _ClassVar[int]
     PARENT_NODE_FIELD_NUMBER: _ClassVar[int]
     section: str
@@ -128,7 +128,7 @@ class AutocompleteContext(_message.Message):
     ) -> None: ...
 
 class AutocompleteDSLResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("suggestions",)
     SUGGESTIONS_FIELD_NUMBER: _ClassVar[int]
     suggestions: _containers.RepeatedCompositeFieldContainer[AutocompleteSuggestion]
     def __init__(
@@ -139,7 +139,7 @@ class AutocompleteDSLResponse(_message.Message):
     ) -> None: ...
 
 class AutocompleteSuggestion(_message.Message):
-    __slots__ = ()
+    __slots__ = ("value", "description", "type", "confidence", "documentation")
     VALUE_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     TYPE_FIELD_NUMBER: _ClassVar[int]
@@ -160,7 +160,7 @@ class AutocompleteSuggestion(_message.Message):
     ) -> None: ...
 
 class GetSyntaxHelpRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("topic", "metadata")
     TOPIC_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]
     topic: str
@@ -172,7 +172,7 @@ class GetSyntaxHelpRequest(_message.Message):
     ) -> None: ...
 
 class GetSyntaxHelpResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("title", "description", "examples", "related_topics")
     TITLE_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     EXAMPLES_FIELD_NUMBER: _ClassVar[int]

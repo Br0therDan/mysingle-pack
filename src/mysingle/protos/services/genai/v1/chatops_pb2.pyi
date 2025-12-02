@@ -30,7 +30,7 @@ RESPONSE_TYPE_ANALYSIS: ResponseType
 RESPONSE_TYPE_ERROR: ResponseType
 
 class CreateSessionRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("user_id", "context", "metadata")
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     CONTEXT_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]
@@ -45,9 +45,9 @@ class CreateSessionRequest(_message.Message):
     ) -> None: ...
 
 class SessionContext(_message.Message):
-    __slots__ = ()
+    __slots__ = ("domain", "entity_id", "custom_context")
     class CustomContextEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -70,7 +70,7 @@ class SessionContext(_message.Message):
     ) -> None: ...
 
 class CreateSessionResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("session_id", "created_at")
     SESSION_ID_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
     session_id: str
@@ -80,9 +80,9 @@ class CreateSessionResponse(_message.Message):
     ) -> None: ...
 
 class ChatMessage(_message.Message):
-    __slots__ = ()
+    __slots__ = ("session_id", "message", "metadata")
     class MetadataEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -105,7 +105,14 @@ class ChatMessage(_message.Message):
     ) -> None: ...
 
 class ChatResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "session_id",
+        "response",
+        "response_type",
+        "tools_used",
+        "tokens_used",
+        "timestamp",
+    )
     SESSION_ID_FIELD_NUMBER: _ClassVar[int]
     RESPONSE_FIELD_NUMBER: _ClassVar[int]
     RESPONSE_TYPE_FIELD_NUMBER: _ClassVar[int]
@@ -129,7 +136,7 @@ class ChatResponse(_message.Message):
     ) -> None: ...
 
 class ToolUsage(_message.Message):
-    __slots__ = ()
+    __slots__ = ("tool_name", "input", "output", "execution_time_ms")
     TOOL_NAME_FIELD_NUMBER: _ClassVar[int]
     INPUT_FIELD_NUMBER: _ClassVar[int]
     OUTPUT_FIELD_NUMBER: _ClassVar[int]
@@ -147,7 +154,7 @@ class ToolUsage(_message.Message):
     ) -> None: ...
 
 class GetSessionHistoryRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("session_id", "pagination", "metadata")
     SESSION_ID_FIELD_NUMBER: _ClassVar[int]
     PAGINATION_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]
@@ -164,7 +171,7 @@ class GetSessionHistoryRequest(_message.Message):
     ) -> None: ...
 
 class GetSessionHistoryResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("entries", "pagination")
     ENTRIES_FIELD_NUMBER: _ClassVar[int]
     PAGINATION_FIELD_NUMBER: _ClassVar[int]
     entries: _containers.RepeatedCompositeFieldContainer[HistoryEntry]
@@ -178,7 +185,7 @@ class GetSessionHistoryResponse(_message.Message):
     ) -> None: ...
 
 class HistoryEntry(_message.Message):
-    __slots__ = ()
+    __slots__ = ("role", "content", "timestamp", "tokens")
     ROLE_FIELD_NUMBER: _ClassVar[int]
     CONTENT_FIELD_NUMBER: _ClassVar[int]
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
@@ -196,7 +203,7 @@ class HistoryEntry(_message.Message):
     ) -> None: ...
 
 class CloseSessionRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("session_id", "metadata")
     SESSION_ID_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]
     session_id: str
@@ -208,7 +215,7 @@ class CloseSessionRequest(_message.Message):
     ) -> None: ...
 
 class CloseSessionResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("success", "total_tokens_used", "total_messages")
     SUCCESS_FIELD_NUMBER: _ClassVar[int]
     TOTAL_TOKENS_USED_FIELD_NUMBER: _ClassVar[int]
     TOTAL_MESSAGES_FIELD_NUMBER: _ClassVar[int]
@@ -217,7 +224,7 @@ class CloseSessionResponse(_message.Message):
     total_messages: int
     def __init__(
         self,
-        success: _Optional[bool] = ...,
+        success: bool = ...,
         total_tokens_used: _Optional[int] = ...,
         total_messages: _Optional[int] = ...,
     ) -> None: ...

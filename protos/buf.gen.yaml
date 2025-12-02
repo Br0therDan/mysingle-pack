@@ -1,9 +1,11 @@
 version: v2
 
 plugins:
-  - remote: buf.build/protocolbuffers/python
+  - protoc_builtin: python
     out: src/mysingle/protos
-    opt: pyi_out=src/mysingle/protos
 
-  - remote: buf.build/grpc/python
+  - protoc_builtin: pyi
+    out: src/mysingle/protos
+
+  - protoc_builtin: grpc_python
     out: src/mysingle/protos

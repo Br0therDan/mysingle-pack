@@ -67,7 +67,7 @@ REPORT_STATUS_COMPLETED: ReportStatus
 REPORT_STATUS_FAILED: ReportStatus
 
 class GenerateReportRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("backtest_id", "config", "metadata")
     BACKTEST_ID_FIELD_NUMBER: _ClassVar[int]
     CONFIG_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]
@@ -82,7 +82,7 @@ class GenerateReportRequest(_message.Message):
     ) -> None: ...
 
 class ReportConfig(_message.Message):
-    __slots__ = ()
+    __slots__ = ("format", "sections", "language", "detail_level")
     FORMAT_FIELD_NUMBER: _ClassVar[int]
     SECTIONS_FIELD_NUMBER: _ClassVar[int]
     LANGUAGE_FIELD_NUMBER: _ClassVar[int]
@@ -100,7 +100,7 @@ class ReportConfig(_message.Message):
     ) -> None: ...
 
 class GenerateReportProgress(_message.Message):
-    __slots__ = ()
+    __slots__ = ("task_id", "status", "progress_percent", "current_stage", "result")
     TASK_ID_FIELD_NUMBER: _ClassVar[int]
     STATUS_FIELD_NUMBER: _ClassVar[int]
     PROGRESS_PERCENT_FIELD_NUMBER: _ClassVar[int]
@@ -121,7 +121,7 @@ class GenerateReportProgress(_message.Message):
     ) -> None: ...
 
 class ReportResult(_message.Message):
-    __slots__ = ()
+    __slots__ = ("content", "metadata", "warnings")
     CONTENT_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]
     WARNINGS_FIELD_NUMBER: _ClassVar[int]
@@ -136,7 +136,7 @@ class ReportResult(_message.Message):
     ) -> None: ...
 
 class ReportMetadata(_message.Message):
-    __slots__ = ()
+    __slots__ = ("generated_at", "tokens_used", "generation_time_ms", "model_used")
     GENERATED_AT_FIELD_NUMBER: _ClassVar[int]
     TOKENS_USED_FIELD_NUMBER: _ClassVar[int]
     GENERATION_TIME_MS_FIELD_NUMBER: _ClassVar[int]
@@ -154,7 +154,7 @@ class ReportMetadata(_message.Message):
     ) -> None: ...
 
 class GetReportStatusRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("task_id", "metadata")
     TASK_ID_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]
     task_id: str
@@ -166,7 +166,7 @@ class GetReportStatusRequest(_message.Message):
     ) -> None: ...
 
 class GetReportStatusResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("task_id", "status", "progress_percent", "result", "error_message")
     TASK_ID_FIELD_NUMBER: _ClassVar[int]
     STATUS_FIELD_NUMBER: _ClassVar[int]
     PROGRESS_PERCENT_FIELD_NUMBER: _ClassVar[int]
@@ -187,7 +187,7 @@ class GetReportStatusResponse(_message.Message):
     ) -> None: ...
 
 class GenerateComparisonReportRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("backtest_ids", "config", "metadata")
     BACKTEST_IDS_FIELD_NUMBER: _ClassVar[int]
     CONFIG_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]

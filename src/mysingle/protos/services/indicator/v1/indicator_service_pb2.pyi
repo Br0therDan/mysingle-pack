@@ -11,7 +11,7 @@ from google.protobuf.internal import containers as _containers
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class GetIndicatorMetadataRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("name", "user_id")
     NAME_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     name: str
@@ -21,7 +21,7 @@ class GetIndicatorMetadataRequest(_message.Message):
     ) -> None: ...
 
 class BatchGetIndicatorMetadataRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("names", "user_id")
     NAMES_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     names: _containers.RepeatedScalarFieldContainer[str]
@@ -31,7 +31,7 @@ class BatchGetIndicatorMetadataRequest(_message.Message):
     ) -> None: ...
 
 class BatchGetIndicatorMetadataResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("indicators", "not_found")
     INDICATORS_FIELD_NUMBER: _ClassVar[int]
     NOT_FOUND_FIELD_NUMBER: _ClassVar[int]
     indicators: _containers.RepeatedCompositeFieldContainer[IndicatorMetadataResponse]
@@ -45,7 +45,15 @@ class BatchGetIndicatorMetadataResponse(_message.Message):
     ) -> None: ...
 
 class Parameter(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "name",
+        "type",
+        "description",
+        "required",
+        "default_value",
+        "constraints",
+        "enum_values",
+    )
     NAME_FIELD_NUMBER: _ClassVar[int]
     TYPE_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
@@ -65,14 +73,14 @@ class Parameter(_message.Message):
         name: _Optional[str] = ...,
         type: _Optional[str] = ...,
         description: _Optional[str] = ...,
-        required: _Optional[bool] = ...,
+        required: bool = ...,
         default_value: _Optional[str] = ...,
         constraints: _Optional[_Union[ParameterConstraints, _Mapping]] = ...,
         enum_values: _Optional[_Iterable[str]] = ...,
     ) -> None: ...
 
 class ParameterConstraints(_message.Message):
-    __slots__ = ()
+    __slots__ = ("min", "max", "min_length", "max_length", "pattern")
     MIN_FIELD_NUMBER: _ClassVar[int]
     MAX_FIELD_NUMBER: _ClassVar[int]
     MIN_LENGTH_FIELD_NUMBER: _ClassVar[int]
@@ -93,7 +101,7 @@ class ParameterConstraints(_message.Message):
     ) -> None: ...
 
 class OutputColumn(_message.Message):
-    __slots__ = ()
+    __slots__ = ("name", "type", "description")
     NAME_FIELD_NUMBER: _ClassVar[int]
     TYPE_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
@@ -108,7 +116,7 @@ class OutputColumn(_message.Message):
     ) -> None: ...
 
 class Dependency(_message.Message):
-    __slots__ = ()
+    __slots__ = ("indicator_name", "reason", "is_optional")
     INDICATOR_NAME_FIELD_NUMBER: _ClassVar[int]
     REASON_FIELD_NUMBER: _ClassVar[int]
     IS_OPTIONAL_FIELD_NUMBER: _ClassVar[int]
@@ -119,11 +127,25 @@ class Dependency(_message.Message):
         self,
         indicator_name: _Optional[str] = ...,
         reason: _Optional[str] = ...,
-        is_optional: _Optional[bool] = ...,
+        is_optional: bool = ...,
     ) -> None: ...
 
 class IndicatorMetadataResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "name",
+        "display_name",
+        "description",
+        "category",
+        "tags",
+        "parameters",
+        "outputs",
+        "dependencies",
+        "min_lookback",
+        "is_overlay",
+        "version",
+        "created_at",
+        "updated_at",
+    )
     NAME_FIELD_NUMBER: _ClassVar[int]
     DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
@@ -161,16 +183,24 @@ class IndicatorMetadataResponse(_message.Message):
         outputs: _Optional[_Iterable[_Union[OutputColumn, _Mapping]]] = ...,
         dependencies: _Optional[_Iterable[_Union[Dependency, _Mapping]]] = ...,
         min_lookback: _Optional[int] = ...,
-        is_overlay: _Optional[bool] = ...,
+        is_overlay: bool = ...,
         version: _Optional[str] = ...,
         created_at: _Optional[str] = ...,
         updated_at: _Optional[str] = ...,
     ) -> None: ...
 
 class CalculateIndicatorRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "indicator_name",
+        "params",
+        "symbol",
+        "interval",
+        "start_date",
+        "end_date",
+        "user_id",
+    )
     class ParamsEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -205,9 +235,20 @@ class CalculateIndicatorRequest(_message.Message):
     ) -> None: ...
 
 class CalculateIndicatorResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "indicator_name",
+        "params",
+        "result_type",
+        "values",
+        "multi_values",
+        "signals",
+        "timestamps",
+        "symbol",
+        "interval",
+        "cached",
+    )
     class ParamsEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -217,7 +258,7 @@ class CalculateIndicatorResponse(_message.Message):
         ) -> None: ...
 
     class MultiValuesEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -259,19 +300,19 @@ class CalculateIndicatorResponse(_message.Message):
         timestamps: _Optional[_Iterable[str]] = ...,
         symbol: _Optional[str] = ...,
         interval: _Optional[str] = ...,
-        cached: _Optional[bool] = ...,
+        cached: bool = ...,
     ) -> None: ...
 
 class DoubleArray(_message.Message):
-    __slots__ = ()
+    __slots__ = ("values",)
     VALUES_FIELD_NUMBER: _ClassVar[int]
     values: _containers.RepeatedScalarFieldContainer[float]
     def __init__(self, values: _Optional[_Iterable[float]] = ...) -> None: ...
 
 class IndicatorSpec(_message.Message):
-    __slots__ = ()
+    __slots__ = ("name", "params")
     class ParamsEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -289,7 +330,14 @@ class IndicatorSpec(_message.Message):
     ) -> None: ...
 
 class BatchCalculateIndicatorsRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "symbol",
+        "interval",
+        "start_date",
+        "end_date",
+        "indicators",
+        "user_id",
+    )
     SYMBOL_FIELD_NUMBER: _ClassVar[int]
     INTERVAL_FIELD_NUMBER: _ClassVar[int]
     START_DATE_FIELD_NUMBER: _ClassVar[int]
@@ -313,7 +361,7 @@ class BatchCalculateIndicatorsRequest(_message.Message):
     ) -> None: ...
 
 class BatchCalculateIndicatorsResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("results", "timestamps")
     RESULTS_FIELD_NUMBER: _ClassVar[int]
     TIMESTAMPS_FIELD_NUMBER: _ClassVar[int]
     results: _containers.RepeatedCompositeFieldContainer[CalculateIndicatorResponse]
@@ -331,7 +379,7 @@ class HealthCheckRequest(_message.Message):
     def __init__(self) -> None: ...
 
 class HealthCheckResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("status", "service", "version", "uptime_seconds", "cache_size")
     STATUS_FIELD_NUMBER: _ClassVar[int]
     SERVICE_FIELD_NUMBER: _ClassVar[int]
     VERSION_FIELD_NUMBER: _ClassVar[int]

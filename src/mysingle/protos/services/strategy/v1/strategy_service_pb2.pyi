@@ -14,7 +14,7 @@ from google.protobuf.internal import containers as _containers
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class GetStrategyVersionRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("strategy_id", "seq", "user_id")
     STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
     SEQ_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
@@ -29,7 +29,7 @@ class GetStrategyVersionRequest(_message.Message):
     ) -> None: ...
 
 class BatchGetStrategyVersionsRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("versions", "user_id")
     VERSIONS_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     versions: _containers.RepeatedCompositeFieldContainer[StrategyVersionIdentifier]
@@ -43,7 +43,7 @@ class BatchGetStrategyVersionsRequest(_message.Message):
     ) -> None: ...
 
 class StrategyVersionIdentifier(_message.Message):
-    __slots__ = ()
+    __slots__ = ("strategy_id", "seq")
     STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
     SEQ_FIELD_NUMBER: _ClassVar[int]
     strategy_id: str
@@ -57,7 +57,7 @@ class HealthCheckRequest(_message.Message):
     def __init__(self) -> None: ...
 
 class ValidateIRRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("user_id", "strategy_ir", "stages")
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     STRATEGY_IR_FIELD_NUMBER: _ClassVar[int]
     STAGES_FIELD_NUMBER: _ClassVar[int]
@@ -72,7 +72,7 @@ class ValidateIRRequest(_message.Message):
     ) -> None: ...
 
 class GetTemplateRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("template_id", "user_id")
     TEMPLATE_ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     template_id: str
@@ -82,7 +82,7 @@ class GetTemplateRequest(_message.Message):
     ) -> None: ...
 
 class ListTemplatesRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("user_id", "tags", "visibility")
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     VISIBILITY_FIELD_NUMBER: _ClassVar[int]
@@ -97,7 +97,7 @@ class ListTemplatesRequest(_message.Message):
     ) -> None: ...
 
 class BatchGetStrategiesRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("strategy_ids", "user_id")
     STRATEGY_IDS_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     strategy_ids: _containers.RepeatedScalarFieldContainer[str]
@@ -109,7 +109,7 @@ class BatchGetStrategiesRequest(_message.Message):
     ) -> None: ...
 
 class ListUserStrategiesRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("user_id", "limit", "offset", "status", "tags")
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     LIMIT_FIELD_NUMBER: _ClassVar[int]
     OFFSET_FIELD_NUMBER: _ClassVar[int]
@@ -130,7 +130,22 @@ class ListUserStrategiesRequest(_message.Message):
     ) -> None: ...
 
 class StrategyVersionResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "id",
+        "user_id",
+        "strategy_id",
+        "seq",
+        "state",
+        "dsl_code",
+        "dsl_code_hash",
+        "original_source",
+        "graph_cache",
+        "rules_cache",
+        "template_id",
+        "validation_pipeline",
+        "created_at",
+        "updated_at",
+    )
     ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
@@ -180,7 +195,7 @@ class StrategyVersionResponse(_message.Message):
     ) -> None: ...
 
 class ValidationResult(_message.Message):
-    __slots__ = ()
+    __slots__ = ("stage", "status", "errors", "warnings", "timestamp")
     STAGE_FIELD_NUMBER: _ClassVar[int]
     STATUS_FIELD_NUMBER: _ClassVar[int]
     ERRORS_FIELD_NUMBER: _ClassVar[int]
@@ -201,7 +216,7 @@ class ValidationResult(_message.Message):
     ) -> None: ...
 
 class HealthCheckResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("status", "service", "version")
     STATUS_FIELD_NUMBER: _ClassVar[int]
     SERVICE_FIELD_NUMBER: _ClassVar[int]
     VERSION_FIELD_NUMBER: _ClassVar[int]
@@ -216,7 +231,7 @@ class HealthCheckResponse(_message.Message):
     ) -> None: ...
 
 class ValidationResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("is_valid", "errors", "warnings", "stage")
     IS_VALID_FIELD_NUMBER: _ClassVar[int]
     ERRORS_FIELD_NUMBER: _ClassVar[int]
     WARNINGS_FIELD_NUMBER: _ClassVar[int]
@@ -227,16 +242,16 @@ class ValidationResponse(_message.Message):
     stage: str
     def __init__(
         self,
-        is_valid: _Optional[bool] = ...,
+        is_valid: bool = ...,
         errors: _Optional[_Iterable[_Union[ValidationError, _Mapping]]] = ...,
         warnings: _Optional[_Iterable[_Union[ValidationWarning, _Mapping]]] = ...,
         stage: _Optional[str] = ...,
     ) -> None: ...
 
 class ValidationError(_message.Message):
-    __slots__ = ()
+    __slots__ = ("code", "message", "field_path", "metadata")
     class MetadataEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -262,7 +277,7 @@ class ValidationError(_message.Message):
     ) -> None: ...
 
 class ValidationWarning(_message.Message):
-    __slots__ = ()
+    __slots__ = ("code", "message", "field_path")
     CODE_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
     FIELD_PATH_FIELD_NUMBER: _ClassVar[int]
@@ -277,7 +292,18 @@ class ValidationWarning(_message.Message):
     ) -> None: ...
 
 class TemplateResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "id",
+        "user_id",
+        "name",
+        "description",
+        "visibility",
+        "tags",
+        "default_dsl",
+        "default_execution_profile",
+        "created_at",
+        "updated_at",
+    )
     ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
@@ -315,7 +341,16 @@ class TemplateResponse(_message.Message):
     ) -> None: ...
 
 class StrategyResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "id",
+        "user_id",
+        "name",
+        "description",
+        "status",
+        "tags",
+        "created_at",
+        "updated_at",
+    )
     ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
@@ -345,7 +380,7 @@ class StrategyResponse(_message.Message):
     ) -> None: ...
 
 class GetStrategyRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("strategy_id", "user_id")
     STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     strategy_id: str
@@ -355,7 +390,7 @@ class GetStrategyRequest(_message.Message):
     ) -> None: ...
 
 class Strategy(_message.Message):
-    __slots__ = ()
+    __slots__ = ("id", "name", "description", "user_id", "is_active")
     ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
@@ -372,11 +407,11 @@ class Strategy(_message.Message):
         name: _Optional[str] = ...,
         description: _Optional[str] = ...,
         user_id: _Optional[str] = ...,
-        is_active: _Optional[bool] = ...,
+        is_active: bool = ...,
     ) -> None: ...
 
 class GetStrategyResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("strategy",)
     STRATEGY_FIELD_NUMBER: _ClassVar[int]
     strategy: Strategy
     def __init__(
@@ -384,7 +419,7 @@ class GetStrategyResponse(_message.Message):
     ) -> None: ...
 
 class ListStrategiesRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("user_id", "is_active", "limit", "skip")
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     IS_ACTIVE_FIELD_NUMBER: _ClassVar[int]
     LIMIT_FIELD_NUMBER: _ClassVar[int]
@@ -396,13 +431,13 @@ class ListStrategiesRequest(_message.Message):
     def __init__(
         self,
         user_id: _Optional[str] = ...,
-        is_active: _Optional[bool] = ...,
+        is_active: bool = ...,
         limit: _Optional[int] = ...,
         skip: _Optional[int] = ...,
     ) -> None: ...
 
 class ListStrategiesResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("strategies", "total")
     STRATEGIES_FIELD_NUMBER: _ClassVar[int]
     TOTAL_FIELD_NUMBER: _ClassVar[int]
     strategies: _containers.RepeatedCompositeFieldContainer[Strategy]
@@ -414,7 +449,7 @@ class ListStrategiesResponse(_message.Message):
     ) -> None: ...
 
 class ValidateStrategyRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("strategy_id", "user_id")
     STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     strategy_id: str
@@ -424,7 +459,7 @@ class ValidateStrategyRequest(_message.Message):
     ) -> None: ...
 
 class ValidateStrategyResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("is_valid", "errors", "warnings")
     IS_VALID_FIELD_NUMBER: _ClassVar[int]
     ERRORS_FIELD_NUMBER: _ClassVar[int]
     WARNINGS_FIELD_NUMBER: _ClassVar[int]
@@ -433,13 +468,13 @@ class ValidateStrategyResponse(_message.Message):
     warnings: _containers.RepeatedScalarFieldContainer[str]
     def __init__(
         self,
-        is_valid: _Optional[bool] = ...,
+        is_valid: bool = ...,
         errors: _Optional[_Iterable[str]] = ...,
         warnings: _Optional[_Iterable[str]] = ...,
     ) -> None: ...
 
 class Position(_message.Message):
-    __slots__ = ()
+    __slots__ = ("symbol", "quantity", "value")
     SYMBOL_FIELD_NUMBER: _ClassVar[int]
     QUANTITY_FIELD_NUMBER: _ClassVar[int]
     VALUE_FIELD_NUMBER: _ClassVar[int]
@@ -454,7 +489,7 @@ class Position(_message.Message):
     ) -> None: ...
 
 class PortfolioHistoryPoint(_message.Message):
-    __slots__ = ()
+    __slots__ = ("timestamp", "value")
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
     VALUE_FIELD_NUMBER: _ClassVar[int]
     timestamp: _timestamp_pb2.Timestamp
@@ -468,7 +503,7 @@ class PortfolioHistoryPoint(_message.Message):
     ) -> None: ...
 
 class GetPortfolioSummaryRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("strategy_id", "user_id")
     STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     strategy_id: str
@@ -478,7 +513,7 @@ class GetPortfolioSummaryRequest(_message.Message):
     ) -> None: ...
 
 class GetPortfolioSummaryResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("strategy_id", "total_value", "positions", "history", "currency")
     STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
     TOTAL_VALUE_FIELD_NUMBER: _ClassVar[int]
     POSITIONS_FIELD_NUMBER: _ClassVar[int]
@@ -499,7 +534,7 @@ class GetPortfolioSummaryResponse(_message.Message):
     ) -> None: ...
 
 class ArchiveStrategyRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("strategy_id", "user_id")
     STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     strategy_id: str
@@ -509,7 +544,7 @@ class ArchiveStrategyRequest(_message.Message):
     ) -> None: ...
 
 class ArchiveStrategyResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("success", "strategy_id", "archived_at")
     SUCCESS_FIELD_NUMBER: _ClassVar[int]
     STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
     ARCHIVED_AT_FIELD_NUMBER: _ClassVar[int]
@@ -518,7 +553,7 @@ class ArchiveStrategyResponse(_message.Message):
     archived_at: _timestamp_pb2.Timestamp
     def __init__(
         self,
-        success: _Optional[bool] = ...,
+        success: bool = ...,
         strategy_id: _Optional[str] = ...,
         archived_at: _Optional[
             _Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]

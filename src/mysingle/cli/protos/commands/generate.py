@@ -27,7 +27,7 @@ def buf_generate(config: ProtoConfig) -> None:
     log("Buf를 사용하여 코드 생성 중...", LogLevel.STEP)
 
     try:
-        # repo_root에서 실행하고 protos/buf.gen.yaml을 템플릿으로 사용
+        # protoc_builtin 방식으로 시도
         subprocess.run(
             [
                 "buf",
@@ -41,12 +41,69 @@ def buf_generate(config: ProtoConfig) -> None:
         )
         log("코드 생성 완료", LogLevel.SUCCESS)
     except subprocess.CalledProcessError as e:
-        log(f"코드 생성 실패: {e}", LogLevel.ERROR)
-        raise SystemExit(1) from e
+        # buf 실패시 직접 protoc 사용
+        log(f"Buf 생성 실패, protoc으로 fallback 중...: {e}", LogLevel.WARNING)
+        try:
+            _protoc_generate(config)
+            log("코드 생성 완료 (protoc)", LogLevel.SUCCESS)
+        except Exception as protoc_err:
+            log(f"코드 생성 실패: {protoc_err}", LogLevel.ERROR)
+            raise SystemExit(1) from protoc_err
     except FileNotFoundError:
-        log("Buf가 설치되어 있지 않습니다.", LogLevel.ERROR)
-        log("설치 방법: https://buf.build/docs/installation", LogLevel.INFO)
-        raise SystemExit(1)
+        log("Buf가 설치되어 있지 않습니다. protoc으로 시도합니다...", LogLevel.WARNING)
+        try:
+            _protoc_generate(config)
+            log("코드 생성 완료 (protoc)", LogLevel.SUCCESS)
+        except Exception as e:
+            log(f"코드 생성 실패: {e}", LogLevel.ERROR)
+            log("Buf 설치 방법: https://buf.build/docs/installation", LogLevel.INFO)
+            raise SystemExit(1)
+
+
+def _protoc_generate(config: ProtoConfig) -> None:
+    """protoc을 직접 사용하여 코드 생성"""
+    import sys
+
+    from grpc_tools import protoc
+
+    protos_dir = config.repo_root / "protos"
+    output_dir = config.generated_root
+
+    # proto 파일 찾기
+    proto_files = list(protos_dir.rglob("*.proto"))
+    if not proto_files:
+        raise RuntimeError("proto 파일을 찾을 수 없습니다")
+
+    log(f"발견된 proto 파일: {len(proto_files)}개", LogLevel.INFO)
+
+    # 출력 디렉토리 생성
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # grpc_tools에 포함된 well-known types 경로 찾기
+    import grpc_tools
+
+    grpc_tools_path = Path(grpc_tools.__file__).parent / "_proto"
+
+    # protoc 실행
+    for proto_file in proto_files:
+        rel_path = proto_file.relative_to(protos_dir)
+        log(f"처리 중: {rel_path}", LogLevel.DEBUG)
+
+        # protoc 명령 구성
+        args = [
+            sys.argv[0],  # protoc 호환을 위해
+            f"--proto_path={protos_dir}",
+            f"--proto_path={grpc_tools_path}",  # well-known types 경로 추가
+            f"--python_out={output_dir}",
+            f"--pyi_out={output_dir}",
+            f"--grpc_python_out={output_dir}",
+            str(proto_file),
+        ]
+
+        # grpc_tools.protoc 실행
+        result = protoc.main(args)
+        if result != 0:
+            raise RuntimeError(f"protoc failed for {rel_path} with code {result}")
 
 
 def rewrite_generated_imports(

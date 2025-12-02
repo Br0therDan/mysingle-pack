@@ -15,7 +15,7 @@ class HealthCheckRequest(_message.Message):
     def __init__(self) -> None: ...
 
 class HealthCheckResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("status", "service", "version")
     STATUS_FIELD_NUMBER: _ClassVar[int]
     SERVICE_FIELD_NUMBER: _ClassVar[int]
     VERSION_FIELD_NUMBER: _ClassVar[int]
@@ -30,7 +30,7 @@ class HealthCheckResponse(_message.Message):
     ) -> None: ...
 
 class Period(_message.Message):
-    __slots__ = ()
+    __slots__ = ("start_date", "end_date")
     START_DATE_FIELD_NUMBER: _ClassVar[int]
     END_DATE_FIELD_NUMBER: _ClassVar[int]
     start_date: str
@@ -40,7 +40,7 @@ class Period(_message.Message):
     ) -> None: ...
 
 class Constraint(_message.Message):
-    __slots__ = ()
+    __slots__ = ("op", "value")
     OP_FIELD_NUMBER: _ClassVar[int]
     VALUE_FIELD_NUMBER: _ClassVar[int]
     op: str
@@ -50,9 +50,21 @@ class Constraint(_message.Message):
     ) -> None: ...
 
 class OptimizeRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "walk_forward_job_id",
+        "window_index",
+        "strategy_version_id",
+        "train_period",
+        "parameter_grid",
+        "optimization_metric",
+        "metric_objective",
+        "constraints",
+        "symbols",
+        "interval",
+        "user_id",
+    )
     class ParameterGridEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -64,7 +76,7 @@ class OptimizeRequest(_message.Message):
         ) -> None: ...
 
     class ConstraintsEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -113,15 +125,27 @@ class OptimizeRequest(_message.Message):
     ) -> None: ...
 
 class ParameterValues(_message.Message):
-    __slots__ = ()
+    __slots__ = ("values",)
     VALUES_FIELD_NUMBER: _ClassVar[int]
     values: _containers.RepeatedScalarFieldContainer[float]
     def __init__(self, values: _Optional[_Iterable[float]] = ...) -> None: ...
 
 class OptimizeProgress(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "trial_index",
+        "total_trials",
+        "current_params",
+        "current_score",
+        "best_params",
+        "best_score",
+        "status",
+        "optimization_run_id",
+        "is_metrics",
+        "execution_time_seconds",
+        "trials",
+    )
     class CurrentParamsEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -131,7 +155,7 @@ class OptimizeProgress(_message.Message):
         ) -> None: ...
 
     class BestParamsEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -141,7 +165,7 @@ class OptimizeProgress(_message.Message):
         ) -> None: ...
 
     class IsMetricsEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -188,9 +212,9 @@ class OptimizeProgress(_message.Message):
     ) -> None: ...
 
 class TrialResult(_message.Message):
-    __slots__ = ()
+    __slots__ = ("params", "metrics", "score")
     class ParamsEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -200,7 +224,7 @@ class TrialResult(_message.Message):
         ) -> None: ...
 
     class MetricsEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -223,7 +247,7 @@ class TrialResult(_message.Message):
     ) -> None: ...
 
 class AnalyzeRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("walk_forward_job_id", "window_results", "user_id")
     WALK_FORWARD_JOB_ID_FIELD_NUMBER: _ClassVar[int]
     WINDOW_RESULTS_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
@@ -240,7 +264,7 @@ class AnalyzeRequest(_message.Message):
     ) -> None: ...
 
 class WindowResultSummary(_message.Message):
-    __slots__ = ()
+    __slots__ = ("window_index", "is_return", "oos_return", "is_sharpe", "oos_sharpe")
     WINDOW_INDEX_FIELD_NUMBER: _ClassVar[int]
     IS_RETURN_FIELD_NUMBER: _ClassVar[int]
     OOS_RETURN_FIELD_NUMBER: _ClassVar[int]
@@ -261,7 +285,15 @@ class WindowResultSummary(_message.Message):
     ) -> None: ...
 
 class AnalyzeResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "analysis_id",
+        "efficiency_ratio",
+        "stability_score",
+        "p_values",
+        "interpretation",
+        "recommendation",
+        "created_at",
+    )
     ANALYSIS_ID_FIELD_NUMBER: _ClassVar[int]
     EFFICIENCY_RATIO_FIELD_NUMBER: _ClassVar[int]
     STABILITY_SCORE_FIELD_NUMBER: _ClassVar[int]
@@ -288,7 +320,7 @@ class AnalyzeResponse(_message.Message):
     ) -> None: ...
 
 class PValues(_message.Message):
-    __slots__ = ()
+    __slots__ = ("is_vs_oos_return", "is_vs_oos_sharpe", "oos_vs_zero")
     IS_VS_OOS_RETURN_FIELD_NUMBER: _ClassVar[int]
     IS_VS_OOS_SHARPE_FIELD_NUMBER: _ClassVar[int]
     OOS_VS_ZERO_FIELD_NUMBER: _ClassVar[int]
@@ -303,7 +335,7 @@ class PValues(_message.Message):
     ) -> None: ...
 
 class MLPredictionRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("features", "model_id", "user_id")
     FEATURES_FIELD_NUMBER: _ClassVar[int]
     MODEL_ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
@@ -318,7 +350,7 @@ class MLPredictionRequest(_message.Message):
     ) -> None: ...
 
 class BatchMLPredictionRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("features_list", "model_id", "user_id")
     FEATURES_LIST_FIELD_NUMBER: _ClassVar[int]
     MODEL_ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
@@ -333,7 +365,35 @@ class BatchMLPredictionRequest(_message.Message):
     ) -> None: ...
 
 class FeatureVector(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "returns_1d",
+        "returns_5d",
+        "returns_20d",
+        "volatility_20d",
+        "volume_ratio",
+        "sma_5",
+        "sma_20",
+        "sma_50",
+        "sma_200",
+        "ema_12",
+        "ema_26",
+        "rsi_14",
+        "macd",
+        "macd_signal",
+        "macd_histogram",
+        "bb_upper",
+        "bb_middle",
+        "bb_lower",
+        "skewness",
+        "kurtosis",
+        "autocorr",
+        "cash_ratio",
+        "position_ratio",
+        "pnl",
+        "drawdown",
+        "regime_type",
+        "trend_strength",
+    )
     RETURNS_1D_FIELD_NUMBER: _ClassVar[int]
     RETURNS_5D_FIELD_NUMBER: _ClassVar[int]
     RETURNS_20D_FIELD_NUMBER: _ClassVar[int]
@@ -420,7 +480,16 @@ class FeatureVector(_message.Message):
     ) -> None: ...
 
 class MLSignalInsight(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "symbol",
+        "as_of",
+        "lookback_days",
+        "probability",
+        "confidence",
+        "recommendation",
+        "feature_contributions",
+        "top_signals",
+    )
     SYMBOL_FIELD_NUMBER: _ClassVar[int]
     AS_OF_FIELD_NUMBER: _ClassVar[int]
     LOOKBACK_DAYS_FIELD_NUMBER: _ClassVar[int]
@@ -454,7 +523,7 @@ class MLSignalInsight(_message.Message):
     ) -> None: ...
 
 class FeatureContribution(_message.Message):
-    __slots__ = ()
+    __slots__ = ("feature", "value", "weight", "impact", "direction")
     FEATURE_FIELD_NUMBER: _ClassVar[int]
     VALUE_FIELD_NUMBER: _ClassVar[int]
     WEIGHT_FIELD_NUMBER: _ClassVar[int]
@@ -475,9 +544,9 @@ class FeatureContribution(_message.Message):
     ) -> None: ...
 
 class FeatureStoreRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("symbol", "interval", "timestamp", "features", "metadata", "user_id")
     class MetadataEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -509,7 +578,7 @@ class FeatureStoreRequest(_message.Message):
     ) -> None: ...
 
 class FeatureStoreResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("feature_id", "stored_at", "quality_score")
     FEATURE_ID_FIELD_NUMBER: _ClassVar[int]
     STORED_AT_FIELD_NUMBER: _ClassVar[int]
     QUALITY_SCORE_FIELD_NUMBER: _ClassVar[int]
@@ -524,9 +593,17 @@ class FeatureStoreResponse(_message.Message):
     ) -> None: ...
 
 class AnalyzeMLBacktestPerformanceRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "job_id",
+        "model_name",
+        "model_version",
+        "predictions",
+        "actual_outcomes",
+        "feature_importances",
+        "user_id",
+    )
     class FeatureImportancesEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -561,7 +638,7 @@ class AnalyzeMLBacktestPerformanceRequest(_message.Message):
     ) -> None: ...
 
 class MLPrediction(_message.Message):
-    __slots__ = ()
+    __slots__ = ("timestamp", "prediction", "confidence", "regime")
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
     PREDICTION_FIELD_NUMBER: _ClassVar[int]
     CONFIDENCE_FIELD_NUMBER: _ClassVar[int]
@@ -579,7 +656,7 @@ class MLPrediction(_message.Message):
     ) -> None: ...
 
 class ActualOutcome(_message.Message):
-    __slots__ = ()
+    __slots__ = ("timestamp", "actual")
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
     ACTUAL_FIELD_NUMBER: _ClassVar[int]
     timestamp: str
@@ -589,7 +666,7 @@ class ActualOutcome(_message.Message):
     ) -> None: ...
 
 class AnalyzeMLBacktestPerformanceResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("performance_id", "success", "message")
     PERFORMANCE_ID_FIELD_NUMBER: _ClassVar[int]
     SUCCESS_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
@@ -599,6 +676,6 @@ class AnalyzeMLBacktestPerformanceResponse(_message.Message):
     def __init__(
         self,
         performance_id: _Optional[str] = ...,
-        success: _Optional[bool] = ...,
+        success: bool = ...,
         message: _Optional[str] = ...,
     ) -> None: ...

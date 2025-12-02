@@ -15,7 +15,7 @@ from mysingle.protos.common import metadata_pb2 as _metadata_pb2
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class GenerateStrategyRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("natural_language", "context", "template_id", "use_cache", "metadata")
     NATURAL_LANGUAGE_FIELD_NUMBER: _ClassVar[int]
     CONTEXT_FIELD_NUMBER: _ClassVar[int]
     TEMPLATE_ID_FIELD_NUMBER: _ClassVar[int]
@@ -31,12 +31,12 @@ class GenerateStrategyRequest(_message.Message):
         natural_language: _Optional[str] = ...,
         context: _Optional[_Union[StrategyContext, _Mapping]] = ...,
         template_id: _Optional[str] = ...,
-        use_cache: _Optional[bool] = ...,
+        use_cache: bool = ...,
         metadata: _Optional[_Union[_metadata_pb2.Metadata, _Mapping]] = ...,
     ) -> None: ...
 
 class StrategyContext(_message.Message):
-    __slots__ = ()
+    __slots__ = ("universe", "market_type", "interval", "risk_level")
     UNIVERSE_FIELD_NUMBER: _ClassVar[int]
     MARKET_TYPE_FIELD_NUMBER: _ClassVar[int]
     INTERVAL_FIELD_NUMBER: _ClassVar[int]
@@ -54,7 +54,14 @@ class StrategyContext(_message.Message):
     ) -> None: ...
 
 class GenerateStrategyResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "strategy_ir",
+        "validation_preview",
+        "explanation",
+        "confidence",
+        "proposal_id",
+        "approval_required",
+    )
     STRATEGY_IR_FIELD_NUMBER: _ClassVar[int]
     VALIDATION_PREVIEW_FIELD_NUMBER: _ClassVar[int]
     EXPLANATION_FIELD_NUMBER: _ClassVar[int]
@@ -74,11 +81,11 @@ class GenerateStrategyResponse(_message.Message):
         explanation: _Optional[str] = ...,
         confidence: _Optional[_Union[_metadata_pb2.ConfidenceScore, _Mapping]] = ...,
         proposal_id: _Optional[str] = ...,
-        approval_required: _Optional[bool] = ...,
+        approval_required: bool = ...,
     ) -> None: ...
 
 class ValidationPreview(_message.Message):
-    __slots__ = ()
+    __slots__ = ("struct_warnings", "static_warnings", "is_valid")
     STRUCT_WARNINGS_FIELD_NUMBER: _ClassVar[int]
     STATIC_WARNINGS_FIELD_NUMBER: _ClassVar[int]
     IS_VALID_FIELD_NUMBER: _ClassVar[int]
@@ -97,11 +104,11 @@ class ValidationPreview(_message.Message):
         static_warnings: _Optional[
             _Iterable[_Union[_error_pb2.ValidationWarning, _Mapping]]
         ] = ...,
-        is_valid: _Optional[bool] = ...,
+        is_valid: bool = ...,
     ) -> None: ...
 
 class ValidateProposalRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("proposal_id", "metadata")
     PROPOSAL_ID_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]
     proposal_id: str
@@ -113,7 +120,7 @@ class ValidateProposalRequest(_message.Message):
     ) -> None: ...
 
 class ValidateProposalResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("is_valid", "warnings", "strategy_ir")
     IS_VALID_FIELD_NUMBER: _ClassVar[int]
     WARNINGS_FIELD_NUMBER: _ClassVar[int]
     STRATEGY_IR_FIELD_NUMBER: _ClassVar[int]
@@ -122,7 +129,7 @@ class ValidateProposalResponse(_message.Message):
     strategy_ir: _struct_pb2.Struct
     def __init__(
         self,
-        is_valid: _Optional[bool] = ...,
+        is_valid: bool = ...,
         warnings: _Optional[
             _Iterable[_Union[_error_pb2.ValidationWarning, _Mapping]]
         ] = ...,
@@ -130,7 +137,7 @@ class ValidateProposalResponse(_message.Message):
     ) -> None: ...
 
 class CustomizeTemplateRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("template_id", "customization_intent", "context", "metadata")
     TEMPLATE_ID_FIELD_NUMBER: _ClassVar[int]
     CUSTOMIZATION_INTENT_FIELD_NUMBER: _ClassVar[int]
     CONTEXT_FIELD_NUMBER: _ClassVar[int]
@@ -148,9 +155,9 @@ class CustomizeTemplateRequest(_message.Message):
     ) -> None: ...
 
 class CustomizeTemplateResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("recommended_parameters", "rationale", "confidence", "strategy_ir")
     class RecommendedParametersEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str

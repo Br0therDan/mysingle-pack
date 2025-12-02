@@ -26,9 +26,9 @@ ERROR_SEVERITY_ERROR: ErrorSeverity
 ERROR_SEVERITY_CRITICAL: ErrorSeverity
 
 class ErrorDetail(_message.Message):
-    __slots__ = ()
+    __slots__ = ("code", "message", "severity", "metadata", "context")
     class MetadataEntry(_message.Message):
-        __slots__ = ()
+        __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
@@ -57,7 +57,7 @@ class ErrorDetail(_message.Message):
     ) -> None: ...
 
 class ValidationWarning(_message.Message):
-    __slots__ = ()
+    __slots__ = ("message", "line", "column", "severity", "suggestion")
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
     LINE_FIELD_NUMBER: _ClassVar[int]
     COLUMN_FIELD_NUMBER: _ClassVar[int]
@@ -78,7 +78,7 @@ class ValidationWarning(_message.Message):
     ) -> None: ...
 
 class ConversionWarning(_message.Message):
-    __slots__ = ()
+    __slots__ = ("message", "severity", "reversible")
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
     SEVERITY_FIELD_NUMBER: _ClassVar[int]
     REVERSIBLE_FIELD_NUMBER: _ClassVar[int]
@@ -89,5 +89,5 @@ class ConversionWarning(_message.Message):
         self,
         message: _Optional[str] = ...,
         severity: _Optional[_Union[ErrorSeverity, str]] = ...,
-        reversible: _Optional[bool] = ...,
+        reversible: bool = ...,
     ) -> None: ...

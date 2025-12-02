@@ -7,7 +7,7 @@ from google.protobuf import message as _message
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class PaginationRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("page", "page_size")
     PAGE_FIELD_NUMBER: _ClassVar[int]
     PAGE_SIZE_FIELD_NUMBER: _ClassVar[int]
     page: int
@@ -17,7 +17,14 @@ class PaginationRequest(_message.Message):
     ) -> None: ...
 
 class PaginationResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "total_count",
+        "page",
+        "page_size",
+        "total_pages",
+        "has_next",
+        "has_previous",
+    )
     TOTAL_COUNT_FIELD_NUMBER: _ClassVar[int]
     PAGE_FIELD_NUMBER: _ClassVar[int]
     PAGE_SIZE_FIELD_NUMBER: _ClassVar[int]
@@ -36,16 +43,14 @@ class PaginationResponse(_message.Message):
         page: _Optional[int] = ...,
         page_size: _Optional[int] = ...,
         total_pages: _Optional[int] = ...,
-        has_next: _Optional[bool] = ...,
-        has_previous: _Optional[bool] = ...,
+        has_next: bool = ...,
+        has_previous: bool = ...,
     ) -> None: ...
 
 class SortOption(_message.Message):
-    __slots__ = ()
+    __slots__ = ("field", "descending")
     FIELD_FIELD_NUMBER: _ClassVar[int]
     DESCENDING_FIELD_NUMBER: _ClassVar[int]
     field: str
     descending: bool
-    def __init__(
-        self, field: _Optional[str] = ..., descending: _Optional[bool] = ...
-    ) -> None: ...
+    def __init__(self, field: _Optional[str] = ..., descending: bool = ...) -> None: ...

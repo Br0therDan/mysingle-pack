@@ -7,7 +7,7 @@ from google.protobuf import message as _message
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class Metadata(_message.Message):
-    __slots__ = ()
+    __slots__ = ("request_id", "user_id", "session_id", "timestamp", "source")
     REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     SESSION_ID_FIELD_NUMBER: _ClassVar[int]
@@ -28,7 +28,7 @@ class Metadata(_message.Message):
     ) -> None: ...
 
 class ConfidenceScore(_message.Message):
-    __slots__ = ()
+    __slots__ = ("score", "explanation")
     SCORE_FIELD_NUMBER: _ClassVar[int]
     EXPLANATION_FIELD_NUMBER: _ClassVar[int]
     score: float

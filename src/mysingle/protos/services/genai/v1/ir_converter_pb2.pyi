@@ -28,7 +28,7 @@ IR_TYPE_RULES: IRType
 IR_TYPE_DSL: IRType
 
 class PreviewConversionRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("source_type", "target_type", "source_ir", "options", "metadata")
     SOURCE_TYPE_FIELD_NUMBER: _ClassVar[int]
     TARGET_TYPE_FIELD_NUMBER: _ClassVar[int]
     SOURCE_IR_FIELD_NUMBER: _ClassVar[int]
@@ -49,7 +49,7 @@ class PreviewConversionRequest(_message.Message):
     ) -> None: ...
 
 class ConversionOptions(_message.Message):
-    __slots__ = ()
+    __slots__ = ("preserve_comments", "optimize", "validate_output")
     PRESERVE_COMMENTS_FIELD_NUMBER: _ClassVar[int]
     OPTIMIZE_FIELD_NUMBER: _ClassVar[int]
     VALIDATE_OUTPUT_FIELD_NUMBER: _ClassVar[int]
@@ -58,13 +58,13 @@ class ConversionOptions(_message.Message):
     validate_output: bool
     def __init__(
         self,
-        preserve_comments: _Optional[bool] = ...,
-        optimize: _Optional[bool] = ...,
-        validate_output: _Optional[bool] = ...,
+        preserve_comments: bool = ...,
+        optimize: bool = ...,
+        validate_output: bool = ...,
     ) -> None: ...
 
 class PreviewConversionResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("target_ir", "preview_code", "warnings", "reversible", "metadata")
     TARGET_IR_FIELD_NUMBER: _ClassVar[int]
     PREVIEW_CODE_FIELD_NUMBER: _ClassVar[int]
     WARNINGS_FIELD_NUMBER: _ClassVar[int]
@@ -82,12 +82,12 @@ class PreviewConversionResponse(_message.Message):
         warnings: _Optional[
             _Iterable[_Union[_error_pb2.ConversionWarning, _Mapping]]
         ] = ...,
-        reversible: _Optional[bool] = ...,
+        reversible: bool = ...,
         metadata: _Optional[_Union[ConversionMetadata, _Mapping]] = ...,
     ) -> None: ...
 
 class ConversionMetadata(_message.Message):
-    __slots__ = ()
+    __slots__ = ("conversion_time_ms", "algorithm_used", "nodes_count", "rules_count")
     CONVERSION_TIME_MS_FIELD_NUMBER: _ClassVar[int]
     ALGORITHM_USED_FIELD_NUMBER: _ClassVar[int]
     NODES_COUNT_FIELD_NUMBER: _ClassVar[int]
@@ -105,7 +105,14 @@ class ConversionMetadata(_message.Message):
     ) -> None: ...
 
 class ExecuteConversionRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = (
+        "source_type",
+        "target_type",
+        "source_ir",
+        "options",
+        "metadata",
+        "strategy_id",
+    )
     SOURCE_TYPE_FIELD_NUMBER: _ClassVar[int]
     TARGET_TYPE_FIELD_NUMBER: _ClassVar[int]
     SOURCE_IR_FIELD_NUMBER: _ClassVar[int]
@@ -129,7 +136,7 @@ class ExecuteConversionRequest(_message.Message):
     ) -> None: ...
 
 class ExecuteConversionResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("target_ir", "warnings", "success", "error_message", "metadata")
     TARGET_IR_FIELD_NUMBER: _ClassVar[int]
     WARNINGS_FIELD_NUMBER: _ClassVar[int]
     SUCCESS_FIELD_NUMBER: _ClassVar[int]
@@ -146,13 +153,13 @@ class ExecuteConversionResponse(_message.Message):
         warnings: _Optional[
             _Iterable[_Union[_error_pb2.ConversionWarning, _Mapping]]
         ] = ...,
-        success: _Optional[bool] = ...,
+        success: bool = ...,
         error_message: _Optional[str] = ...,
         metadata: _Optional[_Union[ConversionMetadata, _Mapping]] = ...,
     ) -> None: ...
 
 class CheckConvertibilityRequest(_message.Message):
-    __slots__ = ()
+    __slots__ = ("source_type", "target_type", "source_ir", "metadata")
     SOURCE_TYPE_FIELD_NUMBER: _ClassVar[int]
     TARGET_TYPE_FIELD_NUMBER: _ClassVar[int]
     SOURCE_IR_FIELD_NUMBER: _ClassVar[int]
@@ -170,7 +177,7 @@ class CheckConvertibilityRequest(_message.Message):
     ) -> None: ...
 
 class CheckConvertibilityResponse(_message.Message):
-    __slots__ = ()
+    __slots__ = ("convertible", "reason", "limitations", "required_features")
     CONVERTIBLE_FIELD_NUMBER: _ClassVar[int]
     REASON_FIELD_NUMBER: _ClassVar[int]
     LIMITATIONS_FIELD_NUMBER: _ClassVar[int]
@@ -181,7 +188,7 @@ class CheckConvertibilityResponse(_message.Message):
     required_features: _containers.RepeatedScalarFieldContainer[str]
     def __init__(
         self,
-        convertible: _Optional[bool] = ...,
+        convertible: bool = ...,
         reason: _Optional[str] = ...,
         limitations: _Optional[_Iterable[str]] = ...,
         required_features: _Optional[_Iterable[str]] = ...,
