@@ -1,7 +1,7 @@
 
 [project]
 name = "mysingle"
-version = "2.4.2"
+version = "2.4.3"
 description = "Unified utilities and gRPC protocols for MySingle Platform"
 readme = "README.md"
 requires-python = ">=3.12"
