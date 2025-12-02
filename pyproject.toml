@@ -1,7 +1,7 @@
 
 [project]
 name = "mysingle"
-version = "2.3.3"
+version = "2.3.4"
 description = "Unified utilities and gRPC protocols for MySingle Platform"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -10,18 +10,18 @@ dependencies = [
     "pydantic>=2.5.0",
     "pydantic-settings>=2.1.0",
     # Core 통합 모듈 의존성
-    "structlog>=23.2.0", # logging
-    "colorlog>=6.9.0", # logging
-    "rich>=13.9.0", # CLI colors and interactive
-    "prometheus-client>=0.19.0", # metrics
-    "motor>=3.3.2", # base (Beanie)
-    "beanie>=1.23.6", # base (Beanie)
-    "emails>=0.6", # email
-    "jinja2>=3.1.6", # email
-    "httpx>=0.25.2", # audit
-    "fastapi>=0.104.1", # core.app_factory
-    "uvicorn[standard]>=0.24.0", # core.app_factory
-    "email-validator>=2.0.0", # config (EmailStr validation)
+    "structlog>=23.2.0",            # logging
+    "colorlog>=6.9.0",              # logging
+    "rich>=13.9.0",                 # CLI colors and interactive
+    "prometheus-client>=0.19.0",    # metrics
+    "motor>=3.3.2",                 # base (Beanie)
+    "beanie>=1.23.6",               # base (Beanie)
+    "emails>=0.6",                  # email
+    "jinja2>=3.1.6",                # email
+    "httpx>=0.25.2",                # audit
+    "fastapi>=0.104.1",             # core.app_factory
+    "uvicorn[standard]>=0.24.0",    # core.app_factory
+    "email-validator>=2.0.0",       # config (EmailStr validation)
     "pandas>=2.3.3",
     "pwdlib[argon2,bcrypt]>=0.2.1",
     "pyjwt>=2.10.1",
@@ -33,7 +33,12 @@ dependencies = [
 
 [project.optional-dependencies]
 # 인증
-auth = ["pyjwt>=2.10.1", "pwdlib[argon2,bcrypt]>=0.2.1", "httpx-oauth>=0.16.1", "argon2-cffi>=23.1.0"]
+auth = [
+    "pyjwt>=2.10.1",
+    "pwdlib[argon2,bcrypt]>=0.2.1",
+    "httpx-oauth>=0.16.1",
+    "argon2-cffi>=23.1.0",
+]
 
 # 웹 (FastAPI) - 이미 core에 포함되어 있으므로 빈 배열
 web = []
@@ -45,7 +50,12 @@ database = ["duckdb>=1.1.0", "redis>=6.4.0"]
 dsl = ["RestrictedPython>=7.0", "pandas>=2.2.0", "numpy>=1.26.0"]
 
 # gRPC
-grpc = ["grpcio>=1.60.0", "grpcio-tools>=1.60.0", "protobuf>=6.33.1"]
+grpc = [
+    "grpcio>=1.60.0",
+    "grpcio-tools>=1.60.0",
+    "protobuf>=4.25.0,<5.0.0",
+    "googleapis-common-protos>=1.63.0",
+]
 
 # 클라이언트
 clients = ["aiohttp>=3.9.4"]
