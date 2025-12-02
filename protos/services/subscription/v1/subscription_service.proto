@@ -1,0 +1,201 @@
+syntax = "proto3";
+
+package subscription.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// Subscription Service - gRPC API
+// Used for quota checking, subscription management, and entitlement verification
+// Port: 50057
+service SubscriptionService {
+  // Check if user can perform action within quota
+  rpc CheckQuota(CheckQuotaRequest) returns (CheckQuotaResponse);
+
+  // Get user's subscription details
+  rpc GetSubscription(GetSubscriptionRequest) returns (GetSubscriptionResponse);
+
+  // Get user's entitlements (features and limits)
+  rpc GetEntitlements(GetEntitlementsRequest) returns (GetEntitlementsResponse);
+
+  // Get current usage for a specific metric
+  rpc GetUsage(GetUsageRequest) returns (GetUsageResponse);
+
+  // Get all quota statuses for a user
+  rpc GetAllQuotas(GetAllQuotasRequest) returns (GetAllQuotasResponse);
+
+  // Health check
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+// Request Messages
+
+// CheckQuotaRequest defines the request payload for CheckQuota
+message CheckQuotaRequest {
+  // User ID for authorization
+  string user_id = 1;
+  // Metric to check (api_calls, backtests, ai_chat_messages, ai_tokens, storage_bytes)
+  string metric = 2;
+  // Amount to check (default: 1)
+  int32 amount = 3;
+}
+
+// GetSubscriptionRequest defines the request payload for GetSubscription
+message GetSubscriptionRequest {
+  // User ID for authorization
+  string user_id = 1;
+}
+
+// GetEntitlementsRequest defines the request payload for GetEntitlements
+message GetEntitlementsRequest {
+  // User ID for authorization
+  string user_id = 1;
+}
+
+// GetUsageRequest defines the request payload for GetUsage
+message GetUsageRequest {
+  // User ID for authorization
+  string user_id = 1;
+  // Metric to get usage for
+  string metric = 2;
+  // Optional: specific date (YYYY-MM-DD, default: today)
+  optional string date = 3;
+}
+
+// GetAllQuotasRequest defines the request payload for GetAllQuotas
+message GetAllQuotasRequest {
+  // User ID for authorization
+  string user_id = 1;
+  // Optional: specific date (YYYY-MM-DD, default: today)
+  optional string date = 2;
+}
+
+// HealthCheckRequest defines the request payload for HealthCheck
+message HealthCheckRequest {}
+
+// Response Messages
+
+// CheckQuotaResponse defines the response payload for CheckQuota
+message CheckQuotaResponse {
+  // Whether the action is allowed
+  bool allowed = 1;
+  // Current usage for the metric
+  int64 current_usage = 2;
+  // Limit for the metric (0 = unlimited)
+  int64 limit = 3;
+  // Remaining quota (0 = unlimited)
+  int64 remaining = 4;
+  // Usage percentage (0-100+)
+  double percentage = 5;
+  // Quota status (allowed, warning, exceeded)
+  string status = 6;
+  // When quota resets
+  google.protobuf.Timestamp reset_at = 7;
+  // Optional message (e.g., reason for denial)
+  optional string message = 8;
+}
+
+// GetSubscriptionResponse defines the response payload for GetSubscription
+message GetSubscriptionResponse {
+  // Subscription ID
+  string id = 1;
+  // User ID
+  string user_id = 2;
+  // Tier (free, starter, professional, institutional)
+  string tier = 3;
+  // Status (active, cancelled, expired, suspended)
+  string status = 4;
+  // Billing cycle (monthly, yearly)
+  optional string billing_cycle = 5;
+  // Price paid
+  double price_paid = 6;
+  // Currency (USD, EUR, etc.)
+  string currency = 7;
+  // Subscription start date
+  google.protobuf.Timestamp started_at = 8;
+  // Subscription expiry date
+  optional google.protobuf.Timestamp expires_at = 9;
+  // Cancellation date
+  optional google.protobuf.Timestamp cancelled_at = 10;
+  // Stripe subscription ID
+  optional string stripe_subscription_id = 11;
+  // Stripe customer ID
+  optional string stripe_customer_id = 12;
+  // Payment method
+  optional string payment_method = 13;
+  // Created at
+  google.protobuf.Timestamp created_at = 14;
+  // Updated at
+  google.protobuf.Timestamp updated_at = 15;
+}
+
+// GetEntitlementsResponse defines the response payload for GetEntitlements
+message GetEntitlementsResponse {
+  // User ID
+  string user_id = 1;
+  // Tier name
+  string tier = 2;
+  // Feature access flags
+  map<string, bool> features = 3;
+  // Quota limits (0 = unlimited)
+  QuotaLimits limits = 4;
+}
+
+// QuotaLimits defines quota limits for all metrics
+message QuotaLimits {
+  // API calls per day (0 = unlimited)
+  int64 api_calls = 1;
+  // Backtests per day (0 = unlimited)
+  int64 backtests = 2;
+  // AI chat messages per day (0 = unlimited)
+  int64 ai_chat_messages = 3;
+  // AI tokens per day (0 = unlimited)
+  int64 ai_tokens = 4;
+  // Storage bytes (0 = unlimited)
+  int64 storage_bytes = 5;
+}
+
+// GetUsageResponse defines the response payload for GetUsage
+message GetUsageResponse {
+  // User ID
+  string user_id = 1;
+  // Usage date
+  string date = 2;
+  // Metric name
+  string metric = 3;
+  // Usage amount
+  int64 usage = 4;
+}
+
+// GetAllQuotasResponse defines the response payload for GetAllQuotas
+message GetAllQuotasResponse {
+  // User ID
+  string user_id = 1;
+  // Quota statuses for all metrics
+  repeated QuotaStatus quotas = 2;
+}
+
+// QuotaStatus defines quota status for a specific metric
+message QuotaStatus {
+  // Metric name
+  string metric = 1;
+  // Current usage
+  int64 current_usage = 2;
+  // Limit (0 = unlimited)
+  int64 limit = 3;
+  // Remaining quota (0 = unlimited)
+  int64 remaining = 4;
+  // Usage percentage (0-100+)
+  double percentage = 5;
+  // Quota status (allowed, warning, exceeded)
+  string status = 6;
+  // When quota resets
+  google.protobuf.Timestamp reset_at = 7;
+}
+
+// HealthCheckResponse defines the response payload for HealthCheck
+message HealthCheckResponse {
+  // Service status
+  string status = 1;
+  // Service version
+  string version = 2;
+}
