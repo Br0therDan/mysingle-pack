@@ -66,7 +66,7 @@ def execute(args: argparse.Namespace, config: ProtoConfig) -> int:
             LogLevel.WARNING,
         )
         log(
-            "서비스 디렉터리의 submodule에서는 'proto-cli version' 또는 'proto-cli validate'를 사용하세요.",
+            "서비스 디렉터리의 submodule에서는 'mysingle-proto version' 또는 'mysingle-proto validate'를 사용하세요.",
             LogLevel.INFO,
         )
         return 1

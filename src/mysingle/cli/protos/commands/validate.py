@@ -64,7 +64,7 @@ def buf_format_check(config: ProtoConfig, fix: bool = False) -> bool:
         except subprocess.CalledProcessError:
             log("❌ Format 검사 실패 (수정이 필요합니다)", LogLevel.ERROR)
             log(
-                f"자동 수정: {colorize('proto-cli validate --fix', Color.BRIGHT_YELLOW)}",
+                f"자동 수정: {colorize('mysingle-proto validate --fix', Color.BRIGHT_YELLOW)}",
                 LogLevel.INFO,
             )
             return False

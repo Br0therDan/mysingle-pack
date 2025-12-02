@@ -83,11 +83,18 @@ mysingle submodule sync      # 변경사항 PR 준비
 # 대화형 모드
 mysingle-proto
 
-# Proto 관리
-mysingle-proto init          # 환경 초기화
-mysingle-proto generate      # Python 스텁 생성
-mysingle-proto validate      # Proto 검증
-mysingle-proto status        # Proto 현황
+# Proto 코드 생성
+mysingle-proto generate      # Python 스텁 생성 (buf + protoc)
+
+# Proto 검증
+mysingle-proto validate                    # Lint + Format 검사
+mysingle-proto validate --breaking         # Breaking change 검사 포함
+mysingle-proto validate --breaking --against develop  # 특정 브랜치와 비교
+mysingle-proto validate --fix              # Format 자동 수정
+
+# 환경 관리
+mysingle-proto init          # 환경 초기화 (buf 설치 등)
+mysingle-proto status        # Proto 현황 확인
 ```
 
 **상세 문서**: [CLI 사용 가이드](src/mysingle/cli/README.md)
@@ -267,12 +274,15 @@ mysingle submodule update
 
 ### 워크플로우 설명
 
-| 워크플로우                 | 트리거                     | 동작                      |
-| -------------------------- | -------------------------- | ------------------------- |
-| `auto-release.yml`         | pyproject.toml 변경 (main) | GitHub Release + Git Tag  |
-| `validate-commits.yml`     | Pull Request               | Conventional Commits 검증 |
-| `validate-protos.yml`      | Proto 파일 변경            | Buf lint + format check   |
-| `auto-generate-protos.yml` | Proto 파일 변경            | Proto stub 자동 생성      |
+| 워크플로우                 | 트리거                     | 동작                                                    |
+| -------------------------- | -------------------------- | ------------------------------------------------------- |
+| `auto-release.yml`         | pyproject.toml 변경 (main) | GitHub Release + Git Tag                                |
+| `validate-commits.yml`     | Pull Request               | Conventional Commits 검증                               |
+| `proto-ci.yml`             | Proto 파일 변경            | **통합 워크플로우**: Validate → Generate → Auto-commit  |
+| `validate-protos.yml`      | Proto 파일 변경            | Proto 검증만 (lint + format + breaking)                 |
+| `auto-generate-protos.yml` | Proto 파일 변경            | Proto 생성 + 검증 + Auto-commit                         |
+
+**권장**: `proto-ci.yml` 사용 (validate + generate 통합)
 
 ---
 
@@ -285,9 +295,14 @@ cd mysingle-pack
 uv sync --all-extras
 ```
 
-### Proto 생성
+### Proto 관리
 ```bash
+# 스텁 생성
 uv run mysingle-proto generate
+
+# 검증 (CI/CD에서 사용)
+uv run mysingle-proto validate              # lint + format
+uv run mysingle-proto validate --breaking   # + breaking change 검사
 ```
 
 ### 테스트

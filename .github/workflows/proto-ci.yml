@@ -1,0 +1,101 @@
+name: Proto CI/CD
+
+on:
+    pull_request:
+        paths:
+            - "protos/**/*.proto"
+            - "protos/buf.yaml"
+            - "protos/buf.gen.yaml"
+    push:
+        branches:
+            - main
+            - develop
+        paths:
+            - "protos/**/*.proto"
+            - "protos/buf.yaml"
+            - "protos/buf.gen.yaml"
+
+jobs:
+    proto-validation-and-generation:
+        name: Validate & Generate Proto Stubs
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  fetch-depth: 0
+
+            - name: Setup Buf
+              uses: bufbuild/buf-setup-action@v1
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Install uv
+              uses: astral-sh/setup-uv@v5
+              with:
+                  enable-cache: true
+                  cache-dependency-glob: "uv.lock"
+
+            - name: Setup Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.12"
+
+            - name: Install dependencies
+              run: uv sync --frozen
+
+            # Validation Stage
+            - name: 🔍 Validate proto files (lint + format)
+              run: uv run mysingle-proto validate
+
+            - name: 🔍 Check for breaking changes (PR only)
+              if: github.event_name == 'pull_request'
+              run: uv run mysingle-proto validate --breaking --against ${{ github.base_ref }}
+              continue-on-error: true
+
+            # Generation Stage
+            - name: 🔨 Generate Python stubs
+              run: uv run mysingle-proto generate
+
+            # Verify Stage
+            - name: 📝 Check for uncommitted changes
+              id: git-check
+              run: |
+                  if ! git diff --exit-code src/mysingle/protos; then
+                    echo "changed=true" >> $GITHUB_OUTPUT
+                    echo "::warning::Proto stubs have been regenerated"
+                  fi
+
+            # Push Stage (main/develop only)
+            - name: 🚀 Commit and push generated stubs
+              if: steps.git-check.outputs.changed == 'true' && github.event_name == 'push'
+              run: |
+                  git config --local user.email "github-actions[bot]@users.noreply.github.com"
+                  git config --local user.name "github-actions[bot]"
+                  git add src/mysingle/protos
+                  git commit -m "chore: auto-generate proto stubs [skip ci]"
+                  git push
+
+            # Fail Stage (PR only)
+            - name: ❌ Fail if stubs are out of sync (PR only)
+              if: steps.git-check.outputs.changed == 'true' && github.event_name == 'pull_request'
+              run: |
+                  echo "::error::Proto stubs are out of sync with proto definitions"
+                  echo "::error::Please run 'uv run mysingle-proto generate' locally and commit the changes"
+                  exit 1
+
+            # Summary
+            - name: ✅ Proto CI/CD Summary
+              if: always()
+              run: |
+                  echo "### Proto CI/CD Results" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "- **Validation**: ✅ Passed" >> $GITHUB_STEP_SUMMARY
+                  echo "- **Generation**: ✅ Completed" >> $GITHUB_STEP_SUMMARY
+                  if [[ "${{ steps.git-check.outputs.changed }}" == "true" ]]; then
+                    echo "- **Stubs**: 🔄 Regenerated" >> $GITHUB_STEP_SUMMARY
+                  else
+                    echo "- **Stubs**: ✅ Up-to-date" >> $GITHUB_STEP_SUMMARY
+                  fi
