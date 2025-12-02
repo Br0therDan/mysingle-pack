@@ -1,6 +1,8 @@
-# MySingle Structured Logging Guide
+# Structured Logging Guide
 
 **Version:** 2.2.1 | **Module:** `mysingle.core.logging`
+
+> **📖 Core Module Overview:** [mysingle.core README](../../src/mysingle/core/README.md)
 
 Production-ready structured logging with context propagation and JSON output support.
 
@@ -8,7 +10,9 @@ Production-ready structured logging with context propagation and JSON output sup
 
 ## Overview
 
-MySingle provides an integrated logging system combining:
+MySingle provides an integrated logging system combining structlog and Python's logging module for production-grade observability.
+
+**For common patterns and environment configuration, see:** [Core README - Structured Logging](../../src/mysingle/core/README.md#3-structured-logging)
 
 | Feature                 | Technology  | Purpose                                  |
 | ----------------------- | ----------- | ---------------------------------------- |
@@ -16,13 +20,6 @@ MySingle provides an integrated logging system combining:
 | **Traditional Logging** | logging     | Console color output, file rotation      |
 | **Context Variables**   | contextvars | Correlation ID, User ID, Request ID      |
 | **Environment Support** | Auto-config | Development (color) vs Production (JSON) |
-
-### Key Benefits
-
-- **Observability:** Correlation IDs for distributed tracing
-- **Performance:** Async-safe context variables
-- **Flexibility:** Dual output (human-readable + JSON)
-- **Standards:** Follows 12-factor app logging principles
 
 ---
 

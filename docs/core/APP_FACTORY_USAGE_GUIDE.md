@@ -1,44 +1,31 @@
-# APP Factory 사용 가이드
+# App Factory Usage Guide
 
-FastAPI 애플리케이션 팩토리를 사용하여 표준화된 마이크로서비스를 생성하는 종합 가이드입니다.
-📊 **[MySingle 패키지 활용가이드](./MYSINGLE_PACK_USAGE_GUIDE.md)**
+**Version:** 2.2.1 | **Module:** `mysingle.core.app_factory`
 
-## 📋 목차
+> **📖 Core Module Overview:** [mysingle.core README](../../src/mysingle/core/README.md)
 
-1. [개요](#개요)
-2. [핵심 개념](#핵심-개념)
-3. [프로세스 플로우](#프로세스-플로우)
-4. [빠른 시작](#빠른-시작)
-5. [서비스 타입별 구현](#서비스-타입별-구현)
-6. [고급 설정](#고급-설정)
-7. [Best Practices](#best-practices)
-8. [트러블슈팅](#트러블슈팅)
+FastAPI application factory for standardized microservice creation.
 
 ---
 
-## 개요
+## Overview
 
-`mysingle.core.app_factory`는 MSA(Microservices Architecture) 환경에서 일관된 FastAPI 애플리케이션을 생성하기 위한 팩토리 패턴 구현체입니다.
+`mysingle.core.app_factory` implements the factory pattern for creating consistent FastAPI applications in the MySingle Quant ecosystem.
 
-### 주요 기능
+**For standard initialization pattern, see:** [Core README - Standard Service Initialization](../../src/mysingle/core/README.md#1-standard-service-initialization)
 
-- ✅ **표준화된 설정**: `ServiceConfig`를 통한 선언적 서비스 구성
-- ✅ **자동 미들웨어 구성**: CORS, Auth, Metrics, Audit 자동 설정
-- ✅ **환경별 분기**: Development/Production 자동 감지 및 최적화
-- ✅ **생명주기 관리**: Startup/Shutdown 이벤트 통합 관리
-- ✅ **IAM/Non-IAM 구분**: 서비스 타입에 따른 인증 전략 자동 적용
-- ✅ **관측성 내장**: Metrics, Health Check, Structured Logging 기본 제공
+### Supported Service Types
 
-### 지원하는 서비스 타입
+| Service Type      | Description            | Authentication       |
+| ----------------- | ---------------------- | -------------------- |
+| `IAM_SERVICE`     | Auth/authz service     | Direct JWT + OAuth2  |
+| `NON_IAM_SERVICE` | Business logic service | Kong Gateway headers |
 
-| 서비스 타입       | 설명                  | 인증 방식              | 사용 사례                    |
-| ----------------- | --------------------- | ---------------------- | ---------------------------- |
-| `IAM_SERVICE`     | 인증/인가 담당 서비스 | 직접 JWT 검증 + OAuth2 | 사용자 관리, 인증 서버       |
-| `NON_IAM_SERVICE` | 일반 비즈니스 서비스  | Gateway 헤더 기반      | Backtest, ML, Market Data 등 |
+**For detailed service type explanation, see:** [Core README - Service Types](../../src/mysingle/core/README.md#service-types)
 
 ---
 
-## 핵심 개념
+## Quick Start
 
 ### ServiceConfig
 

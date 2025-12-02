@@ -1,6 +1,8 @@
-# MySingle Audit Logging Guide
+# Audit Logging Guide
 
 **Version:** 2.2.1 | **Module:** `mysingle.core.audit`
+
+> **📖 Core Module Overview:** [mysingle.core README](../../src/mysingle/core/README.md)
 
 HTTP request/response audit logging with distributed tracing and compliance tracking.
 
@@ -8,7 +10,9 @@ HTTP request/response audit logging with distributed tracing and compliance trac
 
 ## Overview
 
-MySingle provides automated audit logging for all HTTP requests through the `AuditLoggingMiddleware`. This captures essential metadata for:
+Automated audit logging for all HTTP requests with MongoDB storage and distributed tracing support.
+
+**For common patterns and automatic setup, see:** [Core README - Observability Stack](../../src/mysingle/core/README.md#3-audit-logging)
 
 | Purpose           | Data Captured                            |
 | ----------------- | ---------------------------------------- |
@@ -16,15 +20,6 @@ MySingle provides automated audit logging for all HTTP requests through the `Aud
 | **Security**      | User agents, request paths, status codes |
 | **Performance**   | Latency, request/response sizes          |
 | **Observability** | Correlation IDs, trace IDs, request IDs  |
-
-### Key Features
-
-- **Automatic Capture:** Zero-code audit trail via middleware
-- **Distributed Tracing:** Correlation ID and trace ID propagation
-- **User Context:** Kong Gateway and AuthMiddleware integration
-- **Performance Metrics:** Request latency and payload sizes
-- **Structured Logging:** Integrated with MySingle logging system
-- **MongoDB Storage:** Beanie ODM for efficient querying
 
 ---
 

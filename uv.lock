@@ -1331,11 +1331,12 @@ wheels = [
 
 [[package]]
 name = "mysingle"
-version = "2.3.11"
+version = "2.3.12"
 source = { editable = "." }
 dependencies = [
     { name = "beanie" },
     { name = "colorlog" },
+    { name = "duckdb" },
     { name = "email-validator" },
     { name = "emails" },
     { name = "fastapi" },
@@ -1461,6 +1462,7 @@ requires-dist = [
     { name = "argon2-cffi", marker = "extra == 'auth'", specifier = ">=23.1.0" },
     { name = "beanie", specifier = ">=1.23.6" },
     { name = "colorlog", specifier = ">=6.9.0" },
+    { name = "duckdb", specifier = ">=1.4.1" },
     { name = "duckdb", marker = "extra == 'database'", specifier = ">=1.1.0" },
     { name = "email-validator", specifier = ">=2.0.0" },
     { name = "emails", specifier = ">=0.6" },

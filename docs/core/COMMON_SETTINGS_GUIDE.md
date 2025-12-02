@@ -1,51 +1,31 @@
-# CommonSettings 활용 가이드
+# CommonSettings Configuration Guide
 
-**Version:** 2.2.1 | **Updated:** 2025-12-02
+**Version:** 2.2.1 | **Module:** `mysingle.core.config`
 
-이 문서는 MySingle Package의 `CommonSettings`를 상속하여 각 서비스별 커스텀 설정을 구성하는 방법을 설명합니다.
+> **📖 Core Module Overview:** [mysingle.core README](../../src/mysingle/core/README.md)
 
----
-
-## 목차
-
-1. [개요](#개요)
-2. [기본 사용법](#기본-사용법)
-3. [환경변수 중복 설정 방지](#환경변수-중복-설정-방지)
-4. [서비스별 설정 예시](#서비스별-설정-예시)
-5. [환경변수 파일 구성](#환경변수-파일-구성)
-6. [주의사항](#주의사항)
-7. [베스트 프랙티스](#베스트-프랙티스)
+Service-specific configuration using CommonSettings inheritance pattern.
 
 ---
 
-## 개요
+## Overview
 
-`CommonSettings`는 MySingle Quant 마이크로서비스 생태계에서 공통으로 사용되는 설정을 제공합니다. 각 서비스는 이를 상속하여 서비스 고유의 설정을 추가할 수 있습니다.
+`CommonSettings` provides base configuration for all MySingle services. Services extend it to add domain-specific settings while inheriting standard infrastructure configuration.
 
-### CommonSettings에 포함된 주요 설정
-
-| 카테고리         | 환경변수                                          | 설명                     |
-| ---------------- | ------------------------------------------------- | ------------------------ |
-| 프로젝트 정보    | `PROJECT_NAME`, `ENVIRONMENT`, `DEBUG`            | 기본 프로젝트 정보       |
-| 데이터베이스     | `MONGODB_SERVER`, `MONGODB_USERNAME`, `REDIS_URL` | MongoDB, Redis 연결 정보 |
-| 인증             | `TOKEN_TRANSPORT_TYPE`, `HTTPONLY_COOKIES`        | JWT 및 쿠키 설정         |
-| API Gateway      | `USE_API_GATEWAY`, `API_GATEWAY_URL`              | Kong Gateway 설정        |
-| Kong JWT Secrets | `KONG_JWT_SECRET_*`                               | 서비스별 JWT 시크릿      |
-| SMTP             | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`             | 이메일 발송 설정         |
-| OAuth2           | `GOOGLE_CLIENT_ID`, `KAKAO_CLIENT_ID`             | OAuth2 제공자 설정       |
-| 캐시             | `USER_CACHE_TTL_SECONDS`, `USER_CACHE_KEY_PREFIX` | 사용자 캐시 설정         |
+**For complete environment variable reference, see:** [Core README - Environment Variables](../../src/mysingle/core/README.md#environment-variables)
 
 ---
 
-## 기본 사용법
+## Usage Pattern
 
-### 1. CommonSettings 상속
+## Usage Pattern
+
+### 1. Create Service-Specific Settings
 
 ```python
 # app/config.py
 from mysingle.core.config import CommonSettings
 from pydantic_settings import SettingsConfigDict
-
 
 class Settings(CommonSettings):
     """Strategy Service specific settings"""
@@ -57,38 +37,33 @@ class Settings(CommonSettings):
         extra="ignore",
     )
 
-    # 서비스 고유 설정 추가
+    # Service-specific settings only
     STRATEGY_EXECUTION_TIMEOUT: int = 300
     STRATEGY_MAX_WORKERS: int = 4
     STRATEGY_DATA_PATH: str = "./data/strategies"
 
-
-# 글로벌 인스턴스 생성
+# Create singleton
 settings = Settings()
 ```
 
-### 2. 애플리케이션에서 사용
+### 2. Use in Application
 
 ```python
 from app.config import settings
 
-# CommonSettings의 값 사용
+# Use inherited CommonSettings
 print(settings.ENVIRONMENT)
 print(settings.MONGODB_SERVER)
 
-# 서비스 고유 설정 사용
+# Use service-specific settings
 print(settings.STRATEGY_EXECUTION_TIMEOUT)
 ```
 
 ---
 
-## 환경변수 중복 설정 방지
+## Anti-Patterns
 
-### ⚠️ 중요: 환경변수 재정의 금지
-
-`CommonSettings`에 이미 정의된 환경변수를 서비스별 설정 클래스에서 **재정의하지 마세요**.
-
-#### ❌ 잘못된 예시
+### ❌ DO NOT Redefine CommonSettings Fields
 
 ```python
 class Settings(CommonSettings):

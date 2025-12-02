@@ -1,16 +1,18 @@
-# MySingle Metrics Module
+# Metrics Collection Guide
 
 **Version:** 2.2.1 | **Module:** `mysingle.core.metrics`
 
-Production-ready metrics collection with custom metrics support and structured logging.
+> **📖 Core Module Overview:** [mysingle.core README](../../src/mysingle/core/README.md)
+
+Production-ready metrics collection with custom metrics support and Prometheus integration.
 
 ---
 
 ## Overview
 
-The `mysingle.core.metrics` module provides comprehensive metrics collection for FastAPI services with support for standard HTTP metrics and service-specific custom metrics.
+Comprehensive metrics collection for FastAPI services with HTTP metrics and service-specific custom metrics.
 
-### Key Features
+**For common patterns and basic setup, see:** [Core README - Custom Metrics](../../src/mysingle/core/README.md#4-custom-metrics)
 
 | Feature                    | Description                                               |
 | -------------------------- | --------------------------------------------------------- |
@@ -18,22 +20,7 @@ The `mysingle.core.metrics` module provides comprehensive metrics collection for
 | **Custom Metrics**         | Counters, gauges, histograms for service-specific metrics |
 | **Prometheus Compatible**  | Native Prometheus exposition format support               |
 | **Performance Optimized**  | Efficient data structures, background cleanup             |
-| **Structured Logging**     | Production-ready logging with correlation IDs             |
 | **Percentile Calculation** | P50, P90, P95, P99 response time percentiles              |
-| **Route Normalization**    | Intelligent path pattern extraction (UUIDs, IDs)          |
-| **TTL-based Cleanup**      | Automatic removal of old metrics data                     |
-
----
-
-## Installation
-
-```bash
-# Install with core extras
-pip install mysingle[core]
-
-# Or with full package
-pip install mysingle[full]
-```
 
 ---
 

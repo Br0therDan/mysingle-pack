@@ -55,11 +55,17 @@ class CommonSettings(BaseSettings):
     ]
 
     # DATABASE SETTINGS
+    # MongoDB
     MONGODB_SERVER: str = "localhost:27017"
     MONGODB_USERNAME: str = "root"
     MONGODB_PASSWORD: str = "example"
-    REDIS_URL: str = "redis://localhost:6379/0"
-    REDIS_PASSWORD: str = "change-this-redis-password"
+
+    # Redis (Standard format: redis://[:password@]host:port/db)
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+    REDIS_DB: int = 0  # Default DB for user cache
+    REDIS_PASSWORD: str | None = None  # Set to enable AUTH
+    REDIS_URL: str = "redis://localhost:6379/0"  # Override for custom URL
 
     # USER CACHE SETTINGS
     USER_CACHE_TTL_SECONDS: int = 300

@@ -10,7 +10,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 
 from mysingle.auth.exception_handlers import register_auth_exception_handlers
-from mysingle.auth.init_data import create_first_super_admin, create_test_users
 from mysingle.core.config import settings
 from mysingle.core.db import init_mongo
 from mysingle.core.health import create_health_router
@@ -100,8 +99,14 @@ def create_lifespan(
                     # Create first super admin and test users (IAM service only)
                     if service_config.service_type == ServiceType.IAM_SERVICE:
                         logger.info(
-                            f"� IAM Service: Creating super admin and test users for {service_config.service_name}"
+                            f"👤 IAM Service: Creating super admin and test users for {service_config.service_name}"
                         )
+                        # Import lazily to avoid circular dependency
+                        from mysingle.auth.init_data import (
+                            create_first_super_admin,
+                            create_test_users,
+                        )
+
                         await create_first_super_admin()
 
                         # Test users only in development/local environments

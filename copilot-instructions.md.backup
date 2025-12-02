@@ -1,0 +1,337 @@
+# MySingle Service Development Guidelines
+
+**For:** MySingle Quant Microservices
+**Version:** 2.2.1
+
+Essential standards for MySingle-based services. For detailed documentation, see [mysingle-pack](https://github.com/Br0therDan/mysingle-pack).
+
+---
+
+## 1. Structured Logging
+
+**Required:** Use `mysingle.core.logging.get_structured_logger()` - never use `print()` or standard `logging`.
+
+```python
+from mysingle.core.logging import get_structured_logger
+logger = get_structured_logger(__name__)
+
+# Good
+logger.info("Processing order", order_id=order_id, user_id=user.id)
+logger.error("Validation failed", error=str(e), request_id=request_id)
+
+# Bad - Don't use
+print("Processing order")  # ❌
+logging.info("Order processed")  # ❌
+```
+
+**Context binding:** `logger.bind(correlation_id=correlation_id)` for request tracing.
+
+---
+
+## 2. Audit Logging
+
+**Auto-enabled:** All HTTP requests/responses logged to MongoDB when `ENVIRONMENT=production`.
+
+**Skip audit for specific endpoints:**
+
+```python
+from mysingle.core.audit import AuditConfig
+@app.get("/health", tags=["health"])
+async def health():
+    return {"status": "ok"}
+# Health/metrics endpoints excluded by default
+```
+
+**Custom audit data:**
+
+```python
+request.state.audit_metadata = {"action": "order_placed", "amount": 1000}
+```
+
+---
+
+## 3. MySingle Package CI/CD
+
+**Update workflow:**
+
+```bash
+# 1. Update submodule to latest
+cd packages/mysingle
+git pull origin main
+
+# 2. Return to service root
+cd ../..
+git add packages/mysingle
+git commit -m "chore: update mysingle to v2.2.1"
+git push
+```
+
+**Version check:** `mysingle version auto` in mysingle directory shows current version.
+
+---
+
+## 4. Proto File CI/CD
+
+### **Server-Side (gRPC 제공 서비스)**
+
+Your service owns the proto file (e.g., `strategy-service` owns `strategy_service.proto`).
+
+**Update flow:**
+
+```bash
+# 1. Edit proto in mysingle submodule
+cd packages/mysingle
+vim protos/services/strategy/v1/strategy_service.proto
+
+# 2. Validate and generate
+mysingle-proto validate
+mysingle-proto generate
+
+# 3. Submit PR to mysingle-pack
+mysingle submodule sync
+# Follow prompts to create PR
+
+# 4. After PR merge, update your service
+git pull origin main
+cd packages/mysingle
+git pull origin main
+cd ../..
+git add packages/mysingle
+git commit -m "chore: update mysingle with new strategy proto"
+```
+
+### **Consumer-Side (gRPC 호출 서비스)**
+
+You need changes to another service's proto (e.g., `backtest-service` needs `strategy_service.proto` update).
+
+**Request flow:**
+
+1. **Create GitHub Issue** in [mysingle-pack](https://github.com/Br0therDan/mysingle-pack/issues)
+
+   - Title: `[Proto] Add GetStrategyDetails RPC to strategy_service`
+   - Describe: RPC signature, request/response messages, use case
+   - Tag: `proto`, `strategy-service`
+
+2. **Or submit PR directly:**
+
+```bash
+cd packages/mysingle
+git checkout -b proto/strategy-get-details
+vim protos/services/strategy/v1/strategy_service.proto
+mysingle-proto validate
+git add . && git commit -m "feat(proto): add GetStrategyDetails RPC"
+git push origin proto/strategy-get-details
+# Open PR on GitHub
+```
+
+3. **After approval:** Update both strategy-service and your service to use new proto.
+
+---
+
+## 5. API Authentication
+
+### **Kong Gateway Integration (Standard)**
+
+All services receive authenticated user via `Request.state.user`.
+
+```python
+from mysingle.auth import get_current_active_verified_user
+from fastapi import Request
+
+@router.get("/strategies")
+async def list_strategies(request: Request):
+    user = get_current_active_verified_user(request)  # Raises 401 if unauthenticated
+    return await get_user_strategies(str(user.id))
+```
+
+### **User-Scoped Endpoints**
+
+```python
+# ✅ Good - Explicit user access
+@router.get("/strategies/{strategy_id}")
+async def get_strategy(strategy_id: str, request: Request):
+    user = get_current_active_verified_user(request)
+    strategy = await Strategy.get(strategy_id)
+    if strategy.user_id != user.id:
+        raise HTTPException(403, "Not authorized")
+    return strategy
+
+# ❌ Bad - Missing ownership check
+@router.get("/strategies/{strategy_id}")
+async def get_strategy(strategy_id: str):
+    return await Strategy.get(strategy_id)  # Anyone can access!
+```
+
+### **Optional Authentication**
+
+```python
+from mysingle.auth import get_current_user_optional
+
+@router.get("/public/strategies")
+async def public_strategies(request: Request):
+    user = get_current_user_optional(request)  # None if not authenticated
+    if user:
+        # Show personalized results
+        return await get_recommended_strategies(user.id)
+    return await get_public_strategies()
+```
+
+### **Service-to-Service (gRPC)**
+
+```python
+from mysingle.clients import BaseGrpcClient
+
+class StrategyClient(BaseGrpcClient):
+    def __init__(self, user_id: str):
+        super().__init__("strategy-service", 50051, user_id=user_id)
+        self.stub = strategy_pb2_grpc.StrategyServiceStub(self.channel)
+
+# Auto-includes metadata: user-id, correlation-id
+async with StrategyClient(user_id=user.id) as client:
+    result = await client.stub.GetStrategy(request)
+```
+
+---
+
+## 6. Service Types
+
+**IAM_SERVICE:** Issues and validates JWT tokens (only `iam-service`).
+**NON_IAM_SERVICE:** All other services - receive `X-User-Id` from Kong Gateway.
+
+```python
+from mysingle.core import ServiceType, create_service_config
+
+# Most services
+config = create_service_config(
+    service_name="strategy-service",
+    service_type=ServiceType.NON_IAM_SERVICE,  # ← Standard
+)
+```
+
+**Never** use `ServiceType.IAM_SERVICE` unless building the IAM service.
+
+---
+
+## 7. Database Access Patterns
+
+### **MongoDB (Document Storage)**
+
+```python
+from mysingle.core.base import BaseTimeDocWithUserId
+
+class Strategy(BaseTimeDocWithUserId):
+    name: str
+    code: str
+
+    class Settings:
+        name = "strategies"
+
+# ✅ Always filter by user_id
+strategies = await Strategy.find(Strategy.user_id == user.id).to_list()
+
+# ❌ Never query all documents
+strategies = await Strategy.find_all().to_list()  # Security risk!
+```
+
+### **Redis (Caching)**
+
+```python
+from mysingle.database import get_redis_client
+
+redis = await get_redis_client(db=3)  # DB 3 for strategies
+await redis.setex(f"strategy:{user.id}:{strategy_id}", 300, json.dumps(data))
+```
+
+**DB Allocation:**
+
+- 0: IAM (user cache)
+- 1: Market Data
+- 2: Indicators
+- 3: Strategies
+- 4: Backtests
+
+---
+
+## 8. Error Handling
+
+```python
+from fastapi import HTTPException
+
+# ✅ Good - Specific errors
+if not strategy:
+    raise HTTPException(404, detail="Strategy not found")
+if strategy.user_id != user.id:
+    raise HTTPException(403, detail="Access denied")
+
+# ❌ Bad - Generic errors
+if not strategy:
+    raise Exception("Error")  # Don't use generic Exception
+```
+
+---
+
+## 9. Testing Standards
+
+**Required:** Use auth bypass in tests only.
+
+```python
+# tests/conftest.py
+import os
+os.environ["MYSINGLE_AUTH_BYPASS"] = "true"
+os.environ["ENVIRONMENT"] = "development"
+```
+
+**Test structure:**
+
+```python
+import pytest
+from httpx import AsyncClient
+
+@pytest.mark.asyncio
+async def test_list_strategies(client: AsyncClient):
+    response = await client.get("/api/v1/strategies")
+    assert response.status_code == 200
+```
+
+Run: `./run_tests.sh` or `pytest tests/ -v`
+
+---
+
+## 10. Common Anti-Patterns
+
+**❌ Don't:**
+
+- Use `print()` instead of structured logging
+- Skip user ownership validation in endpoints
+- Hard-code service URLs (use environment variables)
+- Create `User` or `OAuthAccount` models in non-IAM services
+- Use generic `Exception` for HTTP errors
+- Query databases without user filtering
+- Expose internal errors to clients
+
+**✅ Do:**
+
+- Use `get_current_active_verified_user(request)` in all protected endpoints
+- Propagate `user_id` and `correlation_id` in all service calls
+- Use `mysingle.clients.BaseGrpcClient` for gRPC communication
+- Follow RESTful naming: `/api/v1/{resource}/{id}`
+- Return appropriate HTTP status codes (200, 201, 400, 401, 403, 404, 500)
+
+---
+
+## Quick Reference
+
+| Task                | Command/Code                                              |
+| ------------------- | --------------------------------------------------------- |
+| **Get logger**      | `from mysingle.core.logging import get_structured_logger` |
+| **Get user**        | `user = get_current_active_verified_user(request)`        |
+| **Update mysingle** | `cd packages/mysingle && git pull origin main`            |
+| **Validate proto**  | `mysingle-proto validate`                                 |
+| **Generate proto**  | `mysingle-proto generate`                                 |
+| **Run tests**       | `./run_tests.sh`                                          |
+| **Get Redis**       | `await get_redis_client(db=N)`                            |
+| **MongoDB filter**  | `Model.find(Model.user_id == user.id)`                    |
+
+---
+
+**Full Documentation:** https://github.com/Br0therDan/mysingle-pack

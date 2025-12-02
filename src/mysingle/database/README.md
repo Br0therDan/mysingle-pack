@@ -2,31 +2,37 @@
 
 **Version:** 2.2.1 | **Module:** `mysingle.database`
 
-High-performance database utilities for DuckDB with caching and structured logging.
+High-performance database and caching utilities for MySingle Quant services.
 
 ---
 
 ## Overview
 
-The `mysingle.database` module provides standardized database management for MySingle Quant services, focusing on DuckDB for analytical workloads and caching.
+The `mysingle.database` module provides standardized database and caching management for MySingle Quant services:
+
+- **DuckDB**: Analytical workloads and time-series data
+- **Redis**: High-performance caching and data sharing across services
 
 ### Key Features
 
-| Feature                | Description                                      |
-| ---------------------- | ------------------------------------------------ |
-| **DuckDB Management**  | Base class for DuckDB connections and operations |
-| **Built-in Caching**   | TTL-based caching with automatic expiration      |
-| **Context Management** | Safe resource handling with context managers     |
-| **Fallback Support**   | Automatic fallback to in-memory DB on lock       |
-| **Structured Logging** | Production-ready logging with correlation IDs    |
-| **JSON Serialization** | Automatic serialization for Pydantic models      |
+| Feature                   | Description                                      |
+| ------------------------- | ------------------------------------------------ |
+| **DuckDB Management**     | Base class for DuckDB connections and operations |
+| **Redis Client Pool**     | Connection pooling and multi-DB support          |
+| **Generic Redis Cache**   | Base cache class for service-specific caching    |
+| **Built-in TTL Caching**  | Automatic expiration with configurable TTL       |
+| **Context Management**    | Safe resource handling with context managers     |
+| **Fallback Support**      | Automatic fallback for locked resources          |
+| **Structured Logging**    | Production-ready logging with correlation IDs    |
+| **JSON Serialization**    | Automatic serialization for Pydantic models      |
+| **Multi-Service Sharing** | Share cache across microservices via Redis       |
 
 ---
 
 ## Installation
 
 ```bash
-# Install with database extras
+# Install with database extras (includes Redis)
 pip install mysingle[database]
 
 # Or with common dependencies
@@ -37,7 +43,7 @@ pip install mysingle[common-grpc]
 
 ## Quick Start
 
-### Basic Usage
+### DuckDB Usage
 
 ```python
 from mysingle.database import BaseDuckDBManager
@@ -57,12 +63,6 @@ class MyDataManager(BaseDuckDBManager):
             )
         """)
 
-        # Create indexes
-        self.duckdb_conn.execute("""
-            CREATE INDEX IF NOT EXISTS idx_analytics_user_id
-            ON analytics(user_id)
-        """)
-
 # Usage with context manager (recommended)
 with MyDataManager(db_path="data/analytics.duckdb") as db:
     db.duckdb_conn.execute("""
@@ -71,20 +71,101 @@ with MyDataManager(db_path="data/analytics.duckdb") as db:
     """, [record_id, user_id, "strategy_created", json.dumps(data), now])
 
     results = db.duckdb_conn.execute("SELECT * FROM analytics").fetchall()
+```
 
-# Or manual connection management
-db = MyDataManager(db_path="data/analytics.duckdb")
-db.connect()
-try:
-    # Your database operations
-    pass
-finally:
-    db.close()
+### Redis Usage
+
+#### Standard Redis Client
+
+```python
+from mysingle.database import get_redis_client
+
+# Get Redis client for specific DB
+async def cache_market_data():
+    # Market data cache (DB 1)
+    redis = await get_redis_client(db=1)
+    if redis:
+        await redis.set("ticker:AAPL:price", "150.0", ex=60)
+        price = await redis.get("ticker:AAPL:price")
+
+# User cache (DB 0 - default)
+async def cache_user_data():
+    redis = await get_redis_client(db=0)
+    if redis:
+        await redis.setex("user:123", 300, user_json)
+```
+
+#### Generic Redis Cache
+
+```python
+from mysingle.database import BaseRedisCache
+
+class MarketDataCache(BaseRedisCache[dict]):
+    """Market-specific cache"""
+
+    def __init__(self):
+        super().__init__(
+            key_prefix="market",
+            default_ttl=60,
+            redis_db=1,  # Dedicated DB for market data
+        )
+
+# Usage
+cache = MarketDataCache()
+await cache.set("AAPL:price", {"price": 150.0, "volume": 1000000})
+data = await cache.get("AAPL:price")
+await cache.delete("AAPL:price")
+```
+
+#### Custom Cache Implementation
+
+```python
+from mysingle.database import BaseRedisCache
+from pydantic import BaseModel
+
+class Indicator(BaseModel):
+    symbol: str
+    indicator_type: str
+    value: float
+    timestamp: str
+
+class IndicatorCache(BaseRedisCache[Indicator]):
+    """Indicator-specific cache with type safety"""
+
+    def __init__(self):
+        super().__init__(
+            key_prefix="indicator",
+            default_ttl=120,
+            redis_db=2,  # Dedicated DB for indicators
+            use_json=True,  # JSON serialization
+        )
+
+    async def get_rsi(self, symbol: str) -> Optional[float]:
+        """Get RSI indicator for symbol"""
+        data = await self.get(f"RSI:{symbol}")
+        return data["value"] if data else None
+
+    async def set_rsi(self, symbol: str, value: float) -> bool:
+        """Set RSI indicator"""
+        indicator = {
+            "symbol": symbol,
+            "indicator_type": "RSI",
+            "value": value,
+            "timestamp": str(datetime.now(UTC))
+        }
+        return await self.set(f"RSI:{symbol}", indicator, ttl=60)
+
+# Usage
+cache = IndicatorCache()
+await cache.set_rsi("AAPL", 65.5)
+rsi_value = await cache.get_rsi("AAPL")
 ```
 
 ---
 
 ## Architecture
+
+### DuckDB Architecture
 
 ```mermaid
 flowchart TB
@@ -121,6 +202,52 @@ flowchart TB
     style J fill:#9C27B0,color:#fff
 ```
 
+### Redis Architecture
+
+```mermaid
+flowchart TB
+    subgraph Services["Microservices"]
+        S1[Market Data Service]
+        S2[Indicator Service]
+        S3[Strategy Service]
+        S4[IAM Service]
+    end
+
+    subgraph ClientLayer["Redis Client Layer"]
+        S1 --> RC1[Redis Client]
+        S2 --> RC2[Redis Client]
+        S3 --> RC3[Redis Client]
+        S4 --> RC4[Redis Client]
+    end
+
+    subgraph CacheLayer["Cache Abstractions"]
+        RC1 --> MC[MarketDataCache]
+        RC2 --> IC[IndicatorCache]
+        RC3 --> SC[StrategyCache]
+        RC4 --> UC[UserCache]
+    end
+
+    subgraph RedisServer["Redis Server"]
+        MC --> DB1[(DB 1: Market Data)]
+        IC --> DB2[(DB 2: Indicators)]
+        SC --> DB3[(DB 3: Strategies)]
+        UC --> DB0[(DB 0: Users)]
+    end
+
+    subgraph ConnectionPool["Connection Pool"]
+        DB0 -.-> CP[Shared Pool]
+        DB1 -.-> CP
+        DB2 -.-> CP
+        DB3 -.-> CP
+    end
+
+    style MC fill:#FF5722,color:#fff
+    style IC fill:#3F51B5,color:#fff
+    style SC fill:#009688,color:#fff
+    style UC fill:#9C27B0,color:#fff
+    style CP fill:#FFC107,color:#000
+```
+
 ---
 
 ## Core Components
@@ -148,11 +275,121 @@ Base class for all DuckDB operations with built-in caching and connection manage
 | `db_path`     | `str`                      | Path to database file      |
 | `connection`  | `DuckDBPyConnection\|None` | Raw connection object      |
 
+### Redis Components
+
+#### RedisConfig
+
+Configuration class for Redis connections with connection pooling support.
+
+```python
+from mysingle.database import RedisConfig
+
+# From URL
+config = RedisConfig.from_url("redis://:password@localhost:6379/1")
+
+# Manual configuration
+config = RedisConfig(
+    host="redis-server.example.com",
+    port=6379,
+    db=1,
+    password="secure-password",
+    max_connections=50,
+    socket_timeout=5.0,
+)
+```
+
+#### RedisClientManager
+
+Manages Redis connection pools and provides DB-specific clients.
+
+```python
+from mysingle.database import RedisClientManager, RedisConfig
+
+config = RedisConfig(host="localhost", port=6379, password="secret")
+manager = RedisClientManager(config)
+
+# Get client for specific DB
+async with manager:
+    client = await manager.get_client(db=1)
+    if client:
+        await client.set("key", "value")
+
+    # Health check
+    is_healthy = await manager.health_check(db=1)
+```
+
+#### BaseRedisCache
+
+Generic Redis cache base class for type-safe caching with TTL.
+
+**Key Methods:**
+
+| Method             | Description                |
+| ------------------ | -------------------------- |
+| `get(key)`         | Retrieve cached value      |
+| `set(key, val)`    | Store value with TTL       |
+| `delete(key)`      | Remove cached value        |
+| `exists(key)`      | Check if key exists        |
+| `expire(key, ttl)` | Update TTL                 |
+| `clear_all()`      | Clear all keys with prefix |
+| `health_check()`   | Check Redis connection     |
+
+**Properties:**
+
+| Property      | Type   | Description                       |
+| ------------- | ------ | --------------------------------- |
+| `key_prefix`  | `str`  | Cache key prefix (e.g., "market") |
+| `default_ttl` | `int`  | Default TTL in seconds            |
+| `redis_db`    | `int`  | Redis DB number (0-15)            |
+| `use_json`    | `bool` | Use JSON (True) or Pickle (False) |
+
 ---
 
-## Usage Patterns
+## Configuration
 
-### 1. Custom Manager Implementation
+### Environment Variables
+
+Configure Redis in your service's `.env` file:
+
+```bash
+# Redis Connection
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_DB=0              # Default DB for user cache
+REDIS_PASSWORD=         # Optional: Set for AUTH
+
+# Or use URL (takes precedence)
+REDIS_URL=redis://localhost:6379/0
+
+# User Cache Settings (for mysingle.auth)
+USER_CACHE_KEY_PREFIX=user
+USER_CACHE_TTL_SECONDS=300
+```
+
+### Service-Specific Redis Configuration
+
+Each service can use dedicated Redis DBs for different purposes:
+
+| Service             | DB  | Purpose          | Key Prefix  | TTL (sec) |
+| ------------------- | --- | ---------------- | ----------- | --------- |
+| IAM Service         | 0   | User cache       | `user`      | 300       |
+| Market Data Service | 1   | Price data       | `market`    | 60        |
+| Indicator Service   | 2   | Indicators       | `indicator` | 120       |
+| Strategy Service    | 3   | Strategy cache   | `strategy`  | 600       |
+| Backtest Service    | 4   | Backtest results | `backtest`  | 3600      |
+
+### Database Path (DuckDB)
+
+```python
+# Production: File-based
+db = MyDataManager(db_path="/data/analytics/prod.duckdb")
+
+# Development: Local file
+db = MyDataManager(db_path="./dev_data/analytics.duckdb")
+
+# Testing: In-memory (explicit)
+db = MyDataManager(db_path=":memory:")
+```
 
 ```python
 from datetime import UTC, datetime
@@ -573,7 +810,9 @@ All database operations emit structured logs following the MySingle logging guid
 
 ## Best Practices
 
-### ✅ DO
+### DuckDB Best Practices
+
+#### ✅ DO
 
 ```python
 # Use context managers for automatic cleanup
@@ -600,7 +839,7 @@ self.duckdb_conn.execute("""
 """)
 ```
 
-### ❌ DON'T
+#### ❌ DON'T
 
 ```python
 # Don't forget to close connections
@@ -621,6 +860,113 @@ def my_method(self):
 
 # Don't use hardcoded paths
 db = MyDataManager(db_path="/hardcoded/path.duckdb")  # Use config/env vars
+```
+
+### Redis Best Practices
+
+#### ✅ DO
+
+```python
+# Use dedicated DBs for different service types
+market_cache = MarketDataCache()  # Uses DB 1
+indicator_cache = IndicatorCache()  # Uses DB 2
+
+# Check Redis availability before operations
+redis = await get_redis_client(db=1)
+if redis:
+    await redis.set("key", "value")
+else:
+    logger.warning("Redis unavailable - using fallback")
+
+# Use TTL for all cached data
+await cache.set("key", data, ttl=300)  # 5 minutes
+
+# Use clear key naming conventions
+await redis.set(f"{service}:{entity}:{id}", value)
+# Example: "market:ticker:AAPL", "indicator:RSI:GOOGL"
+
+# Handle connection errors gracefully
+try:
+    result = await cache.get("key")
+except Exception as e:
+    logger.error(f"Redis error: {e}")
+    result = None  # Fallback to direct fetch
+
+# Use pipelines for batch operations
+pipe = redis.pipeline()
+for item in items:
+    pipe.set(f"item:{item.id}", item.value)
+await pipe.execute()
+
+# Close connections properly
+async with get_redis_client(db=1) as redis:
+    await redis.set("key", "value")
+# Auto-closed
+```
+
+#### ❌ DON'T
+
+```python
+# Don't use DB 0 for service-specific data (reserved for IAM)
+redis = await get_redis_client(db=0)  # Only for user auth cache!
+
+# Don't forget TTL on temporary data
+await redis.set("temp_data", value)  # Will never expire!
+
+# Don't ignore None returns (Redis unavailable)
+redis = await get_redis_client(db=1)
+await redis.set("key", "value")  # Crashes if redis is None!
+
+# Don't use generic keys without prefixes
+await redis.set("data", value)  # Collision risk!
+
+# Don't serialize manually (use BaseRedisCache)
+import json
+await redis.set("key", json.dumps(data))  # Use cache.set() instead
+
+# Don't share Redis client instances across async contexts
+self.redis = await get_redis_client(db=1)  # Risk of connection issues
+# Always call get_redis_client() in each async function
+
+# Don't perform individual operations in loops
+for item in items:
+    await redis.set(f"item:{item.id}", item.value)  # Use pipeline!
+```
+
+#### Key Naming Conventions
+
+```python
+# Service-level pattern: {service}:{entity}:{identifier}
+"market:ticker:AAPL"
+"market:ohlcv:GOOGL:1h"
+"indicator:RSI:AAPL:14"
+"strategy:momentum:result:123"
+
+# User-specific pattern: {service}:user:{user_id}:{entity}
+"iam:user:123:profile"
+"market:user:456:watchlist"
+
+# Temporary data: {service}:temp:{identifier}
+"market:temp:snapshot:20241202"
+```
+
+#### TTL Strategy
+
+```python
+# Real-time data (30s - 1min)
+await cache.set("market:ticker:AAPL", price_data, ttl=60)
+
+# Calculated indicators (2-5min)
+await cache.set("indicator:RSI:AAPL", rsi_data, ttl=300)
+
+# Strategy results (5-10min)
+await cache.set("strategy:result:123", result, ttl=600)
+
+# User sessions (30min - 1hr)
+await cache.set("iam:user:123:session", session, ttl=3600)
+
+# Configuration (1-24hrs)
+await cache.set("config:strategy:456", config, ttl=86400)
 ```
 
 ### Connection Management
@@ -765,7 +1111,9 @@ class AnalyticsService:
 
 ## Troubleshooting
 
-### Issue: Database Locked
+### DuckDB Issues
+
+#### Issue: Database Locked
 
 **Symptom:** `database is locked` error
 
@@ -775,7 +1123,7 @@ class AnalyticsService:
 # WARNING: Falling back to in-memory database (reason: file_locked)
 ```
 
-### Issue: Cache Not Working
+#### Issue: Cache Not Working
 
 **Symptom:** `get_cache_data()` always returns None
 
@@ -797,7 +1145,7 @@ result = db.duckdb_conn.execute("""
 print("Tables:", result)
 ```
 
-### Issue: JSON Serialization Error
+#### Issue: JSON Serialization Error
 
 **Symptom:** `TypeError: Object of type X is not JSON serializable`
 
@@ -809,6 +1157,169 @@ data = {"datetime": datetime.now(), "decimal": Decimal("10.5")}
 # After
 serializable = db._make_json_serializable(data)
 # Result: {"datetime": "2024-12-02T10:30:45.123Z", "decimal": 10.5}
+```
+
+### Redis Issues
+
+#### Issue: Redis Returns None
+
+**Symptom:** `get_redis_client()` returns None
+
+**Possible Causes:**
+1. Redis server not running
+2. Connection refused (wrong host/port)
+3. Authentication failed (wrong password)
+4. Network timeout
+
+**Debug:**
+```python
+# Check Redis connection manually
+from mysingle.database import get_redis_client
+
+redis = await get_redis_client(db=1)
+if redis is None:
+    print("Redis unavailable - check REDIS_HOST, REDIS_PORT, REDIS_PASSWORD")
+else:
+    # Test ping
+    try:
+        await redis.ping()
+        print("Redis connection OK")
+    except Exception as e:
+        print(f"Redis ping failed: {e}")
+```
+
+**Solution:**
+```python
+# Verify environment variables
+echo $REDIS_HOST      # Should be localhost or redis service
+echo $REDIS_PORT      # Should be 6379 (default)
+echo $REDIS_PASSWORD  # Check if required
+
+# Test Redis connection
+redis-cli -h $REDIS_HOST -p $REDIS_PORT ping
+```
+
+#### Issue: Cache Always Returns None
+
+**Symptom:** `cache.get()` always returns None even after `cache.set()`
+
+**Possible Causes:**
+1. Wrong Redis DB - check `redis_db` parameter
+2. TTL too short - data expired immediately
+3. Serialization error - check logs
+4. Key mismatch - verify key prefix
+
+**Debug:**
+```python
+# Check what's in Redis
+redis = await get_redis_client(db=1)
+keys = await redis.keys("*")
+print(f"Keys in DB 1: {keys}")
+
+# Check specific key
+value = await redis.get("market:ticker:AAPL")
+print(f"Raw value: {value}")
+
+# Check TTL
+ttl = await redis.ttl("market:ticker:AAPL")
+print(f"TTL remaining: {ttl} seconds")
+```
+
+#### Issue: Connection Pool Exhausted
+
+**Symptom:** `Too many open connections` or timeouts
+
+**Cause:** Not properly closing Redis connections
+
+**Solution:**
+```python
+# Bad: Creates new connection each time
+async def bad_pattern():
+    redis = await get_redis_client(db=1)
+    await redis.set("key", "value")
+    # Connection not closed!
+
+# Good: Reuses connection pool
+async def good_pattern():
+    redis = await get_redis_client(db=1)
+    if redis:
+        await redis.set("key", "value")
+        # Connection returned to pool automatically
+
+# Best: Use BaseRedisCache
+cache = MarketDataCache()
+await cache.set("ticker:AAPL", data)  # Handles connection internally
+```
+
+#### Issue: Data Not Shared Between Services
+
+**Symptom:** Service A writes data, Service B can't read it
+
+**Possible Causes:**
+1. Different Redis DBs - check `redis_db` parameter
+2. Different key prefixes - verify key names
+3. Different Redis instances - check REDIS_HOST
+
+**Debug:**
+```python
+# Service A (Market Data)
+redis = await get_redis_client(db=1)  # Must use same DB
+await redis.set("market:ticker:AAPL", "150.25")
+
+# Service B (Indicator)
+redis = await get_redis_client(db=1)  # Must match DB 1
+value = await redis.get("market:ticker:AAPL")  # Must match exact key
+```
+
+**Solution:** Use standardized DB allocation (see Configuration table)
+
+#### Issue: Serialization Error
+
+**Symptom:** `pickle.PicklingError` or `json.JSONDecodeError`
+
+**Solution:**
+```python
+# For JSON-serializable data, use use_json=True
+class MyCache(BaseRedisCache[dict]):
+    def __init__(self):
+        super().__init__(
+            key_prefix="my_data",
+            use_json=True,  # Use JSON instead of pickle
+        )
+
+# For complex objects, ensure they're serializable
+from pydantic import BaseModel
+
+class MarketData(BaseModel):
+    symbol: str
+    price: float
+
+# BaseRedisCache handles Pydantic serialization automatically
+await cache.set("AAPL", MarketData(symbol="AAPL", price=150.25))
+```
+
+#### Issue: Memory Usage Too High
+
+**Symptom:** Redis memory grows indefinitely
+
+**Cause:** Missing TTL on cached data
+
+**Solution:**
+```python
+# Always set TTL
+await cache.set("key", data, ttl=300)  # 5 minutes
+
+# For existing keys without TTL
+await redis.expire("key", 300)
+
+# Check current TTL
+ttl = await redis.ttl("key")
+if ttl == -1:  # No TTL set
+    await redis.expire("key", 3600)
+
+# Monitor memory usage
+info = await redis.info("memory")
+print(f"Used memory: {info['used_memory_human']}")
 ```
 
 ---
@@ -847,11 +1358,86 @@ class BaseDuckDBManager:
     def duckdb_conn(self) -> duckdb.DuckDBPyConnection: ...
 ```
 
+### RedisConfig
+
+```python
+@dataclass
+class RedisConfig:
+    host: str = "localhost"
+    port: int = 6379
+    db: int = 0
+    password: str | None = None
+    decode_responses: bool = True
+    max_connections: int = 50
+    socket_timeout: float = 5.0
+    socket_connect_timeout: float = 5.0
+    retry_on_timeout: bool = True
+
+    @classmethod
+    def from_url(cls, redis_url: str, db: int = 0) -> "RedisConfig": ...
+
+    def to_connection_kwargs(self) -> dict[str, Any]: ...
+```
+
+### RedisClientManager
+
+```python
+class RedisClientManager:
+    def __init__(self, config: RedisConfig | None = None): ...
+
+    async def get_client(
+        self,
+        db: int | None = None
+    ) -> redis.Redis | None: ...
+
+    async def close_all(self) -> None: ...
+
+    async def health_check(self, db: int = 0) -> bool: ...
+
+# Global instance
+async def get_redis_client(db: int = 0) -> redis.Redis | None: ...
+```
+
+### BaseRedisCache[T]
+
+```python
+class BaseRedisCache(Generic[T]):
+    def __init__(
+        self,
+        key_prefix: str,
+        default_ttl: int = 300,
+        redis_db: int = 0,
+        use_json: bool = False,
+    ): ...
+
+    async def get(self, key: str) -> T | None: ...
+
+    async def set(
+        self,
+        key: str,
+        value: T,
+        ttl: int | None = None
+    ) -> bool: ...
+
+    async def delete(self, key: str) -> bool: ...
+
+    async def exists(self, key: str) -> bool: ...
+
+    async def expire(self, key: str, ttl: int) -> bool: ...
+
+    async def clear_all(self, pattern: str = "*") -> int: ...
+
+    def _serialize(self, value: T) -> str | bytes: ...
+    def _deserialize(self, data: str | bytes) -> T | None: ...
+```
+
 ---
 
 ## Migration Guide
 
-### From Custom DuckDB Implementation
+### DuckDB Migration
+
+#### From Custom DuckDB Implementation
 
 ```python
 # Old: Custom implementation
@@ -872,7 +1458,7 @@ with MyManager("data.duckdb") as db:
     pass
 ```
 
-### Adding Caching
+#### Adding Caching
 
 ```python
 # Before: No caching
@@ -884,6 +1470,204 @@ if cached is None:
     cached = fetch_expensive_data()
     db.store_cache_data("expensive_data", cached)
 data = cached
+```
+
+### Redis Migration
+
+#### From Direct Redis Usage
+
+```python
+# Old: Direct redis client management
+import redis.asyncio as redis
+
+redis_client = redis.Redis(
+    host="localhost",
+    port=6379,
+    db=0,
+    decode_responses=True,
+)
+
+try:
+    await redis_client.set("key", json.dumps(data))
+    raw_value = await redis_client.get("key")
+    data = json.loads(raw_value) if raw_value else None
+finally:
+    await redis_client.close()
+
+# New: Standardized client manager
+from mysingle.database import get_redis_client
+
+redis = await get_redis_client(db=0)
+if redis:
+    await redis.set("key", json.dumps(data))
+    raw_value = await redis.get("key")
+    data = json.loads(raw_value) if raw_value else None
+# Connection automatically managed
+```
+
+#### From Custom Cache to BaseRedisCache
+
+```python
+# Old: Custom cache implementation (from auth/cache.py)
+class RedisUserCache:
+    def __init__(self):
+        self.redis_url = settings.REDIS_URL
+        self.key_prefix = settings.USER_CACHE_KEY_PREFIX
+        self.ttl = settings.USER_CACHE_TTL_SECONDS
+        self._client: redis.Redis | None = None
+
+    async def _get_client(self) -> redis.Redis | None:
+        if self._client is None:
+            try:
+                self._client = redis.from_url(
+                    self.redis_url,
+                    encoding="utf-8",
+                    decode_responses=True,
+                )
+                await self._client.ping()
+            except Exception as e:
+                logger.error(f"Redis connection failed: {e}")
+                return None
+        return self._client
+
+    async def get_user(self, user_id: str) -> dict | None:
+        client = await self._get_client()
+        if not client:
+            return None
+
+        key = f"{self.key_prefix}{user_id}"
+        cached = await client.get(key)
+        if cached:
+            return json.loads(cached)
+        return None
+
+    async def set_user(self, user_id: str, user_data: dict) -> bool:
+        client = await self._get_client()
+        if not client:
+            return False
+
+        key = f"{self.key_prefix}{user_id}"
+        await client.setex(key, self.ttl, json.dumps(user_data))
+        return True
+
+# New: Using BaseRedisCache
+from mysingle.database import BaseRedisCache
+
+class RedisUserCache(BaseRedisCache[dict]):
+    """User cache using standard Redis infrastructure"""
+
+    def __init__(self):
+        super().__init__(
+            key_prefix=settings.USER_CACHE_KEY_PREFIX,
+            default_ttl=settings.USER_CACHE_TTL_SECONDS,
+            redis_db=0,  # IAM service uses DB 0
+            use_json=True,
+        )
+
+    async def get_user(self, user_id: str) -> dict | None:
+        """Get cached user data"""
+        return await self.get(user_id)
+
+    async def set_user(self, user_id: str, user_data: dict) -> bool:
+        """Cache user data"""
+        return await self.set(user_id, user_data)
+
+# Benefits:
+# - No manual connection management
+# - Automatic serialization
+# - Built-in error handling
+# - Connection pooling
+# - Health checks
+# - Consistent logging
+```
+
+#### From auth/cache.py Migration (Real Example)
+
+```python
+# Before (v2.1.0): 60+ lines with manual Redis management
+class RedisUserCache:
+    def __init__(self):
+        self.redis_url = settings.REDIS_URL
+        self.key_prefix = settings.USER_CACHE_KEY_PREFIX
+        # ... 15+ lines of initialization
+
+    async def _get_client(self):
+        # ... 20+ lines of connection logic
+        pass
+
+    async def get_user(self, user_id: str):
+        client = await self._get_client()
+        if not client:
+            return None
+        # ... 10+ lines of get logic
+
+    async def set_user(self, user_id: str, user_data: dict):
+        # ... 15+ lines of set logic
+        pass
+
+# After (v2.2.0): 20 lines using standard infrastructure
+from mysingle.database import get_redis_client
+
+class RedisUserCache:
+    """User cache using standard Redis infrastructure"""
+
+    def __init__(self):
+        self.key_prefix = settings.USER_CACHE_KEY_PREFIX
+        self.ttl = settings.USER_CACHE_TTL_SECONDS
+
+    async def get_user(self, user_id: str) -> dict | None:
+        redis = await get_redis_client(db=0)
+        if not redis:
+            return None
+
+        key = f"{self.key_prefix}{user_id}"
+        cached = await redis.get(key)
+        return json.loads(cached) if cached else None
+
+    async def set_user(self, user_id: str, user_data: dict) -> bool:
+        redis = await get_redis_client(db=0)
+        if not redis:
+            return False
+
+        key = f"{self.key_prefix}{user_id}"
+        await redis.setex(key, self.ttl, json.dumps(user_data))
+        return True
+
+# Code reduction: 60+ lines → 20 lines (67% reduction)
+# Benefits: Connection pooling, health checks, automatic error handling
+```
+
+#### Multi-DB Migration
+
+```python
+# Old: Single Redis instance for everything
+redis_client = redis.Redis(host="localhost", port=6379, db=0)
+
+# All data in DB 0 - potential key collisions!
+await redis_client.set("user:123", user_data)
+await redis_client.set("market:AAPL", market_data)
+await redis_client.set("indicator:RSI", indicator_data)
+
+# New: Service-specific databases
+from mysingle.database import get_redis_client
+
+# IAM Service - DB 0
+iam_redis = await get_redis_client(db=0)
+await iam_redis.set("user:123", user_data)
+
+# Market Data Service - DB 1
+market_redis = await get_redis_client(db=1)
+await market_redis.set("ticker:AAPL", market_data)
+
+# Indicator Service - DB 2
+indicator_redis = await get_redis_client(db=2)
+await indicator_redis.set("RSI:AAPL", indicator_data)
+
+# Benefits:
+# - No key collisions
+# - Easier to flush service-specific data
+# - Better isolation and debugging
+# - Independent TTL policies per service
 ```
 
 ---
