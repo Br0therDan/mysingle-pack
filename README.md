@@ -156,6 +156,9 @@ class MyGrpcClient(BaseGrpcClient):
 - [프론트엔드 인증 가이드](docs/FRONTEND_AUTH_DEV_GUIDE.md)
 - [전체 패키지 사용법](docs/MYSINGLE_PACK_USAGE_GUIDE.md)
 
+### 개발 워크플로우
+- [Submodule PR 워크플로우](docs/SUBMODULE_PR_WORKFLOW.md) - 서비스에서 MySingle 패키지 업데이트 및 PR 프로세스
+
 ---
 
 ## 🏗️ Phase 0 완료 내역
