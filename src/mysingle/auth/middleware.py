@@ -30,7 +30,6 @@ from .exceptions import AuthorizationFailed, InvalidToken, UserInactive, UserNot
 from .models import User
 
 logger = get_logger(__name__)
-settings = get_settings()
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -52,7 +51,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
         self.user_cache = get_user_cache()
         # Test bypass flag (only active in non-production)
         self.auth_bypass = self._check_auth_bypass()
-        self.settings = settings
+        self.settings = get_settings()
 
     def _check_auth_bypass(self) -> bool:
         """Check if authentication bypass is enabled for testing"""
@@ -95,7 +94,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
         # IAM 서비스는 인증 관련 경로도 공개
         if self.service_config.service_type == ServiceType.IAM_SERVICE:
             # settings.AUTH_PUBLIC_PATHS를 사용하여 중앙 관리
-            auth_public_paths = getattr(self.settings, "AUTH_PUBLIC_PATHS", [])
+            auth_public_paths = self.settings.AUTH_PUBLIC_PATHS
             default_public_paths.extend(auth_public_paths)
 
         return default_public_paths + service_public_paths
