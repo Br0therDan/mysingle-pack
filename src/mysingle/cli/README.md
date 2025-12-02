@@ -21,11 +21,12 @@ which mysingle mysingle-proto
 ### ✨ 주요 기능
 
 1. **Git Submodule 관리**: 마이크로서비스에서 MySingle을 submodule로 관리 ⭐ NEW
-2. **자동 버전 관리**: Conventional Commits 분석 기반 자동 버전 결정 ⭐ NEW
-3. **명령어 간소화**: `mysingle-cli` → `mysingle`
-4. **한국어 인터페이스**: 모든 메시지가 한국어로 제공
-5. **컬러 출력**: Rich 라이브러리 기반의 시각적 개선
-6. **대화형 모드**: 인자 없이 실행 시 단계별 메뉴 제공
+2. **서비스 스캐폴딩**: 표준화된 마이크로서비스 구조 자동 생성 ⭐ NEW
+3. **자동 버전 관리**: Conventional Commits 분석 기반 자동 버전 결정 ⭐ NEW
+4. **명령어 간소화**: `mysingle-cli` → `mysingle`
+5. **한국어 인터페이스**: 모든 메시지가 한국어로 제공
+6. **컬러 출력**: Rich 라이브러리 기반의 시각적 개선
+7. **대화형 모드**: 인자 없이 실행 시 단계별 메뉴 제공
 
 ### 🚀 대화형 모드
 
@@ -39,11 +40,12 @@ $ mysingle
 
   1. version    - 패키지 버전 관리
   2. submodule  - Git Submodule 관리
-  3. proto      - Proto 파일 관리
-  4. help       - 도움말 표시
+  3. scaffold   - 서비스 스캐폴딩
+  4. proto      - Proto 파일 관리
+  5. help       - 도움말 표시
   q. quit       - 종료
 
-명령을 선택하세요 [1/2/3/4/q] (기본: q):
+명령을 선택하세요 [1/2/3/4/5/q] (기본: q):
 ```
 
 ## 🔧 사용 가능한 도구
@@ -181,7 +183,156 @@ git remote add upstream https://github.com/Br0therDan/mysingle-pack.git
 git remote -v
 ```
 
-### 2. mysingle version - 패키지 버전 관리
+### 2. mysingle scaffold - 서비스 스캐폴딩 ⭐ NEW
+
+표준화된 NON_IAM 마이크로서비스 구조를 자동으로 생성하는 도구입니다.
+
+#### 사용 시나리오
+
+새로운 마이크로서비스를 빠르게 시작할 때 MySingle 표준 구조로 자동 생성합니다.
+
+#### 명령어
+
+```bash
+# 대화형 모드 (권장)
+mysingle scaffold
+mysingle scaffold -i
+
+# 커맨드라인 모드
+mysingle scaffold my-service --port 8011
+mysingle scaffold my-service --port 8011 --grpc --grpc-port 50056
+
+# 출력 디렉토리 지정
+mysingle scaffold my-service --output-dir ./custom-services/my-service
+
+# 도움말
+mysingle scaffold --help
+```
+
+#### 대화형 모드 예시
+
+```bash
+$ mysingle scaffold
+
+🚀 MySingle Service Scaffolding Tool
+
+Service Configuration
+
+? Service name (kebab-case, e.g., reporting-service): reporting
+? Service name should end with '-service'. Add it automatically? Yes
+
+💡 Next available ports: HTTP 8011, gRPC 50056
+
+? Use suggested HTTP port (8011)? Yes
+? Enable gRPC support? No
+
+Configuration Summary
+Service Name:     reporting-service
+HTTP Port:        8011
+gRPC Enabled:     No
+Output Directory: /Users/you/mysingle-quant/services/reporting-service
+
+? Proceed with this configuration? Yes
+
+Creating service: reporting-service
+📁 Created directory structure
+📝 Created application files
+⚙️  Created configuration files
+🧪 Created test files
+
+✅ Service 'reporting-service' created successfully!
+
+✅ Next Steps:
+
+1. cd /Users/you/mysingle-quant/services/reporting-service
+2. uv pip install -e .
+3. cp .env .env.local
+4. vim .env.local  # Edit configuration
+5. uvicorn app.main:app --reload --port 8011
+6. open http://localhost:8011/docs
+```
+
+#### 생성되는 구조
+
+```
+services/{service-name}/
+├── app/
+│   ├── __init__.py
+│   ├── main.py              # FastAPI 진입점 (ServiceType.NON_IAM_SERVICE)
+│   ├── api/
+│   │   └── v1/
+│   │       ├── api_v1.py    # API 라우터
+│   │       └── routes/
+│   │           └── health.py
+│   ├── core/
+│   │   └── config.py        # CommonSettings 상속
+│   ├── models/
+│   │   └── __init__.py      # document_models 리스트
+│   ├── schemas/
+│   └── services/
+│       └── service_factory.py
+├── tests/
+│   ├── unit/
+│   │   └── test_health.py
+│   └── integration/
+├── Dockerfile               # Multi-stage build
+├── pyproject.toml           # mysingle>=2.2.0
+├── .env                     # 환경 변수 템플릿
+├── .gitignore
+├── pytest.ini
+└── README.md
+```
+
+#### 주요 특징
+
+1. **NON_IAM Service 패턴**: Kong Gateway 기반 인증
+2. **CommonSettings 상속**: 표준 환경변수 구조
+3. **ServiceFactory 패턴**: 공유 리소스 관리
+4. **Beanie ODM**: document_models 리스트 구조
+5. **Health Check**: `/health`, `/ready` 엔드포인트
+6. **테스트 구조**: pytest + pytest-asyncio
+
+#### 생성된 코드 예시
+
+**app/main.py**:
+```python
+from mysingle.core import (
+    ServiceType,
+    create_fastapi_app,
+    create_service_config,
+    setup_logging,
+)
+
+service_config = create_service_config(
+    service_type=ServiceType.NON_IAM_SERVICE,
+    service_name=settings.SERVICE_NAME,
+    service_version=settings.APP_VERSION,
+    description="My Service",
+    enable_audit_logging=settings.AUDIT_LOGGING_ENABLED,
+    enable_metrics=True,
+    lifespan=lifespan,
+)
+
+app = create_fastapi_app(
+    service_config=service_config,
+    document_models=document_models,
+)
+```
+
+**app/core/config.py**:
+```python
+from mysingle.core import CommonSettings
+
+class Settings(CommonSettings):
+    SERVICE_NAME: str = "my-service"
+    APP_VERSION: str = "0.1.0"
+    LOG_LEVEL: str = "INFO"
+    AUDIT_LOGGING_ENABLED: bool = True
+
+settings = Settings()
+```
+
+### 3. mysingle version - 패키지 버전 관리
 
 패키지 버전을 관리하고 Git 태그를 생성하는 도구입니다.
 
@@ -352,7 +503,7 @@ $ mysingle version patch --custom 2.1.0-rc.1
 ✅ pyproject.toml 업데이트 완료
 ```
 
-### 2. mysingle-proto - Proto 파일 관리
+### 4. mysingle-proto - Proto 파일 관리
 
 gRPC Proto 파일의 생성, 검증, 상태 확인을 위한 도구입니다.
 
@@ -481,10 +632,17 @@ $ mysingle-proto generate
 ```
 src/mysingle/cli/
 ├── __init__.py              # CLI 패키지 루트
-├── __main__.py              # mysingle-cli 진입점
+├── __main__.py              # mysingle 진입점
 ├── core/                    # 패키지 버전 관리
 │   ├── __init__.py
 │   └── version.py           # 버전 bump 및 Git 태깅
+├── submodule/               # Git Submodule 관리
+│   ├── __init__.py
+│   └── commands.py          # Submodule 명령어
+├── scaffold/                # 서비스 스캐폴딩 ⭐ NEW
+│   ├── __init__.py
+│   ├── commands.py          # Scaffold 명령어
+│   └── templates.py         # 파일 템플릿
 └── protos/                  # Proto 관리 도구
     ├── __init__.py
     ├── __main__.py          # mysingle-proto 진입점
@@ -522,7 +680,34 @@ src/mysingle/cli/
 
 ## 🐛 문제 해결
 
-### Buf CLI를 찾을 수 없음
+### mysingle scaffold
+
+#### 대화형 모드를 사용할 수 없음
+
+```bash
+# rich 패키지 설치 확인
+python -c "import rich; print('✅ OK')"
+
+# 미설치 시
+pip install rich
+
+# 또는 커맨드라인 모드 사용
+mysingle scaffold my-service --port 8011
+```
+
+#### 서비스 디렉토리가 이미 존재
+
+```bash
+# 기존 디렉토리 삭제 (주의!)
+rm -rf services/my-service
+
+# 재생성
+mysingle scaffold my-service
+```
+
+### mysingle-proto
+
+#### Buf CLI를 찾을 수 없음
 
 ```bash
 # macOS
@@ -532,7 +717,7 @@ brew install bufbuild/buf/buf
 # https://docs.buf.build/installation
 ```
 
-### Import 경로 오류
+#### Import 경로 오류
 
 ```bash
 # Import 경로 자동 수정
@@ -560,9 +745,6 @@ mysingle-proto generate
 향후 다음 기능이 추가될 예정입니다:
 
 ```bash
-# 서비스 스캐폴딩
-mysingle new service <name>
-
 # 패키지 관리
 mysingle package install <name>
 mysingle package list

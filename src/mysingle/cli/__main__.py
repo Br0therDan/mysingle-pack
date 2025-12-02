@@ -3,15 +3,18 @@ MySingle CLI - 통합 명령줄 도구.
 
 현재 제공 기능:
 - 버전 관리
+- Submodule 관리
+- 서비스 스캐폴딩
 - Proto 관리
 
-향후 확장: 패키지 관리, 서비스 스캐폴딩 등
+향후 확장: 패키지 관리 등
 """
 
 from __future__ import annotations
 
 import argparse
 import sys
+from pathlib import Path
 
 from mysingle.cli.utils import console, print_error, print_header, print_info
 
@@ -25,12 +28,13 @@ def show_interactive_menu() -> int:
     console.print("[cyan]사용 가능한 명령:[/cyan]\n")
     console.print("  [green]1.[/green] version    - 패키지 버전 관리")
     console.print("  [green]2.[/green] submodule  - Git Submodule 관리")
-    console.print("  [green]3.[/green] proto      - Proto 파일 관리")
-    console.print("  [green]4.[/green] help       - 도움말 표시")
+    console.print("  [green]3.[/green] scaffold   - 서비스 스캐폴딩")
+    console.print("  [green]4.[/green] proto      - Proto 파일 관리")
+    console.print("  [green]5.[/green] help       - 도움말 표시")
     console.print("  [green]q.[/green] quit       - 종료\n")
 
     choice = Prompt.ask(
-        "명령을 선택하세요", choices=["1", "2", "3", "4", "q"], default="q"
+        "명령을 선택하세요", choices=["1", "2", "3", "4", "5", "q"], default="q"
     )
 
     if choice == "q":
@@ -72,6 +76,13 @@ def show_interactive_menu() -> int:
             return sync_submodule()
 
     elif choice == "3":
+        # Scaffold subcommand
+        from .scaffold.commands import (
+            execute_interactive as execute_scaffold_interactive,
+        )
+
+        return execute_scaffold_interactive(services_dir=Path.cwd() / "services")
+    elif choice == "4":
         # Proto subcommand - redirect to mysingle-proto
         print_info("Proto 관리는 'mysingle-proto' 명령을 사용하세요.")
         console.print("\n예시:")
@@ -79,7 +90,7 @@ def show_interactive_menu() -> int:
         console.print("  mysingle-proto generate")
         console.print("  mysingle-proto status\n")
         return 0
-    elif choice == "4":
+    elif choice == "5":
         # Show help
         main_with_args(["--help"])
         return 0
@@ -146,6 +157,16 @@ def main_with_args(argv: list[str] | None = None) -> int:
         help="로컬 변경사항 PR 준비",
     )
 
+    # Scaffold command
+    from .scaffold import commands as scaffold_cmd
+
+    scaffold_parser = subparsers.add_parser(
+        "scaffold",
+        help="서비스 스캐폴딩",
+        description="표준화된 마이크로서비스 구조를 생성합니다",
+    )
+    scaffold_cmd.setup_parser(scaffold_parser)
+
     # Parse arguments
     args = parser.parse_args(argv)
 
@@ -168,6 +189,10 @@ def main_with_args(argv: list[str] | None = None) -> int:
             return submodule_cmd.execute_update(args)
         elif args.submodule_command == "sync":
             return submodule_cmd.execute_sync(args)
+    elif args.command == "scaffold":
+        from .scaffold import commands as scaffold_cmd
+
+        return scaffold_cmd.execute(args)
 
     return 0
 
