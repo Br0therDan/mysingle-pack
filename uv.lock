@@ -1331,7 +1331,7 @@ wheels = [
 
 [[package]]
 name = "mysingle"
-version = "2.3.4"
+version = "2.3.5"
 source = { editable = "." }
 dependencies = [
     { name = "beanie" },
@@ -1339,6 +1339,7 @@ dependencies = [
     { name = "email-validator" },
     { name = "emails" },
     { name = "fastapi" },
+    { name = "googleapis-common-protos" },
     { name = "httpx" },
     { name = "httpx-oauth" },
     { name = "jinja2" },
@@ -1346,6 +1347,7 @@ dependencies = [
     { name = "numpy" },
     { name = "pandas" },
     { name = "prometheus-client" },
+    { name = "protobuf" },
     { name = "pwdlib", extra = ["argon2", "bcrypt"] },
     { name = "pydantic" },
     { name = "pydantic-settings" },
@@ -1461,6 +1463,7 @@ requires-dist = [
     { name = "email-validator", specifier = ">=2.0.0" },
     { name = "emails", specifier = ">=0.6" },
     { name = "fastapi", specifier = ">=0.104.1" },
+    { name = "googleapis-common-protos", specifier = ">=1.63.0" },
     { name = "googleapis-common-protos", marker = "extra == 'grpc'", specifier = ">=1.63.0" },
     { name = "grpcio", marker = "extra == 'grpc'", specifier = ">=1.60.0" },
     { name = "grpcio-tools", marker = "extra == 'grpc'", specifier = ">=1.60.0" },
@@ -1481,6 +1484,7 @@ requires-dist = [
     { name = "pandas", marker = "extra == 'dsl'", specifier = ">=2.2.0" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=4.3.0" },
     { name = "prometheus-client", specifier = ">=0.19.0" },
+    { name = "protobuf", specifier = ">=6.33.1" },
     { name = "protobuf", marker = "extra == 'grpc'", specifier = ">=6.33.1" },
     { name = "pwdlib", extras = ["argon2", "bcrypt"], specifier = ">=0.2.1" },
     { name = "pwdlib", extras = ["argon2", "bcrypt"], marker = "extra == 'auth'", specifier = ">=0.2.1" },

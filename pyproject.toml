@@ -29,6 +29,9 @@ dependencies = [
     "restrictedpython>=7.0",
     "pandas>=2.2.0",
     "numpy>=1.26.0",
+    # Protobuf (protos 패키지에 필수)
+    "protobuf>=6.33.1",
+    "googleapis-common-protos>=1.63.0",
 ]
 
 [project.optional-dependencies]
