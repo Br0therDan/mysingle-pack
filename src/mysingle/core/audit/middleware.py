@@ -195,9 +195,9 @@ class AuditLoggingMiddleware(BaseHTTPMiddleware):
         """Extract user ID from request context.
 
         Priority order:
-        1. X-User-Id header (Kong Gateway or service-to-service)
-        2. X-Consumer-Custom-ID header (Kong JWT plugin)
-        3. request.state.user.id (AuthMiddleware)
+        1. request.state.user.id (AuthMiddleware - most reliable)
+        2. X-User-Id header (Kong Gateway or service-to-service)
+        3. X-Consumer-Custom-ID header (Kong JWT plugin - legacy)
 
         Args:
             request: FastAPI Request object
@@ -207,17 +207,8 @@ class AuditLoggingMiddleware(BaseHTTPMiddleware):
         """
         from mysingle.constants import HEADER_KONG_USER_ID, HEADER_USER_ID
 
-        # Priority 1: X-User-Id (standard)
-        user_id = request.headers.get(HEADER_USER_ID)
-        if user_id:
-            return user_id.strip()
-
-        # Priority 2: X-Consumer-Custom-ID (Kong)
-        kong_user_id = request.headers.get(HEADER_KONG_USER_ID)
-        if kong_user_id:
-            return kong_user_id.strip()
-
-        # Priority 3: request.state.user (AuthMiddleware)
+        # Priority 1: request.state.user (AuthMiddleware)
+        # AuthMiddleware가 먼저 실행되어 이미 user를 설정했으면 이를 사용
         try:
             user = getattr(request.state, "user", None)
             if user and hasattr(user, "id"):
@@ -227,5 +218,20 @@ class AuditLoggingMiddleware(BaseHTTPMiddleware):
                 "Failed to extract user from request.state",
                 error=str(e),
             )
+
+        # Priority 2: X-User-Id (standard)
+        # 대소문자 구분 없이 헤더 검색 (HTTP 헤더는 대소문자 구분 없음)
+        for header_key in request.headers:
+            if header_key.lower() == HEADER_USER_ID.lower():
+                user_id = request.headers.get(header_key)
+                if user_id:
+                    return user_id.strip()
+
+        # Priority 3: X-Consumer-Custom-ID (Kong - legacy)
+        for header_key in request.headers:
+            if header_key.lower() == HEADER_KONG_USER_ID.lower():
+                kong_user_id = request.headers.get(header_key)
+                if kong_user_id:
+                    return kong_user_id.strip()
 
         return None

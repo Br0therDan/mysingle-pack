@@ -237,6 +237,26 @@ def create_fastapi_app(
     else:
         logger.info(f"🔓 Authentication disabled for {service_config.service_name}")
 
+    # Add audit logging middleware (shared)
+    # ⚠️ IMPORTANT: Add AFTER AuthMiddleware so request.state.user is available
+    if service_config.enable_audit_logging:
+        try:
+            from .audit.middleware import AuditLoggingMiddleware
+
+            enabled_flag = getattr(settings, "AUDIT_LOGGING_ENABLED", True)
+            app.add_middleware(
+                AuditLoggingMiddleware,
+                service_name=service_config.service_name,
+                enabled=bool(enabled_flag),
+            )
+            logger.info(
+                f"📝 Audit logging middleware enabled for {service_config.service_name}"
+            )
+        except Exception as e:
+            logger.warning(
+                f"⚠️ Failed to add audit logging middleware for {service_config.service_name}: {e}"
+            )
+
     # Add metrics middleware with graceful fallback
     if service_config.enable_metrics:
         try:
@@ -308,25 +328,6 @@ def create_fastapi_app(
         )
         app.include_router(health_router)
         logger.info(f"❤️ Health check endpoints added for {service_config.service_name}")
-
-    # Add audit logging middleware (shared)
-    if service_config.enable_audit_logging:
-        try:
-            from .audit.middleware import AuditLoggingMiddleware
-
-            enabled_flag = getattr(settings, "AUDIT_LOGGING_ENABLED", True)
-            app.add_middleware(
-                AuditLoggingMiddleware,
-                service_name=service_config.service_name,
-                enabled=bool(enabled_flag),
-            )
-            logger.info(
-                f"📝 Audit logging middleware enabled for {service_config.service_name}"
-            )
-        except Exception as e:
-            logger.warning(
-                f"⚠️ Failed to add audit logging middleware for {service_config.service_name}: {e}"
-            )
 
     # Include auth routers only for IAM service
     if service_config.service_type == ServiceType.IAM_SERVICE:

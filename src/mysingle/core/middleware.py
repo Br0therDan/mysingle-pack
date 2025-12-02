@@ -38,8 +38,13 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         correlation_id = request.headers.get("correlation-id") or str(uuid.uuid4())
         set_correlation_id(correlation_id)
 
-        # User ID 설정 (X-User-Id 헤더에서)
-        user_id = request.headers.get("x-user-id", "")
+        # User ID 설정 (대소문자 구분 없이 헤더에서 추출)
+        user_id = None
+        for header_key in request.headers:
+            if header_key.lower() == "x-user-id":
+                user_id = request.headers.get(header_key)
+                break
+
         if user_id:
             set_user_id(user_id)
 
