@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, status
 
-from ..schemas import UserCreate, UserResponse
-from ..user_manager import UserManager
+from mysingle.auth.schemas import UserCreate, UserResponse
+from mysingle.auth.user_manager import UserManager
 
 user_manager = UserManager()
 

@@ -6,7 +6,7 @@ import argparse
 import subprocess
 from pathlib import Path
 
-from ..utils import (
+from mysingle.cli.utils import (
     ask_choice,
     ask_confirm,
     ask_text,

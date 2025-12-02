@@ -6,7 +6,8 @@ from typing import Any
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from ..logging import get_structured_logger
+from mysingle.core.logging import get_structured_logger
+
 from .collector import MetricsCollector, MetricsConfig
 
 logger = get_structured_logger(__name__)

@@ -1,6 +1,5 @@
 # path: app/utils/email_sending.py
 
-import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -8,9 +7,10 @@ from typing import Any
 import emails
 from jinja2 import Template
 
-from ..config import settings
+from mysingle.core.config import settings
+from mysingle.core.logging import get_structured_logger
 
-logger = logging.getLogger()
+logger = get_structured_logger(__name__)
 
 
 @dataclass

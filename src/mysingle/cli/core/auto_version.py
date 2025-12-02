@@ -17,7 +17,8 @@ import re
 import subprocess
 from dataclasses import dataclass
 
-from ..utils import console, print_error, print_info, print_success
+from mysingle.cli.utils import console, print_error, print_info, print_success
+
 from .version import Version, find_pyproject, read_current_version, write_version
 
 

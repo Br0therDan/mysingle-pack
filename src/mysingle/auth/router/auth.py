@@ -15,15 +15,20 @@ from fastapi import (
 )
 from fastapi.security import OAuth2PasswordRequestForm
 
-from ...core.config import settings
-from ...core.logging import get_structured_logger
-from ..authenticate import authenticator
-from ..deps import get_current_user, get_current_user_optional, verified_only
-from ..exceptions import AuthenticationFailed
-from ..schemas.auth import LoginResponse, UserInfo, VerifyTokenResponse
-from ..user_manager import UserManager
+from mysingle.auth.authenticate import authenticator
+from mysingle.auth.deps import (
+    get_current_user,
+    get_current_user_optional,
+    verified_only,
+)
+from mysingle.auth.exceptions import AuthenticationFailed
+from mysingle.auth.schemas.auth import LoginResponse, UserInfo, VerifyTokenResponse
+from mysingle.auth.user_manager import UserManager
+from mysingle.core.config import settings
+from mysingle.core.logging import get_structured_logger
 
 logger = get_structured_logger(__name__)
+
 access_token_expire_minutes = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 user_manager = UserManager()
 authenticator = authenticator

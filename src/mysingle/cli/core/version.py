@@ -8,7 +8,7 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
-from ..utils import (
+from mysingle.cli.utils import (
     ask_choice,
     ask_confirm,
     console,

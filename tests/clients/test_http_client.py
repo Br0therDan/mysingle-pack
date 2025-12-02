@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
-from mysingle.core.http_client import (
+from mysingle.clients.http_client import (
     ServiceHttpClient,
     create_service_http_client,
 )
@@ -50,7 +50,7 @@ async def test_http_client_request_with_headers():
 
         response = await client.request(
             method="GET",
-            path="/health",
+            url="/health",
             headers={"X-Test-Header": "test-value"},
         )
 

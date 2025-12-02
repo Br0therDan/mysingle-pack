@@ -6,8 +6,15 @@ from __future__ import annotations
 
 import argparse
 
-from ..models import ProtoConfig, ServiceProtoInfo
-from ..utils import Color, LogLevel, colorize, log, log_header, log_table
+from mysingle.cli.protos.models import ProtoConfig, ServiceProtoInfo
+from mysingle.cli.protos.utils import (
+    Color,
+    LogLevel,
+    colorize,
+    log,
+    log_header,
+    log_table,
+)
 
 
 def discover_services(config: ProtoConfig) -> list[ServiceProtoInfo]:

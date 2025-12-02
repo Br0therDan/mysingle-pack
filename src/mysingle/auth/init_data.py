@@ -1,7 +1,8 @@
 import asyncio
 
-from ..core.config import settings
-from ..core.logging import get_structured_logger
+from mysingle.core.config import settings
+from mysingle.core.logging import get_structured_logger
+
 from .models import User
 from .security.password import PasswordHelper
 

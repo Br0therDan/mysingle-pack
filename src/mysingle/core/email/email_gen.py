@@ -3,7 +3,8 @@
 
 import logging
 
-from ..config import settings
+from mysingle.core.config import settings
+
 from .email_sending import EmailData, render_email_template
 from .email_token import generate_email_token
 

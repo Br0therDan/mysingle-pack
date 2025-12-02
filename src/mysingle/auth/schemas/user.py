@@ -3,7 +3,7 @@ from datetime import datetime
 from beanie import PydanticObjectId
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-from ...base.schemas import BaseResponseSchema
+from mysingle.core.base import BaseResponseSchema
 
 
 class UserResponse(BaseResponseSchema):

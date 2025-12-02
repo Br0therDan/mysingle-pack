@@ -11,15 +11,6 @@ from .db import (
 )
 from .email import send_email
 from .health import HealthStatus, create_health_router, get_health_checker
-from .http_client import (
-    HttpClientConfig,
-    ServiceHttpClient,
-    ServiceHttpClientManager,
-    create_service_http_client,
-    get_service_http_client,
-    http_client_lifespan,
-    make_service_request,
-)
 from .logging import get_structured_logger, setup_logging
 from .metrics import MetricsCollector, get_metrics_collector
 from .middleware import (
@@ -46,14 +37,6 @@ __all__ = [
     # Service Types
     "ServiceType",
     "create_service_config",
-    # HTTP Client
-    "ServiceHttpClient",
-    "ServiceHttpClientManager",
-    "create_service_http_client",
-    "get_service_http_client",
-    "make_service_request",
-    "http_client_lifespan",
-    "HttpClientConfig",
     # Middleware
     "LoggingMiddleware",
     "HealthCheckLoggingFilter",

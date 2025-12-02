@@ -1,6 +1,6 @@
 from fastapi import Response
 
-from ...core.config import settings
+from mysingle.core.config import settings
 
 
 def set_cookie(

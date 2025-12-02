@@ -17,7 +17,13 @@ import argparse
 import sys
 from pathlib import Path
 
-from ..utils import console, print_error, print_header, print_info
+from mysingle.cli.utils import (
+    console,
+    print_error,
+    print_header,
+    print_info,
+)
+
 from .commands import generate, info, init, status, validate
 from .models import ProtoConfig
 from .utils import LogLevel, log

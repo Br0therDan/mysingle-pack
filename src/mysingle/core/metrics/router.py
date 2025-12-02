@@ -16,7 +16,8 @@ from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 
-from ..logging import get_structured_logger
+from mysingle.core.logging import get_structured_logger
+
 from .collector import MetricsCollector
 from .middleware import get_metrics_collector
 

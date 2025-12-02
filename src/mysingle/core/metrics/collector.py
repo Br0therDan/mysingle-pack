@@ -7,7 +7,7 @@ from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from typing import Any
 
-from ..logging import get_structured_logger
+from mysingle.core.logging import get_structured_logger
 
 logger = get_structured_logger(__name__)
 

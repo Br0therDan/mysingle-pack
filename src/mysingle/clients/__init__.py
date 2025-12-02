@@ -5,5 +5,24 @@ Microservice gRPC Clients
 """
 
 from .base_grpc_client import BaseGrpcClient
+from .http_client import (
+    HttpClientConfig,
+    ServiceHttpClient,
+    ServiceHttpClientManager,
+    create_service_http_client,
+    get_service_http_client,
+    http_client_lifespan,
+    make_service_request,
+)
 
-__all__ = ["BaseGrpcClient"]
+__all__ = [
+    "BaseGrpcClient",
+    # HTTP Client
+    "ServiceHttpClient",
+    "ServiceHttpClientManager",
+    "create_service_http_client",
+    "get_service_http_client",
+    "make_service_request",
+    "http_client_lifespan",
+    "HttpClientConfig",
+]

@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Body, Request, status
 from pydantic import EmailStr
 
-from ..exceptions import (
+from mysingle.auth.exceptions import (
     UserInactive,
     UserNotExists,
 )
-from ..user_manager import UserManager
+from mysingle.auth.user_manager import UserManager
 
 user_manager = UserManager()
 

@@ -9,8 +9,8 @@ from __future__ import annotations
 import argparse
 import subprocess
 
-from ..models import ProtoConfig
-from ..utils import Color, LogLevel, colorize, log, log_header
+from mysingle.cli.protos.models import ProtoConfig
+from mysingle.cli.protos.utils import Color, LogLevel, colorize, log, log_header
 
 
 def execute(args: argparse.Namespace, config: ProtoConfig) -> int:

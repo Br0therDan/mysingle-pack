@@ -9,9 +9,9 @@ import re
 import subprocess
 from pathlib import Path
 
-from ...utils import ask_confirm, print_success
-from ..models import ProtoConfig
-from ..utils import Color, LogLevel, colorize, log, log_header
+from mysingle.cli.protos.models import ProtoConfig
+from mysingle.cli.protos.utils import Color, LogLevel, colorize, log, log_header
+from mysingle.cli.utils import ask_confirm, print_success
 
 
 def ensure_file_exists(path: Path, description: str) -> None:

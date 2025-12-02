@@ -7,8 +7,8 @@ from __future__ import annotations
 import argparse
 import re
 
-from ..models import ProtoConfig
-from ..utils import Color, LogLevel, colorize, log, log_header
+from mysingle.cli.protos.models import ProtoConfig
+from mysingle.cli.protos.utils import Color, LogLevel, colorize, log, log_header
 
 
 def get_current_proto_version(config: ProtoConfig) -> str | None:

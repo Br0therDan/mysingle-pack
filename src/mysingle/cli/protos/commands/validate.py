@@ -7,9 +7,9 @@ from __future__ import annotations
 import argparse
 import subprocess
 
-from ...utils import ask_choice, ask_confirm
-from ..models import ProtoConfig
-from ..utils import Color, LogLevel, colorize, log, log_header
+from mysingle.cli.protos.models import ProtoConfig
+from mysingle.cli.protos.utils import Color, LogLevel, colorize, log, log_header
+from mysingle.cli.utils import ask_choice, ask_confirm
 
 
 def buf_lint(config: ProtoConfig) -> bool:

@@ -7,19 +7,19 @@ from beanie import PydanticObjectId
 from fastapi import Request, Response
 from pydantic import BaseModel
 
+from mysingle.auth.models import OAuthAccount, User
 from mysingle.auth.schemas.oauth2 import BaseOAuthToken
-
-from ..auth.models import OAuthAccount, User
-from ..auth.schemas.user import UserCreate, UserUpdate
-from ..auth.types import DependencyCallable
-from ..core.config import settings
-from ..core.logging import get_structured_logger
-from ..email.email_gen import (
+from mysingle.auth.schemas.user import UserCreate, UserUpdate
+from mysingle.auth.types import DependencyCallable
+from mysingle.core.config import settings
+from mysingle.core.email.email_gen import (
     generate_new_account_email,
     generate_reset_password_email,
     generate_verification_email,
 )
-from ..email.email_sending import send_email
+from mysingle.core.email.email_sending import send_email
+from mysingle.core.logging import get_structured_logger
+
 from .cache import get_user_cache
 from .exceptions import (
     InvalidID,
@@ -720,7 +720,9 @@ class UserManager:
                 )
 
                 # 새로운 템플릿을 사용한 보안 알림 이메일
-                from ..email.email_gen import generate_password_reset_confirmation_email
+                from mysingle.core.email.email_gen import (
+                    generate_password_reset_confirmation_email,
+                )
 
                 email_data = generate_password_reset_confirmation_email(
                     email_to=user.email,

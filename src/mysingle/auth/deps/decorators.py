@@ -6,8 +6,9 @@ from typing import Any, Callable
 
 from fastapi import Request
 
-from ...core.logging import get_structured_logger
-from ..exceptions import AuthorizationFailed
+from mysingle.auth.exceptions import AuthorizationFailed
+from mysingle.core.logging import get_structured_logger
+
 from .core import (
     get_current_active_superuser,
     get_current_active_verified_user,

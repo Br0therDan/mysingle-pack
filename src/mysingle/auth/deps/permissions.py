@@ -2,9 +2,10 @@ from typing import List
 
 from fastapi import Request
 
-from ...core.logging import get_structured_logger
-from ..exceptions import AuthorizationFailed
-from ..models import User
+from mysingle.auth.exceptions import AuthorizationFailed
+from mysingle.auth.models import User
+from mysingle.core.logging import get_structured_logger
+
 from .core import get_current_active_verified_user
 
 logger = get_structured_logger(__name__)

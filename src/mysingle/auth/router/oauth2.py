@@ -2,13 +2,13 @@ from urllib.parse import unquote
 
 from fastapi import APIRouter, HTTPException, Query, Request, Response, status
 
-from ...core.logging import get_structured_logger
-from ..authenticate import authenticator
-from ..exceptions import AuthenticationFailed
-from ..oauth_manager import oauth_manager
-from ..schemas.auth import LoginResponse, UserInfo
-from ..security.jwt import get_jwt_manager
-from ..user_manager import UserManager
+from mysingle.auth.authenticate import authenticator
+from mysingle.auth.exceptions import AuthenticationFailed
+from mysingle.auth.oauth_manager import oauth_manager
+from mysingle.auth.schemas.auth import LoginResponse, UserInfo
+from mysingle.auth.security.jwt import get_jwt_manager
+from mysingle.auth.user_manager import UserManager
+from mysingle.core.logging import get_structured_logger
 
 user_manager = UserManager()
 jwt_manager = get_jwt_manager()

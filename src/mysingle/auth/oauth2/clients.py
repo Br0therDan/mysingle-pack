@@ -4,7 +4,7 @@ from httpx_oauth.clients.naver import NaverOAuth2
 from httpx_oauth.integrations.fastapi import OAuth2AuthorizeCallback
 from httpx_oauth.oauth2 import BaseOAuth2
 
-from ...core.config import settings
+from mysingle.core.config import settings
 
 
 def get_oauth2_client(provider_name: str) -> BaseOAuth2:

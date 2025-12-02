@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 from beanie import PydanticObjectId
 from pydantic import Field
 
-from ..base.models import BaseTimeDoc
+from mysingle.core.base.models import BaseTimeDoc
 
 
 class AuditLog(BaseTimeDoc):

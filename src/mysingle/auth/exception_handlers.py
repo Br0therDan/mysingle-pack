@@ -5,7 +5,7 @@ from typing import Any
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
 
-from .exceptions import (
+from mysingle.auth.exceptions import (
     AuthenticationFailed,
     AuthException,
     AuthorizationFailed,

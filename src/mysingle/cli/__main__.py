@@ -13,7 +13,7 @@ from __future__ import annotations
 import argparse
 import sys
 
-from .utils import console, print_error, print_header, print_info
+from mysingle.cli.utils import console, print_error, print_header, print_info
 
 
 def show_interactive_menu() -> int:

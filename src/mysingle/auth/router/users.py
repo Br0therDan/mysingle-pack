@@ -1,12 +1,12 @@
 from beanie import PydanticObjectId
 from fastapi import APIRouter, Request, Response, status
 
-from ..deps import admin_only, get_current_active_verified_user
-from ..exceptions import (
+from mysingle.auth.deps import admin_only, get_current_active_verified_user
+from mysingle.auth.exceptions import (
     UserNotExists,
 )
-from ..schemas import UserResponse, UserUpdate
-from ..user_manager import UserManager
+from mysingle.auth.schemas import UserResponse, UserUpdate
+from mysingle.auth.user_manager import UserManager
 
 user_manager = UserManager()
 

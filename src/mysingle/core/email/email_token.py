@@ -1,12 +1,11 @@
 # path: app/utils/utiles.py
 
-import logging
-
 from jwt.exceptions import InvalidTokenError
 
 from mysingle.auth.security.jwt import get_jwt_manager
+from mysingle.core.logging import get_structured_logger
 
-logger = logging.getLogger()
+logger = get_structured_logger(__name__)
 jwt_manager = get_jwt_manager()
 
 

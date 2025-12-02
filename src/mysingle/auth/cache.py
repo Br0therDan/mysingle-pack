@@ -33,8 +33,8 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import Any, Optional
 
-from ..core.logging import get_structured_logger
-from .models import User
+from mysingle.auth.models import User
+from mysingle.core.logging import get_structured_logger
 
 logger = get_structured_logger(__name__)
 

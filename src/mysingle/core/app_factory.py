@@ -9,18 +9,17 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 
-from ..auth.exception_handlers import register_auth_exception_handlers
-from ..auth.init_data import create_first_super_admin, create_test_users
-from .config import settings
-from .db import init_mongo
-from .health import create_health_router
-from .logging import get_structured_logger, setup_logging
-from .service_types import ServiceConfig, ServiceType
+from mysingle.auth.exception_handlers import register_auth_exception_handlers
+from mysingle.auth.init_data import create_first_super_admin, create_test_users
+from mysingle.core.config import settings
+from mysingle.core.db import init_mongo
+from mysingle.core.health import create_health_router
+from mysingle.core.logging import get_structured_logger, setup_logging
+from mysingle.core.service_types import ServiceConfig, ServiceType
 
 if TYPE_CHECKING:
     pass
 
-setup_logging()
 logger = get_structured_logger(__name__)
 
 
@@ -36,6 +35,8 @@ def create_lifespan(
     is_development: bool = False,
 ) -> Callable:
     """Create lifespan context manager for the application."""
+
+    setup_logging(service_name=service_config.service_name)
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:

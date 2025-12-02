@@ -4,8 +4,9 @@ from fastapi import HTTPException
 from fastapi.responses import Response
 from pydantic import SecretStr
 
-from ..core.config import settings
-from ..core.logging import get_structured_logger
+from mysingle.core.config import settings
+from mysingle.core.logging import get_structured_logger
+
 from .cache import get_user_cache
 from .models import User
 from .schemas.auth import TokenResponse

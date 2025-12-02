@@ -2,8 +2,9 @@ from typing import Any, Dict, Optional
 
 from fastapi import HTTPException, Request, status
 
-from ...core.logging import get_structured_logger
-from ..models import User
+from mysingle.auth.models import User
+from mysingle.core.logging import get_structured_logger
+
 from .kong import (
     get_kong_correlation_id,
     get_kong_request_id,

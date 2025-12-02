@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 from beanie import PydanticObjectId
 from pydantic import BaseModel, ConfigDict, Field
 
-from ...core.config import settings
+from mysingle.core.config import settings
 
 
 class UserInfo(BaseModel):
