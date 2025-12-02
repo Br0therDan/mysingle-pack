@@ -3,7 +3,6 @@ Tests for mysingle.protos module (gRPC stubs).
 """
 
 
-
 def test_proto_imports():
     """Test that proto stubs can be imported."""
     # Common protos

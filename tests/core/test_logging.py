@@ -2,7 +2,6 @@
 Tests for mysingle.core.logging module.
 """
 
-
 from mysingle.core.logging import get_structured_logger, setup_logging
 
 

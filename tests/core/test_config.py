@@ -2,7 +2,6 @@
 Tests for mysingle.core.config module.
 """
 
-
 from mysingle.core.config import CommonSettings, get_settings
 
 
