@@ -1,6 +1,5 @@
 # path: app/auth/providers.py
 
-import logging
 import secrets
 from typing import Optional, Union
 
@@ -10,6 +9,7 @@ from httpx_oauth.clients.kakao import KakaoOAuth2
 from httpx_oauth.clients.naver import NaverOAuth2
 
 from mysingle.core.config import settings
+from mysingle.core.logging import get_structured_logger
 
 from .schemas.oauth2 import (
     BaseOAuthToken,
@@ -21,7 +21,7 @@ from .schemas.oauth2 import (
     NaverToken,
 )
 
-logger = logging.getLogger(__name__)
+logger = get_structured_logger(__name__)
 
 # ---------------------------
 # OAuth2 Clients

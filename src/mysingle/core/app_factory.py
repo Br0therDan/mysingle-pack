@@ -36,7 +36,12 @@ def create_lifespan(
 ) -> Callable:
     """Create lifespan context manager for the application."""
 
-    setup_logging(service_name=service_config.service_name)
+    # Configure logging using settings.log_level (automatically handles DEBUG and ENVIRONMENT)
+    setup_logging(
+        service_name=service_config.service_name,
+        log_level=settings.log_level,
+        environment=settings.ENVIRONMENT,
+    )
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
@@ -339,8 +344,12 @@ def create_fastapi_app(
             except Exception as e:
                 logger.error(f"⚠️ Failed to include OAuth2 router: {e}")
 
-        logger.info(
-            f"🔐 Auth Public Paths for {service_config.service_name}: {settings.AUTH_PUBLIC_PATHS}"
-        )
+        # Log auth public paths for IAM service
+        if service_config.service_type == ServiceType.IAM_SERVICE:
+            public_path_count = len(settings.AUTH_PUBLIC_PATHS)
+            logger.info(
+                f"🔐 Auth Public Paths configured: {public_path_count} paths",
+                extra={"paths": settings.AUTH_PUBLIC_PATHS[:3]},  # Show first 3 paths
+            )
 
     return app

@@ -1,11 +1,8 @@
-# MySingle Package - Development Guide
+# AGENTS.md - MySingle Package
 
 **Version:** 2.2.1 | **Updated:** 2025-12-02
 
 MySingle provides standardized authentication, gRPC communication, and core utilities for MySingle Quant microservices.
-
-**Installation:** `pip install mysingle[full]`
-
 ---
 
 ## Core Principles

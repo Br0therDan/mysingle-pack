@@ -8,10 +8,10 @@ from typing import Dict, Optional
 
 import httpx
 
-from ..core.config import settings
-from ..core.logging import get_structured_logger
+from mysingle.core.config import settings
+from mysingle.core.logging import get_logger
 
-logger = get_structured_logger(__name__)
+logger = get_logger(__name__)
 
 
 class ServiceHttpClient:
@@ -25,6 +25,7 @@ class ServiceHttpClient:
         max_keepalive_connections: int = 20,
         headers: Optional[Dict[str, str]] = None,
         service_name: Optional[str] = None,
+        propagate_auth_headers: bool = True,
     ):
         """
         HTTP 클라이언트 초기화
@@ -36,9 +37,11 @@ class ServiceHttpClient:
             max_keepalive_connections: 최대 Keep-Alive 연결 수
             headers: 기본 헤더
             service_name: 서비스 이름 (로깅용)
+            propagate_auth_headers: Kong Gateway 인증 헤더 자동 전파 여부
         """
         self.base_url = base_url
         self.service_name = service_name or "unknown"
+        self.propagate_auth_headers = propagate_auth_headers
 
         # 기본 헤더 설정
         default_headers = {
@@ -63,16 +66,23 @@ class ServiceHttpClient:
         )
 
         logger.debug(
-            f"Created HTTP client for {self.service_name}: "
-            f"base_url={base_url}, timeout={timeout}s, "
-            f"max_conn={max_connections}, keepalive={max_keepalive_connections}"
+            "HTTP client created",
+            service=self.service_name,
+            base_url=base_url,
+            timeout_seconds=timeout,
+            max_connections=max_connections,
+            max_keepalive_connections=max_keepalive_connections,
+            propagate_auth=propagate_auth_headers,
         )
 
     async def close(self):
         """클라이언트 연결 정리"""
         if hasattr(self, "client") and self.client:
             await self.client.aclose()
-            logger.debug(f"Closed HTTP client for {self.service_name}")
+            logger.debug(
+                "HTTP client closed",
+                service=self.service_name,
+            )
 
     # 컨텍스트 매니저 지원
     async def __aenter__(self):
@@ -84,27 +94,138 @@ class ServiceHttpClient:
     # HTTP 메서드 래퍼들
     async def get(self, url: str, **kwargs) -> httpx.Response:
         """GET 요청"""
+        logger.debug(
+            "HTTP GET request",
+            service=self.service_name,
+            url=url,
+        )
         return await self.client.get(url, **kwargs)
 
     async def post(self, url: str, **kwargs) -> httpx.Response:
         """POST 요청"""
+        logger.debug(
+            "HTTP POST request",
+            service=self.service_name,
+            url=url,
+        )
         return await self.client.post(url, **kwargs)
 
     async def put(self, url: str, **kwargs) -> httpx.Response:
         """PUT 요청"""
+        logger.debug(
+            "HTTP PUT request",
+            service=self.service_name,
+            url=url,
+        )
         return await self.client.put(url, **kwargs)
 
     async def patch(self, url: str, **kwargs) -> httpx.Response:
         """PATCH 요청"""
+        logger.debug(
+            "HTTP PATCH request",
+            service=self.service_name,
+            url=url,
+        )
         return await self.client.patch(url, **kwargs)
 
     async def delete(self, url: str, **kwargs) -> httpx.Response:
         """DELETE 요청"""
+        logger.debug(
+            "HTTP DELETE request",
+            service=self.service_name,
+            url=url,
+        )
         return await self.client.delete(url, **kwargs)
 
     async def request(self, method: str, url: str, **kwargs) -> httpx.Response:
         """일반 요청 메서드"""
+        logger.debug(
+            "HTTP request",
+            service=self.service_name,
+            method=method,
+            url=url,
+        )
         return await self.client.request(method, url, **kwargs)
+
+    def _prepare_headers_with_propagation(
+        self,
+        request: Optional["httpx.Request"] = None,
+        additional_headers: Optional[Dict[str, str]] = None,
+    ) -> Dict[str, str]:
+        """
+        Kong Gateway 헤더 전파를 포함한 요청 헤더 준비
+
+        Args:
+            request: FastAPI Request 객체 (헤더 추출용)
+            additional_headers: 추가 헤더
+
+        Returns:
+            병합된 헤더 딕셔너리
+        """
+        from mysingle.constants import (
+            HEADER_AUTHORIZATION,
+            HEADER_CORRELATION_ID,
+            HEADER_USER_ID,
+        )
+
+        headers = dict(self.client.headers)
+
+        # Kong Gateway 헤더 전파 (활성화된 경우)
+        if self.propagate_auth_headers and request:
+            # Authorization 헤더
+            auth_header = request.headers.get(HEADER_AUTHORIZATION)
+            if auth_header:
+                headers[HEADER_AUTHORIZATION] = auth_header
+
+            # X-User-Id 헤더
+            user_id = request.headers.get(HEADER_USER_ID)
+            if user_id:
+                headers[HEADER_USER_ID] = user_id
+
+            # X-Correlation-Id 헤더
+            correlation_id = request.headers.get(HEADER_CORRELATION_ID)
+            if correlation_id:
+                headers[HEADER_CORRELATION_ID] = correlation_id
+
+            logger.debug(
+                "Kong Gateway headers propagated",
+                service=self.service_name,
+                has_authorization=bool(auth_header),
+                has_user_id=bool(user_id),
+                has_correlation_id=bool(correlation_id),
+            )
+
+        # 추가 헤더 병합
+        if additional_headers:
+            headers.update(additional_headers)
+
+        return headers
+
+    async def request_with_auth_propagation(
+        self,
+        method: str,
+        url: str,
+        request: Optional["httpx.Request"] = None,
+        headers: Optional[Dict[str, str]] = None,
+        **kwargs,
+    ) -> httpx.Response:
+        """
+        Kong Gateway 인증 헤더 전파를 포함한 요청
+
+        Args:
+            method: HTTP 메서드
+            url: 요청 URL
+            request: FastAPI Request 객체 (헤더 추출용)
+            headers: 추가 헤더
+            **kwargs: 기타 요청 파라미터
+
+        Returns:
+            HTTP 응답
+        """
+        prepared_headers = self._prepare_headers_with_propagation(request, headers)
+        return await self.client.request(
+            method, url, headers=prepared_headers, **kwargs
+        )
 
 
 class ServiceHttpClientManager:
@@ -131,7 +252,11 @@ class ServiceHttpClientManager:
         )
 
         cls._instances[service_name] = client
-        logger.info(f"Created new HTTP client for service: {service_name}")
+        logger.info(
+            "HTTP client created and cached",
+            service=service_name,
+            base_url=base_url,
+        )
 
         return client
 
@@ -167,12 +292,22 @@ class ServiceHttpClientManager:
         for service_name, client in cls._instances.items():
             try:
                 await client.close()
-                logger.debug(f"Closed HTTP client for {service_name}")
+                logger.debug(
+                    "HTTP client closed",
+                    service=service_name,
+                )
             except Exception as e:
-                logger.error(f"Error closing HTTP client for {service_name}: {e}")
+                logger.error(
+                    "Error closing HTTP client",
+                    service=service_name,
+                    error=str(e),
+                )
 
         cls._instances.clear()
-        logger.info("All HTTP clients closed")
+        logger.info(
+            "All HTTP clients closed",
+            count=len(cls._instances),
+        )
 
 
 # Factory 함수들
@@ -217,11 +352,17 @@ def get_service_http_client(
 async def http_client_lifespan():
     """HTTP 클라이언트 생명주기 관리"""
     try:
-        logger.info("🌐 HTTP client manager initialized")
+        logger.info(
+            "HTTP client manager initialized",
+            manager="ServiceHttpClientManager",
+        )
         yield ServiceHttpClientManager
     finally:
         await ServiceHttpClientManager.close_all()
-        logger.info("🌐 HTTP client manager shutdown completed")
+        logger.info(
+            "HTTP client manager shutdown completed",
+            manager="ServiceHttpClientManager",
+        )
 
 
 # 환경 설정 기반 기본값들

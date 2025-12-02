@@ -6,11 +6,11 @@ from typing import Any
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from mysingle.core.logging import get_structured_logger
+from mysingle.core.logging import get_logger
 
 from .collector import MetricsCollector, MetricsConfig
 
-logger = get_structured_logger(__name__)
+logger = get_logger(__name__)
 
 # Global metrics collector
 _metrics_collector: MetricsCollector | None = None
@@ -86,7 +86,12 @@ class MetricsMiddleware(BaseHTTPMiddleware):
             return path
 
         except Exception as e:
-            logger.debug(f"Error extracting route pattern: {e}")
+            logger.debug(
+                "Error extracting route pattern",
+                path=request.url.path,
+                error=str(e),
+                error_type=type(e).__name__,
+            )
             return request.url.path
 
     async def dispatch(self, request: Request, call_next: Any) -> Response:
@@ -113,7 +118,14 @@ class MetricsMiddleware(BaseHTTPMiddleware):
                 status_code=500,
                 duration=duration,
             )
-            logger.error(f"Error processing request {request.method} {route_path}: {e}")
+            logger.error(
+                "Error processing request",
+                method=request.method,
+                path=route_path,
+                duration_seconds=duration,
+                error=str(e),
+                error_type=type(e).__name__,
+            )
             raise
 
         # 지속 시간 계산
@@ -128,7 +140,15 @@ class MetricsMiddleware(BaseHTTPMiddleware):
                 duration=duration,
             )
         except Exception as e:
-            logger.warning(f"Error recording metrics: {e}")
+            logger.warning(
+                "Error recording metrics",
+                method=request.method,
+                path=route_path,
+                status_code=response.status_code,
+                duration_seconds=duration,
+                error=str(e),
+                error_type=type(e).__name__,
+            )
 
         # 응답 헤더 추가 (선택적)
         if self.include_response_headers:
@@ -159,12 +179,24 @@ def create_metrics_middleware(
         # 설정 기본값
         metrics_config = config or MetricsConfig()
 
-        # 메트릭 컬렉터 초기화
+        # 메트릭 커렉터 초기화
         _metrics_collector = MetricsCollector(service_name, metrics_config)
 
-        logger.info(f"✅ Metrics collector initialized for {service_name}")
-        logger.debug(f"Metrics config: {metrics_config}")
+        logger.info(
+            "Metrics collector initialized for service",
+            service_name=service_name,
+            max_duration_samples=metrics_config.max_duration_samples,
+            enable_percentiles=metrics_config.enable_percentiles,
+            enable_histogram=metrics_config.enable_histogram,
+            enable_custom_metrics=metrics_config.enable_custom_metrics,
+            retention_period_seconds=metrics_config.retention_period_seconds,
+        )
 
     except Exception as e:
-        logger.error(f"❌ Failed to create metrics middleware for {service_name}: {e}")
+        logger.error(
+            "Failed to create metrics middleware",
+            service_name=service_name,
+            error=str(e),
+            error_type=type(e).__name__,
+        )
         raise

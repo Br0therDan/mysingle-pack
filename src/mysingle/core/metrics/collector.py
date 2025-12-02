@@ -7,9 +7,9 @@ from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from typing import Any
 
-from mysingle.core.logging import get_structured_logger
+from mysingle.core.logging import get_logger
 
-logger = get_structured_logger(__name__)
+logger = get_logger(__name__)
 
 
 @dataclass
@@ -22,6 +22,7 @@ class MetricsConfig:
     enable_histogram: bool = True
     retention_period_seconds: int = 3600  # 1 hour
     cleanup_interval_seconds: int = 300  # 5 minutes
+    enable_custom_metrics: bool = True  # Enable custom service-specific metrics
 
 
 @dataclass
@@ -53,9 +54,24 @@ class MetricsCollector:
         self.total_requests = 0
         self.total_errors = 0
 
+        # Custom metrics storage (service-specific)
+        self.custom_counters: dict[str, int] = {}
+        self.custom_gauges: dict[str, float] = {}
+        self.custom_histograms: dict[str, deque[float]] = {}
+
         # 백그라운드 정리 작업
         self._cleanup_task: asyncio.Task | None = None
         self._start_cleanup_task()
+
+        logger.info(
+            "Metrics collector initialized",
+            service_name=service_name,
+            max_duration_samples=self.config.max_duration_samples,
+            enable_percentiles=self.config.enable_percentiles,
+            enable_histogram=self.config.enable_histogram,
+            enable_custom_metrics=self.config.enable_custom_metrics,
+            retention_period_seconds=self.config.retention_period_seconds,
+        )
 
     def _start_cleanup_task(self) -> None:
         """Start background cleanup task."""
@@ -73,9 +89,18 @@ class MetricsCollector:
                 await asyncio.sleep(self.config.cleanup_interval_seconds)
                 await self._cleanup_old_metrics()
             except asyncio.CancelledError:
+                logger.debug(
+                    "Metrics cleanup task cancelled",
+                    service=self.service_name,
+                )
                 break
             except Exception as e:
-                logger.warning(f"Error in metrics cleanup: {e}")
+                logger.warning(
+                    "Error in metrics cleanup",
+                    service=self.service_name,
+                    error=str(e),
+                    error_type=type(e).__name__,
+                )
 
     async def _cleanup_old_metrics(self) -> None:
         """Remove old metrics data to prevent memory bloat."""
@@ -91,7 +116,12 @@ class MetricsCollector:
             del self.routes[route_key]
 
         if routes_to_remove:
-            logger.debug(f"Cleaned up {len(routes_to_remove)} old route metrics")
+            logger.debug(
+                "Cleaned up old route metrics",
+                service=self.service_name,
+                routes_removed=len(routes_to_remove),
+                retention_period_seconds=self.config.retention_period_seconds,
+            )
 
     async def record_request(
         self, method: str, path: str, status_code: int, duration: float
@@ -146,7 +176,134 @@ class MetricsCollector:
 
             route_metrics.durations.append(duration)
         except Exception as e:
-            logger.warning(f"Error recording metrics: {e}")
+            logger.warning(
+                "Error recording metrics",
+                service=self.service_name,
+                method=method,
+                path=path,
+                error=str(e),
+                error_type=type(e).__name__,
+            )
+
+    # ===== Custom Metrics Methods =====
+
+    def increment_counter(
+        self, name: str, value: int = 1, labels: dict[str, str] | None = None
+    ) -> None:
+        """Increment a custom counter metric.
+
+        Args:
+            name: Counter name (e.g., "strategy_executions", "trade_count")
+            value: Value to increment by (default: 1)
+            labels: Optional labels for the counter (e.g., {"strategy_type": "momentum"})
+        """
+        if not self.config.enable_custom_metrics:
+            return
+
+        try:
+            # Create unique key with labels
+            key = name
+            if labels:
+                label_str = ",".join(f"{k}={v}" for k, v in sorted(labels.items()))
+                key = f"{name}{{{label_str}}}"
+
+            self.custom_counters[key] = self.custom_counters.get(key, 0) + value
+
+            logger.debug(
+                "Custom counter incremented",
+                service=self.service_name,
+                counter_name=name,
+                increment_value=value,
+                new_value=self.custom_counters[key],
+                labels=labels,
+            )
+        except Exception as e:
+            logger.warning(
+                "Error incrementing custom counter",
+                service=self.service_name,
+                counter_name=name,
+                error=str(e),
+            )
+
+    def set_gauge(
+        self, name: str, value: float, labels: dict[str, str] | None = None
+    ) -> None:
+        """Set a custom gauge metric.
+
+        Args:
+            name: Gauge name (e.g., "active_strategies", "queue_size")
+            value: Current value
+            labels: Optional labels for the gauge
+        """
+        if not self.config.enable_custom_metrics:
+            return
+
+        try:
+            # Create unique key with labels
+            key = name
+            if labels:
+                label_str = ",".join(f"{k}={v}" for k, v in sorted(labels.items()))
+                key = f"{name}{{{label_str}}}"
+
+            self.custom_gauges[key] = value
+
+            logger.debug(
+                "Custom gauge set",
+                service=self.service_name,
+                gauge_name=name,
+                value=value,
+                labels=labels,
+            )
+        except Exception as e:
+            logger.warning(
+                "Error setting custom gauge",
+                service=self.service_name,
+                gauge_name=name,
+                error=str(e),
+            )
+
+    def observe_histogram(
+        self, name: str, value: float, labels: dict[str, str] | None = None
+    ) -> None:
+        """Observe a value for a custom histogram metric.
+
+        Args:
+            name: Histogram name (e.g., "backtest_duration", "optimization_time")
+            value: Observed value
+            labels: Optional labels for the histogram
+        """
+        if not self.config.enable_custom_metrics:
+            return
+
+        try:
+            # Create unique key with labels
+            key = name
+            if labels:
+                label_str = ",".join(f"{k}={v}" for k, v in sorted(labels.items()))
+                key = f"{name}{{{label_str}}}"
+
+            if key not in self.custom_histograms:
+                self.custom_histograms[key] = deque(
+                    maxlen=self.config.max_duration_samples
+                )
+
+            self.custom_histograms[key].append(value)
+
+            logger.debug(
+                "Custom histogram value observed",
+                service=self.service_name,
+                histogram_name=name,
+                value=value,
+                total_observations=len(self.custom_histograms[key]),
+                labels=labels,
+            )
+        except Exception as e:
+            logger.warning(
+                "Error observing custom histogram",
+                service=self.service_name,
+                histogram_name=name,
+                error=str(e),
+            )
 
     def _calculate_percentiles(self, durations: deque[float]) -> dict[str, float]:
         """Calculate percentiles for response times."""
@@ -236,7 +393,7 @@ class MetricsCollector:
 
             routes_metrics[route_key] = route_data
 
-        return {
+        metrics_output = {
             "service": self.service_name,
             "timestamp": time.time(),
             "uptime_seconds": uptime,
@@ -253,10 +410,42 @@ class MetricsCollector:
                 "max_duration_samples": self.config.max_duration_samples,
                 "enable_percentiles": self.config.enable_percentiles,
                 "enable_histogram": self.config.enable_histogram,
+                "enable_custom_metrics": self.config.enable_custom_metrics,
                 "retention_period_seconds": self.config.retention_period_seconds,
             },
             "routes": routes_metrics,
         }
+
+        # Add custom metrics if enabled
+        if self.config.enable_custom_metrics:
+            custom_metrics_data: dict[str, Any] = {}
+
+            # Add counters
+            if self.custom_counters:
+                custom_metrics_data["counters"] = dict(self.custom_counters)
+
+            # Add gauges
+            if self.custom_gauges:
+                custom_metrics_data["gauges"] = dict(self.custom_gauges)
+
+            # Add histograms with statistics
+            if self.custom_histograms:
+                histograms_data = {}
+                for key, values in self.custom_histograms.items():
+                    if values:
+                        histograms_data[key] = {
+                            "count": len(values),
+                            "min": min(values),
+                            "max": max(values),
+                            "avg": sum(values) / len(values),
+                            "p50": statistics.median(sorted(values)),
+                        }
+                custom_metrics_data["histograms"] = histograms_data
+
+            if custom_metrics_data:
+                metrics_output["custom_metrics"] = custom_metrics_data
+
+        return metrics_output
 
     def get_prometheus_metrics(self) -> str:
         """Generate Prometheus-formatted metrics."""
@@ -327,6 +516,107 @@ class MetricsCollector:
                             ]
                         )
 
+        # Add custom metrics if enabled
+        if self.config.enable_custom_metrics:
+            # Custom counters
+            for counter_key, counter_value in self.custom_counters.items():
+                # Parse metric name and labels
+                if "{" in counter_key:
+                    name, labels_part = counter_key.split("{", 1)
+                    labels = labels_part.rstrip("}")
+                    metric_name = f"{service_name}_custom_{name}"
+                    lines.extend(
+                        [
+                            f"# HELP {metric_name} Custom counter metric: {name}",
+                            f"# TYPE {metric_name} counter",
+                            f"{metric_name}{{{labels}}} {counter_value}",
+                            "",
+                        ]
+                    )
+                else:
+                    metric_name = f"{service_name}_custom_{counter_key}"
+                    lines.extend(
+                        [
+                            f"# HELP {metric_name} Custom counter metric: {counter_key}",
+                            f"# TYPE {metric_name} counter",
+                            f"{metric_name} {counter_value}",
+                            "",
+                        ]
+                    )
+
+            # Custom gauges
+            for gauge_key, gauge_value in self.custom_gauges.items():
+                if "{" in gauge_key:
+                    name, labels_part = gauge_key.split("{", 1)
+                    labels = labels_part.rstrip("}")
+                    metric_name = f"{service_name}_custom_{name}"
+                    lines.extend(
+                        [
+                            f"# HELP {metric_name} Custom gauge metric: {name}",
+                            f"# TYPE {metric_name} gauge",
+                            f"{metric_name}{{{labels}}} {gauge_value}",
+                            "",
+                        ]
+                    )
+                else:
+                    metric_name = f"{service_name}_custom_{gauge_key}"
+                    lines.extend(
+                        [
+                            f"# HELP {metric_name} Custom gauge metric: {gauge_key}",
+                            f"# TYPE {metric_name} gauge",
+                            f"{metric_name} {gauge_value}",
+                            "",
+                        ]
+                    )
+
+            # Custom histograms
+            for hist_key, hist_values in self.custom_histograms.items():
+                if hist_values:
+                    if "{" in hist_key:
+                        name, labels_part = hist_key.split("{", 1)
+                        labels = labels_part.rstrip("}")
+                        metric_name = f"{service_name}_custom_{name}"
+                    else:
+                        name = hist_key
+                        labels = ""
+                        metric_name = f"{service_name}_custom_{name}"
+
+                    sorted_values = sorted(hist_values)
+                    label_prefix = f"{{{labels}}}" if labels else ""
+
+                    lines.extend(
+                        [
+                            f"# HELP {metric_name} Custom histogram metric: {name}",
+                            f"# TYPE {metric_name} summary",
+                            f"{metric_name}_count{label_prefix} {len(sorted_values)}",
+                            f"{metric_name}_sum{label_prefix} {sum(sorted_values):.4f}",
+                        ]
+                    )
+
+                    # Add quantiles
+                    p50 = statistics.median(sorted_values)
+                    lines.append(
+                        f"{metric_name}{{quantile=\"0.5\"{','+labels if labels else ''}}} {p50:.4f}"
+                    )
+
+                    if len(sorted_values) >= 10:
+                        p90 = statistics.quantiles(sorted_values, n=10)[8]
+                        lines.append(
+                            f"{metric_name}{{quantile=\"0.9\"{','+labels if labels else ''}}} {p90:.4f}"
+                        )
+
+                    if len(sorted_values) >= 20:
+                        p99 = (
+                            statistics.quantiles(sorted_values, n=100)[98]
+                            if len(sorted_values) >= 100
+                            else sorted_values[-1]
+                        )
+                        lines.append(
+                            f"{metric_name}{{quantile=\"0.99\"{','+labels if labels else ''}}} {p99:.4f}"
+                        )
+
+                    lines.append("")
+
         return "\n".join(lines)
 
     def reset_metrics(self) -> None:
@@ -334,7 +624,16 @@ class MetricsCollector:
         self.routes.clear()
         self.total_requests = 0
         self.total_errors = 0
+        self.custom_counters.clear()
+        self.custom_gauges.clear()
+        self.custom_histograms.clear()
         self.start_time = time.time()
+
+        logger.info(
+            "Metrics reset",
+            service=self.service_name,
+            operation="reset_metrics",
+        )
 
     def __del__(self) -> None:
         """Cleanup when collector is destroyed."""

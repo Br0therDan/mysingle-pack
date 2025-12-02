@@ -11,9 +11,9 @@ from typing import Any
 
 import duckdb
 
-from mysingle.core.logging import get_structured_logger
+from mysingle.core.logging import get_logger
 
-logger = get_structured_logger(__name__)
+logger = get_logger(__name__)
 
 
 class BaseDuckDBManager:
@@ -51,22 +51,43 @@ class BaseDuckDBManager:
     def connect(self) -> None:
         """데이터베이스 연결"""
         if self.connection is None:
-            logger.info(f"Connecting to DuckDB at: {self.db_path}")
+            logger.info(
+                "Connecting to DuckDB",
+                db_path=self.db_path,
+                operation="connect",
+            )
             try:
                 # 기존 연결이 있다면 종료
                 self.close()
                 # 새 연결 생성
                 self.connection = duckdb.connect(self.db_path)
                 self._create_tables()
-                logger.info(f"✅ DuckDB connected successfully at: {self.db_path}")
+                logger.info(
+                    "DuckDB connected successfully",
+                    db_path=self.db_path,
+                    status="success",
+                )
             except Exception as e:
-                logger.error(f"❌ Failed to connect to DuckDB: {e}")
+                logger.error(
+                    "Failed to connect to DuckDB",
+                    db_path=self.db_path,
+                    error=str(e),
+                    error_type=type(e).__name__,
+                )
                 # 파일이 잠겨있다면 메모리 DB로 폴백
                 if "lock" in str(e).lower():
-                    logger.warning("🔄 Falling back to in-memory database")
+                    logger.warning(
+                        "Falling back to in-memory database",
+                        reason="file_locked",
+                        original_db_path=self.db_path,
+                    )
                     self.connection = duckdb.connect(":memory:")
                     self._create_tables()
-                    logger.info("✅ DuckDB connected to in-memory database")
+                    logger.info(
+                        "DuckDB connected to in-memory database",
+                        mode="memory",
+                        status="success",
+                    )
                 else:
                     raise
 
@@ -75,9 +96,17 @@ class BaseDuckDBManager:
         if self.connection:
             try:
                 self.connection.close()
-                logger.info("🔒 DuckDB connection closed")
+                logger.info(
+                    "DuckDB connection closed",
+                    db_path=self.db_path,
+                    operation="close",
+                )
             except Exception as e:
-                logger.warning(f"⚠️ Error closing DuckDB connection: {e}")
+                logger.warning(
+                    "Error closing DuckDB connection",
+                    db_path=self.db_path,
+                    error=str(e),
+                )
             finally:
                 self.connection = None
 
@@ -147,11 +176,23 @@ class BaseDuckDBManager:
                 [record_id, cache_key, json.dumps(data), now, now],
             )
 
-            logger.info(f"캐시 데이터 저장 완료: {cache_key}")
+            logger.info(
+                "Cache data stored successfully",
+                cache_key=cache_key,
+                table_name=table_name,
+                data_count=len(data),
+                operation="store_cache",
+            )
             return True
 
         except Exception as e:
-            logger.error(f"캐시 데이터 저장 실패: {e}")
+            logger.error(
+                "Failed to store cache data",
+                cache_key=cache_key,
+                table_name=table_name,
+                error=str(e),
+                error_type=type(e).__name__,
+            )
             return False
 
     def get_cache_data(
@@ -179,43 +220,84 @@ class BaseDuckDBManager:
             if result:
                 data_json, _ = result
                 parsed_data: list[dict[Any, Any]] = json.loads(data_json)  # type: ignore[assignment]
+                logger.debug(
+                    "Cache data retrieved successfully",
+                    cache_key=cache_key,
+                    table_name=table_name,
+                    data_count=len(parsed_data),
+                    ttl_hours=ttl_hours,
+                    operation="get_cache",
+                )
                 return parsed_data
             else:
+                logger.debug(
+                    "Cache data not found or expired",
+                    cache_key=cache_key,
+                    table_name=table_name,
+                    ttl_hours=ttl_hours,
+                    reason="not_found_or_expired",
+                )
                 return None
 
         except Exception as e:
-            logger.error(f"캐시 데이터 조회 실패: {e}")
+            logger.error(
+                "Failed to retrieve cache data",
+                cache_key=cache_key,
+                table_name=table_name,
+                error=str(e),
+                error_type=type(e).__name__,
+            )
             return None
 
     def _create_cache_table(self, table_name: str) -> None:
         """캐시 테이블 생성"""
         self._ensure_connected()
         if not self.connection:
+            logger.warning(
+                "Cannot create cache table - no connection",
+                table_name=table_name,
+            )
             return
 
-        self.connection.execute(
-            f"""
-            CREATE TABLE IF NOT EXISTS {table_name} (
-                id VARCHAR PRIMARY KEY,
-                cache_key VARCHAR NOT NULL,
-                data_json TEXT NOT NULL,
-                created_at TIMESTAMP NOT NULL,
-                updated_at TIMESTAMP NOT NULL
+        try:
+            self.connection.execute(
+                f"""
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id VARCHAR PRIMARY KEY,
+                    cache_key VARCHAR NOT NULL,
+                    data_json TEXT NOT NULL,
+                    created_at TIMESTAMP NOT NULL,
+                    updated_at TIMESTAMP NOT NULL
+                )
+            """
             )
-        """
-        )
 
-        # 인덱스 생성
-        self.connection.execute(
-            f"""
-            CREATE INDEX IF NOT EXISTS idx_{table_name}_cache_key
-            ON {table_name}(cache_key)
-        """
-        )
+            # 인덱스 생성
+            self.connection.execute(
+                f"""
+                CREATE INDEX IF NOT EXISTS idx_{table_name}_cache_key
+                ON {table_name}(cache_key)
+            """
+            )
 
-        self.connection.execute(
-            f"""
-            CREATE INDEX IF NOT EXISTS idx_{table_name}_updated_at
-            ON {table_name}(updated_at)
-        """
-        )
+            self.connection.execute(
+                f"""
+                CREATE INDEX IF NOT EXISTS idx_{table_name}_updated_at
+                ON {table_name}(updated_at)
+            """
+            )
+
+            logger.debug(
+                "Cache table created successfully",
+                table_name=table_name,
+                indexes=["cache_key", "updated_at"],
+                operation="create_table",
+            )
+
+        except Exception as e:
+            logger.error(
+                "Failed to create cache table",
+                table_name=table_name,
+                error=str(e),
+                error_type=type(e).__name__,
+            )

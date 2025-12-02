@@ -56,12 +56,12 @@ from mysingle.constants import (
     GRPC_METADATA_REQUEST_ID,
     GRPC_METADATA_USER_ID,
 )
-from mysingle.core.logging import get_structured_logger
+from mysingle.core.logging import get_logger
 
 if TYPE_CHECKING:
     from fastapi import Request
 
-logger = get_structured_logger(__name__)
+logger = get_logger(__name__)
 
 
 class BaseGrpcClient:
@@ -152,7 +152,9 @@ class BaseGrpcClient:
         self.channel = self._create_channel(**kwargs)
 
         logger.info(
-            f"{self.__class__.__name__} initialized",
+            "gRPC client initialized",
+            client_class=self.__class__.__name__,
+            service_name=self.service_name,
             address=self.address,
             tls=self.use_tls,
             timeout=timeout,
@@ -165,23 +167,52 @@ class BaseGrpcClient:
         """
         FastAPI Request 객체에서 User ID 추출
 
+        Kong Gateway 헤더 우선순위:
+        1. X-User-Id (서비스 간 전파 표준)
+        2. X-Consumer-Custom-ID (Kong JWT 플러그인 원본)
+        3. request.state.user.id (AuthMiddleware가 주입한 User 객체)
+
         Args:
             request: FastAPI Request 객체
 
         Returns:
             추출된 User ID (없으면 빈 문자열)
         """
-        from mysingle.constants import HEADER_USER_ID
+        from mysingle.constants import HEADER_KONG_USER_ID, HEADER_USER_ID
 
+        # 우선순위 1: X-User-Id (서비스 간 전파 표준)
         user_id = request.headers.get(HEADER_USER_ID, "")
-        if not user_id:
-            logger.warning("User ID not found in request headers")
-        return user_id
+        if user_id:
+            return user_id.strip()
+
+        # 우선순위 2: X-Consumer-Custom-ID (Kong 원본)
+        kong_user_id = request.headers.get(HEADER_KONG_USER_ID, "")
+        if kong_user_id:
+            return kong_user_id.strip()
+
+        # 우선순위 3: request.state.user (AuthMiddleware)
+        try:
+            user = getattr(request.state, "user", None)
+            if user and hasattr(user, "id"):
+                return str(user.id)
+        except Exception as e:
+            logger.debug(f"Failed to extract user from request.state: {e}")
+
+        logger.warning(
+            "User ID not found in request headers or state",
+            headers=dict(request.headers),
+            has_state_user=hasattr(request.state, "user"),
+        )
+        return ""
 
     @staticmethod
     def _extract_correlation_id_from_request(request: "Request") -> str | None:
         """
         FastAPI Request 객체에서 Correlation ID 추출
+
+        Kong Gateway 헤더 우선순위:
+        1. X-Correlation-Id (표준)
+        2. Correlation-Id (대체)
 
         Args:
             request: FastAPI Request 객체
@@ -189,10 +220,19 @@ class BaseGrpcClient:
         Returns:
             추출된 Correlation ID (없으면 None)
         """
-        # HTTP 헤더는 대소문자 무관
-        return request.headers.get("X-Correlation-Id") or request.headers.get(
-            "Correlation-Id"
-        )
+        from mysingle.constants import HEADER_CORRELATION_ID
+
+        # 우선순위 1: X-Correlation-Id (표준)
+        correlation_id = request.headers.get(HEADER_CORRELATION_ID)
+        if correlation_id:
+            return correlation_id.strip()
+
+        # 우선순위 2: Correlation-Id (대체)
+        alt_correlation_id = request.headers.get("Correlation-Id")
+        if alt_correlation_id:
+            return alt_correlation_id.strip()
+
+        return None
 
     def _determine_host(self) -> str:
         """
@@ -270,18 +310,45 @@ class BaseGrpcClient:
         Note:
             - request_id는 매 호출마다 새로 생성됩니다.
             - user_id가 없으면 빈 문자열이지만, 서버에서 UNAUTHENTICATED 오류 발생.
+            - 모든 값은 문자열로 변환되며, None은 빈 문자열로 처리됩니다.
         """
-        return [
-            (GRPC_METADATA_USER_ID, self.user_id),
-            (GRPC_METADATA_CORRELATION_ID, self.correlation_id),
-            (GRPC_METADATA_REQUEST_ID, str(uuid.uuid4())),
+        request_id = str(uuid.uuid4())
+
+        metadata = [
+            (GRPC_METADATA_USER_ID, self.user_id or ""),
+            (GRPC_METADATA_CORRELATION_ID, self.correlation_id or ""),
+            (GRPC_METADATA_REQUEST_ID, request_id),
         ]
+
+        # Debug logging for metadata
+        logger.debug(
+            "gRPC metadata prepared",
+            service=self.service_name,
+            user_id=self.user_id or "<empty>",
+            correlation_id=self.correlation_id,
+            request_id=request_id,
+        )
+
+        return metadata
 
     async def close(self):
         """채널 종료"""
         if self.channel:
-            await self.channel.close()
-            logger.info(f"{self.__class__.__name__} channel closed")
+            try:
+                await self.channel.close()
+                logger.info(
+                    "gRPC channel closed",
+                    client_class=self.__class__.__name__,
+                    service=self.service_name,
+                    address=self.address,
+                )
+            except Exception as e:
+                logger.error(
+                    "Error closing gRPC channel",
+                    service=self.service_name,
+                    error=str(e),
+                    exc_info=True,
+                )
 
     async def __aenter__(self):
         """비동기 컨텍스트 매니저 진입"""
@@ -290,3 +357,79 @@ class BaseGrpcClient:
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """비동기 컨텍스트 매니저 종료"""
         await self.close()
+        return False  # 예외를 전파
+
+    def _handle_grpc_error(
+        self, error: grpc.RpcError, operation: str = "RPC call"
+    ) -> None:
+        """
+        gRPC 에러 처리 및 로깅
+
+        Args:
+            error: gRPC 에러 객체
+            operation: 작업 설명 (로깅용)
+        """
+        status_code = error.code() if hasattr(error, "code") else "UNKNOWN"
+        details = error.details() if hasattr(error, "details") else str(error)
+
+        logger.error(
+            "gRPC error occurred",
+            service=self.service_name,
+            operation=operation,
+            status_code=status_code,
+            details=details,
+            user_id=self.user_id,
+            correlation_id=self.correlation_id,
+        )
+
+    async def check_health(self) -> bool:
+        """
+        서비스 헬스 체크 (gRPC Health Checking Protocol)
+
+        Returns:
+            서비스가 정상이면 True, 아니면 False
+
+        Note:
+            서비스가 gRPC Health Checking Protocol을 구현한 경우에만 동작합니다.
+            구현되지 않은 경우 UNIMPLEMENTED 오류가 발생하며 False를 반환합니다.
+        """
+        try:
+            from grpc_health.v1 import health_pb2, health_pb2_grpc  # type: ignore
+
+            health_stub = health_pb2_grpc.HealthStub(self.channel)
+            health_request = health_pb2.HealthCheckRequest(service=self.service_name)
+            response = await health_stub.Check(health_request, timeout=5.0)  # type: ignore
+
+            is_healthy = response.status == health_pb2.HealthCheckResponse.SERVING
+
+            logger.info(
+                "Health check completed",
+                service=self.service_name,
+                status="healthy" if is_healthy else "unhealthy",
+                is_healthy=is_healthy,
+            )
+
+            return is_healthy
+        except grpc.RpcError as e:
+            if e.code() == grpc.StatusCode.UNIMPLEMENTED:
+                logger.warning(
+                    "Health check not implemented",
+                    service=self.service_name,
+                )
+            else:
+                self._handle_grpc_error(e, "health check")
+            return False
+        except ImportError:
+            logger.warning(
+                "grpcio-health-checking package not installed",
+                service=self.service_name,
+            )
+            return False
+        except Exception as e:
+            logger.error(
+                "Unexpected error during health check",
+                service=self.service_name,
+                error=str(e),
+                exc_info=True,
+            )
+            return False

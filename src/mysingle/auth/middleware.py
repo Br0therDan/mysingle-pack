@@ -21,14 +21,14 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
-from mysingle.core.logging import get_structured_logger
+from mysingle.core.logging import get_logger
 from mysingle.core.service_types import ServiceConfig, ServiceType
 
 from .cache import get_user_cache
 from .exceptions import AuthorizationFailed, InvalidToken, UserInactive, UserNotExists
 from .models import User
 
-logger = get_structured_logger(__name__)
+logger = get_logger(__name__)
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -58,13 +58,19 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
         if bypass_enabled and env == "production":
             logger.warning(
-                "⚠️ MYSINGLE_AUTH_BYPASS is set in production environment - IGNORING for security"
+                "MYSINGLE_AUTH_BYPASS is set in production environment - IGNORING for security",
+                bypass_enabled=bypass_enabled,
+                environment=env,
+                security_risk="high",
             )
             return False
 
         if bypass_enabled:
             logger.info(
-                f"🧪 Authentication bypass enabled for testing (Environment: {env})"
+                "Authentication bypass enabled for testing",
+                bypass_enabled=bypass_enabled,
+                environment=env,
+                mode="testing",
             )
 
         return bypass_enabled
@@ -85,18 +91,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
         # IAM 서비스는 인증 관련 경로도 공개
         if self.service_config.service_type == ServiceType.IAM_SERVICE:
-            auth_public_paths = [
-                "/api/v1/auth/login",
-                "/api/v1/auth/register",
-                "/api/v1/auth/verify-email",
-                "/api/v1/auth/reset-password",
-                "/api/v1/oauth2/google/authorize",
-                "/api/v1/oauth2/google/callback",
-                "/api/v1/oauth2/kakao/authorize",
-                "/api/v1/oauth2/kakao/callback",
-                "/api/v1/oauth2/naver/authorize",
-                "/api/v1/oauth2/naver/callback",
-            ]
+            # settings.AUTH_PUBLIC_PATHS를 사용하여 중앙 관리
+            auth_public_paths = getattr(self.settings, "AUTH_PUBLIC_PATHS", [])
             default_public_paths.extend(auth_public_paths)
 
         return default_public_paths + service_public_paths
@@ -113,35 +109,59 @@ class AuthMiddleware(BaseHTTPMiddleware):
             token: Optional[str] = None
             if authorization.startswith("Bearer "):
                 token = authorization.replace("Bearer ", "").strip()
+                logger.debug(
+                    "Token extracted from Authorization header",
+                    has_token=bool(token),
+                )
 
             # Authorization이 없으면 쿠키에서 access_token 검색 (브라우저 호출 대비)
             if not token:
                 try:
                     token = request.cookies.get("access_token")
+                    if token:
+                        logger.debug(
+                            "Token extracted from cookie",
+                            has_token=True,
+                        )
                 except Exception:
                     token = None
 
             if not token:
+                logger.debug(
+                    "No authentication token found",
+                    checked_sources=["Authorization header", "access_token cookie"],
+                )
                 return None
 
             # JWT 토큰 직접 검증
             try:
                 from .security.jwt import get_jwt_manager
             except ImportError:
-                logger.warning("JWT security module not available")
+                logger.warning(
+                    "JWT security module not available",
+                    module="mysingle.auth.security.jwt",
+                )
                 return None
 
             jwt_manager = get_jwt_manager()
             decoded_token = jwt_manager.decode_token(token)
             user_id = decoded_token.get("sub")
             if not user_id:
+                logger.debug(
+                    "No user_id (sub) in JWT token",
+                    token_claims=list(decoded_token.keys()),
+                )
                 return None
 
             # 캐시 우선 조회 -> 미스 시 DB 조회 후 캐시 저장
             user = await self._get_user_with_cache(user_id)
 
             if user and not user.is_active:
-                logger.warning(f"Inactive user attempted access: {user_id}")
+                logger.warning(
+                    "Inactive user attempted access",
+                    user_id=user_id,
+                    source="iam_jwt_validation",
+                )
                 return None
 
             # DB에 사용자 레코드가 없더라도, JWT 클레임으로 최소 사용자 컨텍스트를 구성해 허용
@@ -169,26 +189,36 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 # 비활성 토큰은 거부
                 if not user.is_active:
                     logger.warning(
-                        f"Inactive user (from token claims) attempted access: {user_id}"
+                        "Inactive user (from token claims) attempted access",
+                        user_id=user_id,
+                        source="jwt_claims_fallback",
                     )
                     return None
 
                 logger.debug(
-                    "Authenticated via JWT claims fallback: %s (ID: %s)",
-                    user.email,
-                    user.id,
+                    "Authenticated via JWT claims fallback",
+                    user_email=user.email,
+                    user_id=str(user.id),
+                    source="jwt_claims",
                 )
 
                 # 캐시에도 적재 시도 (최소 컨텍스트)
                 try:
                     await self.user_cache.set_user(user)
                 except Exception as e:
-                    logger.debug(f"Failed to cache user from claims: {e}")
+                    logger.debug(
+                        "Failed to cache user from claims",
+                        error=str(e),
+                    )
 
             return user
 
         except Exception as e:
-            logger.debug(f"IAM service authentication failed: {e}")
+            logger.debug(
+                "IAM service authentication failed",
+                error=str(e),
+                error_type=type(e).__name__,
+            )
             return None
 
     async def _authenticate_non_iam_service(self, request: Request) -> Optional[User]:
@@ -202,7 +232,10 @@ class AuthMiddleware(BaseHTTPMiddleware):
             x_user_superuser = request.headers.get("X-User-Superuser", "false")
 
             if not x_user_id:
-                logger.debug("No X-User-Id header found in request")
+                logger.debug(
+                    "No X-User-Id header found in request",
+                    source="kong_gateway_headers",
+                )
                 return None
 
             # 캐시에 사용자 정보가 있으면 우선 사용 (게이트웨이 경로에서도 재사용)
@@ -210,11 +243,16 @@ class AuthMiddleware(BaseHTTPMiddleware):
             if cached_user:
                 if not cached_user.is_active:
                     logger.warning(
-                        f"Inactive user from cache via gateway headers: {x_user_id}"
+                        "Inactive user from cache via gateway headers",
+                        user_id=x_user_id,
+                        source="cache",
                     )
                     return None
                 logger.debug(
-                    f"User authenticated via cache (gateway): {cached_user.email} (ID: {cached_user.id})"
+                    "User authenticated via cache (gateway)",
+                    user_email=cached_user.email,
+                    user_id=str(cached_user.id),
+                    source="cache",
                 )
                 return cached_user
 
@@ -222,7 +260,10 @@ class AuthMiddleware(BaseHTTPMiddleware):
             try:
                 from beanie import PydanticObjectId
             except ImportError:
-                logger.warning("Beanie not available for user ID conversion")
+                logger.warning(
+                    "Beanie not available for user ID conversion",
+                    module="beanie",
+                )
                 return None
 
             # 헤더 값 검증 및 변환
@@ -230,7 +271,9 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 user_object_id = PydanticObjectId(x_user_id)
             except Exception as e:
                 logger.warning(
-                    f"Invalid user ID format in X-User-Id header: {x_user_id} ({e})"
+                    "Invalid user ID format in X-User-Id header",
+                    user_id=x_user_id,
+                    error=str(e),
                 )
                 return None
 
@@ -246,22 +289,38 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
             # 활성 사용자만 허용
             if not user.is_active:
-                logger.warning(f"Inactive user from gateway headers: {user_object_id}")
+                logger.warning(
+                    "Inactive user from gateway headers",
+                    user_id=str(user_object_id),
+                    source="kong_gateway_headers",
+                )
                 return None
 
             logger.debug(
-                f"User authenticated via gateway headers: {user.email} (ID: {user.id})"
+                "User authenticated via gateway headers",
+                user_email=user.email,
+                user_id=str(user.id),
+                is_verified=user.is_verified,
+                is_superuser=user.is_superuser,
+                source="kong_gateway_headers",
             )
 
             # 게이트웨이 기반 사용자도 단기 캐시 (TTL 기본값)
             try:
                 await self.user_cache.set_user(user)
             except Exception as e:
-                logger.debug(f"Failed to set user in cache (gateway): {e}")
+                logger.debug(
+                    "Failed to set user in cache (gateway)",
+                    error=str(e),
+                )
             return user
 
         except Exception as e:
-            logger.debug(f"NON_IAM service authentication failed: {e}")
+            logger.debug(
+                "NON_IAM service authentication failed",
+                error=str(e),
+                error_type=type(e).__name__,
+            )
             return None
 
     async def _authenticate_user(self, request: Request) -> Optional[User]:
@@ -270,11 +329,20 @@ class AuthMiddleware(BaseHTTPMiddleware):
             # IAM 서비스: 직접 JWT 검증 우선
             user = await self._authenticate_iam_service(request)
             if user:
-                logger.debug(f"IAM service: User authenticated via JWT: {user.email}")
+                logger.debug(
+                    "IAM service: User authenticated via JWT",
+                    user_email=user.email,
+                    user_id=str(user.id),
+                    auth_method="jwt",
+                )
                 return user
 
             # Fallback: Gateway 헤더 (개발/테스트 환경)
-            logger.debug("IAM service: Falling back to gateway headers")
+            logger.debug(
+                "IAM service: Falling back to gateway headers",
+                service_type="IAM_SERVICE",
+                fallback_method="gateway_headers",
+            )
             return await self._authenticate_non_iam_service(request)
 
         else:
@@ -282,12 +350,19 @@ class AuthMiddleware(BaseHTTPMiddleware):
             user = await self._authenticate_non_iam_service(request)
             if user:
                 logger.debug(
-                    f"NON_IAM service: User authenticated via gateway: {user.email}"
+                    "NON_IAM service: User authenticated via gateway",
+                    user_email=user.email,
+                    user_id=str(user.id),
+                    auth_method="gateway_headers",
                 )
                 return user
 
             # Fallback: 직접 토큰 (개발 환경에서 Gateway 없이 테스트할 때)
-            logger.debug("NON_IAM service: Falling back to direct JWT validation")
+            logger.debug(
+                "NON_IAM service: Falling back to direct JWT validation",
+                service_type="NON_IAM_SERVICE",
+                fallback_method="jwt",
+            )
             return await self._authenticate_iam_service(request)
 
     async def _get_user_with_cache(self, user_id: str) -> Optional[User]:
@@ -296,10 +371,18 @@ class AuthMiddleware(BaseHTTPMiddleware):
             # 1) 캐시 조회
             cached = await self.user_cache.get_user(str(user_id))
             if cached:
-                logger.debug(f"Cache HIT for user_id={user_id}")
+                logger.debug(
+                    "Cache HIT for user",
+                    user_id=user_id,
+                    cache_result="hit",
+                )
                 return cached
 
-            logger.debug(f"Cache MISS for user_id={user_id} - querying DB")
+            logger.debug(
+                "Cache MISS for user - querying DB",
+                user_id=user_id,
+                cache_result="miss",
+            )
 
             # 2) DB 조회
             from beanie import PydanticObjectId
@@ -313,12 +396,25 @@ class AuthMiddleware(BaseHTTPMiddleware):
             if user:
                 try:
                     await self.user_cache.set_user(user)
+                    logger.debug(
+                        "User cached successfully",
+                        user_id=user_id,
+                    )
                 except Exception as e:
-                    logger.debug(f"Failed to set user in cache: {e}")
+                    logger.debug(
+                        "Failed to set user in cache",
+                        user_id=user_id,
+                        error=str(e),
+                    )
             return user
 
         except Exception as e:
-            logger.debug(f"_get_user_with_cache error: {e}")
+            logger.debug(
+                "_get_user_with_cache error",
+                user_id=user_id,
+                error=str(e),
+                error_type=type(e).__name__,
+            )
             return None
 
     def _create_test_user(self) -> User:
@@ -399,7 +495,11 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 },
             )
         else:
-            logger.error(f"Unexpected authentication error: {error}")
+            logger.error(
+                "Unexpected authentication error",
+                error=str(error),
+                error_type=type(error).__name__,
+            )
             return JSONResponse(
                 status_code=500,
                 content={
@@ -416,19 +516,31 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
         # 공개 경로는 인증 건너뛰기
         if self._is_public_path(path):
-            logger.debug(f"Skipping authentication for public path: {method} {path}")
+            logger.debug(
+                "Skipping authentication for public path",
+                method=method,
+                path=path,
+                reason="public_endpoint",
+            )
             return await call_next(request)
 
         # 인증이 비활성화된 경우 건너뛰기
         if not self.service_config.enable_auth:
             logger.debug(
-                f"Authentication disabled for service: {self.service_config.service_name}"
+                "Authentication disabled for service",
+                service_name=self.service_config.service_name,
+                enable_auth=False,
             )
             return await call_next(request)
 
         # 테스트 환경 인증 우회
         if self.auth_bypass:
-            logger.debug(f"🧪 Auth bypass: injecting test user for {method} {path}")
+            logger.debug(
+                "Auth bypass: injecting test user",
+                method=method,
+                path=path,
+                mode="testing",
+            )
             test_user = self._create_test_user()
             request.state.user = test_user
             request.state.authenticated = True
@@ -443,7 +555,11 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 # 이중 활성화 상태 확인 (인증 과정에서도 확인하지만 보안을 위해 재확인)
                 if not user.is_active:
                     logger.warning(
-                        f"Inactive user blocked: {user.id} at {method} {path}"
+                        "Inactive user blocked",
+                        user_id=str(user.id),
+                        method=method,
+                        path=path,
+                        reason="user_inactive",
                     )
                     raise UserInactive(user_id=str(user.id))
 
@@ -453,14 +569,21 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 request.state.service_type = self.service_config.service_type
 
                 logger.debug(
-                    f"✅ User authenticated: {user.email} "
-                    f"(ID: {user.id}, Verified: {user.is_verified}, "
-                    f"Superuser: {user.is_superuser}) for {method} {path}"
+                    "User authenticated successfully",
+                    user_email=user.email,
+                    user_id=str(user.id),
+                    is_verified=user.is_verified,
+                    is_superuser=user.is_superuser,
+                    method=method,
+                    path=path,
                 )
             else:
                 # 인증 필요한 경로에서 사용자 정보 없음
                 logger.warning(
-                    f"❌ Authentication required for protected endpoint: {method} {path}"
+                    "Authentication required for protected endpoint",
+                    method=method,
+                    path=path,
+                    reason="no_credentials",
                 )
                 raise UserNotExists(
                     identifier="user", identifier_type="authenticated user"
@@ -468,13 +591,20 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
         except (UserNotExists, InvalidToken, UserInactive, AuthorizationFailed) as e:
             logger.warning(
-                f"🔒 Authentication failed for {method} {path}: {type(e).__name__} - {e}"
+                "Authentication failed",
+                method=method,
+                path=path,
+                error_type=type(e).__name__,
+                error_message=str(e),
             )
             return self._create_error_response(e)
 
         except Exception as e:
             logger.error(
-                f"💥 Unexpected authentication error for {method} {path}: {e}",
+                "Unexpected authentication error",
+                method=method,
+                path=path,
+                error=str(e),
                 exc_info=True,
             )
             return self._create_error_response(e)

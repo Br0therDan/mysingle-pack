@@ -16,12 +16,12 @@ from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 
-from mysingle.core.logging import get_structured_logger
+from mysingle.core.logging import get_logger
 
 from .collector import MetricsCollector
 from .middleware import get_metrics_collector
 
-logger = get_structured_logger(__name__)
+logger = get_logger(__name__)
 
 
 def create_metrics_router() -> APIRouter:
@@ -51,7 +51,12 @@ def create_metrics_router() -> APIRouter:
             else:
                 return collector.get_metrics()
         except Exception as e:
-            logger.error(f"Error getting metrics: {e}")
+            logger.error(
+                "Error getting metrics",
+                format=format,
+                error=str(e),
+                error_type=type(e).__name__,
+            )
             raise HTTPException(
                 status_code=500, detail=f"Error retrieving metrics: {str(e)}"
             )
@@ -64,7 +69,11 @@ def create_metrics_router() -> APIRouter:
         try:
             return collector.get_metrics()
         except Exception as e:
-            logger.error(f"Error getting JSON metrics: {e}")
+            logger.error(
+                "Error getting JSON metrics",
+                error=str(e),
+                error_type=type(e).__name__,
+            )
             raise HTTPException(
                 status_code=500, detail=f"Error retrieving metrics: {str(e)}"
             )
@@ -78,7 +87,11 @@ def create_metrics_router() -> APIRouter:
             content = collector.get_prometheus_metrics()
             return Response(content=content, media_type="text/plain")
         except Exception as e:
-            logger.error(f"Error getting Prometheus metrics: {e}")
+            logger.error(
+                "Error getting Prometheus metrics",
+                error=str(e),
+                error_type=type(e).__name__,
+            )
             raise HTTPException(
                 status_code=500, detail=f"Error retrieving Prometheus metrics: {str(e)}"
             )
@@ -116,7 +129,11 @@ def create_metrics_router() -> APIRouter:
                 "timestamp": metrics["timestamp"],
             }
         except Exception as e:
-            logger.error(f"Error getting metrics health: {e}")
+            logger.error(
+                "Error getting metrics health",
+                error=str(e),
+                error_type=type(e).__name__,
+            )
             raise HTTPException(
                 status_code=500, detail=f"Error checking metrics health: {str(e)}"
             )
@@ -142,7 +159,11 @@ def create_metrics_router() -> APIRouter:
                 "config": full_metrics["config"],
             }
         except Exception as e:
-            logger.error(f"Error getting metrics summary: {e}")
+            logger.error(
+                "Error getting metrics summary",
+                error=str(e),
+                error_type=type(e).__name__,
+            )
             raise HTTPException(
                 status_code=500, detail=f"Error retrieving metrics summary: {str(e)}"
             )
@@ -185,7 +206,12 @@ def create_metrics_router() -> APIRouter:
                 "routes": routes,
             }
         except Exception as e:
-            logger.error(f"Error getting route metrics: {e}")
+            logger.error(
+                "Error getting route metrics",
+                route_filter=route_filter,
+                error=str(e),
+                error_type=type(e).__name__,
+            )
             raise HTTPException(
                 status_code=500, detail=f"Error retrieving route metrics: {str(e)}"
             )
@@ -203,14 +229,23 @@ def create_metrics_router() -> APIRouter:
         """
         try:
             collector.reset_metrics()
-            logger.info(f"Metrics reset for service: {collector.service_name}")
+            logger.info(
+                "Metrics reset for service",
+                service_name=collector.service_name,
+                operation="reset_metrics",
+            )
             return {
                 "status": "success",
                 "message": f"Metrics reset for service: {collector.service_name}",
                 "timestamp": collector.start_time,
             }
         except Exception as e:
-            logger.error(f"Error resetting metrics: {e}")
+            logger.error(
+                "Error resetting metrics",
+                service_name=collector.service_name,
+                error=str(e),
+                error_type=type(e).__name__,
+            )
             raise HTTPException(
                 status_code=500, detail=f"Error resetting metrics: {str(e)}"
             )

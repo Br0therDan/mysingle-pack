@@ -19,8 +19,7 @@ class CommonSettings(BaseSettings):
     # PROJECT INFORMATION
     PROJECT_NAME: str = "My Project"
     ENVIRONMENT: str = "development"
-    DEBUG: bool = True
-    DEV_MODE: bool = True
+    DEBUG: bool = True  # Enable debug logging (auto-disabled in production)
     MOCK_DATABASE: bool = False
 
     AUDIT_LOGGING_ENABLED: bool = True
@@ -41,8 +40,7 @@ class CommonSettings(BaseSettings):
     TEST_ADMIN_PASSWORD: str = "1234"
     TEST_ADMIN_FULLNAME: str = "Test Admin"
 
-    AUTH_APP_VERSION: str = "0.1.0"  # MySingle Auth 패키지 내부용
-
+    # AUTH MIDDLEWARE SETTINGS
     AUTH_PUBLIC_PATHS: list[str] = [
         "/api/v1/auth/login",
         "/api/v1/auth/register",
@@ -62,13 +60,19 @@ class CommonSettings(BaseSettings):
     MONGODB_PASSWORD: str = "example"
     REDIS_URL: str = "redis://localhost:6379/0"
     REDIS_PASSWORD: str = "change-this-redis-password"
+
     # USER CACHE SETTINGS
     USER_CACHE_TTL_SECONDS: int = 300
     USER_CACHE_KEY_PREFIX: str = "user"
 
+    # JWT & COOKIE SETTINGS
     TOKEN_TRANSPORT_TYPE: Literal["bearer", "cookie", "hybrid"] = "hybrid"
-    HTTPONLY_COOKIES: bool = False
-    SAMESITE_COOKIES: Literal["lax", "strict", "none"] = "lax"
+    HTTPONLY_COOKIES: bool = (
+        False  # Cookie httponly flag (recommended: True for production)
+    )
+    SAMESITE_COOKIES: Literal["lax", "strict", "none"] = (
+        "lax"  # Cookie SameSite attribute
+    )
     ALGORITHM: str = "HS256"
     DEFAULT_AUDIENCE: str = "your-audience"
 
@@ -147,23 +151,37 @@ class CommonSettings(BaseSettings):
 
     @computed_field
     def emails_enabled(self) -> bool:
-        return bool(self.SMTP_HOST == "your_smtp_host")
-
-    # External API Keys
+        """Check if email sending is properly configured."""
+        return bool(
+            self.SMTP_HOST
+            and self.SMTP_HOST != "your_smtp_host"
+            and self.EMAILS_FROM_EMAIL != "your_email@example.com"
+        )
 
     # OAUTH2 SETTINGS
     GOOGLE_CLIENT_ID: str = "your-google-client-id"
     GOOGLE_CLIENT_SECRET: str = "your-google-client-secret"
     GOOGLE_OAUTH_SCOPES: list[str] = ["openid", "email", "profile"]
-    OKTA_CLIENT_ID: str = "your-okta-client-id"
-    OKTA_CLIENT_SECRET: str = "your-okta-client-secret"
-    OKTA_DOMAIN: str = "your-okta-domain"
     KAKAO_CLIENT_ID: str = "your-kakao-client-id"
     KAKAO_CLIENT_SECRET: str = "your-kakao-client-secret"
     KAKAO_OAUTH_SCOPES: list[str] = ["profile", "account_email"]
     NAVER_CLIENT_ID: str = "your-naver-client-id"
     NAVER_CLIENT_SECRET: str = "your-naver-client-secret"
     NAVER_OAUTH_SCOPES: list[str] = ["profile", "email"]
+
+    @computed_field
+    @property
+    def log_level(self) -> str:
+        """Get appropriate log level based on DEBUG and ENVIRONMENT settings."""
+        if self.ENVIRONMENT == "production":
+            return "INFO"  # Force INFO in production for security
+        return "DEBUG" if self.DEBUG else "INFO"
+
+    @computed_field
+    @property
+    def is_debug_mode(self) -> bool:
+        """Check if debug mode is enabled (considers both DEBUG and ENVIRONMENT)."""
+        return self.DEBUG and self.ENVIRONMENT != "production"
 
 
 # Global settings instance
