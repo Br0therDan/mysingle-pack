@@ -14,6 +14,10 @@ from google.protobuf.internal import builder as _builder
 _runtime_version.ValidateProtobufRuntimeVersion(
     _runtime_version.Domain.PUBLIC, 6, 31, 1, "", "common/error.proto"
 )
+from google.protobuf import struct_pb2 as _struct_pb2  # protobuf 6.x compatibility
+
+_ = _struct_pb2.DESCRIPTOR
+
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()

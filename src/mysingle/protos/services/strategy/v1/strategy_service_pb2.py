@@ -19,6 +19,14 @@ _runtime_version.ValidateProtobufRuntimeVersion(
     "",
     "services/strategy/v1/strategy_service.proto",
 )
+from google.protobuf import struct_pb2 as _struct_pb2  # protobuf 6.x compatibility
+from google.protobuf import (
+    timestamp_pb2 as _timestamp_pb2,  # protobuf 6.x compatibility
+)
+
+_ = _struct_pb2.DESCRIPTOR
+_ = _timestamp_pb2.DESCRIPTOR
+
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()

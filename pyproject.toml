@@ -151,6 +151,11 @@ ignore = [
     "SIM103",
 ]
 
+[tool.ruff.lint.per-file-ignores]
+"src/mysingle/protos/**/*_pb2.py" = [
+    "E402",
+] # Generated proto files have imports after runtime checks
+
 [tool.ruff.lint.isort]
 known-first-party = ["mysingle"]
 

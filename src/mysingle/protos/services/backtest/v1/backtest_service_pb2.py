@@ -19,6 +19,12 @@ _runtime_version.ValidateProtobufRuntimeVersion(
     "",
     "services/backtest/v1/backtest_service.proto",
 )
+from google.protobuf import (
+    timestamp_pb2 as _timestamp_pb2,  # protobuf 6.x compatibility
+)
+
+_ = _timestamp_pb2.DESCRIPTOR
+
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()

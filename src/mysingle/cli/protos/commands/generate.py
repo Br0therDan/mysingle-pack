@@ -167,7 +167,7 @@ def fix_wellknown_types_imports(generated_dir: Path) -> list[Path]:
     """생성된 pb2 파일에 well-known types import 추가 (protobuf 6.x 호환성)
 
     protobuf 6.x에서는 well-known types의 DESCRIPTOR를 명시적으로 로드해야 합니다.
-    간단한 방식: 파일 맨 위에 필요한 import만 추가
+    _sym_db 선언 직전에 DESCRIPTOR 참조를 추가합니다.
     """
     if not generated_dir.exists():
         return []
@@ -194,25 +194,32 @@ def fix_wellknown_types_imports(generated_dir: Path) -> list[Path]:
         if not (needs_timestamp or needs_struct):
             continue
 
-        # 파일 맨 위(docstring 다음)에 import 추가
-        # """Generated protocol buffer code.""" 다음에 추가
-        marker = '"""Generated protocol buffer code."""\n'
+        # @@protoc_insertion_point(imports) 앞에 추가하여 E402 방지
+        # protoc가 생성하는 모든 import 앞에 위치해야 함
+        marker = "# @@protoc_insertion_point(imports)\n"
         if marker not in content:
             continue
 
-        imports = []
-        if needs_struct:
-            imports.append(
-                "from google.protobuf import struct_pb2  # protobuf 6.x compatibility"
-            )
-        if needs_timestamp:
-            imports.append(
-                "from google.protobuf import timestamp_pb2  # protobuf 6.x compatibility"
-            )
+        import_lines = []
+        descriptor_refs = []
 
-        if imports:
-            import_block = "\n" + "\n".join(imports) + "\n"
-            content = content.replace(marker, marker + import_block)
+        if needs_struct:
+            import_lines.append(
+                "from google.protobuf import struct_pb2 as _struct_pb2  # protobuf 6.x compatibility"
+            )
+            descriptor_refs.append("_ = _struct_pb2.DESCRIPTOR")
+        if needs_timestamp:
+            import_lines.append(
+                "from google.protobuf import timestamp_pb2 as _timestamp_pb2  # protobuf 6.x compatibility"
+            )
+            descriptor_refs.append("_ = _timestamp_pb2.DESCRIPTOR")
+
+        if import_lines and descriptor_refs:
+            # import와 DESCRIPTOR 참조를 @@protoc_insertion_point 앞에 삽입
+            injection_block = (
+                "\n".join(import_lines) + "\n" + "\n".join(descriptor_refs) + "\n\n"
+            )
+            content = content.replace(marker, injection_block + marker)
 
             file_path.write_text(content, encoding="utf-8")
             modified.append(file_path)
