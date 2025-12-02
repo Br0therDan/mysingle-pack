@@ -1,7 +1,7 @@
 
 [project]
 name = "mysingle"
-version = "2.3.12"
+version = "2.4.0"
 description = "Unified utilities and gRPC protocols for MySingle Platform"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -36,6 +36,9 @@ dependencies = [
     "redis>=7.0.1",
     "duckdb>=1.4.1",
 ]
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [project.optional-dependencies]
 # 인증
