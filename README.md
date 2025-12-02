@@ -201,7 +201,7 @@ MySingle 패키지는 **Git 저장소를 통해 직접 설치**하는 방식으�
 **pyproject.toml:**
 ```toml
 dependencies = [
-    "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.3.6",
+    "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.3.7",
     # 또는 최신 main 브랜치
     "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@main",
 ]

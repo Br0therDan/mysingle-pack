@@ -164,7 +164,11 @@ def rewrite_generated_imports(
 
 
 def fix_wellknown_types_imports(generated_dir: Path) -> list[Path]:
-    """생성된 pb2 파일에 well-known types import 추가 (protobuf 6.x 호환성)"""
+    """생성된 pb2 파일에 well-known types import 추가 (protobuf 6.x 호환성)
+
+    protobuf 6.x에서는 well-known types의 DESCRIPTOR를 명시적으로 로드해야 합니다.
+    간단한 방식: 파일 맨 위에 필요한 import만 추가
+    """
     if not generated_dir.exists():
         return []
 
@@ -174,50 +178,56 @@ def fix_wellknown_types_imports(generated_dir: Path) -> list[Path]:
 
     # _pb2.py 파일만 처리 (_grpc.py 제외)
     for file_path in generated_dir.rglob("*_pb2.py"):
-        # _grpc 파일 제외
         if "_grpc" in file_path.stem:
             continue
 
-        original = file_path.read_text(encoding="utf-8")
+        content = file_path.read_text(encoding="utf-8")
 
-        # 이미 well-known types import가 있는지 확인
-        if "from google.protobuf import timestamp_pb2" in original:
+        # 이미 수정되었는지 확인
+        if "# protobuf 6.x compatibility" in content:
             continue
 
-        # timestamp.proto 또는 struct.proto 의존성이 있는지 확인
-        needs_timestamp = b"google/protobuf/timestamp.proto" in file_path.read_bytes()
-        needs_struct = b"google/protobuf/struct.proto" in file_path.read_bytes()
+        # timestamp.proto 또는 struct.proto 의존성 확인
+        needs_timestamp = "google/protobuf/timestamp.proto" in content
+        needs_struct = "google/protobuf/struct.proto" in content
 
         if not (needs_timestamp or needs_struct):
             continue
 
-        # # @@protoc_insertion_point(imports) 바로 다음에 import 추가
-        import_lines = []
+        # 파일 맨 위(docstring 다음)에 import 추가
+        # """Generated protocol buffer code.""" 다음에 추가
+        marker = '"""Generated protocol buffer code."""\n'
+        if marker not in content:
+            continue
+
+        imports = []
         if needs_struct:
-            import_lines.append(
-                "from google.protobuf import struct_pb2 as google_dot_protobuf_dot_struct__pb2"
+            imports.append(
+                "from google.protobuf import struct_pb2  # protobuf 6.x compatibility"
             )
         if needs_timestamp:
-            import_lines.append(
-                "from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2"
+            imports.append(
+                "from google.protobuf import timestamp_pb2  # protobuf 6.x compatibility"
             )
 
-        if import_lines:
-            # # @@protoc_insertion_point(imports) 다음에 추가
-            insertion_marker = "# @@protoc_insertion_point(imports)\n"
-            if insertion_marker in original:
-                import_block = "\n".join(import_lines) + "\n"
-                updated = original.replace(
-                    insertion_marker, insertion_marker + import_block
-                )
+        if imports:
+            import_block = "\n" + "\n".join(imports) + "\n"
+            content = content.replace(marker, marker + import_block)
 
-                file_path.write_text(updated, encoding="utf-8")
-                modified.append(file_path)
-                log(
-                    f"수정: {colorize(str(file_path.relative_to(generated_dir)), Color.CYAN)} "
-                    f"(추가: {', '.join(['timestamp_pb2' if needs_timestamp else '', 'struct_pb2' if needs_struct else '']).strip(', ')})",
-                    LogLevel.DEBUG,
-                )
+            file_path.write_text(content, encoding="utf-8")
+            modified.append(file_path)
+
+            types_str = []
+            if needs_timestamp:
+                types_str.append("timestamp_pb2")
+            if needs_struct:
+                types_str.append("struct_pb2")
+
+            log(
+                f"수정: {colorize(str(file_path.relative_to(generated_dir)), Color.CYAN)} "
+                f"(추가: {', '.join(types_str)})",
+                LogLevel.DEBUG,
+            )
 
     if modified:
         log(
