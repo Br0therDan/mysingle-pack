@@ -9,6 +9,7 @@ dependencies = [
     # Pydantic (기본)
     "pydantic>=2.5.0",
     "pydantic-settings>=2.1.0",
+    "python_multipart>=0.0.6", # FastAPI file uploads
     # Core 통합 모듈 의존성
     "structlog>=23.2.0", # logging
     "colorlog>=6.9.0", # logging
