@@ -11,7 +11,7 @@ from .db import (
 )
 from .email import send_email
 from .health import HealthStatus, create_health_router, get_health_checker
-from .logging import get_structured_logger, setup_logging
+from .logging import get_logger, get_structured_logger, setup_logging
 from .metrics import MetricsCollector, get_metrics_collector
 from .middleware import (
     HealthCheckLoggingFilter,
@@ -51,6 +51,7 @@ __all__ = [
     # Logging (consolidated)
     "setup_logging",
     "get_structured_logger",
+    "get_logger",
     # Metrics (consolidated)
     "MetricsCollector",
     "get_metrics_collector",

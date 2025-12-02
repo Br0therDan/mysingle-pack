@@ -32,7 +32,8 @@ from typing import Any, Literal, Optional
 
 import jwt
 
-from mysingle.core import get_structured_logger, settings
+from mysingle.core.config import settings
+from mysingle.core.logging import get_structured_logger
 
 logger = get_structured_logger(__name__)
 

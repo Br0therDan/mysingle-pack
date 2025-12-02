@@ -1,108 +1,117 @@
 #!/usr/bin/env python3
-"""Proto import 테스트 스크립트
+"""MySingle Package 전체 Import 테스트 스크립트
 
-protobuf 6.x 호환성 검증을 위한 모든 proto 파일 import 테스트
+모든 mysingle 패키지 모듈의 import 가능 여부를 검증합니다.
 """
 
+import importlib
+import pkgutil
 import sys
+import traceback
 
 
-def test_proto_imports():
-    """모든 proto 서비스 import 테스트"""
-    print("=" * 60)
-    print("  Proto Import 테스트 (protobuf 6.x 호환성)")
-    print("=" * 60)
+def get_module_path(module_name: str) -> str:
+    """모듈의 파일 경로를 반환"""
+    try:
+        module = importlib.import_module(module_name)
+        if hasattr(module, "__file__") and module.__file__:
+            return module.__file__
+        return f"<{module_name}>"
+    except Exception:
+        return "<unknown>"
+
+
+def test_all_imports():
+    """mysingle 패키지의 모든 모듈 import 테스트"""
+    print("=" * 80)
+    print("  MySingle Package 전체 Import 테스트")
+    print("=" * 80)
     print()
 
-    services = [
-        (
-            "Indicator Service",
-            "mysingle.protos.services.indicator.v1",
-            "indicator_service_pb2",
-        ),
-        (
-            "Market Data Service",
-            "mysingle.protos.services.market_data.v1",
-            "market_data_service_pb2",
-        ),
-        (
-            "Backtest Service",
-            "mysingle.protos.services.backtest.v1",
-            "backtest_service_pb2",
-        ),
-        ("IAM Service", "mysingle.protos.services.iam.v1", "iam_service_pb2"),
-        ("ML Service", "mysingle.protos.services.ml.v1", "ml_service_pb2"),
-        (
-            "Strategy Service",
-            "mysingle.protos.services.strategy.v1",
-            "strategy_service_pb2",
-        ),
-        ("DSL Validator", "mysingle.protos.services.genai.v1", "dsl_validator_pb2"),
-        (
-            "Strategy Builder",
-            "mysingle.protos.services.genai.v1",
-            "strategy_builder_pb2",
-        ),
-        ("Narrative", "mysingle.protos.services.genai.v1", "narrative_pb2"),
-        ("ChatOps", "mysingle.protos.services.genai.v1", "chatops_pb2"),
-        ("IR Converter", "mysingle.protos.services.genai.v1", "ir_converter_pb2"),
-    ]
-
-    common_protos = [
-        ("Error", "mysingle.protos.common", "error_pb2"),
-        ("Metadata", "mysingle.protos.common", "metadata_pb2"),
-        ("Pagination", "mysingle.protos.common", "pagination_pb2"),
-    ]
+    try:
+        import mysingle
+    except Exception as e:
+        print(f"❌ mysingle 패키지를 찾을 수 없습니다: {e}")
+        return 1
 
     failed = []
     passed = []
+    skipped = []
 
-    # Common protos 테스트
-    print("📦 Common Protos:")
-    for name, module_path, module_name in common_protos:
+    # mysingle 패키지의 모든 하위 모듈 탐색
+    def walk_packages(package, prefix=""):
+        """재귀적으로 패키지의 모든 모듈 탐색"""
+        if hasattr(package, "__path__"):
+            for _importer, modname, ispkg in pkgutil.walk_packages(
+                package.__path__, prefix=f"{package.__name__}."
+            ):
+                yield modname, ispkg
+
+    print("🔍 모듈 탐색 중...")
+    all_modules = list(walk_packages(mysingle))
+    print(f"   발견된 모듈: {len(all_modules)}개\n")
+
+    # 각 모듈 import 테스트
+    for module_name, is_package in sorted(all_modules):
+        # 테스트 모듈은 스킵
+        if ".tests." in module_name or module_name.endswith(".tests"):
+            skipped.append(module_name)
+            continue
+
+        # __pycache__ 등 스킵
+        if "__pycache__" in module_name:
+            skipped.append(module_name)
+            continue
+
         try:
-            module = __import__(f"{module_path}.{module_name}", fromlist=[module_name])
-            descriptor_name = (
-                module.DESCRIPTOR.name if hasattr(module, "DESCRIPTOR") else "N/A"
-            )
-            print(f"  ✅ {name}: {descriptor_name}")
-            passed.append(name)
+            importlib.import_module(module_name)
+            module_path = get_module_path(module_name)
+            pkg_mark = "📦" if is_package else "📄"
+            print(f"  ✅ {pkg_mark} {module_name}")
+            passed.append((module_name, module_path))
         except Exception as e:
-            print(f"  ❌ {name}: {e}")
-            failed.append((name, str(e)))
+            module_path = get_module_path(module_name)
+            error_msg = str(e)
+            # 짧은 에러 메시지만 표시
+            if len(error_msg) > 100:
+                error_msg = error_msg[:100] + "..."
+            print(f"  ❌ {'📦' if is_package else '📄'} {module_name}")
+            print(f"     경로: {module_path}")
+            print(f"     에러: {error_msg}")
+            failed.append((module_name, module_path, str(e), traceback.format_exc()))
 
+    # 결과 요약
     print()
-
-    # Service protos 테스트
-    print("🚀 Service Protos:")
-    for name, module_path, module_name in services:
-        try:
-            module = __import__(f"{module_path}.{module_name}", fromlist=[module_name])
-            descriptor_name = (
-                module.DESCRIPTOR.name if hasattr(module, "DESCRIPTOR") else "N/A"
-            )
-            print(f"  ✅ {name}: {descriptor_name}")
-            passed.append(name)
-        except Exception as e:
-            print(f"  ❌ {name}: {e}")
-            failed.append((name, str(e)))
-
-    print()
-    print("=" * 60)
-    print(f"✅ 통과: {len(passed)}개")
+    print("=" * 80)
+    print("📊 테스트 결과 요약")
+    print("=" * 80)
+    print(f"✅ 성공: {len(passed)}개")
     print(f"❌ 실패: {len(failed)}개")
+    print(f"⏭️  스킵: {len(skipped)}개")
+    print(f"📈 총계: {len(passed) + len(failed) + len(skipped)}개")
 
     if failed:
         print()
-        print("실패 상세:")
-        for name, error in failed:
-            print(f"  - {name}: {error}")
+        print("=" * 80)
+        print("❌ 실패 상세")
+        print("=" * 80)
+        for idx, (name, path, error, tb) in enumerate(failed, 1):
+            print(f"\n{idx}. {name}")
+            print(f"   파일: {path}")
+            print(f"   에러: {error}")
+            if "--verbose" in sys.argv or "-v" in sys.argv:
+                print("\n   Traceback:")
+                for line in tb.split("\n"):
+                    if line.strip():
+                        print(f"   {line}")
         return 1
 
     print()
-    print("🎉 모든 proto import 테스트 통과!")
+    print("🎉 모든 모듈 import 테스트 통과!")
+    print()
+    print("💡 Tip: --verbose 또는 -v 옵션으로 상세한 traceback을 볼 수 있습니다.")
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(test_proto_imports())
+    sys.exit(test_all_imports())

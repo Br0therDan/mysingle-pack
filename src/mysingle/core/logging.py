@@ -447,3 +447,7 @@ def setup_logging_legacy():
 def configure_logging_for_service(service_name: str):
     """서비스별 로깅 설정 (간단한 인터페이스)"""
     setup_logging(service_name=service_name)
+
+
+# Alias for backward compatibility with mysingle/__init__.py
+get_logger = get_structured_logger

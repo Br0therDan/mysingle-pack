@@ -76,14 +76,14 @@ __all__ = [
 # 지연 로딩 매핑: 심볼명 -> (모듈경로, 속성명)
 _EXPORTS = {
     # Core
-    "settings": ("mysingle.core", "settings"),
-    "get_settings": ("mysingle.core", "get_settings"),
-    "CommonSettings": ("mysingle.core", "CommonSettings"),
+    "settings": ("mysingle.core.config", "settings"),
+    "get_settings": ("mysingle.core.config", "get_settings"),
+    "CommonSettings": ("mysingle.core.config", "CommonSettings"),
     "create_fastapi_app": ("mysingle.core", "create_fastapi_app"),
     "create_lifespan": ("mysingle.core", "create_lifespan"),
-    "init_mongo": ("mysingle.core", "init_mongo"),
-    "get_mongodb_url": ("mysingle.core", "get_mongodb_url"),
-    "get_database_name": ("mysingle.core", "get_database_name"),
+    "init_mongo": ("mysingle.core.database", "init_mongo"),
+    "get_mongodb_url": ("mysingle.core.database", "get_mongodb_url"),
+    "get_database_name": ("mysingle.core.database", "get_database_name"),
     # Logging (consolidated to core)
     "get_logger": ("mysingle.core.logging", "get_logger"),
     "setup_logging": ("mysingle.core.logging", "setup_logging"),
