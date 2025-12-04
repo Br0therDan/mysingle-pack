@@ -1331,7 +1331,7 @@ wheels = [
 
 [[package]]
 name = "mysingle"
-version = "2.3.12"
+version = "2.4.10"
 source = { editable = "." }
 dependencies = [
     { name = "beanie" },
@@ -1469,8 +1469,8 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.104.1" },
     { name = "googleapis-common-protos", specifier = ">=1.63.0" },
     { name = "googleapis-common-protos", marker = "extra == 'grpc'", specifier = ">=1.63.0" },
-    { name = "grpcio", marker = "extra == 'grpc'", specifier = ">=1.60.0" },
-    { name = "grpcio-tools", marker = "extra == 'grpc'", specifier = ">=1.60.0" },
+    { name = "grpcio", marker = "extra == 'grpc'", specifier = ">=1.76.0" },
+    { name = "grpcio-tools", marker = "extra == 'grpc'", specifier = ">=1.76.0" },
     { name = "httpx", specifier = ">=0.25.2" },
     { name = "httpx", marker = "extra == 'dev'", specifier = ">=0.26.0" },
     { name = "httpx-oauth", specifier = ">=0.16.1" },
