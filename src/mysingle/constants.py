@@ -78,11 +78,11 @@ GRPC_METADATA_REQUEST_ID = "request-id"
 # =============================================================================
 # 서비스별 gRPC 사용 여부 플래그
 # 패턴: USE_GRPC_FOR_<SERVICE_NAME>
-# 예: USE_GRPC_FOR_STRATEGY, USE_GRPC_FOR_INDICATOR
+# 예: USE_GRPC, USE_GRPC
 
 # 서비스별 gRPC 호스트/포트
 # 패턴: <SERVICE_NAME>_GRPC_HOST, <SERVICE_NAME>_GRPC_PORT
-# 예: STRATEGY_GRPC_HOST, STRATEGY_GRPC_PORT
+# 예: STRATEGY_HOST, STRATEGY_GRPC_PORT
 
 
 # =============================================================================

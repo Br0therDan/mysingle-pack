@@ -10,7 +10,7 @@ class CommonSettings(BaseSettings):
     """Common settings for all microservices."""
 
     model_config = SettingsConfigDict(
-        env_file="../../.env",
+        env_file=[".env", "../../.env"],
         env_file_encoding="utf-8",
         case_sensitive=True,
         extra="ignore",
@@ -22,7 +22,7 @@ class CommonSettings(BaseSettings):
     DEBUG: bool = True  # Enable debug logging (auto-disabled in production)
     MOCK_DATABASE: bool = False
 
-    AUDIT_LOGGING_ENABLED: bool = True
+    AUDIT_LOGGING_ENABLED: bool = False
 
     FRONTEND_URL: str = "http://localhost:3000"
 

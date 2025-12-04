@@ -82,7 +82,7 @@ class BaseGrpcClient:
 
     Environment Variables:
         - {SERVICE}_GRPC_HOST: 서비스별 호스트 오버라이드
-          예) INDICATOR_GRPC_HOST=indicator-service
+          예) INDICATOR_HOST=indicator-service
         - GRPC_USE_TLS: TLS 사용 여부 (기본값: false)
     """
 
@@ -235,7 +235,7 @@ class BaseGrpcClient:
         환경 기반 호스트 결정
 
         우선순위:
-        1. 환경변수 {SERVICE}_GRPC_HOST (예: INDICATOR_GRPC_HOST)
+        1. 환경변수 {SERVICE}_GRPC_HOST (예: INDICATOR_HOST)
         2. Docker 환경: service_name (예: indicator-service)
         3. 기본값: localhost
 

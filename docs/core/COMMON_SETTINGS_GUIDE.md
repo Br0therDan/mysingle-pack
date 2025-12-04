@@ -209,47 +209,11 @@ ENVIRONMENT=development
 DEBUG=true
 DEV_MODE=true
 
-# Database
-MONGODB_SERVER=localhost:27017
-MONGODB_USERNAME=root
-MONGODB_PASSWORD=example
-REDIS_URL=redis://localhost:6379/0
-REDIS_PASSWORD=change-this-redis-password
-
-# JWT & Authentication
-TOKEN_TRANSPORT_TYPE=hybrid
-ALGORITHM=HS256
-
-# Kong Gateway
-USE_API_GATEWAY=true
-API_GATEWAY_URL=http://localhost:8000
-KONG_JWT_SECRET_STRATEGY=change-this-strategy-service-jwt-secret
-
-# SMTP (Optional - for email notifications)
-SMTP_HOST=your_smtp_host
-SMTP_PORT=587
-SMTP_USER=your_smtp_user
-SMTP_PASSWORD=your_smtp_password
-EMAILS_FROM_EMAIL=your_email@example.com
 
 # ============================================
 # Strategy Service Specific Settings
 # ============================================
 
-# Strategy Execution
-STRATEGY_EXECUTION_TIMEOUT=300
-STRATEGY_MAX_WORKERS=4
-STRATEGY_DATA_PATH=./data/strategies
-STRATEGY_CACHE_SIZE_MB=512
-
-# gRPC Configuration
-STRATEGY_GRPC_PORT=50051
-STRATEGY_GRPC_MAX_WORKERS=10
-
-# External Services
-BACKTEST_SERVICE_GRPC_HOST=backtest-service
-BACKTEST_SERVICE_GRPC_PORT=50052
-```
 
 ### 환경별 파일 구성 권장사항
 
