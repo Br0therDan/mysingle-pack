@@ -411,6 +411,7 @@ class JWTManager:
         secret_env_map = {
             "frontend-key": "KONG_JWT_SECRET_FRONTEND",
             "iam-service-key": "KONG_JWT_SECRET_IAM",
+            "subscription-service-key": "KONG_JWT_SECRET_SUBSCRIPTION",
             "strategy-service-key": "KONG_JWT_SECRET_STRATEGY",
             "backtest-service-key": "KONG_JWT_SECRET_BACKTEST",
             "indicator-service": "KONG_JWT_SECRET_INDICATOR",
