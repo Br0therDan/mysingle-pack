@@ -4,20 +4,25 @@
 # source: services/backtest/v1/backtest_service.proto
 # Protobuf Python Version: 6.31.1
 """Generated protocol buffer code."""
+
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
+
 _runtime_version.ValidateProtobufRuntimeVersion(
     _runtime_version.Domain.PUBLIC,
     6,
     31,
     1,
-    '',
-    'services/backtest/v1/backtest_service.proto'
+    "",
+    "services/backtest/v1/backtest_service.proto",
 )
-from google.protobuf import timestamp_pb2 as _timestamp_pb2  # protobuf 6.x compatibility
+from google.protobuf import (
+    timestamp_pb2 as _timestamp_pb2,  # protobuf 6.x compatibility
+)
+
 _ = _timestamp_pb2.DESCRIPTOR
 
 # @@protoc_insertion_point(imports)
@@ -25,62 +30,63 @@ _ = _timestamp_pb2.DESCRIPTOR
 _sym_db = _symbol_database.Default()
 
 
-from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
-
-
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n+services/backtest/v1/backtest_service.proto\x12\x08\x62\x61\x63ktest\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa4\x01\n\x16\x45xecuteBacktestRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x13\n\x0bstrategy_id\x18\x02 \x01(\t\x12!\n\x14strategy_version_seq\x18\x03 \x01(\x05H\x00\x88\x01\x01\x12(\n\x06\x63onfig\x18\x04 \x01(\x0b\x32\x18.backtest.BacktestConfigB\x17\n\x15_strategy_version_seq\"\x9a\x04\n\x0e\x42\x61\x63ktestConfig\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x10\n\x08interval\x18\x02 \x01(\t\x12\x12\n\nstart_date\x18\x03 \x01(\t\x12\x10\n\x08\x65nd_date\x18\x04 \x01(\t\x12\x17\n\x0finitial_capital\x18\x05 \x01(\x01\x12\x19\n\x0cslippage_bps\x18\x06 \x01(\x01H\x00\x88\x01\x01\x12!\n\x14\x63ommission_per_trade\x18\x07 \x01(\x01H\x01\x88\x01\x01\x12\x1a\n\rstop_loss_pct\x18\x08 \x01(\x01H\x02\x88\x01\x01\x12\x1c\n\x0ftake_profit_pct\x18\t \x01(\x01H\x03\x88\x01\x01\x12\x1e\n\x11max_position_size\x18\n \x01(\x01H\x04\x88\x01\x01\x12\x34\n\x06params\x18\x0b \x03(\x0b\x32$.backtest.BacktestConfig.ParamsEntry\x12&\n\x19snapshot_interval_seconds\x18\x0c \x01(\x05H\x05\x88\x01\x01\x1a-\n\x0bParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x42\x0f\n\r_slippage_bpsB\x17\n\x15_commission_per_tradeB\x10\n\x0e_stop_loss_pctB\x12\n\x10_take_profit_pctB\x14\n\x12_max_position_sizeB\x1c\n\x1a_snapshot_interval_seconds\"@\n\x18GetBacktestResultRequest\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\"=\n\x15StreamProgressRequest\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\"9\n\x11GetMetricsRequest\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\"\xab\x01\n\x14ListBacktestsRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x18\n\x0bstrategy_id\x18\x02 \x01(\tH\x00\x88\x01\x01\x12\x13\n\x06status\x18\x03 \x01(\tH\x01\x88\x01\x01\x12\x12\n\x05limit\x18\x04 \x01(\x05H\x02\x88\x01\x01\x12\x11\n\x04skip\x18\x05 \x01(\x05H\x03\x88\x01\x01\x42\x0e\n\x0c_strategy_idB\t\n\x07_statusB\x08\n\x06_limitB\x07\n\x05_skip\"=\n\x15\x43\x61ncelBacktestRequest\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\"\x14\n\x12HealthCheckRequest\"\x7f\n\x17\x45xecuteBacktestResponse\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12\x0e\n\x06status\x18\x02 \x01(\t\x12\x0f\n\x07message\x18\x03 \x01(\t\x12.\n\ncreated_at\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"\xec\x03\n\x16\x42\x61\x63ktestResultResponse\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12\x13\n\x0bstrategy_id\x18\x02 \x01(\t\x12!\n\x14strategy_version_seq\x18\x03 \x01(\x05H\x00\x88\x01\x01\x12\x0e\n\x06status\x18\x04 \x01(\t\x12\x32\n\x07metrics\x18\x05 \x01(\x0b\x32\x1c.backtest.PerformanceMetricsH\x01\x88\x01\x01\x12\x1f\n\x06trades\x18\x06 \x03(\x0b\x32\x0f.backtest.Trade\x12+\n\x0c\x65quity_curve\x18\x07 \x03(\x0b\x32\x15.backtest.EquityPoint\x12(\n\x06\x63onfig\x18\x08 \x01(\x0b\x32\x18.backtest.BacktestConfig\x12.\n\ncreated_at\x18\t \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x35\n\x0c\x63ompleted_at\x18\n \x01(\x0b\x32\x1a.google.protobuf.TimestampH\x02\x88\x01\x01\x12\x1a\n\rerror_message\x18\x0b \x01(\tH\x03\x88\x01\x01\x42\x17\n\x15_strategy_version_seqB\n\n\x08_metricsB\x0f\n\r_completed_atB\x10\n\x0e_error_message\"\xdb\x01\n\x0eProgressUpdate\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12\x0e\n\x06status\x18\x02 \x01(\t\x12\x14\n\x0cprogress_pct\x18\x03 \x01(\x01\x12\x0f\n\x07message\x18\x04 \x01(\t\x12-\n\ttimestamp\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12:\n\x0f\x63urrent_metrics\x18\x06 \x01(\x0b\x32\x1c.backtest.PerformanceMetricsH\x00\x88\x01\x01\x42\x12\n\x10_current_metrics\"\x88\x01\n\x0fMetricsResponse\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12-\n\x07metrics\x18\x02 \x01(\x0b\x32\x1c.backtest.PerformanceMetrics\x12\x31\n\rcalculated_at\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"Z\n\x15ListBacktestsResponse\x12,\n\tbacktests\x18\x01 \x03(\x0b\x32\x19.backtest.BacktestSummary\x12\x13\n\x0btotal_count\x18\x02 \x01(\x05\"\xe1\x02\n\x0f\x42\x61\x63ktestSummary\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12\x13\n\x0bstrategy_id\x18\x02 \x01(\t\x12!\n\x14strategy_version_seq\x18\x03 \x01(\x05H\x00\x88\x01\x01\x12\x0e\n\x06status\x18\x04 \x01(\t\x12\x0e\n\x06symbol\x18\x05 \x01(\t\x12\x10\n\x08interval\x18\x06 \x01(\t\x12.\n\ncreated_at\x18\x07 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x35\n\x0c\x63ompleted_at\x18\x08 \x01(\x0b\x32\x1a.google.protobuf.TimestampH\x01\x88\x01\x01\x12\x32\n\x07metrics\x18\t \x01(\x0b\x32\x1c.backtest.PerformanceMetricsH\x02\x88\x01\x01\x42\x17\n\x15_strategy_version_seqB\x0f\n\r_completed_atB\n\n\x08_metrics\"N\n\x16\x43\x61ncelBacktestResponse\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12\x0e\n\x06status\x18\x02 \x01(\t\x12\x0f\n\x07message\x18\x03 \x01(\t\"\xe8\x01\n\x13HealthCheckResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x14\n\x0cservice_name\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\t\x12-\n\ttimestamp\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12;\n\x07\x64\x65tails\x18\x05 \x03(\x0b\x32*.backtest.HealthCheckResponse.DetailsEntry\x1a.\n\x0c\x44\x65tailsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"\xea\x03\n\x12PerformanceMetrics\x12\x14\n\x0ctotal_return\x18\x01 \x01(\x01\x12\x15\n\rannual_return\x18\x02 \x01(\x01\x12\x14\n\x0csharpe_ratio\x18\x03 \x01(\x01\x12\x15\n\rsortino_ratio\x18\x04 \x01(\x01\x12\x14\n\x0cmax_drawdown\x18\x05 \x01(\x01\x12\x12\n\nvolatility\x18\x06 \x01(\x01\x12\x14\n\x0ctotal_trades\x18\x07 \x01(\x05\x12\x16\n\x0ewinning_trades\x18\x08 \x01(\x05\x12\x15\n\rlosing_trades\x18\t \x01(\x05\x12\x10\n\x08win_rate\x18\n \x01(\x01\x12\x15\n\rprofit_factor\x18\x0b \x01(\x01\x12\x13\n\x0b\x61verage_win\x18\x0c \x01(\x01\x12\x14\n\x0c\x61verage_loss\x18\r \x01(\x01\x12\x13\n\x0blargest_win\x18\x0e \x01(\x01\x12\x14\n\x0clargest_loss\x18\x0f \x01(\x01\x12$\n\x1c\x61verage_holding_period_hours\x18\x10 \x01(\x01\x12\x1c\n\x14max_consecutive_wins\x18\x11 \x01(\x01\x12\x1e\n\x16max_consecutive_losses\x18\x12 \x01(\x01\x12\x14\n\x0c\x66inal_equity\x18\x13 \x01(\x01\x12\x12\n\ntotal_fees\x18\x14 \x01(\x01\"\xec\x01\n\x05Trade\x12-\n\ttimestamp\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x0e\n\x06symbol\x18\x02 \x01(\t\x12\x0c\n\x04side\x18\x03 \x01(\t\x12\x10\n\x08quantity\x18\x04 \x01(\x01\x12\r\n\x05price\x18\x05 \x01(\x01\x12\x0b\n\x03pnl\x18\x06 \x01(\x01\x12\x12\n\ncommission\x18\x07 \x01(\x01\x12\x15\n\x08trade_id\x18\x08 \x01(\tH\x00\x88\x01\x01\x12\x1c\n\x0fportfolio_value\x18\t \x01(\x01H\x01\x88\x01\x01\x42\x0b\n\t_trade_idB\x12\n\x10_portfolio_value\"\x85\x01\n\x0b\x45quityPoint\x12-\n\ttimestamp\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x0e\n\x06\x65quity\x18\x02 \x01(\x01\x12\x10\n\x08\x64rawdown\x18\x03 \x01(\x01\x12\x0c\n\x04\x63\x61sh\x18\x04 \x01(\x01\x12\x17\n\x0fpositions_value\x18\x05 \x01(\x01\x32\xdc\x04\n\x0f\x42\x61\x63ktestService\x12V\n\x0f\x45xecuteBacktest\x12 .backtest.ExecuteBacktestRequest\x1a!.backtest.ExecuteBacktestResponse\x12Y\n\x11GetBacktestResult\x12\".backtest.GetBacktestResultRequest\x1a .backtest.BacktestResultResponse\x12U\n\x16StreamBacktestProgress\x12\x1f.backtest.StreamProgressRequest\x1a\x18.backtest.ProgressUpdate0\x01\x12L\n\x12GetBacktestMetrics\x12\x1b.backtest.GetMetricsRequest\x1a\x19.backtest.MetricsResponse\x12P\n\rListBacktests\x12\x1e.backtest.ListBacktestsRequest\x1a\x1f.backtest.ListBacktestsResponse\x12S\n\x0e\x43\x61ncelBacktest\x12\x1f.backtest.CancelBacktestRequest\x1a .backtest.CancelBacktestResponse\x12J\n\x0bHealthCheck\x12\x1c.backtest.HealthCheckRequest\x1a\x1d.backtest.HealthCheckResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
+    b'\n+services/backtest/v1/backtest_service.proto\x12\x08\x62\x61\x63ktest\x1a\x1fgoogle/protobuf/timestamp.proto"\xa4\x01\n\x16\x45xecuteBacktestRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x13\n\x0bstrategy_id\x18\x02 \x01(\t\x12!\n\x14strategy_version_seq\x18\x03 \x01(\x05H\x00\x88\x01\x01\x12(\n\x06\x63onfig\x18\x04 \x01(\x0b\x32\x18.backtest.BacktestConfigB\x17\n\x15_strategy_version_seq"\x9a\x04\n\x0e\x42\x61\x63ktestConfig\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x10\n\x08interval\x18\x02 \x01(\t\x12\x12\n\nstart_date\x18\x03 \x01(\t\x12\x10\n\x08\x65nd_date\x18\x04 \x01(\t\x12\x17\n\x0finitial_capital\x18\x05 \x01(\x01\x12\x19\n\x0cslippage_bps\x18\x06 \x01(\x01H\x00\x88\x01\x01\x12!\n\x14\x63ommission_per_trade\x18\x07 \x01(\x01H\x01\x88\x01\x01\x12\x1a\n\rstop_loss_pct\x18\x08 \x01(\x01H\x02\x88\x01\x01\x12\x1c\n\x0ftake_profit_pct\x18\t \x01(\x01H\x03\x88\x01\x01\x12\x1e\n\x11max_position_size\x18\n \x01(\x01H\x04\x88\x01\x01\x12\x34\n\x06params\x18\x0b \x03(\x0b\x32$.backtest.BacktestConfig.ParamsEntry\x12&\n\x19snapshot_interval_seconds\x18\x0c \x01(\x05H\x05\x88\x01\x01\x1a-\n\x0bParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x42\x0f\n\r_slippage_bpsB\x17\n\x15_commission_per_tradeB\x10\n\x0e_stop_loss_pctB\x12\n\x10_take_profit_pctB\x14\n\x12_max_position_sizeB\x1c\n\x1a_snapshot_interval_seconds"@\n\x18GetBacktestResultRequest\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t"=\n\x15StreamProgressRequest\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t"9\n\x11GetMetricsRequest\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t"\xab\x01\n\x14ListBacktestsRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x18\n\x0bstrategy_id\x18\x02 \x01(\tH\x00\x88\x01\x01\x12\x13\n\x06status\x18\x03 \x01(\tH\x01\x88\x01\x01\x12\x12\n\x05limit\x18\x04 \x01(\x05H\x02\x88\x01\x01\x12\x11\n\x04skip\x18\x05 \x01(\x05H\x03\x88\x01\x01\x42\x0e\n\x0c_strategy_idB\t\n\x07_statusB\x08\n\x06_limitB\x07\n\x05_skip"=\n\x15\x43\x61ncelBacktestRequest\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t"\x14\n\x12HealthCheckRequest"\x7f\n\x17\x45xecuteBacktestResponse\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12\x0e\n\x06status\x18\x02 \x01(\t\x12\x0f\n\x07message\x18\x03 \x01(\t\x12.\n\ncreated_at\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp"\xec\x03\n\x16\x42\x61\x63ktestResultResponse\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12\x13\n\x0bstrategy_id\x18\x02 \x01(\t\x12!\n\x14strategy_version_seq\x18\x03 \x01(\x05H\x00\x88\x01\x01\x12\x0e\n\x06status\x18\x04 \x01(\t\x12\x32\n\x07metrics\x18\x05 \x01(\x0b\x32\x1c.backtest.PerformanceMetricsH\x01\x88\x01\x01\x12\x1f\n\x06trades\x18\x06 \x03(\x0b\x32\x0f.backtest.Trade\x12+\n\x0c\x65quity_curve\x18\x07 \x03(\x0b\x32\x15.backtest.EquityPoint\x12(\n\x06\x63onfig\x18\x08 \x01(\x0b\x32\x18.backtest.BacktestConfig\x12.\n\ncreated_at\x18\t \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x35\n\x0c\x63ompleted_at\x18\n \x01(\x0b\x32\x1a.google.protobuf.TimestampH\x02\x88\x01\x01\x12\x1a\n\rerror_message\x18\x0b \x01(\tH\x03\x88\x01\x01\x42\x17\n\x15_strategy_version_seqB\n\n\x08_metricsB\x0f\n\r_completed_atB\x10\n\x0e_error_message"\xdb\x01\n\x0eProgressUpdate\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12\x0e\n\x06status\x18\x02 \x01(\t\x12\x14\n\x0cprogress_pct\x18\x03 \x01(\x01\x12\x0f\n\x07message\x18\x04 \x01(\t\x12-\n\ttimestamp\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12:\n\x0f\x63urrent_metrics\x18\x06 \x01(\x0b\x32\x1c.backtest.PerformanceMetricsH\x00\x88\x01\x01\x42\x12\n\x10_current_metrics"\x88\x01\n\x0fMetricsResponse\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12-\n\x07metrics\x18\x02 \x01(\x0b\x32\x1c.backtest.PerformanceMetrics\x12\x31\n\rcalculated_at\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp"Z\n\x15ListBacktestsResponse\x12,\n\tbacktests\x18\x01 \x03(\x0b\x32\x19.backtest.BacktestSummary\x12\x13\n\x0btotal_count\x18\x02 \x01(\x05"\xe1\x02\n\x0f\x42\x61\x63ktestSummary\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12\x13\n\x0bstrategy_id\x18\x02 \x01(\t\x12!\n\x14strategy_version_seq\x18\x03 \x01(\x05H\x00\x88\x01\x01\x12\x0e\n\x06status\x18\x04 \x01(\t\x12\x0e\n\x06symbol\x18\x05 \x01(\t\x12\x10\n\x08interval\x18\x06 \x01(\t\x12.\n\ncreated_at\x18\x07 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x35\n\x0c\x63ompleted_at\x18\x08 \x01(\x0b\x32\x1a.google.protobuf.TimestampH\x01\x88\x01\x01\x12\x32\n\x07metrics\x18\t \x01(\x0b\x32\x1c.backtest.PerformanceMetricsH\x02\x88\x01\x01\x42\x17\n\x15_strategy_version_seqB\x0f\n\r_completed_atB\n\n\x08_metrics"N\n\x16\x43\x61ncelBacktestResponse\x12\x13\n\x0b\x62\x61\x63ktest_id\x18\x01 \x01(\t\x12\x0e\n\x06status\x18\x02 \x01(\t\x12\x0f\n\x07message\x18\x03 \x01(\t"\xe8\x01\n\x13HealthCheckResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x14\n\x0cservice_name\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\t\x12-\n\ttimestamp\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12;\n\x07\x64\x65tails\x18\x05 \x03(\x0b\x32*.backtest.HealthCheckResponse.DetailsEntry\x1a.\n\x0c\x44\x65tailsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"\xea\x03\n\x12PerformanceMetrics\x12\x14\n\x0ctotal_return\x18\x01 \x01(\x01\x12\x15\n\rannual_return\x18\x02 \x01(\x01\x12\x14\n\x0csharpe_ratio\x18\x03 \x01(\x01\x12\x15\n\rsortino_ratio\x18\x04 \x01(\x01\x12\x14\n\x0cmax_drawdown\x18\x05 \x01(\x01\x12\x12\n\nvolatility\x18\x06 \x01(\x01\x12\x14\n\x0ctotal_trades\x18\x07 \x01(\x05\x12\x16\n\x0ewinning_trades\x18\x08 \x01(\x05\x12\x15\n\rlosing_trades\x18\t \x01(\x05\x12\x10\n\x08win_rate\x18\n \x01(\x01\x12\x15\n\rprofit_factor\x18\x0b \x01(\x01\x12\x13\n\x0b\x61verage_win\x18\x0c \x01(\x01\x12\x14\n\x0c\x61verage_loss\x18\r \x01(\x01\x12\x13\n\x0blargest_win\x18\x0e \x01(\x01\x12\x14\n\x0clargest_loss\x18\x0f \x01(\x01\x12$\n\x1c\x61verage_holding_period_hours\x18\x10 \x01(\x01\x12\x1c\n\x14max_consecutive_wins\x18\x11 \x01(\x01\x12\x1e\n\x16max_consecutive_losses\x18\x12 \x01(\x01\x12\x14\n\x0c\x66inal_equity\x18\x13 \x01(\x01\x12\x12\n\ntotal_fees\x18\x14 \x01(\x01"\xec\x01\n\x05Trade\x12-\n\ttimestamp\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x0e\n\x06symbol\x18\x02 \x01(\t\x12\x0c\n\x04side\x18\x03 \x01(\t\x12\x10\n\x08quantity\x18\x04 \x01(\x01\x12\r\n\x05price\x18\x05 \x01(\x01\x12\x0b\n\x03pnl\x18\x06 \x01(\x01\x12\x12\n\ncommission\x18\x07 \x01(\x01\x12\x15\n\x08trade_id\x18\x08 \x01(\tH\x00\x88\x01\x01\x12\x1c\n\x0fportfolio_value\x18\t \x01(\x01H\x01\x88\x01\x01\x42\x0b\n\t_trade_idB\x12\n\x10_portfolio_value"\x85\x01\n\x0b\x45quityPoint\x12-\n\ttimestamp\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x0e\n\x06\x65quity\x18\x02 \x01(\x01\x12\x10\n\x08\x64rawdown\x18\x03 \x01(\x01\x12\x0c\n\x04\x63\x61sh\x18\x04 \x01(\x01\x12\x17\n\x0fpositions_value\x18\x05 \x01(\x01\x32\xdc\x04\n\x0f\x42\x61\x63ktestService\x12V\n\x0f\x45xecuteBacktest\x12 .backtest.ExecuteBacktestRequest\x1a!.backtest.ExecuteBacktestResponse\x12Y\n\x11GetBacktestResult\x12".backtest.GetBacktestResultRequest\x1a .backtest.BacktestResultResponse\x12U\n\x16StreamBacktestProgress\x12\x1f.backtest.StreamProgressRequest\x1a\x18.backtest.ProgressUpdate0\x01\x12L\n\x12GetBacktestMetrics\x12\x1b.backtest.GetMetricsRequest\x1a\x19.backtest.MetricsResponse\x12P\n\rListBacktests\x12\x1e.backtest.ListBacktestsRequest\x1a\x1f.backtest.ListBacktestsResponse\x12S\n\x0e\x43\x61ncelBacktest\x12\x1f.backtest.CancelBacktestRequest\x1a .backtest.CancelBacktestResponse\x12J\n\x0bHealthCheck\x12\x1c.backtest.HealthCheckRequest\x1a\x1d.backtest.HealthCheckResponseb\x06proto3'
+)
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
-_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'services.backtest.v1.backtest_service_pb2', _globals)
+_builder.BuildTopDescriptorsAndMessages(
+    DESCRIPTOR, "services.backtest.v1.backtest_service_pb2", _globals
+)
 if not _descriptor._USE_C_DESCRIPTORS:
-  DESCRIPTOR._loaded_options = None
-  _globals['_BACKTESTCONFIG_PARAMSENTRY']._loaded_options = None
-  _globals['_BACKTESTCONFIG_PARAMSENTRY']._serialized_options = b'8\001'
-  _globals['_HEALTHCHECKRESPONSE_DETAILSENTRY']._loaded_options = None
-  _globals['_HEALTHCHECKRESPONSE_DETAILSENTRY']._serialized_options = b'8\001'
-  _globals['_EXECUTEBACKTESTREQUEST']._serialized_start=91
-  _globals['_EXECUTEBACKTESTREQUEST']._serialized_end=255
-  _globals['_BACKTESTCONFIG']._serialized_start=258
-  _globals['_BACKTESTCONFIG']._serialized_end=796
-  _globals['_BACKTESTCONFIG_PARAMSENTRY']._serialized_start=619
-  _globals['_BACKTESTCONFIG_PARAMSENTRY']._serialized_end=664
-  _globals['_GETBACKTESTRESULTREQUEST']._serialized_start=798
-  _globals['_GETBACKTESTRESULTREQUEST']._serialized_end=862
-  _globals['_STREAMPROGRESSREQUEST']._serialized_start=864
-  _globals['_STREAMPROGRESSREQUEST']._serialized_end=925
-  _globals['_GETMETRICSREQUEST']._serialized_start=927
-  _globals['_GETMETRICSREQUEST']._serialized_end=984
-  _globals['_LISTBACKTESTSREQUEST']._serialized_start=987
-  _globals['_LISTBACKTESTSREQUEST']._serialized_end=1158
-  _globals['_CANCELBACKTESTREQUEST']._serialized_start=1160
-  _globals['_CANCELBACKTESTREQUEST']._serialized_end=1221
-  _globals['_HEALTHCHECKREQUEST']._serialized_start=1223
-  _globals['_HEALTHCHECKREQUEST']._serialized_end=1243
-  _globals['_EXECUTEBACKTESTRESPONSE']._serialized_start=1245
-  _globals['_EXECUTEBACKTESTRESPONSE']._serialized_end=1372
-  _globals['_BACKTESTRESULTRESPONSE']._serialized_start=1375
-  _globals['_BACKTESTRESULTRESPONSE']._serialized_end=1867
-  _globals['_PROGRESSUPDATE']._serialized_start=1870
-  _globals['_PROGRESSUPDATE']._serialized_end=2089
-  _globals['_METRICSRESPONSE']._serialized_start=2092
-  _globals['_METRICSRESPONSE']._serialized_end=2228
-  _globals['_LISTBACKTESTSRESPONSE']._serialized_start=2230
-  _globals['_LISTBACKTESTSRESPONSE']._serialized_end=2320
-  _globals['_BACKTESTSUMMARY']._serialized_start=2323
-  _globals['_BACKTESTSUMMARY']._serialized_end=2676
-  _globals['_CANCELBACKTESTRESPONSE']._serialized_start=2678
-  _globals['_CANCELBACKTESTRESPONSE']._serialized_end=2756
-  _globals['_HEALTHCHECKRESPONSE']._serialized_start=2759
-  _globals['_HEALTHCHECKRESPONSE']._serialized_end=2991
-  _globals['_HEALTHCHECKRESPONSE_DETAILSENTRY']._serialized_start=2945
-  _globals['_HEALTHCHECKRESPONSE_DETAILSENTRY']._serialized_end=2991
-  _globals['_PERFORMANCEMETRICS']._serialized_start=2994
-  _globals['_PERFORMANCEMETRICS']._serialized_end=3484
-  _globals['_TRADE']._serialized_start=3487
-  _globals['_TRADE']._serialized_end=3723
-  _globals['_EQUITYPOINT']._serialized_start=3726
-  _globals['_EQUITYPOINT']._serialized_end=3859
-  _globals['_BACKTESTSERVICE']._serialized_start=3862
-  _globals['_BACKTESTSERVICE']._serialized_end=4466
+    DESCRIPTOR._loaded_options = None
+    _globals["_BACKTESTCONFIG_PARAMSENTRY"]._loaded_options = None
+    _globals["_BACKTESTCONFIG_PARAMSENTRY"]._serialized_options = b"8\001"
+    _globals["_HEALTHCHECKRESPONSE_DETAILSENTRY"]._loaded_options = None
+    _globals["_HEALTHCHECKRESPONSE_DETAILSENTRY"]._serialized_options = b"8\001"
+    _globals["_EXECUTEBACKTESTREQUEST"]._serialized_start = 91
+    _globals["_EXECUTEBACKTESTREQUEST"]._serialized_end = 255
+    _globals["_BACKTESTCONFIG"]._serialized_start = 258
+    _globals["_BACKTESTCONFIG"]._serialized_end = 796
+    _globals["_BACKTESTCONFIG_PARAMSENTRY"]._serialized_start = 619
+    _globals["_BACKTESTCONFIG_PARAMSENTRY"]._serialized_end = 664
+    _globals["_GETBACKTESTRESULTREQUEST"]._serialized_start = 798
+    _globals["_GETBACKTESTRESULTREQUEST"]._serialized_end = 862
+    _globals["_STREAMPROGRESSREQUEST"]._serialized_start = 864
+    _globals["_STREAMPROGRESSREQUEST"]._serialized_end = 925
+    _globals["_GETMETRICSREQUEST"]._serialized_start = 927
+    _globals["_GETMETRICSREQUEST"]._serialized_end = 984
+    _globals["_LISTBACKTESTSREQUEST"]._serialized_start = 987
+    _globals["_LISTBACKTESTSREQUEST"]._serialized_end = 1158
+    _globals["_CANCELBACKTESTREQUEST"]._serialized_start = 1160
+    _globals["_CANCELBACKTESTREQUEST"]._serialized_end = 1221
+    _globals["_HEALTHCHECKREQUEST"]._serialized_start = 1223
+    _globals["_HEALTHCHECKREQUEST"]._serialized_end = 1243
+    _globals["_EXECUTEBACKTESTRESPONSE"]._serialized_start = 1245
+    _globals["_EXECUTEBACKTESTRESPONSE"]._serialized_end = 1372
+    _globals["_BACKTESTRESULTRESPONSE"]._serialized_start = 1375
+    _globals["_BACKTESTRESULTRESPONSE"]._serialized_end = 1867
+    _globals["_PROGRESSUPDATE"]._serialized_start = 1870
+    _globals["_PROGRESSUPDATE"]._serialized_end = 2089
+    _globals["_METRICSRESPONSE"]._serialized_start = 2092
+    _globals["_METRICSRESPONSE"]._serialized_end = 2228
+    _globals["_LISTBACKTESTSRESPONSE"]._serialized_start = 2230
+    _globals["_LISTBACKTESTSRESPONSE"]._serialized_end = 2320
+    _globals["_BACKTESTSUMMARY"]._serialized_start = 2323
+    _globals["_BACKTESTSUMMARY"]._serialized_end = 2676
+    _globals["_CANCELBACKTESTRESPONSE"]._serialized_start = 2678
+    _globals["_CANCELBACKTESTRESPONSE"]._serialized_end = 2756
+    _globals["_HEALTHCHECKRESPONSE"]._serialized_start = 2759
+    _globals["_HEALTHCHECKRESPONSE"]._serialized_end = 2991
+    _globals["_HEALTHCHECKRESPONSE_DETAILSENTRY"]._serialized_start = 2945
+    _globals["_HEALTHCHECKRESPONSE_DETAILSENTRY"]._serialized_end = 2991
+    _globals["_PERFORMANCEMETRICS"]._serialized_start = 2994
+    _globals["_PERFORMANCEMETRICS"]._serialized_end = 3484
+    _globals["_TRADE"]._serialized_start = 3487
+    _globals["_TRADE"]._serialized_end = 3723
+    _globals["_EQUITYPOINT"]._serialized_start = 3726
+    _globals["_EQUITYPOINT"]._serialized_end = 3859
+    _globals["_BACKTESTSERVICE"]._serialized_start = 3862
+    _globals["_BACKTESTSERVICE"]._serialized_end = 4466
 # @@protoc_insertion_point(module_scope)

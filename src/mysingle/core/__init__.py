@@ -12,14 +12,14 @@ from .db import (
 from .email import send_email
 from .health import HealthStatus, create_health_router, get_health_checker
 from .logging import get_logger, get_structured_logger, setup_logging
-from .metrics import MetricsCollector, get_metrics_collector
-from .middleware import (
+from .logging.middleware import (
     HealthCheckLoggingFilter,
     LoggingMiddleware,
     TimingLogMiddleware,
     add_logging_middleware,
     setup_request_id_dependency,
 )
+from .metrics import MetricsCollector, get_metrics_collector
 from .service_types import ServiceType, create_service_config
 
 __all__ = [

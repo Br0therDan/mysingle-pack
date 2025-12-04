@@ -4,20 +4,23 @@
 # source: services/genai/v1/strategy_builder.proto
 # Protobuf Python Version: 6.31.1
 """Generated protocol buffer code."""
+
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
+
 _runtime_version.ValidateProtobufRuntimeVersion(
     _runtime_version.Domain.PUBLIC,
     6,
     31,
     1,
-    '',
-    'services/genai/v1/strategy_builder.proto'
+    "",
+    "services/genai/v1/strategy_builder.proto",
 )
 from google.protobuf import struct_pb2 as _struct_pb2  # protobuf 6.x compatibility
+
 _ = _struct_pb2.DESCRIPTOR
 
 # @@protoc_insertion_point(imports)
@@ -25,38 +28,45 @@ _ = _struct_pb2.DESCRIPTOR
 _sym_db = _symbol_database.Default()
 
 
-from mysingle.protos.common import error_pb2 as common_dot_error__pb2
-from mysingle.protos.common import metadata_pb2 as common_dot_metadata__pb2
-from google.protobuf import struct_pb2 as google_dot_protobuf_dot_struct__pb2
-
-
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n(services/genai/v1/strategy_builder.proto\x12\x16genai.strategy_builder\x1a\x12\x63ommon/error.proto\x1a\x15\x63ommon/metadata.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xbf\x01\n\x17GenerateStrategyRequest\x12\x18\n\x10natural_language\x18\x01 \x01(\t\x12\x38\n\x07\x63ontext\x18\x02 \x01(\x0b\x32\'.genai.strategy_builder.StrategyContext\x12\x13\n\x0btemplate_id\x18\x03 \x01(\t\x12\x11\n\tuse_cache\x18\x04 \x01(\x08\x12(\n\x08metadata\x18\x05 \x01(\x0b\x32\x16.genai.common.Metadata\"^\n\x0fStrategyContext\x12\x10\n\x08universe\x18\x01 \x03(\t\x12\x13\n\x0bmarket_type\x18\x02 \x01(\t\x12\x10\n\x08interval\x18\x03 \x01(\t\x12\x12\n\nrisk_level\x18\x04 \x01(\t\"\x87\x02\n\x18GenerateStrategyResponse\x12,\n\x0bstrategy_ir\x18\x01 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x45\n\x12validation_preview\x18\x02 \x01(\x0b\x32).genai.strategy_builder.ValidationPreview\x12\x13\n\x0b\x65xplanation\x18\x03 \x01(\t\x12\x31\n\nconfidence\x18\x04 \x01(\x0b\x32\x1d.genai.common.ConfidenceScore\x12\x13\n\x0bproposal_id\x18\x05 \x01(\t\x12\x19\n\x11\x61pproval_required\x18\x06 \x01(\x08\"\x99\x01\n\x11ValidationPreview\x12\x38\n\x0fstruct_warnings\x18\x01 \x03(\x0b\x32\x1f.genai.common.ValidationWarning\x12\x38\n\x0fstatic_warnings\x18\x02 \x03(\x0b\x32\x1f.genai.common.ValidationWarning\x12\x10\n\x08is_valid\x18\x03 \x01(\x08\"X\n\x17ValidateProposalRequest\x12\x13\n\x0bproposal_id\x18\x01 \x01(\t\x12(\n\x08metadata\x18\x02 \x01(\x0b\x32\x16.genai.common.Metadata\"\x8d\x01\n\x18ValidateProposalResponse\x12\x10\n\x08is_valid\x18\x01 \x01(\x08\x12\x31\n\x08warnings\x18\x02 \x03(\x0b\x32\x1f.genai.common.ValidationWarning\x12,\n\x0bstrategy_ir\x18\x03 \x01(\x0b\x32\x17.google.protobuf.Struct\"\xb1\x01\n\x18\x43ustomizeTemplateRequest\x12\x13\n\x0btemplate_id\x18\x01 \x01(\t\x12\x1c\n\x14\x63ustomization_intent\x18\x02 \x01(\t\x12\x38\n\x07\x63ontext\x18\x03 \x01(\x0b\x32\'.genai.strategy_builder.StrategyContext\x12(\n\x08metadata\x18\x04 \x01(\x0b\x32\x16.genai.common.Metadata\"\xd3\x02\n\x19\x43ustomizeTemplateResponse\x12l\n\x16recommended_parameters\x18\x01 \x03(\x0b\x32L.genai.strategy_builder.CustomizeTemplateResponse.RecommendedParametersEntry\x12\x11\n\trationale\x18\x02 \x01(\t\x12\x31\n\nconfidence\x18\x03 \x01(\x0b\x32\x1d.genai.common.ConfidenceScore\x12,\n\x0bstrategy_ir\x18\x04 \x01(\x0b\x32\x17.google.protobuf.Struct\x1aT\n\x1aRecommendedParametersEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12%\n\x05value\x18\x02 \x01(\x0b\x32\x16.google.protobuf.Value:\x02\x38\x01\x32\x80\x03\n\x16StrategyBuilderService\x12u\n\x10GenerateStrategy\x12/.genai.strategy_builder.GenerateStrategyRequest\x1a\x30.genai.strategy_builder.GenerateStrategyResponse\x12u\n\x10ValidateProposal\x12/.genai.strategy_builder.ValidateProposalRequest\x1a\x30.genai.strategy_builder.ValidateProposalResponse\x12x\n\x11\x43ustomizeTemplate\x12\x30.genai.strategy_builder.CustomizeTemplateRequest\x1a\x31.genai.strategy_builder.CustomizeTemplateResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
+    b'\n(services/genai/v1/strategy_builder.proto\x12\x16genai.strategy_builder\x1a\x12\x63ommon/error.proto\x1a\x15\x63ommon/metadata.proto\x1a\x1cgoogle/protobuf/struct.proto"\xbf\x01\n\x17GenerateStrategyRequest\x12\x18\n\x10natural_language\x18\x01 \x01(\t\x12\x38\n\x07\x63ontext\x18\x02 \x01(\x0b\x32\'.genai.strategy_builder.StrategyContext\x12\x13\n\x0btemplate_id\x18\x03 \x01(\t\x12\x11\n\tuse_cache\x18\x04 \x01(\x08\x12(\n\x08metadata\x18\x05 \x01(\x0b\x32\x16.genai.common.Metadata"^\n\x0fStrategyContext\x12\x10\n\x08universe\x18\x01 \x03(\t\x12\x13\n\x0bmarket_type\x18\x02 \x01(\t\x12\x10\n\x08interval\x18\x03 \x01(\t\x12\x12\n\nrisk_level\x18\x04 \x01(\t"\x87\x02\n\x18GenerateStrategyResponse\x12,\n\x0bstrategy_ir\x18\x01 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x45\n\x12validation_preview\x18\x02 \x01(\x0b\x32).genai.strategy_builder.ValidationPreview\x12\x13\n\x0b\x65xplanation\x18\x03 \x01(\t\x12\x31\n\nconfidence\x18\x04 \x01(\x0b\x32\x1d.genai.common.ConfidenceScore\x12\x13\n\x0bproposal_id\x18\x05 \x01(\t\x12\x19\n\x11\x61pproval_required\x18\x06 \x01(\x08"\x99\x01\n\x11ValidationPreview\x12\x38\n\x0fstruct_warnings\x18\x01 \x03(\x0b\x32\x1f.genai.common.ValidationWarning\x12\x38\n\x0fstatic_warnings\x18\x02 \x03(\x0b\x32\x1f.genai.common.ValidationWarning\x12\x10\n\x08is_valid\x18\x03 \x01(\x08"X\n\x17ValidateProposalRequest\x12\x13\n\x0bproposal_id\x18\x01 \x01(\t\x12(\n\x08metadata\x18\x02 \x01(\x0b\x32\x16.genai.common.Metadata"\x8d\x01\n\x18ValidateProposalResponse\x12\x10\n\x08is_valid\x18\x01 \x01(\x08\x12\x31\n\x08warnings\x18\x02 \x03(\x0b\x32\x1f.genai.common.ValidationWarning\x12,\n\x0bstrategy_ir\x18\x03 \x01(\x0b\x32\x17.google.protobuf.Struct"\xb1\x01\n\x18\x43ustomizeTemplateRequest\x12\x13\n\x0btemplate_id\x18\x01 \x01(\t\x12\x1c\n\x14\x63ustomization_intent\x18\x02 \x01(\t\x12\x38\n\x07\x63ontext\x18\x03 \x01(\x0b\x32\'.genai.strategy_builder.StrategyContext\x12(\n\x08metadata\x18\x04 \x01(\x0b\x32\x16.genai.common.Metadata"\xd3\x02\n\x19\x43ustomizeTemplateResponse\x12l\n\x16recommended_parameters\x18\x01 \x03(\x0b\x32L.genai.strategy_builder.CustomizeTemplateResponse.RecommendedParametersEntry\x12\x11\n\trationale\x18\x02 \x01(\t\x12\x31\n\nconfidence\x18\x03 \x01(\x0b\x32\x1d.genai.common.ConfidenceScore\x12,\n\x0bstrategy_ir\x18\x04 \x01(\x0b\x32\x17.google.protobuf.Struct\x1aT\n\x1aRecommendedParametersEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12%\n\x05value\x18\x02 \x01(\x0b\x32\x16.google.protobuf.Value:\x02\x38\x01\x32\x80\x03\n\x16StrategyBuilderService\x12u\n\x10GenerateStrategy\x12/.genai.strategy_builder.GenerateStrategyRequest\x1a\x30.genai.strategy_builder.GenerateStrategyResponse\x12u\n\x10ValidateProposal\x12/.genai.strategy_builder.ValidateProposalRequest\x1a\x30.genai.strategy_builder.ValidateProposalResponse\x12x\n\x11\x43ustomizeTemplate\x12\x30.genai.strategy_builder.CustomizeTemplateRequest\x1a\x31.genai.strategy_builder.CustomizeTemplateResponseb\x06proto3'
+)
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
-_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'services.genai.v1.strategy_builder_pb2', _globals)
+_builder.BuildTopDescriptorsAndMessages(
+    DESCRIPTOR, "services.genai.v1.strategy_builder_pb2", _globals
+)
 if not _descriptor._USE_C_DESCRIPTORS:
-  DESCRIPTOR._loaded_options = None
-  _globals['_CUSTOMIZETEMPLATERESPONSE_RECOMMENDEDPARAMETERSENTRY']._loaded_options = None
-  _globals['_CUSTOMIZETEMPLATERESPONSE_RECOMMENDEDPARAMETERSENTRY']._serialized_options = b'8\001'
-  _globals['_GENERATESTRATEGYREQUEST']._serialized_start=142
-  _globals['_GENERATESTRATEGYREQUEST']._serialized_end=333
-  _globals['_STRATEGYCONTEXT']._serialized_start=335
-  _globals['_STRATEGYCONTEXT']._serialized_end=429
-  _globals['_GENERATESTRATEGYRESPONSE']._serialized_start=432
-  _globals['_GENERATESTRATEGYRESPONSE']._serialized_end=695
-  _globals['_VALIDATIONPREVIEW']._serialized_start=698
-  _globals['_VALIDATIONPREVIEW']._serialized_end=851
-  _globals['_VALIDATEPROPOSALREQUEST']._serialized_start=853
-  _globals['_VALIDATEPROPOSALREQUEST']._serialized_end=941
-  _globals['_VALIDATEPROPOSALRESPONSE']._serialized_start=944
-  _globals['_VALIDATEPROPOSALRESPONSE']._serialized_end=1085
-  _globals['_CUSTOMIZETEMPLATEREQUEST']._serialized_start=1088
-  _globals['_CUSTOMIZETEMPLATEREQUEST']._serialized_end=1265
-  _globals['_CUSTOMIZETEMPLATERESPONSE']._serialized_start=1268
-  _globals['_CUSTOMIZETEMPLATERESPONSE']._serialized_end=1607
-  _globals['_CUSTOMIZETEMPLATERESPONSE_RECOMMENDEDPARAMETERSENTRY']._serialized_start=1523
-  _globals['_CUSTOMIZETEMPLATERESPONSE_RECOMMENDEDPARAMETERSENTRY']._serialized_end=1607
-  _globals['_STRATEGYBUILDERSERVICE']._serialized_start=1610
-  _globals['_STRATEGYBUILDERSERVICE']._serialized_end=1994
+    DESCRIPTOR._loaded_options = None
+    _globals[
+        "_CUSTOMIZETEMPLATERESPONSE_RECOMMENDEDPARAMETERSENTRY"
+    ]._loaded_options = None
+    _globals[
+        "_CUSTOMIZETEMPLATERESPONSE_RECOMMENDEDPARAMETERSENTRY"
+    ]._serialized_options = b"8\001"
+    _globals["_GENERATESTRATEGYREQUEST"]._serialized_start = 142
+    _globals["_GENERATESTRATEGYREQUEST"]._serialized_end = 333
+    _globals["_STRATEGYCONTEXT"]._serialized_start = 335
+    _globals["_STRATEGYCONTEXT"]._serialized_end = 429
+    _globals["_GENERATESTRATEGYRESPONSE"]._serialized_start = 432
+    _globals["_GENERATESTRATEGYRESPONSE"]._serialized_end = 695
+    _globals["_VALIDATIONPREVIEW"]._serialized_start = 698
+    _globals["_VALIDATIONPREVIEW"]._serialized_end = 851
+    _globals["_VALIDATEPROPOSALREQUEST"]._serialized_start = 853
+    _globals["_VALIDATEPROPOSALREQUEST"]._serialized_end = 941
+    _globals["_VALIDATEPROPOSALRESPONSE"]._serialized_start = 944
+    _globals["_VALIDATEPROPOSALRESPONSE"]._serialized_end = 1085
+    _globals["_CUSTOMIZETEMPLATEREQUEST"]._serialized_start = 1088
+    _globals["_CUSTOMIZETEMPLATEREQUEST"]._serialized_end = 1265
+    _globals["_CUSTOMIZETEMPLATERESPONSE"]._serialized_start = 1268
+    _globals["_CUSTOMIZETEMPLATERESPONSE"]._serialized_end = 1607
+    _globals[
+        "_CUSTOMIZETEMPLATERESPONSE_RECOMMENDEDPARAMETERSENTRY"
+    ]._serialized_start = 1523
+    _globals[
+        "_CUSTOMIZETEMPLATERESPONSE_RECOMMENDEDPARAMETERSENTRY"
+    ]._serialized_end = 1607
+    _globals["_STRATEGYBUILDERSERVICE"]._serialized_start = 1610
+    _globals["_STRATEGYBUILDERSERVICE"]._serialized_end = 1994
 # @@protoc_insertion_point(module_scope)

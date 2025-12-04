@@ -4,20 +4,25 @@
 # source: services/subscription/v1/subscription_service.proto
 # Protobuf Python Version: 6.31.1
 """Generated protocol buffer code."""
+
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
+
 _runtime_version.ValidateProtobufRuntimeVersion(
     _runtime_version.Domain.PUBLIC,
     6,
     31,
     1,
-    '',
-    'services/subscription/v1/subscription_service.proto'
+    "",
+    "services/subscription/v1/subscription_service.proto",
 )
-from google.protobuf import timestamp_pb2 as _timestamp_pb2  # protobuf 6.x compatibility
+from google.protobuf import (
+    timestamp_pb2 as _timestamp_pb2,  # protobuf 6.x compatibility
+)
+
 _ = _timestamp_pb2.DESCRIPTOR
 
 # @@protoc_insertion_point(imports)
@@ -25,48 +30,49 @@ _ = _timestamp_pb2.DESCRIPTOR
 _sym_db = _symbol_database.Default()
 
 
-from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
-
-
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n3services/subscription/v1/subscription_service.proto\x12\x0fsubscription.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"D\n\x11\x43heckQuotaRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0e\n\x06metric\x18\x02 \x01(\t\x12\x0e\n\x06\x61mount\x18\x03 \x01(\x05\")\n\x16GetSubscriptionRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\")\n\x16GetEntitlementsRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\"N\n\x0fGetUsageRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0e\n\x06metric\x18\x02 \x01(\t\x12\x11\n\x04\x64\x61te\x18\x03 \x01(\tH\x00\x88\x01\x01\x42\x07\n\x05_date\"B\n\x13GetAllQuotasRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x11\n\x04\x64\x61te\x18\x02 \x01(\tH\x00\x88\x01\x01\x42\x07\n\x05_date\"\x14\n\x12HealthCheckRequest\"\xd2\x01\n\x12\x43heckQuotaResponse\x12\x0f\n\x07\x61llowed\x18\x01 \x01(\x08\x12\x15\n\rcurrent_usage\x18\x02 \x01(\x03\x12\r\n\x05limit\x18\x03 \x01(\x03\x12\x11\n\tremaining\x18\x04 \x01(\x03\x12\x12\n\npercentage\x18\x05 \x01(\x01\x12\x0e\n\x06status\x18\x06 \x01(\t\x12,\n\x08reset_at\x18\x07 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x14\n\x07message\x18\x08 \x01(\tH\x00\x88\x01\x01\x42\n\n\x08_message\"\xec\x04\n\x17GetSubscriptionResponse\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\x12\x0c\n\x04tier\x18\x03 \x01(\t\x12\x0e\n\x06status\x18\x04 \x01(\t\x12\x1a\n\rbilling_cycle\x18\x05 \x01(\tH\x00\x88\x01\x01\x12\x12\n\nprice_paid\x18\x06 \x01(\x01\x12\x10\n\x08\x63urrency\x18\x07 \x01(\t\x12.\n\nstarted_at\x18\x08 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x33\n\nexpires_at\x18\t \x01(\x0b\x32\x1a.google.protobuf.TimestampH\x01\x88\x01\x01\x12\x35\n\x0c\x63\x61ncelled_at\x18\n \x01(\x0b\x32\x1a.google.protobuf.TimestampH\x02\x88\x01\x01\x12#\n\x16stripe_subscription_id\x18\x0b \x01(\tH\x03\x88\x01\x01\x12\x1f\n\x12stripe_customer_id\x18\x0c \x01(\tH\x04\x88\x01\x01\x12\x1b\n\x0epayment_method\x18\r \x01(\tH\x05\x88\x01\x01\x12.\n\ncreated_at\x18\x0e \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\nupdated_at\x18\x0f \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x10\n\x0e_billing_cycleB\r\n\x0b_expires_atB\x0f\n\r_cancelled_atB\x19\n\x17_stripe_subscription_idB\x15\n\x13_stripe_customer_idB\x11\n\x0f_payment_method\"\xe1\x01\n\x17GetEntitlementsResponse\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0c\n\x04tier\x18\x02 \x01(\t\x12H\n\x08\x66\x65\x61tures\x18\x03 \x03(\x0b\x32\x36.subscription.v1.GetEntitlementsResponse.FeaturesEntry\x12,\n\x06limits\x18\x04 \x01(\x0b\x32\x1c.subscription.v1.QuotaLimits\x1a/\n\rFeaturesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x08:\x02\x38\x01\"w\n\x0bQuotaLimits\x12\x11\n\tapi_calls\x18\x01 \x01(\x03\x12\x11\n\tbacktests\x18\x02 \x01(\x03\x12\x18\n\x10\x61i_chat_messages\x18\x03 \x01(\x03\x12\x11\n\tai_tokens\x18\x04 \x01(\x03\x12\x15\n\rstorage_bytes\x18\x05 \x01(\x03\"P\n\x10GetUsageResponse\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0c\n\x04\x64\x61te\x18\x02 \x01(\t\x12\x0e\n\x06metric\x18\x03 \x01(\t\x12\r\n\x05usage\x18\x04 \x01(\x03\"U\n\x14GetAllQuotasResponse\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12,\n\x06quotas\x18\x02 \x03(\x0b\x32\x1c.subscription.v1.QuotaStatus\"\xa8\x01\n\x0bQuotaStatus\x12\x0e\n\x06metric\x18\x01 \x01(\t\x12\x15\n\rcurrent_usage\x18\x02 \x01(\x03\x12\r\n\x05limit\x18\x03 \x01(\x03\x12\x11\n\tremaining\x18\x04 \x01(\x03\x12\x12\n\npercentage\x18\x05 \x01(\x01\x12\x0e\n\x06status\x18\x06 \x01(\t\x12,\n\x08reset_at\x18\x07 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"6\n\x13HealthCheckResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t2\xc0\x04\n\x13SubscriptionService\x12U\n\nCheckQuota\x12\".subscription.v1.CheckQuotaRequest\x1a#.subscription.v1.CheckQuotaResponse\x12\x64\n\x0fGetSubscription\x12\'.subscription.v1.GetSubscriptionRequest\x1a(.subscription.v1.GetSubscriptionResponse\x12\x64\n\x0fGetEntitlements\x12\'.subscription.v1.GetEntitlementsRequest\x1a(.subscription.v1.GetEntitlementsResponse\x12O\n\x08GetUsage\x12 .subscription.v1.GetUsageRequest\x1a!.subscription.v1.GetUsageResponse\x12[\n\x0cGetAllQuotas\x12$.subscription.v1.GetAllQuotasRequest\x1a%.subscription.v1.GetAllQuotasResponse\x12X\n\x0bHealthCheck\x12#.subscription.v1.HealthCheckRequest\x1a$.subscription.v1.HealthCheckResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
+    b'\n3services/subscription/v1/subscription_service.proto\x12\x0fsubscription.v1\x1a\x1fgoogle/protobuf/timestamp.proto"D\n\x11\x43heckQuotaRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0e\n\x06metric\x18\x02 \x01(\t\x12\x0e\n\x06\x61mount\x18\x03 \x01(\x05")\n\x16GetSubscriptionRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t")\n\x16GetEntitlementsRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t"N\n\x0fGetUsageRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0e\n\x06metric\x18\x02 \x01(\t\x12\x11\n\x04\x64\x61te\x18\x03 \x01(\tH\x00\x88\x01\x01\x42\x07\n\x05_date"B\n\x13GetAllQuotasRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x11\n\x04\x64\x61te\x18\x02 \x01(\tH\x00\x88\x01\x01\x42\x07\n\x05_date"\x14\n\x12HealthCheckRequest"\xd2\x01\n\x12\x43heckQuotaResponse\x12\x0f\n\x07\x61llowed\x18\x01 \x01(\x08\x12\x15\n\rcurrent_usage\x18\x02 \x01(\x03\x12\r\n\x05limit\x18\x03 \x01(\x03\x12\x11\n\tremaining\x18\x04 \x01(\x03\x12\x12\n\npercentage\x18\x05 \x01(\x01\x12\x0e\n\x06status\x18\x06 \x01(\t\x12,\n\x08reset_at\x18\x07 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x14\n\x07message\x18\x08 \x01(\tH\x00\x88\x01\x01\x42\n\n\x08_message"\xec\x04\n\x17GetSubscriptionResponse\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\x12\x0c\n\x04tier\x18\x03 \x01(\t\x12\x0e\n\x06status\x18\x04 \x01(\t\x12\x1a\n\rbilling_cycle\x18\x05 \x01(\tH\x00\x88\x01\x01\x12\x12\n\nprice_paid\x18\x06 \x01(\x01\x12\x10\n\x08\x63urrency\x18\x07 \x01(\t\x12.\n\nstarted_at\x18\x08 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x33\n\nexpires_at\x18\t \x01(\x0b\x32\x1a.google.protobuf.TimestampH\x01\x88\x01\x01\x12\x35\n\x0c\x63\x61ncelled_at\x18\n \x01(\x0b\x32\x1a.google.protobuf.TimestampH\x02\x88\x01\x01\x12#\n\x16stripe_subscription_id\x18\x0b \x01(\tH\x03\x88\x01\x01\x12\x1f\n\x12stripe_customer_id\x18\x0c \x01(\tH\x04\x88\x01\x01\x12\x1b\n\x0epayment_method\x18\r \x01(\tH\x05\x88\x01\x01\x12.\n\ncreated_at\x18\x0e \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\nupdated_at\x18\x0f \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x10\n\x0e_billing_cycleB\r\n\x0b_expires_atB\x0f\n\r_cancelled_atB\x19\n\x17_stripe_subscription_idB\x15\n\x13_stripe_customer_idB\x11\n\x0f_payment_method"\xe1\x01\n\x17GetEntitlementsResponse\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0c\n\x04tier\x18\x02 \x01(\t\x12H\n\x08\x66\x65\x61tures\x18\x03 \x03(\x0b\x32\x36.subscription.v1.GetEntitlementsResponse.FeaturesEntry\x12,\n\x06limits\x18\x04 \x01(\x0b\x32\x1c.subscription.v1.QuotaLimits\x1a/\n\rFeaturesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x08:\x02\x38\x01"w\n\x0bQuotaLimits\x12\x11\n\tapi_calls\x18\x01 \x01(\x03\x12\x11\n\tbacktests\x18\x02 \x01(\x03\x12\x18\n\x10\x61i_chat_messages\x18\x03 \x01(\x03\x12\x11\n\tai_tokens\x18\x04 \x01(\x03\x12\x15\n\rstorage_bytes\x18\x05 \x01(\x03"P\n\x10GetUsageResponse\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0c\n\x04\x64\x61te\x18\x02 \x01(\t\x12\x0e\n\x06metric\x18\x03 \x01(\t\x12\r\n\x05usage\x18\x04 \x01(\x03"U\n\x14GetAllQuotasResponse\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12,\n\x06quotas\x18\x02 \x03(\x0b\x32\x1c.subscription.v1.QuotaStatus"\xa8\x01\n\x0bQuotaStatus\x12\x0e\n\x06metric\x18\x01 \x01(\t\x12\x15\n\rcurrent_usage\x18\x02 \x01(\x03\x12\r\n\x05limit\x18\x03 \x01(\x03\x12\x11\n\tremaining\x18\x04 \x01(\x03\x12\x12\n\npercentage\x18\x05 \x01(\x01\x12\x0e\n\x06status\x18\x06 \x01(\t\x12,\n\x08reset_at\x18\x07 \x01(\x0b\x32\x1a.google.protobuf.Timestamp"6\n\x13HealthCheckResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t2\xc0\x04\n\x13SubscriptionService\x12U\n\nCheckQuota\x12".subscription.v1.CheckQuotaRequest\x1a#.subscription.v1.CheckQuotaResponse\x12\x64\n\x0fGetSubscription\x12\'.subscription.v1.GetSubscriptionRequest\x1a(.subscription.v1.GetSubscriptionResponse\x12\x64\n\x0fGetEntitlements\x12\'.subscription.v1.GetEntitlementsRequest\x1a(.subscription.v1.GetEntitlementsResponse\x12O\n\x08GetUsage\x12 .subscription.v1.GetUsageRequest\x1a!.subscription.v1.GetUsageResponse\x12[\n\x0cGetAllQuotas\x12$.subscription.v1.GetAllQuotasRequest\x1a%.subscription.v1.GetAllQuotasResponse\x12X\n\x0bHealthCheck\x12#.subscription.v1.HealthCheckRequest\x1a$.subscription.v1.HealthCheckResponseb\x06proto3'
+)
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
-_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'services.subscription.v1.subscription_service_pb2', _globals)
+_builder.BuildTopDescriptorsAndMessages(
+    DESCRIPTOR, "services.subscription.v1.subscription_service_pb2", _globals
+)
 if not _descriptor._USE_C_DESCRIPTORS:
-  DESCRIPTOR._loaded_options = None
-  _globals['_GETENTITLEMENTSRESPONSE_FEATURESENTRY']._loaded_options = None
-  _globals['_GETENTITLEMENTSRESPONSE_FEATURESENTRY']._serialized_options = b'8\001'
-  _globals['_CHECKQUOTAREQUEST']._serialized_start=105
-  _globals['_CHECKQUOTAREQUEST']._serialized_end=173
-  _globals['_GETSUBSCRIPTIONREQUEST']._serialized_start=175
-  _globals['_GETSUBSCRIPTIONREQUEST']._serialized_end=216
-  _globals['_GETENTITLEMENTSREQUEST']._serialized_start=218
-  _globals['_GETENTITLEMENTSREQUEST']._serialized_end=259
-  _globals['_GETUSAGEREQUEST']._serialized_start=261
-  _globals['_GETUSAGEREQUEST']._serialized_end=339
-  _globals['_GETALLQUOTASREQUEST']._serialized_start=341
-  _globals['_GETALLQUOTASREQUEST']._serialized_end=407
-  _globals['_HEALTHCHECKREQUEST']._serialized_start=409
-  _globals['_HEALTHCHECKREQUEST']._serialized_end=429
-  _globals['_CHECKQUOTARESPONSE']._serialized_start=432
-  _globals['_CHECKQUOTARESPONSE']._serialized_end=642
-  _globals['_GETSUBSCRIPTIONRESPONSE']._serialized_start=645
-  _globals['_GETSUBSCRIPTIONRESPONSE']._serialized_end=1265
-  _globals['_GETENTITLEMENTSRESPONSE']._serialized_start=1268
-  _globals['_GETENTITLEMENTSRESPONSE']._serialized_end=1493
-  _globals['_GETENTITLEMENTSRESPONSE_FEATURESENTRY']._serialized_start=1446
-  _globals['_GETENTITLEMENTSRESPONSE_FEATURESENTRY']._serialized_end=1493
-  _globals['_QUOTALIMITS']._serialized_start=1495
-  _globals['_QUOTALIMITS']._serialized_end=1614
-  _globals['_GETUSAGERESPONSE']._serialized_start=1616
-  _globals['_GETUSAGERESPONSE']._serialized_end=1696
-  _globals['_GETALLQUOTASRESPONSE']._serialized_start=1698
-  _globals['_GETALLQUOTASRESPONSE']._serialized_end=1783
-  _globals['_QUOTASTATUS']._serialized_start=1786
-  _globals['_QUOTASTATUS']._serialized_end=1954
-  _globals['_HEALTHCHECKRESPONSE']._serialized_start=1956
-  _globals['_HEALTHCHECKRESPONSE']._serialized_end=2010
-  _globals['_SUBSCRIPTIONSERVICE']._serialized_start=2013
-  _globals['_SUBSCRIPTIONSERVICE']._serialized_end=2589
+    DESCRIPTOR._loaded_options = None
+    _globals["_GETENTITLEMENTSRESPONSE_FEATURESENTRY"]._loaded_options = None
+    _globals["_GETENTITLEMENTSRESPONSE_FEATURESENTRY"]._serialized_options = b"8\001"
+    _globals["_CHECKQUOTAREQUEST"]._serialized_start = 105
+    _globals["_CHECKQUOTAREQUEST"]._serialized_end = 173
+    _globals["_GETSUBSCRIPTIONREQUEST"]._serialized_start = 175
+    _globals["_GETSUBSCRIPTIONREQUEST"]._serialized_end = 216
+    _globals["_GETENTITLEMENTSREQUEST"]._serialized_start = 218
+    _globals["_GETENTITLEMENTSREQUEST"]._serialized_end = 259
+    _globals["_GETUSAGEREQUEST"]._serialized_start = 261
+    _globals["_GETUSAGEREQUEST"]._serialized_end = 339
+    _globals["_GETALLQUOTASREQUEST"]._serialized_start = 341
+    _globals["_GETALLQUOTASREQUEST"]._serialized_end = 407
+    _globals["_HEALTHCHECKREQUEST"]._serialized_start = 409
+    _globals["_HEALTHCHECKREQUEST"]._serialized_end = 429
+    _globals["_CHECKQUOTARESPONSE"]._serialized_start = 432
+    _globals["_CHECKQUOTARESPONSE"]._serialized_end = 642
+    _globals["_GETSUBSCRIPTIONRESPONSE"]._serialized_start = 645
+    _globals["_GETSUBSCRIPTIONRESPONSE"]._serialized_end = 1265
+    _globals["_GETENTITLEMENTSRESPONSE"]._serialized_start = 1268
+    _globals["_GETENTITLEMENTSRESPONSE"]._serialized_end = 1493
+    _globals["_GETENTITLEMENTSRESPONSE_FEATURESENTRY"]._serialized_start = 1446
+    _globals["_GETENTITLEMENTSRESPONSE_FEATURESENTRY"]._serialized_end = 1493
+    _globals["_QUOTALIMITS"]._serialized_start = 1495
+    _globals["_QUOTALIMITS"]._serialized_end = 1614
+    _globals["_GETUSAGERESPONSE"]._serialized_start = 1616
+    _globals["_GETUSAGERESPONSE"]._serialized_end = 1696
+    _globals["_GETALLQUOTASRESPONSE"]._serialized_start = 1698
+    _globals["_GETALLQUOTASRESPONSE"]._serialized_end = 1783
+    _globals["_QUOTASTATUS"]._serialized_start = 1786
+    _globals["_QUOTASTATUS"]._serialized_end = 1954
+    _globals["_HEALTHCHECKRESPONSE"]._serialized_start = 1956
+    _globals["_HEALTHCHECKRESPONSE"]._serialized_end = 2010
+    _globals["_SUBSCRIPTIONSERVICE"]._serialized_start = 2013
+    _globals["_SUBSCRIPTIONSERVICE"]._serialized_end = 2589
 # @@protoc_insertion_point(module_scope)

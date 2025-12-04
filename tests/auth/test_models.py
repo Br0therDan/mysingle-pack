@@ -14,7 +14,7 @@ async def init_db():
     """Initialize test database."""
     client = AsyncMongoMockClient()
     await init_beanie(
-        database=client.test_db,
+        database=client.test_db,  # type: ignore
         document_models=[User],
     )
     yield

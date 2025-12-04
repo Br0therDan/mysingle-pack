@@ -1,11 +1,14 @@
 import datetime
+from collections.abc import Iterable as _Iterable
+from collections.abc import Mapping as _Mapping
+from typing import ClassVar as _ClassVar
+from typing import Optional as _Optional
+from typing import Union as _Union
 
-from google.protobuf import timestamp_pb2 as _timestamp_pb2
-from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from collections.abc import Iterable as _Iterable, Mapping as _Mapping
-from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
+from google.protobuf import timestamp_pb2 as _timestamp_pb2
+from google.protobuf.internal import containers as _containers
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -23,7 +26,12 @@ class VerifyUserAccessRequest(_message.Message):
     user_id: str
     resource: str
     permission: str
-    def __init__(self, user_id: _Optional[str] = ..., resource: _Optional[str] = ..., permission: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        user_id: _Optional[str] = ...,
+        resource: _Optional[str] = ...,
+        permission: _Optional[str] = ...,
+    ) -> None: ...
 
 class BatchGetUsersRequest(_message.Message):
     __slots__ = ("user_ids",)
@@ -54,7 +62,16 @@ class GetUserInfoResponse(_message.Message):
     def __init__(self, user: _Optional[_Union[UserInfo, _Mapping]] = ...) -> None: ...
 
 class UserInfo(_message.Message):
-    __slots__ = ("id", "email", "full_name", "is_verified", "is_active", "is_superuser", "created_at", "updated_at")
+    __slots__ = (
+        "id",
+        "email",
+        "full_name",
+        "is_verified",
+        "is_active",
+        "is_superuser",
+        "created_at",
+        "updated_at",
+    )
     ID_FIELD_NUMBER: _ClassVar[int]
     EMAIL_FIELD_NUMBER: _ClassVar[int]
     FULL_NAME_FIELD_NUMBER: _ClassVar[int]
@@ -71,7 +88,21 @@ class UserInfo(_message.Message):
     is_superuser: bool
     created_at: _timestamp_pb2.Timestamp
     updated_at: _timestamp_pb2.Timestamp
-    def __init__(self, id: _Optional[str] = ..., email: _Optional[str] = ..., full_name: _Optional[str] = ..., is_verified: bool = ..., is_active: bool = ..., is_superuser: bool = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    def __init__(
+        self,
+        id: _Optional[str] = ...,
+        email: _Optional[str] = ...,
+        full_name: _Optional[str] = ...,
+        is_verified: bool = ...,
+        is_active: bool = ...,
+        is_superuser: bool = ...,
+        created_at: _Optional[
+            _Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]
+        ] = ...,
+        updated_at: _Optional[
+            _Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]
+        ] = ...,
+    ) -> None: ...
 
 class VerifyUserAccessResponse(_message.Message):
     __slots__ = ("allowed", "reason")
@@ -95,7 +126,12 @@ class VerifyTokenResponse(_message.Message):
     valid: bool
     user: UserInfo
     reason: str
-    def __init__(self, valid: bool = ..., user: _Optional[_Union[UserInfo, _Mapping]] = ..., reason: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        valid: bool = ...,
+        user: _Optional[_Union[UserInfo, _Mapping]] = ...,
+        reason: _Optional[str] = ...,
+    ) -> None: ...
 
 class RefreshTokenResponse(_message.Message):
     __slots__ = ("access_token", "refresh_token", "token_type", "expires_in")
@@ -107,7 +143,13 @@ class RefreshTokenResponse(_message.Message):
     refresh_token: str
     token_type: str
     expires_in: int
-    def __init__(self, access_token: _Optional[str] = ..., refresh_token: _Optional[str] = ..., token_type: _Optional[str] = ..., expires_in: _Optional[int] = ...) -> None: ...
+    def __init__(
+        self,
+        access_token: _Optional[str] = ...,
+        refresh_token: _Optional[str] = ...,
+        token_type: _Optional[str] = ...,
+        expires_in: _Optional[int] = ...,
+    ) -> None: ...
 
 class HealthCheckResponse(_message.Message):
     __slots__ = ("status", "version")
@@ -115,4 +157,6 @@ class HealthCheckResponse(_message.Message):
     VERSION_FIELD_NUMBER: _ClassVar[int]
     status: str
     version: str
-    def __init__(self, status: _Optional[str] = ..., version: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self, status: _Optional[str] = ..., version: _Optional[str] = ...
+    ) -> None: ...

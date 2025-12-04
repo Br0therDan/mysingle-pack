@@ -1,11 +1,14 @@
 import datetime
+from collections.abc import Iterable as _Iterable
+from collections.abc import Mapping as _Mapping
+from typing import ClassVar as _ClassVar
+from typing import Optional as _Optional
+from typing import Union as _Union
 
-from google.protobuf import timestamp_pb2 as _timestamp_pb2
-from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from collections.abc import Iterable as _Iterable, Mapping as _Mapping
-from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
+from google.protobuf import timestamp_pb2 as _timestamp_pb2
+from google.protobuf.internal import containers as _containers
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -19,17 +22,39 @@ class ExecuteBacktestRequest(_message.Message):
     strategy_id: str
     strategy_version_seq: int
     config: BacktestConfig
-    def __init__(self, user_id: _Optional[str] = ..., strategy_id: _Optional[str] = ..., strategy_version_seq: _Optional[int] = ..., config: _Optional[_Union[BacktestConfig, _Mapping]] = ...) -> None: ...
+    def __init__(
+        self,
+        user_id: _Optional[str] = ...,
+        strategy_id: _Optional[str] = ...,
+        strategy_version_seq: _Optional[int] = ...,
+        config: _Optional[_Union[BacktestConfig, _Mapping]] = ...,
+    ) -> None: ...
 
 class BacktestConfig(_message.Message):
-    __slots__ = ("symbol", "interval", "start_date", "end_date", "initial_capital", "slippage_bps", "commission_per_trade", "stop_loss_pct", "take_profit_pct", "max_position_size", "params", "snapshot_interval_seconds")
+    __slots__ = (
+        "symbol",
+        "interval",
+        "start_date",
+        "end_date",
+        "initial_capital",
+        "slippage_bps",
+        "commission_per_trade",
+        "stop_loss_pct",
+        "take_profit_pct",
+        "max_position_size",
+        "params",
+        "snapshot_interval_seconds",
+    )
     class ParamsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
         value: str
-        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[str] = ...
+        ) -> None: ...
+
     SYMBOL_FIELD_NUMBER: _ClassVar[int]
     INTERVAL_FIELD_NUMBER: _ClassVar[int]
     START_DATE_FIELD_NUMBER: _ClassVar[int]
@@ -54,7 +79,21 @@ class BacktestConfig(_message.Message):
     max_position_size: float
     params: _containers.ScalarMap[str, str]
     snapshot_interval_seconds: int
-    def __init__(self, symbol: _Optional[str] = ..., interval: _Optional[str] = ..., start_date: _Optional[str] = ..., end_date: _Optional[str] = ..., initial_capital: _Optional[float] = ..., slippage_bps: _Optional[float] = ..., commission_per_trade: _Optional[float] = ..., stop_loss_pct: _Optional[float] = ..., take_profit_pct: _Optional[float] = ..., max_position_size: _Optional[float] = ..., params: _Optional[_Mapping[str, str]] = ..., snapshot_interval_seconds: _Optional[int] = ...) -> None: ...
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        interval: _Optional[str] = ...,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+        initial_capital: _Optional[float] = ...,
+        slippage_bps: _Optional[float] = ...,
+        commission_per_trade: _Optional[float] = ...,
+        stop_loss_pct: _Optional[float] = ...,
+        take_profit_pct: _Optional[float] = ...,
+        max_position_size: _Optional[float] = ...,
+        params: _Optional[_Mapping[str, str]] = ...,
+        snapshot_interval_seconds: _Optional[int] = ...,
+    ) -> None: ...
 
 class GetBacktestResultRequest(_message.Message):
     __slots__ = ("backtest_id", "user_id")
@@ -62,7 +101,9 @@ class GetBacktestResultRequest(_message.Message):
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     backtest_id: str
     user_id: str
-    def __init__(self, backtest_id: _Optional[str] = ..., user_id: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self, backtest_id: _Optional[str] = ..., user_id: _Optional[str] = ...
+    ) -> None: ...
 
 class StreamProgressRequest(_message.Message):
     __slots__ = ("backtest_id", "user_id")
@@ -70,7 +111,9 @@ class StreamProgressRequest(_message.Message):
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     backtest_id: str
     user_id: str
-    def __init__(self, backtest_id: _Optional[str] = ..., user_id: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self, backtest_id: _Optional[str] = ..., user_id: _Optional[str] = ...
+    ) -> None: ...
 
 class GetMetricsRequest(_message.Message):
     __slots__ = ("backtest_id", "user_id")
@@ -78,7 +121,9 @@ class GetMetricsRequest(_message.Message):
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     backtest_id: str
     user_id: str
-    def __init__(self, backtest_id: _Optional[str] = ..., user_id: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self, backtest_id: _Optional[str] = ..., user_id: _Optional[str] = ...
+    ) -> None: ...
 
 class ListBacktestsRequest(_message.Message):
     __slots__ = ("user_id", "strategy_id", "status", "limit", "skip")
@@ -92,7 +137,14 @@ class ListBacktestsRequest(_message.Message):
     status: str
     limit: int
     skip: int
-    def __init__(self, user_id: _Optional[str] = ..., strategy_id: _Optional[str] = ..., status: _Optional[str] = ..., limit: _Optional[int] = ..., skip: _Optional[int] = ...) -> None: ...
+    def __init__(
+        self,
+        user_id: _Optional[str] = ...,
+        strategy_id: _Optional[str] = ...,
+        status: _Optional[str] = ...,
+        limit: _Optional[int] = ...,
+        skip: _Optional[int] = ...,
+    ) -> None: ...
 
 class CancelBacktestRequest(_message.Message):
     __slots__ = ("backtest_id", "user_id")
@@ -100,7 +152,9 @@ class CancelBacktestRequest(_message.Message):
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     backtest_id: str
     user_id: str
-    def __init__(self, backtest_id: _Optional[str] = ..., user_id: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self, backtest_id: _Optional[str] = ..., user_id: _Optional[str] = ...
+    ) -> None: ...
 
 class HealthCheckRequest(_message.Message):
     __slots__ = ()
@@ -116,10 +170,30 @@ class ExecuteBacktestResponse(_message.Message):
     status: str
     message: str
     created_at: _timestamp_pb2.Timestamp
-    def __init__(self, backtest_id: _Optional[str] = ..., status: _Optional[str] = ..., message: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    def __init__(
+        self,
+        backtest_id: _Optional[str] = ...,
+        status: _Optional[str] = ...,
+        message: _Optional[str] = ...,
+        created_at: _Optional[
+            _Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]
+        ] = ...,
+    ) -> None: ...
 
 class BacktestResultResponse(_message.Message):
-    __slots__ = ("backtest_id", "strategy_id", "strategy_version_seq", "status", "metrics", "trades", "equity_curve", "config", "created_at", "completed_at", "error_message")
+    __slots__ = (
+        "backtest_id",
+        "strategy_id",
+        "strategy_version_seq",
+        "status",
+        "metrics",
+        "trades",
+        "equity_curve",
+        "config",
+        "created_at",
+        "completed_at",
+        "error_message",
+    )
     BACKTEST_ID_FIELD_NUMBER: _ClassVar[int]
     STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
     STRATEGY_VERSION_SEQ_FIELD_NUMBER: _ClassVar[int]
@@ -142,10 +216,34 @@ class BacktestResultResponse(_message.Message):
     created_at: _timestamp_pb2.Timestamp
     completed_at: _timestamp_pb2.Timestamp
     error_message: str
-    def __init__(self, backtest_id: _Optional[str] = ..., strategy_id: _Optional[str] = ..., strategy_version_seq: _Optional[int] = ..., status: _Optional[str] = ..., metrics: _Optional[_Union[PerformanceMetrics, _Mapping]] = ..., trades: _Optional[_Iterable[_Union[Trade, _Mapping]]] = ..., equity_curve: _Optional[_Iterable[_Union[EquityPoint, _Mapping]]] = ..., config: _Optional[_Union[BacktestConfig, _Mapping]] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., completed_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error_message: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        backtest_id: _Optional[str] = ...,
+        strategy_id: _Optional[str] = ...,
+        strategy_version_seq: _Optional[int] = ...,
+        status: _Optional[str] = ...,
+        metrics: _Optional[_Union[PerformanceMetrics, _Mapping]] = ...,
+        trades: _Optional[_Iterable[_Union[Trade, _Mapping]]] = ...,
+        equity_curve: _Optional[_Iterable[_Union[EquityPoint, _Mapping]]] = ...,
+        config: _Optional[_Union[BacktestConfig, _Mapping]] = ...,
+        created_at: _Optional[
+            _Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]
+        ] = ...,
+        completed_at: _Optional[
+            _Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]
+        ] = ...,
+        error_message: _Optional[str] = ...,
+    ) -> None: ...
 
 class ProgressUpdate(_message.Message):
-    __slots__ = ("backtest_id", "status", "progress_pct", "message", "timestamp", "current_metrics")
+    __slots__ = (
+        "backtest_id",
+        "status",
+        "progress_pct",
+        "message",
+        "timestamp",
+        "current_metrics",
+    )
     BACKTEST_ID_FIELD_NUMBER: _ClassVar[int]
     STATUS_FIELD_NUMBER: _ClassVar[int]
     PROGRESS_PCT_FIELD_NUMBER: _ClassVar[int]
@@ -158,7 +256,17 @@ class ProgressUpdate(_message.Message):
     message: str
     timestamp: _timestamp_pb2.Timestamp
     current_metrics: PerformanceMetrics
-    def __init__(self, backtest_id: _Optional[str] = ..., status: _Optional[str] = ..., progress_pct: _Optional[float] = ..., message: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., current_metrics: _Optional[_Union[PerformanceMetrics, _Mapping]] = ...) -> None: ...
+    def __init__(
+        self,
+        backtest_id: _Optional[str] = ...,
+        status: _Optional[str] = ...,
+        progress_pct: _Optional[float] = ...,
+        message: _Optional[str] = ...,
+        timestamp: _Optional[
+            _Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]
+        ] = ...,
+        current_metrics: _Optional[_Union[PerformanceMetrics, _Mapping]] = ...,
+    ) -> None: ...
 
 class MetricsResponse(_message.Message):
     __slots__ = ("backtest_id", "metrics", "calculated_at")
@@ -168,7 +276,14 @@ class MetricsResponse(_message.Message):
     backtest_id: str
     metrics: PerformanceMetrics
     calculated_at: _timestamp_pb2.Timestamp
-    def __init__(self, backtest_id: _Optional[str] = ..., metrics: _Optional[_Union[PerformanceMetrics, _Mapping]] = ..., calculated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    def __init__(
+        self,
+        backtest_id: _Optional[str] = ...,
+        metrics: _Optional[_Union[PerformanceMetrics, _Mapping]] = ...,
+        calculated_at: _Optional[
+            _Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]
+        ] = ...,
+    ) -> None: ...
 
 class ListBacktestsResponse(_message.Message):
     __slots__ = ("backtests", "total_count")
@@ -176,10 +291,24 @@ class ListBacktestsResponse(_message.Message):
     TOTAL_COUNT_FIELD_NUMBER: _ClassVar[int]
     backtests: _containers.RepeatedCompositeFieldContainer[BacktestSummary]
     total_count: int
-    def __init__(self, backtests: _Optional[_Iterable[_Union[BacktestSummary, _Mapping]]] = ..., total_count: _Optional[int] = ...) -> None: ...
+    def __init__(
+        self,
+        backtests: _Optional[_Iterable[_Union[BacktestSummary, _Mapping]]] = ...,
+        total_count: _Optional[int] = ...,
+    ) -> None: ...
 
 class BacktestSummary(_message.Message):
-    __slots__ = ("backtest_id", "strategy_id", "strategy_version_seq", "status", "symbol", "interval", "created_at", "completed_at", "metrics")
+    __slots__ = (
+        "backtest_id",
+        "strategy_id",
+        "strategy_version_seq",
+        "status",
+        "symbol",
+        "interval",
+        "created_at",
+        "completed_at",
+        "metrics",
+    )
     BACKTEST_ID_FIELD_NUMBER: _ClassVar[int]
     STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
     STRATEGY_VERSION_SEQ_FIELD_NUMBER: _ClassVar[int]
@@ -198,7 +327,22 @@ class BacktestSummary(_message.Message):
     created_at: _timestamp_pb2.Timestamp
     completed_at: _timestamp_pb2.Timestamp
     metrics: PerformanceMetrics
-    def __init__(self, backtest_id: _Optional[str] = ..., strategy_id: _Optional[str] = ..., strategy_version_seq: _Optional[int] = ..., status: _Optional[str] = ..., symbol: _Optional[str] = ..., interval: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., completed_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., metrics: _Optional[_Union[PerformanceMetrics, _Mapping]] = ...) -> None: ...
+    def __init__(
+        self,
+        backtest_id: _Optional[str] = ...,
+        strategy_id: _Optional[str] = ...,
+        strategy_version_seq: _Optional[int] = ...,
+        status: _Optional[str] = ...,
+        symbol: _Optional[str] = ...,
+        interval: _Optional[str] = ...,
+        created_at: _Optional[
+            _Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]
+        ] = ...,
+        completed_at: _Optional[
+            _Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]
+        ] = ...,
+        metrics: _Optional[_Union[PerformanceMetrics, _Mapping]] = ...,
+    ) -> None: ...
 
 class CancelBacktestResponse(_message.Message):
     __slots__ = ("backtest_id", "status", "message")
@@ -208,7 +352,12 @@ class CancelBacktestResponse(_message.Message):
     backtest_id: str
     status: str
     message: str
-    def __init__(self, backtest_id: _Optional[str] = ..., status: _Optional[str] = ..., message: _Optional[str] = ...) -> None: ...
+    def __init__(
+        self,
+        backtest_id: _Optional[str] = ...,
+        status: _Optional[str] = ...,
+        message: _Optional[str] = ...,
+    ) -> None: ...
 
 class HealthCheckResponse(_message.Message):
     __slots__ = ("status", "service_name", "version", "timestamp", "details")
@@ -218,7 +367,10 @@ class HealthCheckResponse(_message.Message):
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
         value: str
-        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[str] = ...
+        ) -> None: ...
+
     STATUS_FIELD_NUMBER: _ClassVar[int]
     SERVICE_NAME_FIELD_NUMBER: _ClassVar[int]
     VERSION_FIELD_NUMBER: _ClassVar[int]
@@ -229,10 +381,40 @@ class HealthCheckResponse(_message.Message):
     version: str
     timestamp: _timestamp_pb2.Timestamp
     details: _containers.ScalarMap[str, str]
-    def __init__(self, status: _Optional[str] = ..., service_name: _Optional[str] = ..., version: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., details: _Optional[_Mapping[str, str]] = ...) -> None: ...
+    def __init__(
+        self,
+        status: _Optional[str] = ...,
+        service_name: _Optional[str] = ...,
+        version: _Optional[str] = ...,
+        timestamp: _Optional[
+            _Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]
+        ] = ...,
+        details: _Optional[_Mapping[str, str]] = ...,
+    ) -> None: ...
 
 class PerformanceMetrics(_message.Message):
-    __slots__ = ("total_return", "annual_return", "sharpe_ratio", "sortino_ratio", "max_drawdown", "volatility", "total_trades", "winning_trades", "losing_trades", "win_rate", "profit_factor", "average_win", "average_loss", "largest_win", "largest_loss", "average_holding_period_hours", "max_consecutive_wins", "max_consecutive_losses", "final_equity", "total_fees")
+    __slots__ = (
+        "total_return",
+        "annual_return",
+        "sharpe_ratio",
+        "sortino_ratio",
+        "max_drawdown",
+        "volatility",
+        "total_trades",
+        "winning_trades",
+        "losing_trades",
+        "win_rate",
+        "profit_factor",
+        "average_win",
+        "average_loss",
+        "largest_win",
+        "largest_loss",
+        "average_holding_period_hours",
+        "max_consecutive_wins",
+        "max_consecutive_losses",
+        "final_equity",
+        "total_fees",
+    )
     TOTAL_RETURN_FIELD_NUMBER: _ClassVar[int]
     ANNUAL_RETURN_FIELD_NUMBER: _ClassVar[int]
     SHARPE_RATIO_FIELD_NUMBER: _ClassVar[int]
@@ -273,10 +455,42 @@ class PerformanceMetrics(_message.Message):
     max_consecutive_losses: float
     final_equity: float
     total_fees: float
-    def __init__(self, total_return: _Optional[float] = ..., annual_return: _Optional[float] = ..., sharpe_ratio: _Optional[float] = ..., sortino_ratio: _Optional[float] = ..., max_drawdown: _Optional[float] = ..., volatility: _Optional[float] = ..., total_trades: _Optional[int] = ..., winning_trades: _Optional[int] = ..., losing_trades: _Optional[int] = ..., win_rate: _Optional[float] = ..., profit_factor: _Optional[float] = ..., average_win: _Optional[float] = ..., average_loss: _Optional[float] = ..., largest_win: _Optional[float] = ..., largest_loss: _Optional[float] = ..., average_holding_period_hours: _Optional[float] = ..., max_consecutive_wins: _Optional[float] = ..., max_consecutive_losses: _Optional[float] = ..., final_equity: _Optional[float] = ..., total_fees: _Optional[float] = ...) -> None: ...
+    def __init__(
+        self,
+        total_return: _Optional[float] = ...,
+        annual_return: _Optional[float] = ...,
+        sharpe_ratio: _Optional[float] = ...,
+        sortino_ratio: _Optional[float] = ...,
+        max_drawdown: _Optional[float] = ...,
+        volatility: _Optional[float] = ...,
+        total_trades: _Optional[int] = ...,
+        winning_trades: _Optional[int] = ...,
+        losing_trades: _Optional[int] = ...,
+        win_rate: _Optional[float] = ...,
+        profit_factor: _Optional[float] = ...,
+        average_win: _Optional[float] = ...,
+        average_loss: _Optional[float] = ...,
+        largest_win: _Optional[float] = ...,
+        largest_loss: _Optional[float] = ...,
+        average_holding_period_hours: _Optional[float] = ...,
+        max_consecutive_wins: _Optional[float] = ...,
+        max_consecutive_losses: _Optional[float] = ...,
+        final_equity: _Optional[float] = ...,
+        total_fees: _Optional[float] = ...,
+    ) -> None: ...
 
 class Trade(_message.Message):
-    __slots__ = ("timestamp", "symbol", "side", "quantity", "price", "pnl", "commission", "trade_id", "portfolio_value")
+    __slots__ = (
+        "timestamp",
+        "symbol",
+        "side",
+        "quantity",
+        "price",
+        "pnl",
+        "commission",
+        "trade_id",
+        "portfolio_value",
+    )
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
     SYMBOL_FIELD_NUMBER: _ClassVar[int]
     SIDE_FIELD_NUMBER: _ClassVar[int]
@@ -295,7 +509,20 @@ class Trade(_message.Message):
     commission: float
     trade_id: str
     portfolio_value: float
-    def __init__(self, timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., symbol: _Optional[str] = ..., side: _Optional[str] = ..., quantity: _Optional[float] = ..., price: _Optional[float] = ..., pnl: _Optional[float] = ..., commission: _Optional[float] = ..., trade_id: _Optional[str] = ..., portfolio_value: _Optional[float] = ...) -> None: ...
+    def __init__(
+        self,
+        timestamp: _Optional[
+            _Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]
+        ] = ...,
+        symbol: _Optional[str] = ...,
+        side: _Optional[str] = ...,
+        quantity: _Optional[float] = ...,
+        price: _Optional[float] = ...,
+        pnl: _Optional[float] = ...,
+        commission: _Optional[float] = ...,
+        trade_id: _Optional[str] = ...,
+        portfolio_value: _Optional[float] = ...,
+    ) -> None: ...
 
 class EquityPoint(_message.Message):
     __slots__ = ("timestamp", "equity", "drawdown", "cash", "positions_value")
@@ -309,4 +536,13 @@ class EquityPoint(_message.Message):
     drawdown: float
     cash: float
     positions_value: float
-    def __init__(self, timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., equity: _Optional[float] = ..., drawdown: _Optional[float] = ..., cash: _Optional[float] = ..., positions_value: _Optional[float] = ...) -> None: ...
+    def __init__(
+        self,
+        timestamp: _Optional[
+            _Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]
+        ] = ...,
+        equity: _Optional[float] = ...,
+        drawdown: _Optional[float] = ...,
+        cash: _Optional[float] = ...,
+        positions_value: _Optional[float] = ...,
+    ) -> None: ...
