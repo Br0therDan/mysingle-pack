@@ -129,6 +129,7 @@ class CommonSettings(BaseSettings):
 
     KONG_JWT_SECRET_FRONTEND: str = "change-this-frontend-jwt-secret"
     KONG_JWT_SECRET_IAM: str = "change-this-iam-service-jwt-secret"
+    KONG_JWT_SECRET_SUBSCRIPTION: str = "change-this-subscription-service-jwt-secret"
     KONG_JWT_SECRET_STRATEGY: str = "change-this-strategy-service-jwt-secret"
     KONG_JWT_SECRET_BACKTEST: str = "change-this-backtest-service-jwt-secret"
     KONG_JWT_SECRET_INDICATOR: str = "change-this-indicator-service-jwt-secret"
