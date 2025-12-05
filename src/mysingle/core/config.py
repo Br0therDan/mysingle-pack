@@ -10,7 +10,7 @@ class CommonSettings(BaseSettings):
     """Common settings for all microservices."""
 
     model_config = SettingsConfigDict(
-        env_file=[".env", "../../.env"],
+        env_file=[".env"],
         env_file_encoding="utf-8",
         case_sensitive=True,
         extra="ignore",
@@ -46,7 +46,6 @@ class CommonSettings(BaseSettings):
 
     # REDIS DB ALLOCATION
     REDIS_DB_USER: int = 0  # User authentication cache
-    REDIS_DB_MARKET: int = 1  # Market data cache
     REDIS_DB_GRPC: int = 2  # gRPC response cache
     REDIS_DB_RATE_LIMIT: int = 3  # Rate limiting counters
     REDIS_DB_SESSION: int = 4  # Session storage
