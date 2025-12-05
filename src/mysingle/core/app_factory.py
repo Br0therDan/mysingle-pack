@@ -257,6 +257,47 @@ def create_fastapi_app(
                 f"⚠️ Failed to add audit logging middleware for {service_config.service_name}: {e}"
             )
 
+    # Add quota enforcement middleware (optional)
+    # ⚠️ IMPORTANT: Add AFTER AuthMiddleware so request.state.user is available
+    if service_config.enable_quota_enforcement:
+        if not service_config.quota_metric:
+            logger.warning(
+                f"⚠️ Quota enforcement enabled but quota_metric not specified for {service_config.service_name}"
+            )
+        else:
+            try:
+                from mysingle.subscription import (
+                    QuotaEnforcementMiddleware,
+                    UsageMetric,
+                )
+
+                # Convert string metric to UsageMetric enum
+                try:
+                    metric = UsageMetric(service_config.quota_metric)
+                except ValueError:
+                    logger.error(
+                        f"❌ Invalid quota metric '{service_config.quota_metric}' for {service_config.service_name}"
+                    )
+                    raise
+
+                app.add_middleware(
+                    QuotaEnforcementMiddleware,
+                    metric=metric,
+                )
+                logger.info(
+                    f"🔢 Quota enforcement middleware enabled for {service_config.service_name} (metric: {metric.value})"
+                )
+            except ImportError as e:
+                logger.warning(
+                    f"⚠️ Quota enforcement middleware not available: {e}. Install mysingle[subscription]."
+                )
+            except Exception as e:
+                logger.error(
+                    f"❌ Failed to add quota enforcement middleware for {service_config.service_name}: {e}"
+                )
+                if not is_development:
+                    raise  # 프로덕션에서는 quota enforcement 실패 시 앱 시작 중단
+
     # Add metrics middleware with graceful fallback
     if service_config.enable_metrics:
         try:

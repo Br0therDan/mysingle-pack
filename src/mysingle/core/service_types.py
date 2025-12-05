@@ -49,6 +49,10 @@ class ServiceConfig:
     enable_health_check: bool = True
     cors_origins: Optional[list[str]] = None
 
+    # Quota enforcement (선택적)
+    enable_quota_enforcement: bool = False
+    quota_metric: Optional[str] = None  # "api_calls", "backtests", etc.
+
     # 생명주기
     lifespan: Optional[Callable] = None
 
