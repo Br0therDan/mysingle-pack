@@ -65,15 +65,33 @@ class AuditLoggingMiddleware(BaseHTTPMiddleware):
         ... )
     """
 
-    def __init__(self, app, service_name: str, enabled: bool = True):  # type: ignore[no-untyped-def]
+    def __init__(
+        self,
+        app,
+        service_name: str,
+        enabled: bool = True,
+        exclude_paths: list[str] | None = None,
+    ):  # type: ignore[no-untyped-def]
         super().__init__(app)
         self.service_name = service_name
         self.enabled = enabled
+
+        # Parse exclude paths from environment if not provided
+        if exclude_paths is None:
+            exclude_paths_str = getattr(settings, "AUDIT_EXCLUDE_PATHS", "")
+            exclude_paths = (
+                [path.strip() for path in exclude_paths_str.split(",") if path.strip()]
+                if exclude_paths_str
+                else []
+            )
+
+        self.exclude_paths = exclude_paths
 
         logger.info(
             "Audit logging middleware initialized",
             service=service_name,
             enabled=enabled,
+            exclude_paths=exclude_paths,
         )
 
     async def dispatch(
@@ -92,6 +110,15 @@ class AuditLoggingMiddleware(BaseHTTPMiddleware):
         should_log = bool(self.enabled) and (
             getattr(settings, "ENVIRONMENT", "").lower() != "test"
         )
+
+        # Check if path should be excluded from audit logging
+        path = request.url.path
+        if should_log and self._should_exclude_path(path):
+            should_log = False
+            logger.debug(
+                "Skipping audit log for excluded path",
+                path=path,
+            )
 
         start = time.monotonic()
 
@@ -235,3 +262,26 @@ class AuditLoggingMiddleware(BaseHTTPMiddleware):
                     return kong_user_id.strip()
 
         return None
+
+    def _should_exclude_path(self, path: str) -> bool:
+        """Check if request path should be excluded from audit logging.
+
+        Args:
+            path: Request path to check
+
+        Returns:
+            True if path matches any exclude pattern, False otherwise
+
+        Note:
+            Supports both exact matches and prefix patterns:
+            - "/health" matches only "/health"
+            - "/api/*" matches "/api/..." (future enhancement)
+        """
+        for exclude_pattern in self.exclude_paths:
+            # Exact match
+            if path == exclude_pattern:
+                return True
+            # Prefix match (for patterns like "/api/internal/*")
+            if exclude_pattern.endswith("*") and path.startswith(exclude_pattern[:-1]):
+                return True
+        return False

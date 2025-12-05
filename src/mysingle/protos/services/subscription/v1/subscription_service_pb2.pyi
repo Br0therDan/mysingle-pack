@@ -12,6 +12,31 @@ from google.protobuf.internal import containers as _containers
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
+class CheckResourceQuotaRequest(_message.Message):
+    __slots__ = ("user_id", "resource_type", "current_count")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    RESOURCE_TYPE_FIELD_NUMBER: _ClassVar[int]
+    CURRENT_COUNT_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    resource_type: str
+    current_count: int
+    def __init__(
+        self,
+        user_id: _Optional[str] = ...,
+        resource_type: _Optional[str] = ...,
+        current_count: _Optional[int] = ...,
+    ) -> None: ...
+
+class CheckFeatureAccessRequest(_message.Message):
+    __slots__ = ("user_id", "feature_name")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    FEATURE_NAME_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    feature_name: str
+    def __init__(
+        self, user_id: _Optional[str] = ..., feature_name: _Optional[str] = ...
+    ) -> None: ...
+
 class CheckQuotaRequest(_message.Message):
     __slots__ = ("user_id", "metric", "amount")
     USER_ID_FIELD_NUMBER: _ClassVar[int]
@@ -67,6 +92,61 @@ class GetAllQuotasRequest(_message.Message):
 class HealthCheckRequest(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
+
+class CheckResourceQuotaResponse(_message.Message):
+    __slots__ = ("can_create", "current_count", "limit", "remaining", "tier", "message")
+    CAN_CREATE_FIELD_NUMBER: _ClassVar[int]
+    CURRENT_COUNT_FIELD_NUMBER: _ClassVar[int]
+    LIMIT_FIELD_NUMBER: _ClassVar[int]
+    REMAINING_FIELD_NUMBER: _ClassVar[int]
+    TIER_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    can_create: bool
+    current_count: int
+    limit: int
+    remaining: int
+    tier: str
+    message: str
+    def __init__(
+        self,
+        can_create: bool = ...,
+        current_count: _Optional[int] = ...,
+        limit: _Optional[int] = ...,
+        remaining: _Optional[int] = ...,
+        tier: _Optional[str] = ...,
+        message: _Optional[str] = ...,
+    ) -> None: ...
+
+class CheckFeatureAccessResponse(_message.Message):
+    __slots__ = (
+        "enabled",
+        "int_value",
+        "bool_value",
+        "string_value",
+        "tier",
+        "message",
+    )
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    INT_VALUE_FIELD_NUMBER: _ClassVar[int]
+    BOOL_VALUE_FIELD_NUMBER: _ClassVar[int]
+    STRING_VALUE_FIELD_NUMBER: _ClassVar[int]
+    TIER_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    enabled: bool
+    int_value: int
+    bool_value: bool
+    string_value: str
+    tier: str
+    message: str
+    def __init__(
+        self,
+        enabled: bool = ...,
+        int_value: _Optional[int] = ...,
+        bool_value: bool = ...,
+        string_value: _Optional[str] = ...,
+        tier: _Optional[str] = ...,
+        message: _Optional[str] = ...,
+    ) -> None: ...
 
 class CheckQuotaResponse(_message.Message):
     __slots__ = (

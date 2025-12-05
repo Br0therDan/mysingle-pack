@@ -23,6 +23,8 @@ class CommonSettings(BaseSettings):
     MOCK_DATABASE: bool = False
 
     AUDIT_LOGGING_ENABLED: bool = False
+    # Comma-separated path patterns to exclude from audit logs (e.g., "/health,/ready,/metrics")
+    AUDIT_EXCLUDE_PATHS: str = "/health,/ready,/metrics,/docs,/openapi.json,/redoc"
 
     FRONTEND_URL: str = "http://localhost:3000"
 

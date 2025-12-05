@@ -6,10 +6,13 @@ import "google/protobuf/timestamp.proto";
 
 // Subscription Service - gRPC API
 // Used for quota checking, subscription management, and entitlement verification
-// Port: 50057
+// Port: 50052
 service SubscriptionService {
-  // Check if user can perform action within quota
-  rpc CheckQuota(CheckQuotaRequest) returns (CheckQuotaResponse);
+  // Check if user can create more resources (strategies, templates, etc.)
+  rpc CheckResourceQuota(CheckResourceQuotaRequest) returns (CheckResourceQuotaResponse);
+
+  // Check feature access (e.g., private_templates)
+  rpc CheckFeatureAccess(CheckFeatureAccessRequest) returns (CheckFeatureAccessResponse);
 
   // Get user's subscription details
   rpc GetSubscription(GetSubscriptionRequest) returns (GetSubscriptionResponse);
@@ -17,11 +20,14 @@ service SubscriptionService {
   // Get user's entitlements (features and limits)
   rpc GetEntitlements(GetEntitlementsRequest) returns (GetEntitlementsResponse);
 
-  // Get current usage for a specific metric
+  // Get current usage for a specific metric (legacy: backtests, API calls, etc.)
   rpc GetUsage(GetUsageRequest) returns (GetUsageResponse);
 
-  // Get all quota statuses for a user
+  // Get all quota statuses for a user (legacy)
   rpc GetAllQuotas(GetAllQuotasRequest) returns (GetAllQuotasResponse);
+
+  // Check if user can perform action within quota (legacy)
+  rpc CheckQuota(CheckQuotaRequest) returns (CheckQuotaResponse);
 
   // Health check
   rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
@@ -29,7 +35,25 @@ service SubscriptionService {
 
 // Request Messages
 
-// CheckQuotaRequest defines the request payload for CheckQuota
+// CheckResourceQuotaRequest defines the request for resource quota check
+message CheckResourceQuotaRequest {
+  // User ID for authorization (auto-injected from metadata)
+  string user_id = 1;
+  // Resource type (strategies, strategy_versions_per_strategy, etc.)
+  string resource_type = 2;
+  // Current count of resources owned by user
+  int32 current_count = 3;
+}
+
+// CheckFeatureAccessRequest defines the request for feature access check
+message CheckFeatureAccessRequest {
+  // User ID for authorization (auto-injected from metadata)
+  string user_id = 1;
+  // Feature name (private_templates, custom_indicators, etc.)
+  string feature_name = 2;
+}
+
+// CheckQuotaRequest defines the request payload for CheckQuota (legacy)
 message CheckQuotaRequest {
   // User ID for authorization
   string user_id = 1;
@@ -74,7 +98,42 @@ message HealthCheckRequest {}
 
 // Response Messages
 
-// CheckQuotaResponse defines the response payload for CheckQuota
+// CheckResourceQuotaResponse defines the response for resource quota check
+message CheckResourceQuotaResponse {
+  // Whether user can create more resources
+  bool can_create = 1;
+  // Current resource count
+  int32 current_count = 2;
+  // Resource limit (0 = unlimited)
+  int32 limit = 3;
+  // Remaining quota (0 = unlimited)
+  int32 remaining = 4;
+  // Tier name
+  string tier = 5;
+  // Optional message (e.g., upgrade suggestion)
+  optional string message = 6;
+}
+
+// CheckFeatureAccessResponse defines the response for feature access check
+message CheckFeatureAccessResponse {
+  // Whether feature is enabled
+  bool enabled = 1;
+  // Feature value (could be int limit, bool flag, or string config)
+  oneof value {
+    // Integer value (e.g., private_templates limit count)
+    int32 int_value = 2;
+    // Boolean value (e.g., optimization enabled/disabled)
+    bool bool_value = 3;
+    // String value (e.g., feature configuration)
+    string string_value = 4;
+  }
+  // Tier name
+  string tier = 5;
+  // Optional message (e.g., upgrade suggestion)
+  optional string message = 6;
+}
+
+// CheckQuotaResponse defines the response payload for CheckQuota (legacy)
 message CheckQuotaResponse {
   // Whether the action is allowed
   bool allowed = 1;

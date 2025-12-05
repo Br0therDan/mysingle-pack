@@ -33,7 +33,7 @@ if _version_not_supported:
 class SubscriptionServiceStub(object):
     """Subscription Service - gRPC API
     Used for quota checking, subscription management, and entitlement verification
-    Port: 50057
+    Port: 50052
     """
 
     def __init__(self, channel):
@@ -42,10 +42,16 @@ class SubscriptionServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.CheckQuota = channel.unary_unary(
-            "/subscription.v1.SubscriptionService/CheckQuota",
-            request_serializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckQuotaRequest.SerializeToString,
-            response_deserializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckQuotaResponse.FromString,
+        self.CheckResourceQuota = channel.unary_unary(
+            "/subscription.v1.SubscriptionService/CheckResourceQuota",
+            request_serializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckResourceQuotaRequest.SerializeToString,
+            response_deserializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckResourceQuotaResponse.FromString,
+            _registered_method=True,
+        )
+        self.CheckFeatureAccess = channel.unary_unary(
+            "/subscription.v1.SubscriptionService/CheckFeatureAccess",
+            request_serializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckFeatureAccessRequest.SerializeToString,
+            response_deserializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckFeatureAccessResponse.FromString,
             _registered_method=True,
         )
         self.GetSubscription = channel.unary_unary(
@@ -72,6 +78,12 @@ class SubscriptionServiceStub(object):
             response_deserializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.GetAllQuotasResponse.FromString,
             _registered_method=True,
         )
+        self.CheckQuota = channel.unary_unary(
+            "/subscription.v1.SubscriptionService/CheckQuota",
+            request_serializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckQuotaRequest.SerializeToString,
+            response_deserializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckQuotaResponse.FromString,
+            _registered_method=True,
+        )
         self.HealthCheck = channel.unary_unary(
             "/subscription.v1.SubscriptionService/HealthCheck",
             request_serializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.HealthCheckRequest.SerializeToString,
@@ -83,11 +95,17 @@ class SubscriptionServiceStub(object):
 class SubscriptionServiceServicer(object):
     """Subscription Service - gRPC API
     Used for quota checking, subscription management, and entitlement verification
-    Port: 50057
+    Port: 50052
     """
 
-    def CheckQuota(self, request, context):
-        """Check if user can perform action within quota"""
+    def CheckResourceQuota(self, request, context):
+        """Check if user can create more resources (strategies, templates, etc.)"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def CheckFeatureAccess(self, request, context):
+        """Check feature access (e.g., private_templates)"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
@@ -105,13 +123,19 @@ class SubscriptionServiceServicer(object):
         raise NotImplementedError("Method not implemented!")
 
     def GetUsage(self, request, context):
-        """Get current usage for a specific metric"""
+        """Get current usage for a specific metric (legacy: backtests, API calls, etc.)"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
     def GetAllQuotas(self, request, context):
-        """Get all quota statuses for a user"""
+        """Get all quota statuses for a user (legacy)"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def CheckQuota(self, request, context):
+        """Check if user can perform action within quota (legacy)"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
@@ -125,10 +149,15 @@ class SubscriptionServiceServicer(object):
 
 def add_SubscriptionServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-        "CheckQuota": grpc.unary_unary_rpc_method_handler(
-            servicer.CheckQuota,
-            request_deserializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckQuotaRequest.FromString,
-            response_serializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckQuotaResponse.SerializeToString,
+        "CheckResourceQuota": grpc.unary_unary_rpc_method_handler(
+            servicer.CheckResourceQuota,
+            request_deserializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckResourceQuotaRequest.FromString,
+            response_serializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckResourceQuotaResponse.SerializeToString,
+        ),
+        "CheckFeatureAccess": grpc.unary_unary_rpc_method_handler(
+            servicer.CheckFeatureAccess,
+            request_deserializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckFeatureAccessRequest.FromString,
+            response_serializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckFeatureAccessResponse.SerializeToString,
         ),
         "GetSubscription": grpc.unary_unary_rpc_method_handler(
             servicer.GetSubscription,
@@ -150,6 +179,11 @@ def add_SubscriptionServiceServicer_to_server(servicer, server):
             request_deserializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.GetAllQuotasRequest.FromString,
             response_serializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.GetAllQuotasResponse.SerializeToString,
         ),
+        "CheckQuota": grpc.unary_unary_rpc_method_handler(
+            servicer.CheckQuota,
+            request_deserializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckQuotaRequest.FromString,
+            response_serializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckQuotaResponse.SerializeToString,
+        ),
         "HealthCheck": grpc.unary_unary_rpc_method_handler(
             servicer.HealthCheck,
             request_deserializer=services_dot_subscription_dot_v1_dot_subscription__service__pb2.HealthCheckRequest.FromString,
@@ -169,11 +203,11 @@ def add_SubscriptionServiceServicer_to_server(servicer, server):
 class SubscriptionService(object):
     """Subscription Service - gRPC API
     Used for quota checking, subscription management, and entitlement verification
-    Port: 50057
+    Port: 50052
     """
 
     @staticmethod
-    def CheckQuota(
+    def CheckResourceQuota(
         request,
         target,
         options=(),
@@ -188,9 +222,39 @@ class SubscriptionService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/subscription.v1.SubscriptionService/CheckQuota",
-            services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckQuotaRequest.SerializeToString,
-            services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckQuotaResponse.FromString,
+            "/subscription.v1.SubscriptionService/CheckResourceQuota",
+            services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckResourceQuotaRequest.SerializeToString,
+            services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckResourceQuotaResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def CheckFeatureAccess(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/subscription.v1.SubscriptionService/CheckFeatureAccess",
+            services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckFeatureAccessRequest.SerializeToString,
+            services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckFeatureAccessResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -311,6 +375,36 @@ class SubscriptionService(object):
             "/subscription.v1.SubscriptionService/GetAllQuotas",
             services_dot_subscription_dot_v1_dot_subscription__service__pb2.GetAllQuotasRequest.SerializeToString,
             services_dot_subscription_dot_v1_dot_subscription__service__pb2.GetAllQuotasResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def CheckQuota(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/subscription.v1.SubscriptionService/CheckQuota",
+            services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckQuotaRequest.SerializeToString,
+            services_dot_subscription_dot_v1_dot_subscription__service__pb2.CheckQuotaResponse.FromString,
             options,
             channel_credentials,
             insecure,
