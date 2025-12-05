@@ -596,13 +596,13 @@ class MetricsCollector:
                     # Add quantiles
                     p50 = statistics.median(sorted_values)
                     lines.append(
-                        f"{metric_name}{{quantile=\"0.5\"{','+labels if labels else ''}}} {p50:.4f}"
+                        f'{metric_name}{{quantile="0.5"{"," + labels if labels else ""}}} {p50:.4f}'
                     )
 
                     if len(sorted_values) >= 10:
                         p90 = statistics.quantiles(sorted_values, n=10)[8]
                         lines.append(
-                            f"{metric_name}{{quantile=\"0.9\"{','+labels if labels else ''}}} {p90:.4f}"
+                            f'{metric_name}{{quantile="0.9"{"," + labels if labels else ""}}} {p90:.4f}'
                         )
 
                     if len(sorted_values) >= 20:
@@ -612,7 +612,7 @@ class MetricsCollector:
                             else sorted_values[-1]
                         )
                         lines.append(
-                            f"{metric_name}{{quantile=\"0.99\"{','+labels if labels else ''}}} {p99:.4f}"
+                            f'{metric_name}{{quantile="0.99"{"," + labels if labels else ""}}} {p99:.4f}'
                         )
 
                     lines.append("")
