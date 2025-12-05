@@ -319,9 +319,349 @@ class ClientAuthInterceptor(grpc.aio.UnaryUnaryClientInterceptor):
         return await continuation(new_details, request)
 
 
+# Server Interceptors (추가)
+
+# Prometheus 메트릭 (모듈 레벨, 중복 등록 방지)
+try:
+    from prometheus_client import Counter, Histogram
+
+    _grpc_requests_total = Counter(
+        "mysingle_grpc_requests_total",
+        "Total gRPC requests",
+        ["service", "method", "status"],
+    )
+
+    _grpc_request_duration = Histogram(
+        "mysingle_grpc_request_duration_seconds",
+        "gRPC request duration",
+        ["service", "method"],
+        buckets=(0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0),
+    )
+
+    _METRICS_AVAILABLE = True
+except ImportError:
+    _METRICS_AVAILABLE = False
+
+
+class MetricsInterceptor(grpc.aio.ServerInterceptor):
+    """
+    gRPC 서버 메트릭 수집 인터셉터
+
+    Prometheus 메트릭 자동 수집:
+    - grpc_requests_total: 총 요청 수 (서비스, 메서드, 상태별)
+    - grpc_request_duration_seconds: 요청 소요 시간 히스토그램
+    - grpc_active_connections: 현재 활성 연결 수
+
+    Usage:
+        ```python
+        from mysingle.grpc.interceptors import MetricsInterceptor
+
+        server = grpc.aio.server(
+            interceptors=[MetricsInterceptor(service_name="strategy-service")]
+        )
+        ```
+    """
+
+    def __init__(self, service_name: str):
+        """
+        Args:
+            service_name: 서비스 이름 (메트릭 레이블)
+        """
+        self.service_name = service_name
+
+        if not _METRICS_AVAILABLE:
+            logger.warning(
+                "prometheus_client not installed - metrics disabled. "
+                "Install: pip install prometheus-client"
+            )
+
+    async def intercept_service(
+        self,
+        continuation: Callable,
+        handler_call_details: grpc.HandlerCallDetails,
+    ) -> grpc.RpcMethodHandler:
+        """메트릭 수집"""
+        if not _METRICS_AVAILABLE:
+            return await continuation(handler_call_details)
+
+        import time
+
+        method = handler_call_details.method.split("/")[
+            -1
+        ]  # /package.Service/Method -> Method
+        start_time = time.time()
+        status = "OK"
+
+        try:
+            handler = await continuation(handler_call_details)
+            return handler
+
+        except grpc.RpcError as e:
+            status = str(e.code())
+            raise
+
+        except Exception:
+            status = "UNKNOWN"
+            raise
+
+        finally:
+            # 소요 시간 측정
+            duration = time.time() - start_time
+
+            # 메트릭 업데이트 (모듈 레벨 변수 사용)
+            _grpc_requests_total.labels(
+                service=self.service_name, method=method, status=status
+            ).inc()
+
+            _grpc_request_duration.labels(
+                service=self.service_name, method=method
+            ).observe(duration)
+
+
+class ErrorHandlingInterceptor(grpc.aio.ServerInterceptor):
+    """
+    gRPC 서버 에러 핸들링 인터셉터
+
+    Python 예외를 gRPC StatusCode로 자동 변환:
+    - ValueError, TypeError -> INVALID_ARGUMENT
+    - PermissionError -> PERMISSION_DENIED
+    - FileNotFoundError, KeyError -> NOT_FOUND
+    - NotImplementedError -> UNIMPLEMENTED
+    - TimeoutError -> DEADLINE_EXCEEDED
+    - 기타 Exception -> INTERNAL
+
+    Usage:
+        ```python
+        from mysingle.grpc.interceptors import ErrorHandlingInterceptor
+
+        server = grpc.aio.server(
+            interceptors=[ErrorHandlingInterceptor()]
+        )
+        ```
+    """
+
+    # 예외 타입 -> gRPC StatusCode 매핑
+    ERROR_MAPPING = {
+        ValueError: grpc.StatusCode.INVALID_ARGUMENT,
+        TypeError: grpc.StatusCode.INVALID_ARGUMENT,
+        PermissionError: grpc.StatusCode.PERMISSION_DENIED,
+        FileNotFoundError: grpc.StatusCode.NOT_FOUND,
+        KeyError: grpc.StatusCode.NOT_FOUND,
+        NotImplementedError: grpc.StatusCode.UNIMPLEMENTED,
+        TimeoutError: grpc.StatusCode.DEADLINE_EXCEEDED,
+    }
+
+    async def intercept_service(
+        self,
+        continuation: Callable,
+        handler_call_details: grpc.HandlerCallDetails,
+    ) -> grpc.RpcMethodHandler:
+        """에러 핸들링"""
+        method = handler_call_details.method
+
+        try:
+            handler = await continuation(handler_call_details)
+
+            # 원본 handler를 래핑하여 에러 변환 적용
+            if handler and handler.unary_unary:
+                original_unary = handler.unary_unary
+
+                async def error_wrapped_unary(request, context):
+                    try:
+                        return await original_unary(request, context)
+                    except grpc.RpcError:
+                        # gRPC 에러는 그대로 전파
+                        raise
+                    except Exception as e:
+                        # Python 예외 -> gRPC StatusCode 변환
+                        status_code = self.ERROR_MAPPING.get(
+                            type(e), grpc.StatusCode.INTERNAL
+                        )
+                        error_msg = f"{type(e).__name__}: {str(e)}"
+
+                        logger.error(
+                            f"gRPC error in {method}: {error_msg}",
+                            extra={
+                                "method": method,
+                                "exception_type": type(e).__name__,
+                                "status_code": status_code,
+                            },
+                            exc_info=True,
+                        )
+
+                        await context.abort(status_code, error_msg)
+
+                return grpc.unary_unary_rpc_method_handler(
+                    error_wrapped_unary,
+                    request_deserializer=handler.request_deserializer,
+                    response_serializer=handler.response_serializer,
+                )
+
+            return handler
+
+        except Exception as e:
+            logger.error(
+                f"Error in ErrorHandlingInterceptor for {method}: {e}",
+                exc_info=True,
+            )
+            raise
+
+
+class RateLimiterInterceptor(grpc.aio.ServerInterceptor):
+    """
+    gRPC 서버 Rate Limiting 인터셉터
+
+    슬라이딩 윈도우 방식으로 요청 제한:
+    - Redis 기반 (가용 시) 또는 In-Memory 폴백
+    - user_id별 제한 (메타데이터에서 추출)
+    - 초과 시 RESOURCE_EXHAUSTED 에러 반환
+
+    Usage:
+        ```python
+        from mysingle.grpc.interceptors import RateLimiterInterceptor
+
+        server = grpc.aio.server(
+            interceptors=[
+                RateLimiterInterceptor(max_requests=1000, window_seconds=60)
+            ]
+        )
+        ```
+    """
+
+    def __init__(self, max_requests: int = 1000, window_seconds: int = 60):
+        """
+        Args:
+            max_requests: 윈도우 내 최대 요청 수
+            window_seconds: 윈도우 크기 (초)
+        """
+        self.max_requests = max_requests
+        self.window_seconds = window_seconds
+        self._redis_client = None
+        self._memory_fallback: dict[str, list[float]] = {}  # user_id -> timestamps
+
+        logger.info(f"RateLimiterInterceptor: {max_requests} req/{window_seconds}s")
+
+    async def _get_redis(self):
+        """Redis 클라이언트 가져오기 (lazy loading)"""
+        if self._redis_client is None:
+            try:
+                from mysingle.database import get_redis_client
+
+                self._redis_client = await get_redis_client(db=3)  # Rate limit 전용 DB
+                logger.debug("RateLimiter using Redis backend")
+            except Exception as e:
+                logger.warning(
+                    f"Redis not available for rate limiting, using in-memory fallback: {e}"
+                )
+        return self._redis_client
+
+    async def _check_rate_limit_redis(self, user_id: str) -> bool:
+        """Redis 기반 Rate limit 체크"""
+        import time
+
+        redis = await self._get_redis()
+        if redis is None:
+            return await self._check_rate_limit_memory(user_id)
+
+        try:
+            key = f"ratelimit:{user_id}"
+            now = time.time()
+            window_start = now - self.window_seconds
+
+            # 슬라이딩 윈도우: 오래된 타임스탬프 제거
+            await redis.zremrangebyscore(key, 0, window_start)
+
+            # 현재 카운트 확인
+            count = await redis.zcard(key)
+
+            if count >= self.max_requests:
+                logger.warning(
+                    f"Rate limit exceeded for user {user_id}: {count}/{self.max_requests}"
+                )
+                return False
+
+            # 현재 요청 타임스탬프 추가
+            await redis.zadd(key, {str(now): now})
+            await redis.expire(key, self.window_seconds * 2)  # TTL 2배로 설정
+
+            return True
+
+        except Exception as e:
+            logger.error(f"Redis rate limit error: {e}, fallback to memory")
+            return await self._check_rate_limit_memory(user_id)
+
+    async def _check_rate_limit_memory(self, user_id: str) -> bool:
+        """In-Memory 폴백 Rate limit 체크"""
+        import time
+
+        now = time.time()
+        window_start = now - self.window_seconds
+
+        # 오래된 타임스탬프 제거
+        if user_id in self._memory_fallback:
+            self._memory_fallback[user_id] = [
+                ts for ts in self._memory_fallback[user_id] if ts > window_start
+            ]
+        else:
+            self._memory_fallback[user_id] = []
+
+        # 카운트 확인
+        count = len(self._memory_fallback[user_id])
+        if count >= self.max_requests:
+            logger.warning(
+                f"Rate limit exceeded (memory) for user {user_id}: {count}/{self.max_requests}"
+            )
+            return False
+
+        # 현재 요청 추가
+        self._memory_fallback[user_id].append(now)
+        return True
+
+    async def intercept_service(
+        self,
+        continuation: Callable,
+        handler_call_details: grpc.HandlerCallDetails,
+    ) -> grpc.RpcMethodHandler:
+        """Rate limit 체크"""
+        metadata = dict(handler_call_details.invocation_metadata or [])
+        user_id_raw = metadata.get(GRPC_METADATA_USER_ID, "anonymous")
+
+        # bytes를 str로 변환
+        user_id = (
+            user_id_raw.decode("utf-8")
+            if isinstance(user_id_raw, bytes)
+            else str(user_id_raw)
+        )
+
+        # Rate limit 체크
+        allowed = await self._check_rate_limit_redis(user_id)
+
+        if not allowed:
+            # RESOURCE_EXHAUSTED 에러 반환
+            handler = await continuation(handler_call_details)
+
+            async def rate_limit_abort(request, context):
+                await context.abort(
+                    grpc.StatusCode.RESOURCE_EXHAUSTED,
+                    f"Rate limit exceeded: {self.max_requests} req/{self.window_seconds}s",
+                )
+
+            return grpc.unary_unary_rpc_method_handler(
+                rate_limit_abort,
+                request_deserializer=handler.request_deserializer,
+                response_serializer=handler.response_serializer,
+            )
+
+        # 허용
+        return await continuation(handler_call_details)
+
+
 __all__ = [
     "AuthInterceptor",
     "LoggingInterceptor",
     "MetadataInterceptor",
     "ClientAuthInterceptor",
+    "MetricsInterceptor",
+    "ErrorHandlingInterceptor",
+    "RateLimiterInterceptor",
 ]

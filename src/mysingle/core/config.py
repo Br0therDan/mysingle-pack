@@ -19,90 +19,92 @@ class CommonSettings(BaseSettings):
     # PROJECT INFORMATION
     PROJECT_NAME: str = "My Project"
     ENVIRONMENT: str = "development"
+
+    FRONTEND_URL: str = "http://localhost:3000"
+
     DEBUG: bool = True  # Enable debug logging (auto-disabled in production)
     MOCK_DATABASE: bool = False
 
     AUDIT_LOGGING_ENABLED: bool = False
-    # Comma-separated path patterns to exclude from audit logs (e.g., "/health,/ready,/metrics")
     AUDIT_EXCLUDE_PATHS: str = "/health,/ready,/metrics,/docs,/openapi.json,/redoc"
 
-    FRONTEND_URL: str = "http://localhost:3000"
-
-    # INITIAL SUPERUSER CREDENTIAL SETTINGS
-    SUPERUSER_EMAIL: EmailStr = "your_email@example.com"
-    SUPERUSER_PASSWORD: str = "change-this-admin-password"
-    SUPERUSER_FULLNAME: str = "Admin User"
-
-    # TEST USER CREDENTIAL SETTINGS (development/local only)
-    TEST_USER_EMAIL: str = "test_user"
-    TEST_USER_PASSWORD: str = "1234"
-    TEST_USER_FULLNAME: str = "Test User"
-
-    TEST_ADMIN_EMAIL: str = "test_admin"
-    TEST_ADMIN_PASSWORD: str = "1234"
-    TEST_ADMIN_FULLNAME: str = "Test Admin"
-
-    # AUTH MIDDLEWARE SETTINGS
-    AUTH_PUBLIC_PATHS: list[str] = [
-        "/api/v1/auth/login",
-        "/api/v1/auth/register",
-        "/api/v1/auth/verify-email",
-        "/api/v1/auth/reset-password",
-        "/api/v1/oauth2/google/authorize",
-        "/api/v1/oauth2/google/callback",
-        "/api/v1/oauth2/kakao/authorize",
-        "/api/v1/oauth2/kakao/callback",
-        "/api/v1/oauth2/naver/authorize",
-        "/api/v1/oauth2/naver/callback",
-    ]
-
-    # DATABASE SETTINGS
-    # MongoDB
+    ##################################################################
+    # MONGODB SETTINGS
+    ##################################################################
     MONGODB_SERVER: str = "localhost:27017"
     MONGODB_USERNAME: str = "root"
     MONGODB_PASSWORD: str = "example"
 
-    # Redis (Standard format: redis://[:password@]host:port/db)
+    ##################################################################
+    # REDIS SETTINGS
+    ##################################################################
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
     REDIS_DB: int = 0  # Default DB for user cache
     REDIS_PASSWORD: str | None = None  # Set to enable AUTH
     REDIS_URL: str = "redis://localhost:6379/0"  # Override for custom URL
 
+    # REDIS DB ALLOCATION
+    REDIS_DB_USER: int = 0  # User authentication cache
+    REDIS_DB_MARKET: int = 1  # Market data cache
+    REDIS_DB_GRPC: int = 2  # gRPC response cache
+    REDIS_DB_RATE_LIMIT: int = 3  # Rate limiting counters
+    REDIS_DB_SESSION: int = 4  # Session storage
+
     # USER CACHE SETTINGS
     USER_CACHE_TTL_SECONDS: int = 300
     USER_CACHE_KEY_PREFIX: str = "user"
 
-    # JWT & COOKIE SETTINGS
-    TOKEN_TRANSPORT_TYPE: Literal["bearer", "cookie", "hybrid"] = "hybrid"
-    HTTPONLY_COOKIES: bool = (
-        False  # Cookie httponly flag (recommended: True for production)
-    )
-    SAMESITE_COOKIES: Literal["lax", "strict", "none"] = (
-        "lax"  # Cookie SameSite attribute
-    )
-    ALGORITHM: str = "HS256"
-    DEFAULT_AUDIENCE: str = "your-audience"
+    ##################################################################
+    # REDIS SETTINGS
+    ##################################################################
 
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 30
-    SERVICE_TOKEN_EXPIRE_MINUTES: int = 10
-    RESET_TOKEN_EXPIRE_MINUTES: int = 60
-    VERIFY_TOKEN_EXPIRE_MINUTES: int = 60
-    EMAIL_TOKEN_EXPIRE_HOURS: int = 48
+    # GRPC SERVER SETTINGS
+    GRPC_SERVER_PORT: int = 50051  # Default gRPC port (override per service)
+    GRPC_SERVER_MAX_WORKERS: int = 10  # Thread pool size
+    GRPC_SERVER_ENABLE_REFLECTION: bool = False  # Enable in development only
 
-    # API Settings
-    CORS_ORIGINS: list[str] = Field(
-        default=["http://localhost:3000", "http://localhost:8000"],
-        description="CORS origins",
-    )
+    # GRPC Interceptor Settings
+    GRPC_ENABLE_AUTH: bool = True  # Require user_id metadata
+    GRPC_ENABLE_RATE_LIMITING: bool = True  # Enable rate limiting
+    GRPC_ENABLE_METRICS: bool = True  # Prometheus metrics collection
+    GRPC_ENABLE_ERROR_HANDLING: bool = True  # Auto error conversion
 
+    # GRPC Rate Limiting
+    GRPC_RATE_LIMIT_MAX_REQUESTS: int = 1000  # Max requests per window
+    GRPC_RATE_LIMIT_WINDOW_SECONDS: int = 60  # Rate limit window (seconds)
+
+    # GRPC Server Options
+    GRPC_KEEPALIVE_TIME_MS: int = 30000  # TCP keepalive time (30s)
+    GRPC_KEEPALIVE_TIMEOUT_MS: int = 10000  # TCP keepalive timeout (10s)
+    GRPC_MAX_CONCURRENT_STREAMS: int = 100  # Max concurrent streams
+    GRPC_MAX_MESSAGE_LENGTH: int = 10 * 1024 * 1024  # Max message size (10MB)
+
+    # GRPC Cache Settings
+    GRPC_CACHE_ENABLED: bool = True  # Enable response caching
+    GRPC_CACHE_L1_TTL_SECONDS: int = 300  # L1 in-memory TTL (5 min)
+    GRPC_CACHE_L1_MAX_SIZE: int = 100  # L1 LRU cache size
+    GRPC_CACHE_L2_TTL_SECONDS: int = 3600  # L2 Redis TTL (1 hour)
+    GRPC_CACHE_DEFAULT_TTL: int = 300  # Default cache TTL (5 min)
+
+    ##################################################################
     # HTTP CLIENT SETTINGS
+    ##################################################################
+
     HTTP_CLIENT_TIMEOUT: float = 30.0
     HTTP_CLIENT_MAX_CONNECTIONS: int = 100
     HTTP_CLIENT_MAX_KEEPALIVE: int = 20
     HTTP_CLIENT_MAX_RETRIES: int = 3
     HTTP_CLIENT_RETRY_DELAY: float = 1.0
+
+    ##################################################################
+    # CORS SETTINGS
+    ##################################################################
+
+    CORS_ORIGINS: list[str] = Field(
+        default=["http://localhost:3000", "http://localhost:8000"],
+        description="CORS origins",
+    )
 
     @property
     def all_cors_origins(self) -> list[str]:
@@ -125,7 +127,27 @@ class CommonSettings(BaseSettings):
 
         return origins
 
+    ##################################################################
+    # LOGGING SETTINGS
+    ##################################################################
+
+    @computed_field
+    @property
+    def log_level(self) -> str:
+        """Get appropriate log level based on DEBUG and ENVIRONMENT settings."""
+        if self.ENVIRONMENT == "production":
+            return "INFO"  # Force INFO in production for security
+        return "DEBUG" if self.DEBUG else "INFO"
+
+    @computed_field
+    @property
+    def is_debug_mode(self) -> bool:
+        """Check if debug mode is enabled (considers both DEBUG and ENVIRONMENT)."""
+        return self.DEBUG and self.ENVIRONMENT != "production"
+
+    ##################################################################
     # API GATEWAY SETTINGS
+    ##################################################################
     USE_API_GATEWAY: bool = True
     API_GATEWAY_URL: str = "http://localhost:8000"
 
@@ -142,7 +164,10 @@ class CommonSettings(BaseSettings):
     KONG_JWT_SECRET_GENAI: str = "change-this-genai-service-jwt-secret"
     KONG_JWT_SECRET_ML: str = "change-this-ml-service-jwt-secret"
 
+    ##################################################################
     # SMTP SETTINGS
+    ##################################################################
+
     SMTP_TLS: bool = True
     SMTP_SSL: bool = False
     SMTP_PORT: int = 587
@@ -167,6 +192,49 @@ class CommonSettings(BaseSettings):
             and self.EMAILS_FROM_EMAIL != "your_email@example.com"
         )
 
+    ##################################################################
+    # IAM & SECURITY SETTINGS
+    ##################################################################
+
+    TOKEN_TRANSPORT_TYPE: Literal["bearer", "cookie", "hybrid"] = "hybrid"
+    HTTPONLY_COOKIES: bool = False
+    SAMESITE_COOKIES: Literal["lax", "strict", "none"] = "lax"
+    ALGORITHM: str = "HS256"
+    DEFAULT_AUDIENCE: str = "your-audience"
+
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 30
+    SERVICE_TOKEN_EXPIRE_MINUTES: int = 10
+    RESET_TOKEN_EXPIRE_MINUTES: int = 60
+    VERIFY_TOKEN_EXPIRE_MINUTES: int = 60
+    EMAIL_TOKEN_EXPIRE_HOURS: int = 48
+
+    # INITIAL SUPERUSER CREDENTIAL SETTINGS
+    SUPERUSER_EMAIL: EmailStr = "your_email@example.com"
+    SUPERUSER_PASSWORD: str = "change-this-admin-password"
+    SUPERUSER_FULLNAME: str = "Admin User"
+
+    # TEST USER CREDENTIAL SETTINGS (development/local only)
+    TEST_USER_EMAIL: str = "test_user"
+    TEST_USER_PASSWORD: str = "1234"
+    TEST_USER_FULLNAME: str = "Test User"
+
+    TEST_ADMIN_EMAIL: str = "test_admin"
+    TEST_ADMIN_PASSWORD: str = "1234"
+    TEST_ADMIN_FULLNAME: str = "Test Admin"
+    # AUTH MIDDLEWARE SETTINGS
+    AUTH_PUBLIC_PATHS: list[str] = [
+        "/api/v1/auth/login",
+        "/api/v1/auth/register",
+        "/api/v1/auth/verify-email",
+        "/api/v1/auth/reset-password",
+        "/api/v1/oauth2/google/authorize",
+        "/api/v1/oauth2/google/callback",
+        "/api/v1/oauth2/kakao/authorize",
+        "/api/v1/oauth2/kakao/callback",
+        "/api/v1/oauth2/naver/authorize",
+        "/api/v1/oauth2/naver/callback",
+    ]
     # OAUTH2 SETTINGS
     GOOGLE_CLIENT_ID: str = "your-google-client-id"
     GOOGLE_CLIENT_SECRET: str = "your-google-client-secret"
@@ -177,20 +245,6 @@ class CommonSettings(BaseSettings):
     NAVER_CLIENT_ID: str = "your-naver-client-id"
     NAVER_CLIENT_SECRET: str = "your-naver-client-secret"
     NAVER_OAUTH_SCOPES: list[str] = ["profile", "email"]
-
-    @computed_field
-    @property
-    def log_level(self) -> str:
-        """Get appropriate log level based on DEBUG and ENVIRONMENT settings."""
-        if self.ENVIRONMENT == "production":
-            return "INFO"  # Force INFO in production for security
-        return "DEBUG" if self.DEBUG else "INFO"
-
-    @computed_field
-    @property
-    def is_debug_mode(self) -> bool:
-        """Check if debug mode is enabled (considers both DEBUG and ENVIRONMENT)."""
-        return self.DEBUG and self.ENVIRONMENT != "production"
 
 
 # Global settings instance
