@@ -555,7 +555,6 @@ vim .env
 - **[Metrics Collection](docs/core/METRICS_USAGE_GUIDE.md)** - Prometheus integration
 - **[Audit Logging](docs/core/AUDIT_LOGGING_USAGE_GUIDE.md)** - Compliance tracking
 - **[Common Settings](docs/core/COMMON_SETTINGS_GUIDE.md)** - Configuration patterns
-- **[gRPC Server Standardization](GRPC_SERVER_STANDARDIZATION.md)** ⭐ **NEW** - BaseGrpcServer strategy & performance optimization
 
 ### Workflow Guides
 - **[Submodule PR Workflow](docs/cicd/SUBMODULE_PR_WORKFLOW.md)** - Cross-repo development process
