@@ -441,7 +441,7 @@ def get_user_cache() -> BaseUserCache:
 
             key_prefix = getattr(settings, "USER_CACHE_KEY_PREFIX", "user")
             default_ttl = getattr(settings, "USER_CACHE_TTL_SECONDS", 300)
-            redis_db = getattr(settings, "REDIS_DB", 0)
+            redis_db = getattr(settings, "REDIS_DB_USER", 0)
         except Exception as e:
             logger.warning(f"Failed to load cache settings: {e}, using defaults")
 

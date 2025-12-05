@@ -32,8 +32,8 @@ class CommonSettings(BaseSettings):
     # MONGODB SETTINGS
     ##################################################################
     MONGODB_SERVER: str = "localhost:27017"
-    MONGODB_USERNAME: str = "root"
-    MONGODB_PASSWORD: str = "example"
+    MONGODB_USERNAME: str = "admin"
+    MONGODB_PASSWORD: str = "your_password"
 
     ##################################################################
     # REDIS SETTINGS
