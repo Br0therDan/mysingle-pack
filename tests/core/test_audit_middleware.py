@@ -236,3 +236,52 @@ async def test_audit_user_id_none_when_not_provided():
     # user_id should be None
     assert len(recorded) == 1
     assert recorded[0]["user_id"] is None
+
+
+@pytest.mark.asyncio
+async def test_app_factory_audit_exclusion():
+    """Test that app factory properly configures audit log exclusions from settings."""
+    from mysingle.core import ServiceType, create_fastapi_app, create_service_config
+
+    recorded = []
+
+    class MockAuditLog:
+        def __init__(self, **kwargs):
+            self.path = kwargs.get("path")
+
+        async def insert(self):
+            recorded.append({"path": self.path})
+
+    config = create_service_config(
+        service_name="test-service", service_type=ServiceType.NON_IAM_SERVICE
+    )
+
+    with override_settings(
+        ENVIRONMENT="development",
+        AUDIT_LOGGING_ENABLED=True,
+        AUDIT_EXCLUDE_PATHS="/health,/ready,/metrics",
+    ):
+        app = create_fastapi_app(service_config=config)
+
+        @app.get("/api/data")
+        def get_data():
+            return {"data": "test"}
+
+        with patch("mysingle.core.audit.middleware.AuditLog", MockAuditLog):
+            with TestClient(app) as client:
+                # Health check should NOT create audit log
+                client.get("/health")
+                assert len(recorded) == 0
+
+                # Ready check should NOT create audit log
+                client.get("/ready")
+                assert len(recorded) == 0
+
+                # Metrics should NOT create audit log
+                client.get("/metrics")
+                assert len(recorded) == 0
+
+                # API endpoint SHOULD create audit log
+                client.get("/api/data")
+                assert len(recorded) == 1
+                assert recorded[0]["path"] == "/api/data"

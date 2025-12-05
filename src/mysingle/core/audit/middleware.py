@@ -274,14 +274,27 @@ class AuditLoggingMiddleware(BaseHTTPMiddleware):
 
         Note:
             Supports both exact matches and prefix patterns:
-            - "/health" matches only "/health"
-            - "/api/*" matches "/api/..." (future enhancement)
+            - "/health" matches both "/health" and "/health/"
+            - "/api/*" matches "/api/..." (prefix wildcard)
         """
+        # Normalize path: remove trailing slash except for root path
+        normalized_path = path.rstrip("/") if path != "/" else path
+
         for exclude_pattern in self.exclude_paths:
-            # Exact match
-            if path == exclude_pattern:
+            # Normalize exclude pattern as well
+            normalized_pattern = (
+                exclude_pattern.rstrip("/")
+                if exclude_pattern != "/"
+                else exclude_pattern
+            )
+
+            # Check for wildcard patterns (e.g., "/api/internal/*")
+            if normalized_pattern.endswith("*"):
+                prefix = normalized_pattern[:-1]  # Remove the asterisk
+                if normalized_path.startswith(prefix.rstrip("/")):
+                    return True
+            # Exact match after normalization
+            elif normalized_path == normalized_pattern:
                 return True
-            # Prefix match (for patterns like "/api/internal/*")
-            if exclude_pattern.endswith("*") and path.startswith(exclude_pattern[:-1]):
-                return True
+
         return False

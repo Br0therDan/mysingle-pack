@@ -18,7 +18,7 @@ HTTP 요청/응답 감사 로그를 자동으로 MongoDB에 저장하는 미들�
 
 ## 빠른 시작
 
-### 1. 기본 사용법
+### 1. App Factory 사용 (권장)
 
 ```python
 from mysingle.core import create_fastapi_app, create_service_config, ServiceType
@@ -26,12 +26,10 @@ from mysingle.core import create_fastapi_app, create_service_config, ServiceType
 config = create_service_config(
     service_name="my-service",
     service_type=ServiceType.NON_IAM_SERVICE,
+    enable_audit_logging=True,  # 감사 로깅 활성화
 )
 
-app = create_fastapi_app(
-    service_config=config,
-    audit_logging_enabled=True,  # 감사 로깅 활성화
-)
+app = create_fastapi_app(service_config=config)
 ```
 
 ### 2. 환경변수 설정
@@ -43,6 +41,8 @@ AUDIT_LOGGING_ENABLED=true
 # 감사 로그에서 제외할 경로 (쉼표로 구분)
 AUDIT_EXCLUDE_PATHS="/health,/ready,/metrics,/docs,/openapi.json"
 ```
+
+**중요:** `AUDIT_EXCLUDE_PATHS`가 설정되지 않으면 기본값으로 `/health,/ready,/metrics,/docs,/openapi.json,/redoc`가 사용됩니다.
 
 ### 3. 수동 미들웨어 추가 (고급)
 
@@ -63,7 +63,7 @@ app.add_middleware(
 
 ### 기본 제외 경로
 
-기본적으로 다음 경로는 감사 로그에서 제외됩니다:
+기본적으로 다음 경로는 감사 로그에서 제외됩니다 (환경변수 미설정 시):
 
 - `/health` - 헬스 체크
 - `/ready` - 준비 상태 확인
@@ -86,8 +86,15 @@ AUDIT_EXCLUDE_PATHS="/health,/api/internal/*,/debug/*"
 
 **패턴 매칭 규칙:**
 
-- **정확한 일치**: `/health` → `/health`만 매칭
-- **Prefix 매칭**: `/api/internal/*` → `/api/internal/...` 하위 모든 경로 매칭
+| 패턴              | 매칭 예시                                     | 설명                              |
+| ----------------- | --------------------------------------------- | --------------------------------- |
+| `/health`         | `/health`, `/health/`                         | 정확한 일치 (trailing slash 무시) |
+| `/api/internal/*` | `/api/internal/debug`, `/api/internal/status` | Prefix 매칭 (하위 모든 경로)      |
+| `/metrics`        | `/metrics`, `/metrics/`                       | 정확한 일치                       |
+
+**Trailing Slash 처리:**
+- `/health`와 `/health/` 모두 매칭됩니다
+- FastAPI의 자동 리다이렉트에도 대응
 
 ---
 
@@ -298,6 +305,55 @@ AUDIT_EXCLUDE_PATHS="/health,/ready,/metrics"
 AUDIT_EXCLUDE_PATHS="/health,/ready,/metrics,/api/internal/*"
 ```
 
+### 프로덕션 환경에서 /health 로그가 여전히 쌓임
+
+**문제 증상:**
+- mysingle 패키지를 최신 버전(2.2.1+)으로 업그레이드했는데도 `/health` 요청이 감사 로그에 기록됨
+
+**원인:**
+- App Factory에서 `AUDIT_EXCLUDE_PATHS`를 읽지만, **환경변수가 설정되지 않으면** 기본값이 적용되지 않음
+- 서비스 컨테이너에 환경변수 추가 필요
+
+**해결 방법:**
+
+1. **Docker Compose 환경변수 추가**
+   ```yaml
+   # docker-compose.yml
+   services:
+     my-service:
+       environment:
+         - AUDIT_LOGGING_ENABLED=true
+         - AUDIT_EXCLUDE_PATHS=/health,/ready,/metrics,/docs,/openapi.json,/redoc
+   ```
+
+2. **Kubernetes ConfigMap/Secret 설정**
+   ```yaml
+   apiVersion: v1
+   kind: ConfigMap
+   metadata:
+     name: my-service-config
+   data:
+     AUDIT_LOGGING_ENABLED: "true"
+     AUDIT_EXCLUDE_PATHS: "/health,/ready,/metrics,/docs,/openapi.json,/redoc"
+   ```
+
+3. **배포 후 확인**
+   ```bash
+   # 컨테이너 환경변수 확인
+   kubectl exec -it <pod-name> -- env | grep AUDIT
+
+   # 또는 Docker
+   docker exec <container-id> env | grep AUDIT
+
+   # 로그에서 미들웨어 초기화 확인
+   kubectl logs <pod-name> | grep "Audit logging middleware initialized"
+   ```
+
+4. **예상 로그 출력**
+   ```
+   2025-12-05T06:18:19.599884Z [info] 📝 Audit logging middleware enabled for my-service (exclude_paths: ['/health', '/ready', '/metrics', '/docs', '/openapi.json', '/redoc'])
+   ```
+
 ---
 
 ## 변경 이력
@@ -305,9 +361,12 @@ AUDIT_EXCLUDE_PATHS="/health,/ready,/metrics,/api/internal/*"
 ### v2.2.1 (2025-12-05)
 
 - **FEATURE**: `AUDIT_EXCLUDE_PATHS` 환경변수 추가
-- **FEATURE**: 와일드카드 패턴 매칭 지원
+- **FEATURE**: 와일드카드 패턴 매칭 지원 (`/api/internal/*`)
+- **FEATURE**: Trailing slash 자동 정규화 (`/health` = `/health/`)
 - **IMPROVEMENT**: 기본 제외 경로 추가 (`/health`, `/ready`, `/metrics`, etc.)
-- **DOCS**: README 작성
+- **IMPROVEMENT**: App Factory에서 exclude_paths 명시적 전달
+- **FIX**: FastAPI 자동 리다이렉트로 인한 중복 로그 방지
+- **DOCS**: README 작성 및 프로덕션 배포 가이드 추가
 
 ### v2.2.0
 

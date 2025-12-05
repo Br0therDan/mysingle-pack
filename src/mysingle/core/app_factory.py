@@ -244,13 +244,23 @@ def create_fastapi_app(
             from .audit.middleware import AuditLoggingMiddleware
 
             enabled_flag = getattr(settings, "AUDIT_LOGGING_ENABLED", True)
+            # Parse exclude paths from settings (defaults to health/metrics/docs)
+            exclude_paths_str = getattr(settings, "AUDIT_EXCLUDE_PATHS", "")
+            exclude_paths = (
+                [path.strip() for path in exclude_paths_str.split(",") if path.strip()]
+                if exclude_paths_str
+                else []
+            )
+
             app.add_middleware(
                 AuditLoggingMiddleware,
                 service_name=service_config.service_name,
                 enabled=bool(enabled_flag),
+                exclude_paths=exclude_paths,
             )
             logger.info(
-                f"📝 Audit logging middleware enabled for {service_config.service_name}"
+                f"📝 Audit logging middleware enabled for {service_config.service_name} "
+                f"(exclude_paths: {exclude_paths})"
             )
         except Exception as e:
             logger.warning(
