@@ -92,6 +92,3 @@ class AuditLog(BaseTimeDoc):
             "trace_id",
             "correlation_id",
         ]
-
-
-__all__ = ["AuditLog"]
