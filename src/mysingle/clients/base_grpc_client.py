@@ -140,7 +140,11 @@ class BaseGrpcClient:
             host = self._determine_host()
 
         self.host = host
-        self.address = f"{host}:{default_port}"
+
+        # 포트 결정 (환경변수 우선)
+        port = self._determine_port()
+
+        self.address = f"{host}:{port}"
 
         # TLS 설정 결정
         if use_tls is None:
@@ -235,7 +239,7 @@ class BaseGrpcClient:
         환경 기반 호스트 결정
 
         우선순위:
-        1. 환경변수 {SERVICE}_GRPC_HOST (예: INDICATOR_HOST)
+        1. 환경변수 {SERVICE}_GRPC_HOST (예: INDICATOR_GRPC_HOST)
         2. Docker 환경: service_name (예: indicator-service)
         3. 기본값: localhost
 
@@ -257,6 +261,39 @@ class BaseGrpcClient:
 
         # 기본값
         return "localhost"
+
+    def _determine_port(self) -> int:
+        """
+        환경 기반 포트 결정
+
+        우선순위:
+        1. 환경변수 {SERVICE}_GRPC_PORT (예: SUBSCRIPTION_GRPC_PORT)
+        2. default_port 파라미터
+
+        Returns:
+            결정된 포트
+
+        Example:
+            # subscription-service -> SUBSCRIPTION_GRPC_PORT
+            # market-data-service -> MARKET_DATA_GRPC_PORT
+        """
+        # 환경변수로 서비스명 변환 (subscription-service -> SUBSCRIPTION)
+        env_key = (
+            self.service_name.upper().replace("-SERVICE", "").replace("-", "_")
+            + "_GRPC_PORT"
+        )
+        env_port = os.getenv(env_key)
+        if env_port:
+            try:
+                return int(env_port)
+            except ValueError:
+                logger.warning(
+                    f"Invalid port in environment variable {env_key}={env_port}, "
+                    f"using default_port={self.default_port}"
+                )
+
+        # 기본값
+        return self.default_port
 
     def _create_channel(self, **kwargs: Any) -> grpc.aio.Channel:
         """

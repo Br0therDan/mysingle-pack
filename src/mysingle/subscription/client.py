@@ -1,7 +1,11 @@
 """Subscription Service gRPC client.
 
-This client wraps gRPC calls to Subscription Service (port 50057).
+This client wraps gRPC calls to Subscription Service.
 All business logic resides in Subscription Service.
+
+Port Configuration:
+    - Default: 50052 (Subscription Service gRPC port)
+    - Override via environment variable: SUBSCRIPTION_GRPC_PORT=50052
 """
 
 from typing import Optional
@@ -38,13 +42,17 @@ class SubscriptionServiceClient(BaseGrpcClient):
     ):
         """Initialize Subscription Service gRPC client.
 
+        Port is determined by BaseGrpcClient in the following priority:
+        1. Environment variable: SUBSCRIPTION_GRPC_PORT
+        2. Default port: 50052
+
         Args:
             user_id: User ID for metadata propagation
             correlation_id: Correlation ID for request tracing
         """
         super().__init__(
             service_name="subscription-service",
-            default_port=50057,
+            default_port=50052,  # Fallback if SUBSCRIPTION_GRPC_PORT not set
             user_id=user_id,
             correlation_id=correlation_id,
         )
