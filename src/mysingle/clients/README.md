@@ -83,6 +83,34 @@ class BacktestClient(BaseGrpcClient):
         return await self.stub.RunBacktest(request, metadata=self.metadata)
 ```
 
+### Environment Configuration
+
+BaseGrpcClient automatically determines host and port using environment variables:
+
+**Priority for Host:**
+1. Environment variable: `{SERVICE}_GRPC_HOST` (e.g., `BACKTEST_GRPC_HOST`)
+2. Docker environment: `service-name` (e.g., `backtest-service`)
+3. Default: `localhost`
+
+**Priority for Port:**
+1. Environment variable: `{SERVICE}_GRPC_PORT` (e.g., `BACKTEST_GRPC_PORT`)
+2. `default_port` parameter in `__init__`
+
+**Example:**
+```bash
+# Override host and port for backtest-service
+export BACKTEST_GRPC_HOST=backtest.example.com
+export BACKTEST_GRPC_PORT=9090
+
+# Override port only (host auto-detected)
+export SUBSCRIPTION_GRPC_PORT=50052
+```
+
+**Service Name Mapping:**
+- `backtest-service` → `BACKTEST_GRPC_HOST`, `BACKTEST_GRPC_PORT`
+- `subscription-service` → `SUBSCRIPTION_GRPC_HOST`, `SUBSCRIPTION_GRPC_PORT`
+- `market-data-service` → `MARKET_DATA_GRPC_HOST`, `MARKET_DATA_GRPC_PORT`
+
 ### Kong Gateway Integration
 
 ```python
