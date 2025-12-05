@@ -14,16 +14,25 @@ from mysingle.cli.utils import (
 )
 
 from .templates import (
+    generate_agents_md,
     generate_api_v1_py,
     generate_config_py,
+    generate_conftest_py,
+    generate_copilot_instructions_md,
     generate_dockerfile,
+    generate_dockerignore,
     generate_gitignore,
     generate_health_router_py,
     generate_main_py,
     generate_models_init_py,
+    generate_pre_commit_config,
     generate_pyproject_toml,
     generate_pytest_ini,
     generate_readme,
+    generate_sample_item_model,
+    generate_sample_item_router,
+    generate_sample_item_schema,
+    generate_sample_item_test,
     generate_service_factory_py,
     generate_test_example,
 )
@@ -309,6 +318,7 @@ def _create_directory_structure(base_dir: Path, grpc_enabled: bool) -> None:
         "tests/unit",
         "tests/integration",
         "logs",
+        ".github",
     ]
 
     if grpc_enabled:
@@ -349,11 +359,22 @@ def _create_app_files(
         generate_health_router_py()
     )
 
+    # app/api/v1/routes/items.py (SampleItem router)
+    (base_dir / "app" / "api" / "v1" / "routes" / "items.py").write_text(
+        generate_sample_item_router()
+    )
+
     # app/models/__init__.py
     (base_dir / "app" / "models" / "__init__.py").write_text(generate_models_init_py())
 
+    # app/models/item.py (SampleItem model)
+    (base_dir / "app" / "models" / "item.py").write_text(generate_sample_item_model())
+
     # app/schemas/__init__.py
     (base_dir / "app" / "schemas" / "__init__.py").write_text("")
+
+    # app/schemas/item.py (SampleItem schemas)
+    (base_dir / "app" / "schemas" / "item.py").write_text(generate_sample_item_schema())
 
     # app/services/service_factory.py
     (base_dir / "app" / "services" / "__init__.py").write_text("")
@@ -382,6 +403,12 @@ def _create_config_files(
     # .gitignore
     (base_dir / ".gitignore").write_text(generate_gitignore())
 
+    # .dockerignore
+    (base_dir / ".dockerignore").write_text(generate_dockerignore())
+
+    # .pre-commit-config.yaml
+    (base_dir / ".pre-commit-config.yaml").write_text(generate_pre_commit_config())
+
     # pytest.ini
     (base_dir / "pytest.ini").write_text(generate_pytest_ini())
 
@@ -393,6 +420,41 @@ def _create_config_files(
         generate_readme(service_name, service_name_pascal, port, grpc_port)
     )
 
+    # AGENTS.md
+    (base_dir / "AGENTS.md").write_text(
+        generate_agents_md(service_name, service_name_pascal)
+    )
+
+    # .github/copilot-instructions.md
+    (base_dir / ".github" / "copilot-instructions.md").write_text(
+        generate_copilot_instructions_md(service_name, service_name_pascal)
+    )
+
+    # .env template
+    env_content = f"""# {service_name.replace("-", " ").title()} Environment Variables
+# Copy to .env.local for local development
+
+# Service Info
+SERVICE_NAME={service_name}
+APP_VERSION=0.1.0
+ENVIRONMENT=development
+LOG_LEVEL=INFO
+
+# MongoDB
+MONGODB_SERVER=localhost:27017
+MONGODB_USERNAME=root
+MONGODB_PASSWORD=example
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_DB=0
+
+# Logging
+AUDIT_LOGGING_ENABLED=true
+"""
+    (base_dir / ".env").write_text(env_content)
+
     print_info("⚙️  Created configuration files")
 
 
@@ -403,8 +465,17 @@ def _create_tests(base_dir: Path) -> None:
     (base_dir / "tests" / "unit" / "__init__.py").write_text("")
     (base_dir / "tests" / "integration" / "__init__.py").write_text("")
 
+    # tests/conftest.py
+    service_name = base_dir.name  # Extract service name from directory
+    (base_dir / "tests" / "conftest.py").write_text(generate_conftest_py(service_name))
+
     # tests/unit/test_health.py
     (base_dir / "tests" / "unit" / "test_health.py").write_text(generate_test_example())
+
+    # tests/unit/test_items.py (SampleItem tests)
+    (base_dir / "tests" / "unit" / "test_items.py").write_text(
+        generate_sample_item_test()
+    )
 
     print_info("🧪 Created test files")
 

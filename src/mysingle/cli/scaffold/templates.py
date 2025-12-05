@@ -3,6 +3,536 @@
 from __future__ import annotations
 
 
+def generate_agents_md(service_name: str, service_name_pascal: str) -> str:
+    """Generate AGENTS.md template."""
+    service_title = service_name.replace("-", " ").title()
+    return f"""# {service_title} - Agent Instructions
+
+**Version**: 1.0.0
+**Date**: {{% import datetime %}}{{{{ datetime.date.today() }}}}
+
+---
+
+## 1. Phase Planning
+
+### Before Starting a Phase
+- Review MASTER_PLAN.md and PROJECT_DASHBOARD.md
+- Create detailed plan: `PHASE{{N}}_{{DESCRIPTION}}.md`
+- DO NOT include time estimates (weeks/days)
+
+### Phase Plan Structure
+- Tasks formatted as: `[ ] P{{Phase#}}-{{Task#}}. {{Task Name}}`
+- Each Task includes:
+  - **Purpose**: Goal of the task
+  - **Implementation Details**: Technical requirements
+  - **Deliverables**: Files/documents to create
+  - **Completion Criteria**: Clear acceptance criteria
+- NO example code in planning documents
+
+---
+
+## 2. Task Execution
+
+### Task Completion Criteria (ALL required)
+1. **Code Quality**
+   - `ruff check` pass (0 lint errors)
+   - `ruff format` applied
+   - Type validation pass (mypy/pyright 0 errors)
+
+2. **Testing**
+   - Unit tests written and passing
+   - Skip only if test not applicable (e.g., docs)
+
+3. **Documentation**
+   - Update PROJECT_DASHBOARD.md: `[ ]` → `[x]`
+   - NO modifications to completed task details
+
+### Git Workflow
+**Task completion:**
+```bash
+git commit -m "P{{Phase#}}-{{Task#}}: {{Task Name}} completed
+
+{{Brief implementation summary}}"
+```
+
+**Phase completion:**
+```bash
+git commit -m "Phase {{N}} completed: {{Phase Name}}
+
+- {{N}} tasks completed
+- {{N}} unit tests passed
+- Deliverables: {{file list}}"
+```
+
+### Phase Completion Criteria (ALL required)
+- All tasks completed
+- All unit tests passing (80%+ coverage)
+- PROJECT_DASHBOARD.md updated (⚪ → 🟡 → 🟢)
+- NO additional summary documents
+
+---
+
+## 3. Code Standards
+
+### Type Safety
+- Type hints required for all functions/methods
+- Use Pydantic models (NO dicts)
+- IDs as `str`, convert to `PydanticObjectId` only at query boundaries
+
+### Beanie Models
+- User-owned: `BaseTimeDocWithUserId`
+- Shared: `BaseTimeDoc`
+- Simple: `BaseDoc`
+
+### Response Schemas
+- Inherit `BaseResponseSchema`
+- Naming: `{{Entity}}Response`
+- Return: `model_dump(by_alias=True)`
+
+### Logging
+- Use `get_structured_logger(__name__)` (mysingle.core.logging)
+- NO `print()` or standard logging
+- Include context: `user_id`, `correlation_id`, `operation`
+
+### Authentication
+- External API: `get_current_active_verified_user(request)`
+- Internal API: `get_current_user(request)`
+- ALWAYS filter user-owned resources by `user_id`
+
+### Error Handling
+- Define custom exceptions in `app/core/exceptions.py`
+- Use `HTTPException(status_code, detail)`
+- Status codes: 401 (unauthorized), 403 (forbidden), 404 (not found), 400 (bad request), 500 (server error)
+
+---
+
+## 4. Testing
+
+### Unit Tests
+- Location: `tests/unit/`
+- Naming: `test_{{module_name}}.py`
+- Use pytest fixtures
+
+### Integration Tests
+- Location: `tests/integration/`
+- Mock external services (Redis, MongoDB)
+
+---
+
+## 5. Anti-Patterns
+
+### Prohibited
+- ❌ Jumping between phases (complete Phase 1 before Phase 2)
+- ❌ Modifying completed task details
+- ❌ Creating unnecessary summary documents
+- ❌ Including code examples in planning docs
+- ❌ Using `print()` or standard logging
+- ❌ Using dicts instead of Pydantic models
+- ❌ Querying all docs without user_id filter
+
+### Recommended
+- ✅ Sequential phase execution
+- ✅ Commit after each task completion
+- ✅ Test-driven development
+- ✅ Structured logging with context
+- ✅ Explicit type hints
+
+---
+
+## 6. MySingle Package Patterns
+
+### Settings Configuration
+- Extend `CommonSettings` from `mysingle.core.config`
+- DO NOT redefine CommonSettings fields (MONGODB_URL, REDIS_HOST, etc.)
+- Override defaults via environment variables only
+
+### Authentication (NON_IAM Service)
+- Import from `mysingle.auth`: `get_current_user`, `get_current_active_verified_user`
+- External API: `get_current_active_verified_user(request)` - raises 401/403
+- Internal API: `get_current_user(request)` - service-to-service only
+- User info from Kong Gateway headers (`X-User-Id`, `X-Correlation-Id`)
+- NO MongoDB user lookup in NON_IAM services
+
+### Database Initialization
+- Create `app/models/__init__.py` with `document_models = [Model1, Model2]`
+- Pass to `create_fastapi_app(document_models=document_models)`
+- Beanie auto-initialized on startup via `app_factory`
+- NO manual `init_beanie()` calls needed
+
+### Dependencies Pattern
+```python
+from fastapi import Request
+from mysingle.auth import get_current_active_verified_user
+from app.core.config import get_settings
+
+# Direct usage (recommended)
+async def route(request: Request):
+    user = get_current_active_verified_user(request)
+    settings = get_settings()
+```
+
+### App Factory (NON_IAM Service)
+```python
+from mysingle.core import create_fastapi_app, create_service_config, ServiceType
+
+config = create_service_config(
+    service_name="{service_name}",
+    service_type=ServiceType.NON_IAM_SERVICE,
+)
+
+app = create_fastapi_app(
+    service_config=config,
+    document_models=models.document_models,
+)
+```
+
+---
+
+## References
+- [.github/copilot-instructions.md](./.github/copilot-instructions.md): Development guidelines
+- [MySingle Package Docs](https://github.com/Br0therDan/mysingle-pack/tree/main/docs): API documentation
+"""
+
+
+def generate_copilot_instructions_md(
+    service_name: str, service_name_pascal: str
+) -> str:
+    """Generate .github/copilot-instructions.md template."""
+    service_title = service_name.replace("-", " ").title()
+    return f"""# {service_title} - Development Guidelines
+
+## Architecture Principles
+
+- Kong Gateway for all HTTP traffic (no direct service HTTP calls)
+- gRPC for inter-service communication only
+- Auth: Kong JWT + `X-User-Id` header propagation
+- Proto: https://github.com/Br0therDan/grpc-protos
+
+---
+
+## Type Safety & Models
+
+**Pydantic Everywhere:** No raw dicts in routes/services. Define schemas in `app/schemas/<domain>.py`.
+**Beanie Inheritance:**
+
+- User-owned: `BaseTimeDocWithUserId`
+- Shared: `BaseTimeDoc`
+- Simple: `BaseDoc`
+
+**Response Schemas:** Inherit `BaseResponseSchema`, name as `<Entity>Response`, construct via `model_dump(by_alias=True)`.
+**IDs:** Use `str` in schemas/docs, convert to `PydanticObjectId` only at query boundaries.
+**DateTime:** Use `datetime.now(UTC)` not `utcnow()`.
+**Return Types:** All route functions require type hints.
+
+---
+
+## Directory Structure
+
+- Models (ODM): `app/models/` (inherit mysingle.base)
+- Public schemas: `app/schemas/<domain>.py`
+- Internal models: `app/services/<domain>/models.py`
+- External clients: `app/clients/`
+- No inline schemas in routers
+
+---
+
+## Configuration & Logging
+
+**Settings:** Extend `CommonSettings` from mysingle.core. Env vars: `<SERVICE>_<FEATURE>_<PROPERTY>`. Access via `get_settings()`.
+**Logging:** Use `get_structured_logger(__name__)` from mysingle.core.logging. Never `print()` or standard logging. Include context keys (user_id, correlation_id).
+**Audit:** Auto-enabled in production. Add custom metadata via `request.state.audit_metadata`.
+
+---
+
+## Authentication
+
+**Import:** `mysingle.auth` provides `get_current_user`, `get_current_active_verified_user`, `get_kong_user_id`, `get_kong_correlation_id`.
+**External API:** Use `get_current_active_verified_user(request)` (raises 401).
+**Internal API:** Use `get_current_user(request)` (service-to-service only).
+**User Ownership:** ALWAYS filter by `user_id` before returning/modifying resources.
+**Testing:** Set `MYSINGLE_AUTH_BYPASS=true` and `ENVIRONMENT=development`.
+
+---
+
+## Database
+
+**MongoDB:**
+
+- Inherit `BaseTimeDocWithUserId` for user-scoped
+- Filter: `Model.find(Model.user_id == user.id)`
+- Avoid N+1: batch fetch → map join
+- Index: `(user_id, created_at desc)`
+
+**Redis:**
+
+- Get client: `get_redis_client(db=N)`
+- DB allocation: 0=IAM, 1=Market, 2=Indicators, 3=Strategies, 4=Backtests
+- Key format: `{{resource}}:{{user_id}}:{{resource_id}}`
+
+**Idempotency:** Support `Idempotency-Key` header, cache in Redis (TTL: 86400s).
+
+---
+
+## gRPC Communication
+
+**Client:** Extend `BaseGrpcClient(service_name, port, user_id, correlation_id)` - auto-propagates metadata headers (user-id, correlation-id, request-id).
+**Package:** `mysingle-protos @ git+https://github.com/Br0therDan/grpc-protos.git@v1.x.x`
+
+**Versioning:** Major=breaking, Minor=new features, Patch=fixes.
+
+---
+
+## Routing
+
+**External Router:** Public CRUD endpoints. Use `get_current_active_verified_user(request)`.
+**Internal Router:** Service-to-service triggers. Use `get_current_user(request)`. NOT exposed via Kong.
+**Registration:** Include router with prefix, tags, dependencies (auth required).
+
+---
+
+## Error Handling
+
+**Custom Exceptions:** Define narrow exceptions (e.g., `ValidationError`, `ResourceNotFoundError`).
+**HTTP Errors:** Use `HTTPException(status_code, detail)`. Status codes: 401=unauthenticated, 403=forbidden, 404=not found, 400=bad request, 500=server error.
+**Logging:** Log with context (service, operation, IDs). Re-raise IO/network errors.
+
+---
+
+## File Operations
+
+**Replacement Pattern:** Create `file_new.py` → delete `file.py` → rename `file_new.py` to `file.py`.
+
+---
+
+## MySingle Package Updates
+
+**Submodule add / update / Sync:**:
+- To add: `uv run mysingle submodule add`
+- To update: `uv run mysingle submodule update`
+- To sync: `uv run mysingle submodule sync`
+
+**Proto Changes (Owner):**
+
+1. Edit `packages/mysingle/protos/services/{{service}}/v1/*.proto`
+2. Validate: `uv run mysingle-proto validate`
+3. Generate: `uv run mysingle-proto generate`
+4. Submit PR: `uv run mysingle submodule sync`
+
+**Proto Changes (Consumer):** Create issue or PR in mysingle-pack repo.
+
+---
+
+## Anti-Patterns
+
+❌ Service-to-service HTTP (bypass Kong)
+❌ Mixed HTTP/gRPC for same service
+❌ Manual auth without mysingle.auth
+❌ Missing user_id/correlation_id propagation
+❌ Hard-coded URLs/ports
+❌ Exposing internal routes via Kong
+❌ N+1 queries
+❌ Missing user_id filters
+❌ Using print() or standard logging
+❌ Querying all docs without user scope
+❌ Creating User/OAuthAccount in non-IAM services
+
+---
+
+## Service Infrastructure
+
+| Service      | HTTP  | gRPC   | Kong Path     |
+| ------------ | ----- | ------ | ------------- |
+| IAM          | :8001 | :50051 | /iam          |
+| Subscription | :8002 | :50052 | /subscription |
+| Strategy     | :8003 | :50053 | /strategy     |
+| Backtest     | :8004 | :50054 | /backtest     |
+| Indicator    | :8005 | :50055 | /indicator    |
+| Optimization | :8006 | :50056 | /optimization |
+| Dashboard    | :8007 | :50057 | /dashboard    |
+| Notification | :8008 | :50058 | /notification |
+| Market Data  | :8009 | :50059 | /market-data  |
+| GenAI        | :8010 | :50060 | /genai        |
+| ML           | :8011 | :50061 | /ml           |
+
+**MongoDB:** `db-mongo:27017`
+**Redis:** `db-redis:6379`
+**Kong:** `kong-gateway:8000` (Admin: :8100)
+
+---
+
+**Repos:** [mysingle-quant](https://github.com/Br0therDan/mysingle-quant) | [grpc-protos](https://github.com/Br0therDan/grpc-protos) | [mysingle-pack](https://github.com/Br0therDan/mysingle-pack)
+"""
+
+
+def generate_dockerignore() -> str:
+    """Generate .dockerignore template."""
+    return """# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Development files
+*.log
+*.tmp
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Testing
+tests/
+*.test.py
+test_*.py
+
+# Documentation
+docs/
+
+# CI/CD
+.github/
+"""
+
+
+def generate_pre_commit_config() -> str:
+    """Generate .pre-commit-config.yaml template."""
+    return """# Pre-commit hooks for code quality and formatting
+repos:
+  # Basic file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+        exclude: '\\.vscode/.*\\.json$'
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=1000"]
+      - id: check-case-conflict
+
+  # Linting and formatting with Ruff (replaces Black + Flake8)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
+
+  # Security checks with Bandit
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.10
+    hooks:
+      - id: bandit
+        args: ["-s", "B311,B110", "--severity-level", "medium"]
+        exclude: "^tests/"
+
+# Global settings
+default_language_version:
+  python: python3.12
+
+# Files to exclude from all hooks
+exclude: |
+  (?x)^(
+    data/.*|
+    logs/.*|
+    .*\\.log|
+    .*\\.cache/.*|
+    \\.vscode/.*|
+    __pycache__/.*|
+    build/.*|
+    dist/.*
+  )$
+"""
+
+
+def generate_conftest_py(service_name: str) -> str:
+    """Generate tests/conftest.py template."""
+    service_db_name = service_name.replace("-", "_")
+    return f'''"""Pytest configuration and fixtures."""
+
+from unittest.mock import MagicMock, patch
+
+import pytest
+from beanie import init_beanie
+from mongomock_motor import AsyncMongoMockClient
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_test_environment():
+    """Setup test environment variables."""
+    import os
+
+    # Auth bypass for tests
+    os.environ["MYSINGLE_AUTH_BYPASS"] = "true"
+    os.environ["ENVIRONMENT"] = "development"
+
+
+@pytest.fixture(scope="session")
+async def init_test_db():
+    """Initialize test database and Beanie ODM with mongomock."""
+    from app.models import document_models
+
+    # Use mongomock for unit tests (no real MongoDB needed)
+    client = AsyncMongoMockClient()
+    db = client.get_database("{service_db_name}_test")
+
+    # Initialize Beanie with all document models
+    await init_beanie(database=db, document_models=document_models)  # type: ignore
+
+    yield db
+
+    # Cleanup
+    client.close()
+
+
+@pytest.fixture(autouse=True)
+async def setup_db(init_test_db):
+    """Ensure database is initialized for each test."""
+    yield init_test_db
+
+
+@pytest.fixture(scope="session")
+def test_app():
+    """Create FastAPI test app with settings mock."""
+    # Mock settings before importing app
+    with patch("app.core.config.get_settings") as mock_settings:
+        mock_settings.return_value.SERVICE_NAME = "{service_name}"
+        mock_settings.return_value.MONGODB_URL = "mongodb://localhost:27017"
+        from app.main import app
+
+        return app
+
+
+@pytest.fixture(scope="session")
+def test_client(test_app):
+    """Create test client."""
+    from fastapi.testclient import TestClient
+
+    return TestClient(test_app)
+'''
+
+
 def generate_main_py(
     service_name: str, service_name_snake: str, grpc_enabled: bool
 ) -> str:
@@ -42,7 +572,7 @@ async def lifespan(app: FastAPI):
     - Initialize shared singletons (HTTP clients, service factory)
     - Ensure graceful shutdown of resources
     """
-    logger.info(f"🚀 Starting {service_name.replace('-', ' ').title()}...")
+    logger.info(f"🚀 Starting {service_name.replace("-", " ").title()}...")
 
     try:
         # Initialize service factory
@@ -54,13 +584,13 @@ async def lifespan(app: FastAPI):
         logger.error(f"❌ Startup failed: {{e}}")
         raise
 
-    logger.info(f"✅ {service_name.replace('-', ' ').title()} started successfully")
+    logger.info(f"✅ {service_name.replace("-", " ").title()} started successfully")
 
     yield
 
     # Shutdown
     try:
-        logger.info(f"🛑 Shutting down {service_name.replace('-', ' ').title()}...")
+        logger.info(f"🛑 Shutting down {service_name.replace("-", " ").title()}...")
 
         # Cleanup service factory
         factory = get_service_factory()
@@ -70,7 +600,7 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"❌ Shutdown error: {{e}}")
 
-    logger.info(f"👋 {service_name.replace('-', ' ').title()} shutdown completed")
+    logger.info(f"👋 {service_name.replace("-", " ").title()} shutdown completed")
 
 
 def create_app() -> FastAPI:
@@ -113,42 +643,55 @@ def generate_config_py(
     grpc_settings = ""
     if grpc_enabled:
         grpc_settings = f"""
-    # gRPC SERVER SETTINGS
-    USE_GRPC_FOR_{service_name_snake.upper()}: bool = False
+    # gRPC Settings
+    USE_GRPC: bool = False
+    GRPC_CLIENT_TIMEOUT: float = 10.0
     {service_name_snake.upper()}_GRPC_PORT: int = 50051
 """
 
     return f'''"""{service_name.replace("-", " ").title()} Configuration."""
 
 from mysingle.core import CommonSettings
-from pydantic_settings import SettingsConfigDict
 
 
-class Settings(CommonSettings):
+class {service_name.replace("-", "").title()}Settings(CommonSettings):
     """{service_name.replace("-", " ").title()} settings extending CommonSettings."""
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        case_sensitive=True,
-        extra="ignore",
-    )
-
-    # APP INFO
+    # Service Info
     SERVICE_NAME: str = "{service_name}"
     APP_VERSION: str = "0.1.0"
-    LOG_LEVEL: str = "INFO"
 
-    # Audit logging (HTTP request/response) toggle
+    # Feature Settings
     AUDIT_LOGGING_ENABLED: bool = True
 {grpc_settings}
+    # Common service endpoints (from main .env)
+    IAM_HOST: str = "localhost"
+    STRATEGY_HOST: str = "localhost"
+    BACKTEST_HOST: str = "localhost"
+    INDICATOR_HOST: str = "localhost"
+    MARKET_DATA_HOST: str = "localhost"
+    GENAI_HOST: str = "localhost"
+    ML_HOST: str = "localhost"
 
-settings = Settings()
+    # gRPC Ports (from main .env)
+    IAM_GRPC_PORT: int = 50051
+    STRATEGY_GRPC_PORT: int = 50053
+    BACKTEST_GRPC_PORT: int = 50054
+    INDICATOR_GRPC_PORT: int = 50055
+    MARKET_DATA_GRPC_PORT: int = 50059
+    GENAI_GRPC_PORT: int = 50060
+    ML_GRPC_PORT: int = 50061
 
 
-def get_settings() -> Settings:
-    """Get application settings."""
-    return settings
+_settings: {service_name.replace("-", "").title()}Settings | None = None
+
+
+def get_settings() -> {service_name.replace("-", "").title()}Settings:
+    """Get application settings singleton."""
+    global _settings
+    if _settings is None:
+        _settings = {service_name.replace("-", "").title()}Settings()
+    return _settings
 '''
 
 
@@ -158,12 +701,477 @@ def generate_api_v1_py() -> str:
 
 from fastapi import APIRouter
 
-from app.api.v1.routes import health
+from app.api.v1.routes import health, items
 
 api_router = APIRouter(prefix="/api/v1")
 
 # Health check routes
 api_router.include_router(health.router, tags=["health"])
+
+# Sample Item routes
+api_router.include_router(items.router, prefix="/items", tags=["items"])
+'''
+
+
+def generate_sample_item_model() -> str:
+    """Generate sample item model (app/models/item.py)."""
+    return '''"""Sample Item model."""
+
+from beanie import PydanticObjectId
+from pydantic import Field
+
+from mysingle.core.base import BaseTimeDocWithUserId
+
+
+class SampleItem(BaseTimeDocWithUserId):
+    """Sample item document model.
+
+    Demonstrates user-owned resource with CRUD operations.
+    """
+
+    name: str = Field(..., description="Item name")
+    description: str | None = Field(None, description="Item description")
+    quantity: int = Field(default=0, ge=0, description="Item quantity")
+    is_active: bool = Field(default=True, description="Whether item is active")
+
+    class Settings:
+        """Beanie document settings."""
+
+        name = "sample_items"
+        indexes = [
+            "user_id",
+            "name",
+            ("user_id", "created_at"),
+        ]
+'''
+
+
+def generate_sample_item_schema() -> str:
+    """Generate sample item schemas (app/schemas/item.py)."""
+    return '''"""Sample Item schemas."""
+
+from pydantic import Field
+
+from mysingle.core.base import BaseResponseSchema
+
+
+class SampleItemCreate(BaseResponseSchema):
+    """Schema for creating a sample item."""
+
+    name: str = Field(..., min_length=1, max_length=100, description="Item name")
+    description: str | None = Field(None, max_length=500, description="Item description")
+    quantity: int = Field(default=0, ge=0, description="Item quantity")
+    is_active: bool = Field(default=True, description="Whether item is active")
+
+
+class SampleItemUpdate(BaseResponseSchema):
+    """Schema for updating a sample item."""
+
+    name: str | None = Field(None, min_length=1, max_length=100, description="Item name")
+    description: str | None = Field(None, max_length=500, description="Item description")
+    quantity: int | None = Field(None, ge=0, description="Item quantity")
+    is_active: bool | None = Field(None, description="Whether item is active")
+
+
+class SampleItemResponse(BaseResponseSchema):
+    """Schema for sample item response."""
+
+    id: str = Field(..., description="Item ID")
+    user_id: str = Field(..., description="Owner user ID")
+    name: str = Field(..., description="Item name")
+    description: str | None = Field(None, description="Item description")
+    quantity: int = Field(..., description="Item quantity")
+    is_active: bool = Field(..., description="Whether item is active")
+    created_at: str = Field(..., description="Creation timestamp")
+    updated_at: str = Field(..., description="Last update timestamp")
+'''
+
+
+def generate_sample_item_router() -> str:
+    """Generate sample item router (app/api/v1/routes/items.py)."""
+    return '''"""Sample Item CRUD endpoints."""
+
+from typing import Annotated
+
+from beanie import PydanticObjectId
+from fastapi import APIRouter, HTTPException, Request, status
+from mysingle.auth import get_current_active_verified_user
+from mysingle.auth.models import User
+from mysingle.core import get_structured_logger
+
+from app.models.item import SampleItem
+from app.schemas.item import SampleItemCreate, SampleItemResponse, SampleItemUpdate
+
+router = APIRouter()
+logger = get_structured_logger(__name__)
+
+
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=SampleItemResponse)
+async def create_item(
+    request: Request,
+    item_data: SampleItemCreate,
+) -> SampleItemResponse:
+    """
+    Create a new sample item.
+
+    - **name**: Item name (required)
+    - **description**: Item description (optional)
+    - **quantity**: Item quantity (default: 0)
+    - **is_active**: Whether item is active (default: true)
+    """
+    # Get authenticated user from Kong Gateway
+    user = get_current_active_verified_user(request)
+
+    logger.info(
+        "Creating sample item",
+        user_id=str(user.id),
+        item_name=item_data.name,
+    )
+
+    # Create item with user ownership
+    item = SampleItem(
+        user_id=user.id,
+        **item_data.model_dump(exclude_unset=True),
+    )
+
+    await item.insert()
+
+    logger.info(
+        "Sample item created",
+        user_id=str(user.id),
+        item_id=str(item.id),
+        item_name=item.name,
+    )
+
+    return SampleItemResponse(**item.model_dump(by_alias=True))
+
+
+@router.get("", response_model=list[SampleItemResponse])
+async def list_items(
+    request: Request,
+    skip: int = 0,
+    limit: int = 100,
+    is_active: bool | None = None,
+) -> list[SampleItemResponse]:
+    """
+    List user's sample items.
+
+    - **skip**: Number of items to skip (default: 0)
+    - **limit**: Maximum number of items to return (default: 100)
+    - **is_active**: Filter by active status (optional)
+    """
+    user = get_current_active_verified_user(request)
+
+    logger.info(
+        "Listing sample items",
+        user_id=str(user.id),
+        skip=skip,
+        limit=limit,
+    )
+
+    # Build query - ALWAYS filter by user_id
+    query = SampleItem.find(SampleItem.user_id == user.id)
+
+    if is_active is not None:
+        query = query.find(SampleItem.is_active == is_active)
+
+    items = await query.skip(skip).limit(limit).sort("-created_at").to_list()
+
+    logger.info(
+        "Sample items retrieved",
+        user_id=str(user.id),
+        count=len(items),
+    )
+
+    return [SampleItemResponse(**item.model_dump(by_alias=True)) for item in items]
+
+
+@router.get("/{item_id}", response_model=SampleItemResponse)
+async def get_item(
+    request: Request,
+    item_id: str,
+) -> SampleItemResponse:
+    """
+    Get a specific sample item by ID.
+
+    - **item_id**: Item ID
+    """
+    user = get_current_active_verified_user(request)
+
+    logger.info(
+        "Retrieving sample item",
+        user_id=str(user.id),
+        item_id=item_id,
+    )
+
+    # Find item and verify ownership
+    item = await SampleItem.find_one(
+        SampleItem.id == PydanticObjectId(item_id),
+        SampleItem.user_id == user.id,  # Critical: user_id filter
+    )
+
+    if not item:
+        logger.warning(
+            "Sample item not found",
+            user_id=str(user.id),
+            item_id=item_id,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Item not found",
+        )
+
+    return SampleItemResponse(**item.model_dump(by_alias=True))
+
+
+@router.put("/{item_id}", response_model=SampleItemResponse)
+async def update_item(
+    request: Request,
+    item_id: str,
+    item_data: SampleItemUpdate,
+) -> SampleItemResponse:
+    """
+    Update a sample item.
+
+    - **item_id**: Item ID
+    - **name**: Updated item name (optional)
+    - **description**: Updated item description (optional)
+    - **quantity**: Updated item quantity (optional)
+    - **is_active**: Updated active status (optional)
+    """
+    user = get_current_active_verified_user(request)
+
+    logger.info(
+        "Updating sample item",
+        user_id=str(user.id),
+        item_id=item_id,
+    )
+
+    # Find item and verify ownership
+    item = await SampleItem.find_one(
+        SampleItem.id == PydanticObjectId(item_id),
+        SampleItem.user_id == user.id,
+    )
+
+    if not item:
+        logger.warning(
+            "Sample item not found for update",
+            user_id=str(user.id),
+            item_id=item_id,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Item not found",
+        )
+
+    # Update fields
+    update_data = item_data.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(item, field, value)
+
+    await item.save()
+
+    logger.info(
+        "Sample item updated",
+        user_id=str(user.id),
+        item_id=str(item.id),
+    )
+
+    return SampleItemResponse(**item.model_dump(by_alias=True))
+
+
+@router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_item(
+    request: Request,
+    item_id: str,
+) -> None:
+    """
+    Delete a sample item.
+
+    - **item_id**: Item ID
+    """
+    user = get_current_active_verified_user(request)
+
+    logger.info(
+        "Deleting sample item",
+        user_id=str(user.id),
+        item_id=item_id,
+    )
+
+    # Find item and verify ownership
+    item = await SampleItem.find_one(
+        SampleItem.id == PydanticObjectId(item_id),
+        SampleItem.user_id == user.id,
+    )
+
+    if not item:
+        logger.warning(
+            "Sample item not found for deletion",
+            user_id=str(user.id),
+            item_id=item_id,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Item not found",
+        )
+
+    await item.delete()
+
+    logger.info(
+        "Sample item deleted",
+        user_id=str(user.id),
+        item_id=str(item.id),
+    )
+'''
+
+
+def generate_sample_item_test() -> str:
+    """Generate sample item test (tests/unit/test_items.py)."""
+    return '''"""Tests for sample item endpoints."""
+
+import pytest
+from beanie import PydanticObjectId
+from httpx import AsyncClient
+
+from app.models.item import SampleItem
+
+
+@pytest.mark.asyncio
+async def test_create_item(test_app):
+    """Test creating a sample item."""
+    async with AsyncClient(app=test_app, base_url="http://test") as client:
+        # Set mock user ID in headers (simulating Kong Gateway)
+        user_id = str(PydanticObjectId())
+        headers = {"X-User-Id": user_id}
+
+        response = await client.post(
+            "/api/v1/items",
+            json={
+                "name": "Test Item",
+                "description": "Test description",
+                "quantity": 10,
+            },
+            headers=headers,
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data["name"] == "Test Item"
+        assert data["user_id"] == user_id
+        assert data["quantity"] == 10
+
+
+@pytest.mark.asyncio
+async def test_list_items(test_app):
+    """Test listing user's items."""
+    async with AsyncClient(app=test_app, base_url="http://test") as client:
+        user_id = str(PydanticObjectId())
+        headers = {"X-User-Id": user_id}
+
+        # Create test items
+        for i in range(3):
+            await SampleItem(
+                user_id=PydanticObjectId(user_id),
+                name=f"Item {i}",
+                quantity=i * 10,
+            ).insert()
+
+        response = await client.get("/api/v1/items", headers=headers)
+
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data) == 3
+        assert all(item["user_id"] == user_id for item in data)
+
+
+@pytest.mark.asyncio
+async def test_get_item(test_app):
+    """Test getting a specific item."""
+    async with AsyncClient(app=test_app, base_url="http://test") as client:
+        user_id = str(PydanticObjectId())
+        headers = {"X-User-Id": user_id}
+
+        # Create test item
+        item = await SampleItem(
+            user_id=PydanticObjectId(user_id),
+            name="Test Item",
+            quantity=5,
+        ).insert()
+
+        response = await client.get(f"/api/v1/items/{str(item.id)}", headers=headers)
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["id"] == str(item.id)
+        assert data["name"] == "Test Item"
+
+
+@pytest.mark.asyncio
+async def test_update_item(test_app):
+    """Test updating an item."""
+    async with AsyncClient(app=test_app, base_url="http://test") as client:
+        user_id = str(PydanticObjectId())
+        headers = {"X-User-Id": user_id}
+
+        # Create test item
+        item = await SampleItem(
+            user_id=PydanticObjectId(user_id),
+            name="Original Name",
+            quantity=5,
+        ).insert()
+
+        response = await client.put(
+            f"/api/v1/items/{str(item.id)}",
+            json={"name": "Updated Name", "quantity": 10},
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["name"] == "Updated Name"
+        assert data["quantity"] == 10
+
+
+@pytest.mark.asyncio
+async def test_delete_item(test_app):
+    """Test deleting an item."""
+    async with AsyncClient(app=test_app, base_url="http://test") as client:
+        user_id = str(PydanticObjectId())
+        headers = {"X-User-Id": user_id}
+
+        # Create test item
+        item = await SampleItem(
+            user_id=PydanticObjectId(user_id),
+            name="Test Item",
+        ).insert()
+
+        response = await client.delete(f"/api/v1/items/{str(item.id)}", headers=headers)
+
+        assert response.status_code == 204
+
+        # Verify deletion
+        deleted_item = await SampleItem.get(item.id)
+        assert deleted_item is None
+
+
+@pytest.mark.asyncio
+async def test_user_isolation(test_app):
+    """Test that users can only access their own items."""
+    async with AsyncClient(app=test_app, base_url="http://test") as client:
+        user1_id = str(PydanticObjectId())
+        user2_id = str(PydanticObjectId())
+
+        # Create item for user1
+        item = await SampleItem(
+            user_id=PydanticObjectId(user1_id),
+            name="User1 Item",
+        ).insert()
+
+        # Try to access with user2
+        headers = {"X-User-Id": user2_id}
+        response = await client.get(f"/api/v1/items/{str(item.id)}", headers=headers)
+
+        assert response.status_code == 404  # Not found (due to user_id filter)
 '''
 
 
@@ -203,14 +1211,14 @@ def generate_models_init_py() -> str:
 
 from beanie import Document
 
-# Import your models here
-# from .example import ExampleModel
+from .item import SampleItem
 
 # List of all document models for Beanie initialization
 document_models: list[type[Document]] = [
-    # Add your models here
-    # ExampleModel,
+    SampleItem,
 ]
+
+__all__ = ["SampleItem", "document_models"]
 '''
 
 
@@ -587,12 +1595,17 @@ __pycache__/
 .ruff_cache/
 .mypy_cache/
 .env.local
+.env
 *.log
 logs/*.log
 .DS_Store
 *.sqlite
 htmlcov/
 .coverage
+coverage.xml
+*.egg-info/
+dist/
+build/
 """
 
 
@@ -604,6 +1617,13 @@ testpaths = tests
 pythonpath = .
 filterwarnings =
     ignore::DeprecationWarning
+addopts =
+    --cov=app
+    --cov-report=html
+    --cov-report=term-missing
+    --cov-report=xml
+    --cov-branch
+    --cov-fail-under=60
 """
 
 
