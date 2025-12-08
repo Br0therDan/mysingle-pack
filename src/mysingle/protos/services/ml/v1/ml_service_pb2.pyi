@@ -1092,6 +1092,136 @@ class ParameterTrialHistory(_message.Message):
         state: _Optional[str] = ...,
     ) -> None: ...
 
+class GetMLBacktestPerformanceRequest(_message.Message):
+    __slots__ = ("job_id", "user_id")
+    JOB_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    job_id: str
+    user_id: str
+    def __init__(
+        self, job_id: _Optional[str] = ..., user_id: _Optional[str] = ...
+    ) -> None: ...
+
+class GetMLBacktestPerformanceResponse(_message.Message):
+    __slots__ = (
+        "found",
+        "performance_id",
+        "classification_metrics",
+        "confidence_distribution",
+        "regime_wise_performance",
+        "model_metadata",
+        "error",
+    )
+    class RegimeWisePerformanceEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: RegimePerformanceStats
+        def __init__(
+            self,
+            key: _Optional[str] = ...,
+            value: _Optional[_Union[RegimePerformanceStats, _Mapping]] = ...,
+        ) -> None: ...
+
+    FOUND_FIELD_NUMBER: _ClassVar[int]
+    PERFORMANCE_ID_FIELD_NUMBER: _ClassVar[int]
+    CLASSIFICATION_METRICS_FIELD_NUMBER: _ClassVar[int]
+    CONFIDENCE_DISTRIBUTION_FIELD_NUMBER: _ClassVar[int]
+    REGIME_WISE_PERFORMANCE_FIELD_NUMBER: _ClassVar[int]
+    MODEL_METADATA_FIELD_NUMBER: _ClassVar[int]
+    ERROR_FIELD_NUMBER: _ClassVar[int]
+    found: bool
+    performance_id: str
+    classification_metrics: ClassificationMetrics
+    confidence_distribution: ConfidenceDistributionStats
+    regime_wise_performance: _containers.MessageMap[str, RegimePerformanceStats]
+    model_metadata: ModelMetadata
+    error: str
+    def __init__(
+        self,
+        found: bool = ...,
+        performance_id: _Optional[str] = ...,
+        classification_metrics: _Optional[
+            _Union[ClassificationMetrics, _Mapping]
+        ] = ...,
+        confidence_distribution: _Optional[
+            _Union[ConfidenceDistributionStats, _Mapping]
+        ] = ...,
+        regime_wise_performance: _Optional[_Mapping[str, RegimePerformanceStats]] = ...,
+        model_metadata: _Optional[_Union[ModelMetadata, _Mapping]] = ...,
+        error: _Optional[str] = ...,
+    ) -> None: ...
+
+class ClassificationMetrics(_message.Message):
+    __slots__ = ("accuracy", "precision", "recall", "f1_score")
+    ACCURACY_FIELD_NUMBER: _ClassVar[int]
+    PRECISION_FIELD_NUMBER: _ClassVar[int]
+    RECALL_FIELD_NUMBER: _ClassVar[int]
+    F1_SCORE_FIELD_NUMBER: _ClassVar[int]
+    accuracy: float
+    precision: float
+    recall: float
+    f1_score: float
+    def __init__(
+        self,
+        accuracy: _Optional[float] = ...,
+        precision: _Optional[float] = ...,
+        recall: _Optional[float] = ...,
+        f1_score: _Optional[float] = ...,
+    ) -> None: ...
+
+class ConfidenceDistributionStats(_message.Message):
+    __slots__ = ("mean_confidence", "high_confidence_ratio", "low_confidence_ratio")
+    MEAN_CONFIDENCE_FIELD_NUMBER: _ClassVar[int]
+    HIGH_CONFIDENCE_RATIO_FIELD_NUMBER: _ClassVar[int]
+    LOW_CONFIDENCE_RATIO_FIELD_NUMBER: _ClassVar[int]
+    mean_confidence: float
+    high_confidence_ratio: float
+    low_confidence_ratio: float
+    def __init__(
+        self,
+        mean_confidence: _Optional[float] = ...,
+        high_confidence_ratio: _Optional[float] = ...,
+        low_confidence_ratio: _Optional[float] = ...,
+    ) -> None: ...
+
+class RegimePerformanceStats(_message.Message):
+    __slots__ = ("prediction_count", "accuracy", "precision", "avg_confidence")
+    PREDICTION_COUNT_FIELD_NUMBER: _ClassVar[int]
+    ACCURACY_FIELD_NUMBER: _ClassVar[int]
+    PRECISION_FIELD_NUMBER: _ClassVar[int]
+    AVG_CONFIDENCE_FIELD_NUMBER: _ClassVar[int]
+    prediction_count: int
+    accuracy: float
+    precision: float
+    avg_confidence: float
+    def __init__(
+        self,
+        prediction_count: _Optional[int] = ...,
+        accuracy: _Optional[float] = ...,
+        precision: _Optional[float] = ...,
+        avg_confidence: _Optional[float] = ...,
+    ) -> None: ...
+
+class ModelMetadata(_message.Message):
+    __slots__ = ("model_type", "model_version", "training_date", "feature_count")
+    MODEL_TYPE_FIELD_NUMBER: _ClassVar[int]
+    MODEL_VERSION_FIELD_NUMBER: _ClassVar[int]
+    TRAINING_DATE_FIELD_NUMBER: _ClassVar[int]
+    FEATURE_COUNT_FIELD_NUMBER: _ClassVar[int]
+    model_type: str
+    model_version: str
+    training_date: str
+    feature_count: int
+    def __init__(
+        self,
+        model_type: _Optional[str] = ...,
+        model_version: _Optional[str] = ...,
+        training_date: _Optional[str] = ...,
+        feature_count: _Optional[int] = ...,
+    ) -> None: ...
+
 class DriftNotificationRequest(_message.Message):
     __slots__ = (
         "user_id",

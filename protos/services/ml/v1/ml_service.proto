@@ -32,6 +32,8 @@ service MLService {
   rpc RecommendModel(RecommendModelRequest) returns (RecommendModelResponse);
   // Suggest optimal strategy parameters using Bayesian optimization.
   rpc SuggestParameters(SuggestParametersRequest) returns (SuggestParametersResponse);
+  // Get stored ML backtest performance analysis results.
+  rpc GetMLBacktestPerformance(GetMLBacktestPerformanceRequest) returns (GetMLBacktestPerformanceResponse);
   // Send drift detection notification to GenAI service.
   rpc SendDriftNotification(DriftNotificationRequest) returns (DriftNotificationResponse);
 }
@@ -601,6 +603,78 @@ message ParameterTrialHistory {
   double value = 3;
   // Trial state (e.g., "COMPLETE", "PRUNED", "FAIL").
   string state = 4;
+}
+
+// Request to retrieve stored ML backtest performance.
+message GetMLBacktestPerformanceRequest {
+  // Backtest job identifier.
+  string job_id = 1;
+  // User ID for authorization.
+  string user_id = 2;
+}
+
+// Response containing ML backtest performance analysis.
+message GetMLBacktestPerformanceResponse {
+  // Whether performance data was found.
+  bool found = 1;
+  // Performance document ID.
+  string performance_id = 2;
+  // Classification metrics.
+  ClassificationMetrics classification_metrics = 3;
+  // Confidence distribution statistics.
+  ConfidenceDistributionStats confidence_distribution = 4;
+  // Regime-wise performance breakdown.
+  map<string, RegimePerformanceStats> regime_wise_performance = 5;
+  // Model metadata.
+  ModelMetadata model_metadata = 6;
+  // Error message if not found or error occurred.
+  optional string error = 7;
+}
+
+// Classification performance metrics.
+message ClassificationMetrics {
+  // Overall accuracy (0.0-1.0).
+  double accuracy = 1;
+  // Precision score (0.0-1.0).
+  double precision = 2;
+  // Recall score (0.0-1.0).
+  double recall = 3;
+  // F1 score (0.0-1.0).
+  double f1_score = 4;
+}
+
+// Confidence distribution statistics.
+message ConfidenceDistributionStats {
+  // Mean confidence across all predictions.
+  double mean_confidence = 1;
+  // Ratio of high-confidence predictions (>0.7).
+  double high_confidence_ratio = 2;
+  // Ratio of low-confidence predictions (<0.3).
+  double low_confidence_ratio = 3;
+}
+
+// Performance metrics for a specific market regime.
+message RegimePerformanceStats {
+  // Number of predictions in this regime.
+  int32 prediction_count = 1;
+  // Accuracy in this regime.
+  double accuracy = 2;
+  // Precision in this regime.
+  double precision = 3;
+  // Average confidence in this regime.
+  double avg_confidence = 4;
+}
+
+// ML model metadata.
+message ModelMetadata {
+  // Model type (e.g., "RandomForest", "XGBoost").
+  string model_type = 1;
+  // Model version.
+  string model_version = 2;
+  // Training date (ISO 8601).
+  string training_date = 3;
+  // Number of features used.
+  int32 feature_count = 4;
 }
 
 // Request to send drift notification.

@@ -107,6 +107,12 @@ class MLServiceStub(object):
             response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.SuggestParametersResponse.FromString,
             _registered_method=True,
         )
+        self.GetMLBacktestPerformance = channel.unary_unary(
+            "/ml.MLService/GetMLBacktestPerformance",
+            request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetMLBacktestPerformanceRequest.SerializeToString,
+            response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetMLBacktestPerformanceResponse.FromString,
+            _registered_method=True,
+        )
         self.SendDriftNotification = channel.unary_unary(
             "/ml.MLService/SendDriftNotification",
             request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.DriftNotificationRequest.SerializeToString,
@@ -191,6 +197,12 @@ class MLServiceServicer(object):
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
+    def GetMLBacktestPerformance(self, request, context):
+        """Get stored ML backtest performance analysis results."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
     def SendDriftNotification(self, request, context):
         """Send drift detection notification to GenAI service."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -254,6 +266,11 @@ def add_MLServiceServicer_to_server(servicer, server):
             servicer.SuggestParameters,
             request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.SuggestParametersRequest.FromString,
             response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.SuggestParametersResponse.SerializeToString,
+        ),
+        "GetMLBacktestPerformance": grpc.unary_unary_rpc_method_handler(
+            servicer.GetMLBacktestPerformance,
+            request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetMLBacktestPerformanceRequest.FromString,
+            response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetMLBacktestPerformanceResponse.SerializeToString,
         ),
         "SendDriftNotification": grpc.unary_unary_rpc_method_handler(
             servicer.SendDriftNotification,
@@ -593,6 +610,36 @@ class MLService(object):
             "/ml.MLService/SuggestParameters",
             services_dot_ml_dot_v1_dot_ml__service__pb2.SuggestParametersRequest.SerializeToString,
             services_dot_ml_dot_v1_dot_ml__service__pb2.SuggestParametersResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def GetMLBacktestPerformance(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/ml.MLService/GetMLBacktestPerformance",
+            services_dot_ml_dot_v1_dot_ml__service__pb2.GetMLBacktestPerformanceRequest.SerializeToString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.GetMLBacktestPerformanceResponse.FromString,
             options,
             channel_credentials,
             insecure,
