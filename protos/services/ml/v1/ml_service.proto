@@ -19,6 +19,21 @@ service MLService {
   rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
   // Analyze ML-driven backtest performance submitted by backtest service.
   rpc AnalyzeMLBacktestPerformance(AnalyzeMLBacktestPerformanceRequest) returns (AnalyzeMLBacktestPerformanceResponse);
+
+  // ============================================================
+  // GenAI Service Integration RPCs
+  // ============================================================
+
+  // List all ML models owned by the user.
+  rpc ListModels(ListModelsRequest) returns (ListModelsResponse);
+  // Get detailed information about a specific ML model.
+  rpc GetModelInfo(GetModelInfoRequest) returns (GetModelInfoResponse);
+  // Recommend ML models based on strategy type and market regime.
+  rpc RecommendModel(RecommendModelRequest) returns (RecommendModelResponse);
+  // Suggest optimal strategy parameters using Bayesian optimization.
+  rpc SuggestParameters(SuggestParametersRequest) returns (SuggestParametersResponse);
+  // Send drift detection notification to GenAI service.
+  rpc SendDriftNotification(DriftNotificationRequest) returns (DriftNotificationResponse);
 }
 
 // ============================================================
@@ -382,4 +397,228 @@ message AnalyzeMLBacktestPerformanceResponse {
   bool success = 2;
   // Optional message or error details.
   string message = 3;
+}
+
+// ============================================================
+// GenAI Service Integration Messages
+// ============================================================
+
+// Request to list all ML models for a user.
+message ListModelsRequest {
+  // User ID requesting the model list.
+  string user_id = 1;
+  // Optional filter by model type.
+  optional string model_type = 2;
+  // Optional filter by status (e.g., "active", "archived").
+  optional string status = 3;
+}
+
+// Response containing list of ML models.
+message ListModelsResponse {
+  // List of model summaries.
+  repeated ModelSummary models = 1;
+  // Total count of models.
+  int32 total_count = 2;
+}
+
+// Summary information about an ML model.
+message ModelSummary {
+  // Unique model identifier.
+  string model_id = 1;
+  // Human-readable model name.
+  string name = 2;
+  // Model type (e.g., "signal_prediction", "regime_detection").
+  string type = 3;
+  // Current model version.
+  string version = 4;
+  // Model status (e.g., "active", "training", "archived").
+  string status = 5;
+  // Overall accuracy metric.
+  float accuracy = 6;
+  // F1 score.
+  float f1_score = 7;
+  // Sharpe ratio achieved in backtests.
+  float sharpe_ratio = 8;
+  // ISO 8601 timestamp when the model was created.
+  string created_at = 9;
+  // ISO 8601 timestamp when the model was last updated.
+  string updated_at = 10;
+}
+
+// Request for detailed model information.
+message GetModelInfoRequest {
+  // Model identifier.
+  string model_id = 1;
+  // User ID making the request.
+  string user_id = 2;
+}
+
+// Response with detailed model information.
+message GetModelInfoResponse {
+  // Model identifier.
+  string model_id = 1;
+  // Model name.
+  string name = 2;
+  // Model type.
+  string type = 3;
+  // Model version.
+  string version = 4;
+  // Model status.
+  string status = 5;
+  // Performance metrics.
+  ModelPerformanceMetrics metrics = 6;
+  // Model hyperparameters.
+  map<string, string> hyperparameters = 7;
+  // Feature names used by the model.
+  repeated string feature_names = 8;
+  // Number of training samples.
+  int32 training_samples = 9;
+  // ISO 8601 timestamp when training was completed.
+  string trained_at = 10;
+  // Best strategy types for this model.
+  repeated string best_strategy_types = 11;
+  // Best market regimes for this model.
+  repeated string best_regimes = 12;
+  // Additional metadata.
+  map<string, string> metadata = 13;
+}
+
+// Performance metrics for an ML model.
+message ModelPerformanceMetrics {
+  // Overall accuracy.
+  float accuracy = 1;
+  // Precision score.
+  float precision = 2;
+  // Recall score.
+  float recall = 3;
+  // F1 score.
+  float f1_score = 4;
+  // Sharpe ratio from backtests.
+  float sharpe_ratio = 5;
+  // Total return percentage.
+  float total_return = 6;
+  // Maximum drawdown percentage.
+  float max_drawdown = 7;
+  // Win rate percentage.
+  float win_rate = 8;
+}
+
+// Request to recommend models based on context.
+message RecommendModelRequest {
+  // User ID requesting recommendations.
+  string user_id = 1;
+  // Strategy type (e.g., "momentum", "mean_reversion").
+  string strategy_type = 2;
+  // Current market regime (e.g., "bull", "bear", "sideways").
+  optional string market_regime = 3;
+  // Number of recommendations to return.
+  int32 top_n = 4;
+}
+
+// Response with recommended models.
+message RecommendModelResponse {
+  // List of recommended models with scores.
+  repeated ModelRecommendation recommendations = 1;
+}
+
+// Single model recommendation with score.
+message ModelRecommendation {
+  // Model summary.
+  ModelSummary model = 1;
+  // Recommendation score (0.0 to 1.0).
+  float score = 2;
+  // Reasoning for the recommendation.
+  string reason = 3;
+  // Historical performance in similar contexts.
+  map<string, float> context_performance = 4;
+}
+
+// Request for parameter optimization suggestions.
+message SuggestParametersRequest {
+  // User ID requesting optimization.
+  string user_id = 1;
+  // Strategy type to optimize.
+  string strategy_type = 2;
+  // Parameter space definition.
+  map<string, ParameterSpec> parameter_space = 3;
+  // Optimization objective metric (e.g., "sharpe_ratio", "total_return").
+  string objective_metric = 4;
+  // Number of Optuna trials to run.
+  int32 n_trials = 5;
+  // Optional symbols to optimize for.
+  repeated string symbols = 6;
+  // Optional time period for optimization.
+  optional Period optimization_period = 7;
+}
+
+// Parameter specification for optimization.
+message ParameterSpec {
+  // Parameter type ("int", "float", "categorical").
+  string type = 1;
+  // Lower bound for numeric parameters.
+  optional double low = 2;
+  // Upper bound for numeric parameters.
+  optional double high = 3;
+  // Categorical choices.
+  repeated string choices = 4;
+  // Step size for discrete parameters.
+  optional double step = 5;
+}
+
+// Response with optimized parameters.
+message SuggestParametersResponse {
+  // Best parameters found.
+  map<string, double> best_params = 1;
+  // Best objective metric value achieved.
+  double best_value = 2;
+  // Total number of trials executed.
+  int32 total_trials = 3;
+  // Execution time in seconds.
+  double execution_time_seconds = 4;
+  // Trial history.
+  repeated ParameterTrialHistory trials = 5;
+  // Optimization run identifier.
+  string optimization_run_id = 6;
+}
+
+// Single trial in parameter optimization.
+message ParameterTrialHistory {
+  // Trial number.
+  int32 trial_number = 1;
+  // Parameters tested.
+  map<string, double> params = 2;
+  // Objective value achieved.
+  double value = 3;
+  // Trial state (e.g., "COMPLETE", "PRUNED", "FAIL").
+  string state = 4;
+}
+
+// Request to send drift notification.
+message DriftNotificationRequest {
+  // User ID to notify.
+  string user_id = 1;
+  // Model name experiencing drift.
+  string model_name = 2;
+  // Model version.
+  string version = 3;
+  // Drift type (e.g., "model_drift", "data_drift", "concept_drift").
+  string drift_type = 4;
+  // Drift severity (e.g., "low", "medium", "high").
+  string drift_severity = 5;
+  // Metric differences showing drift impact.
+  map<string, float> metrics_diff = 6;
+  // Retraining status (e.g., "not_started", "in_progress", "completed").
+  string retraining_status = 7;
+  // Additional context.
+  map<string, string> context = 8;
+}
+
+// Response confirming drift notification.
+message DriftNotificationResponse {
+  // Whether notification was successfully sent.
+  bool success = 1;
+  // Notification identifier.
+  string notification_id = 2;
+  // Error message if failed.
+  optional string error = 3;
 }
