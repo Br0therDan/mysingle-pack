@@ -3,7 +3,6 @@ syntax = "proto3";
 package strategy.v1;
 
 import "google/protobuf/struct.proto";
-import "google/protobuf/timestamp.proto";
 
 // Strategy Service - gRPC API
 // Used by Backtest Service and GenAI Service for high-performance strategy operations

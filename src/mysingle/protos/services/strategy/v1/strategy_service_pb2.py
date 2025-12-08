@@ -20,12 +20,8 @@ _runtime_version.ValidateProtobufRuntimeVersion(
     "services/strategy/v1/strategy_service.proto",
 )
 from google.protobuf import struct_pb2 as _struct_pb2  # protobuf 6.x compatibility
-from google.protobuf import (
-    timestamp_pb2 as _timestamp_pb2,  # protobuf 6.x compatibility
-)
 
 _ = _struct_pb2.DESCRIPTOR
-_ = _timestamp_pb2.DESCRIPTOR
 
 # @@protoc_insertion_point(imports)
 
@@ -33,7 +29,7 @@ _sym_db = _symbol_database.Default()
 
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n+services/strategy/v1/strategy_service.proto\x12\x0bstrategy.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto"N\n\x19GetStrategyVersionRequest\x12\x13\n\x0bstrategy_id\x18\x01 \x01(\t\x12\x0b\n\x03seq\x18\x02 \x01(\x05\x12\x0f\n\x07user_id\x18\x03 \x01(\t"l\n\x1f\x42\x61tchGetStrategyVersionsRequest\x12\x38\n\x08versions\x18\x01 \x03(\x0b\x32&.strategy.v1.StrategyVersionIdentifier\x12\x0f\n\x07user_id\x18\x02 \x01(\t"=\n\x19StrategyVersionIdentifier\x12\x13\n\x0bstrategy_id\x18\x01 \x01(\t\x12\x0b\n\x03seq\x18\x02 \x01(\x05"\x14\n\x12HealthCheckRequest"b\n\x11ValidateIRRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12,\n\x0bstrategy_ir\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x0e\n\x06stages\x18\x03 \x03(\t":\n\x12GetTemplateRequest\x12\x13\n\x0btemplate_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t"]\n\x14ListTemplatesRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0c\n\x04tags\x18\x02 \x03(\t\x12\x17\n\nvisibility\x18\x03 \x01(\tH\x00\x88\x01\x01\x42\r\n\x0b_visibility"B\n\x19\x42\x61tchGetStrategiesRequest\x12\x14\n\x0cstrategy_ids\x18\x01 \x03(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t"\x98\x01\n\x19ListUserStrategiesRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x12\n\x05limit\x18\x02 \x01(\x05H\x00\x88\x01\x01\x12\x13\n\x06offset\x18\x03 \x01(\x05H\x01\x88\x01\x01\x12\x13\n\x06status\x18\x04 \x01(\tH\x02\x88\x01\x01\x12\x0c\n\x04tags\x18\x05 \x03(\tB\x08\n\x06_limitB\t\n\x07_offsetB\t\n\x07_status"\x8b\x03\n\x17StrategyVersionResponse\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\x12\x13\n\x0bstrategy_id\x18\x03 \x01(\t\x12\x0b\n\x03seq\x18\x04 \x01(\x05\x12\r\n\x05state\x18\x05 \x01(\t\x12\x10\n\x08\x64sl_code\x18\x06 \x01(\t\x12\x15\n\rdsl_code_hash\x18\x07 \x01(\t\x12\x17\n\x0foriginal_source\x18\x08 \x01(\t\x12\x18\n\x0bgraph_cache\x18\t \x01(\tH\x00\x88\x01\x01\x12\x18\n\x0brules_cache\x18\n \x01(\tH\x01\x88\x01\x01\x12\x18\n\x0btemplate_id\x18\x0b \x01(\tH\x02\x88\x01\x01\x12:\n\x13validation_pipeline\x18\x0c \x03(\x0b\x32\x1d.strategy.v1.ValidationResult\x12\x12\n\ncreated_at\x18\r \x01(\t\x12\x12\n\nupdated_at\x18\x0e \x01(\tB\x0e\n\x0c_graph_cacheB\x0e\n\x0c_rules_cacheB\x0e\n\x0c_template_id"y\n\x10ValidationResult\x12\r\n\x05stage\x18\x01 \x01(\t\x12\x0e\n\x06status\x18\x02 \x01(\t\x12\x0e\n\x06\x65rrors\x18\x03 \x03(\t\x12\x10\n\x08warnings\x18\x04 \x03(\t\x12\x16\n\ttimestamp\x18\x05 \x01(\tH\x00\x88\x01\x01\x42\x0c\n\n_timestamp"G\n\x13HealthCheckResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07service\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\t"\x95\x01\n\x12ValidationResponse\x12\x10\n\x08is_valid\x18\x01 \x01(\x08\x12,\n\x06\x65rrors\x18\x02 \x03(\x0b\x32\x1c.strategy.v1.ValidationError\x12\x30\n\x08warnings\x18\x03 \x03(\x0b\x32\x1e.strategy.v1.ValidationWarning\x12\r\n\x05stage\x18\x04 \x01(\t"\xb3\x01\n\x0fValidationError\x12\x0c\n\x04\x63ode\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x12\n\nfield_path\x18\x03 \x01(\t\x12<\n\x08metadata\x18\x04 \x03(\x0b\x32*.strategy.v1.ValidationError.MetadataEntry\x1a/\n\rMetadataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"Z\n\x11ValidationWarning\x12\x0c\n\x04\x63ode\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x17\n\nfield_path\x18\x03 \x01(\tH\x00\x88\x01\x01\x42\r\n\x0b_field_path"\x90\x02\n\x10TemplateResponse\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x04 \x01(\t\x12\x12\n\nvisibility\x18\x05 \x01(\t\x12\x0c\n\x04tags\x18\x06 \x03(\t\x12\x13\n\x0b\x64\x65\x66\x61ult_dsl\x18\x07 \x01(\t\x12?\n\x19\x64\x65\x66\x61ult_execution_profile\x18\x08 \x01(\x0b\x32\x17.google.protobuf.StructH\x00\x88\x01\x01\x12\x12\n\ncreated_at\x18\t \x01(\t\x12\x12\n\nupdated_at\x18\n \x01(\tB\x1c\n\x1a_default_execution_profile"\x98\x01\n\x10StrategyResponse\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x04 \x01(\t\x12\x0e\n\x06status\x18\x05 \x01(\t\x12\x0c\n\x04tags\x18\x06 \x03(\t\x12\x12\n\ncreated_at\x18\x07 \x01(\t\x12\x12\n\nupdated_at\x18\x08 \x01(\t":\n\x12GetStrategyRequest\x12\x13\n\x0bstrategy_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t"]\n\x08Strategy\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x0f\n\x07user_id\x18\x04 \x01(\t\x12\x11\n\tis_active\x18\x05 \x01(\x08">\n\x13GetStrategyResponse\x12\'\n\x08strategy\x18\x01 \x01(\x0b\x32\x15.strategy.v1.Strategy"X\n\x15ListStrategiesRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x11\n\tis_active\x18\x02 \x01(\x08\x12\r\n\x05limit\x18\x03 \x01(\x05\x12\x0c\n\x04skip\x18\x04 \x01(\x05"R\n\x16ListStrategiesResponse\x12)\n\nstrategies\x18\x01 \x03(\x0b\x32\x15.strategy.v1.Strategy\x12\r\n\x05total\x18\x02 \x01(\x05"?\n\x17ValidateStrategyRequest\x12\x13\n\x0bstrategy_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t"N\n\x18ValidateStrategyResponse\x12\x10\n\x08is_valid\x18\x01 \x01(\x08\x12\x0e\n\x06\x65rrors\x18\x02 \x03(\t\x12\x10\n\x08warnings\x18\x03 \x03(\t";\n\x08Position\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x10\n\x08quantity\x18\x02 \x01(\x01\x12\r\n\x05value\x18\x03 \x01(\x01"U\n\x15PortfolioHistoryPoint\x12-\n\ttimestamp\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\r\n\x05value\x18\x02 \x01(\x01"B\n\x1aGetPortfolioSummaryRequest\x12\x13\n\x0bstrategy_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t"\xb8\x01\n\x1bGetPortfolioSummaryResponse\x12\x13\n\x0bstrategy_id\x18\x01 \x01(\t\x12\x13\n\x0btotal_value\x18\x02 \x01(\x01\x12(\n\tpositions\x18\x03 \x03(\x0b\x32\x15.strategy.v1.Position\x12\x33\n\x07history\x18\x04 \x03(\x0b\x32".strategy.v1.PortfolioHistoryPoint\x12\x10\n\x08\x63urrency\x18\x05 \x01(\t">\n\x16\x41rchiveStrategyRequest\x12\x13\n\x0bstrategy_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t"p\n\x17\x41rchiveStrategyResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x13\n\x0bstrategy_id\x18\x02 \x01(\t\x12/\n\x0b\x61rchived_at\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp2\xd8\t\n\x0fStrategyService\x12\x62\n\x12GetStrategyVersion\x12&.strategy.v1.GetStrategyVersionRequest\x1a$.strategy.v1.StrategyVersionResponse\x12p\n\x18\x42\x61tchGetStrategyVersions\x12,.strategy.v1.BatchGetStrategyVersionsRequest\x1a$.strategy.v1.StrategyVersionResponse0\x01\x12P\n\x0bHealthCheck\x12\x1f.strategy.v1.HealthCheckRequest\x1a .strategy.v1.HealthCheckResponse\x12U\n\x12ValidateStrategyIR\x12\x1e.strategy.v1.ValidateIRRequest\x1a\x1f.strategy.v1.ValidationResponse\x12U\n\x13GetStrategyTemplate\x12\x1f.strategy.v1.GetTemplateRequest\x1a\x1d.strategy.v1.TemplateResponse\x12[\n\x15ListStrategyTemplates\x12!.strategy.v1.ListTemplatesRequest\x1a\x1d.strategy.v1.TemplateResponse0\x01\x12]\n\x12\x42\x61tchGetStrategies\x12&.strategy.v1.BatchGetStrategiesRequest\x1a\x1d.strategy.v1.StrategyResponse0\x01\x12]\n\x12ListUserStrategies\x12&.strategy.v1.ListUserStrategiesRequest\x1a\x1d.strategy.v1.StrategyResponse0\x01\x12\\\n\x0f\x41rchiveStrategy\x12#.strategy.v1.ArchiveStrategyRequest\x1a$.strategy.v1.ArchiveStrategyResponse\x12P\n\x0bGetStrategy\x12\x1f.strategy.v1.GetStrategyRequest\x1a .strategy.v1.GetStrategyResponse\x12Y\n\x0eListStrategies\x12".strategy.v1.ListStrategiesRequest\x1a#.strategy.v1.ListStrategiesResponse\x12_\n\x10ValidateStrategy\x12$.strategy.v1.ValidateStrategyRequest\x1a%.strategy.v1.ValidateStrategyResponse\x12h\n\x13GetPortfolioSummary\x12\'.strategy.v1.GetPortfolioSummaryRequest\x1a(.strategy.v1.GetPortfolioSummaryResponseb\x06proto3'
+    b'\n+services/strategy/v1/strategy_service.proto\x12\x0bstrategy.v1\x1a\x1cgoogle/protobuf/struct.proto"N\n\x19GetStrategyVersionRequest\x12\x13\n\x0bstrategy_id\x18\x01 \x01(\t\x12\x0b\n\x03seq\x18\x02 \x01(\x05\x12\x0f\n\x07user_id\x18\x03 \x01(\t"e\n GetStrategyVersionMinimalRequest\x12\x13\n\x0bstrategy_id\x18\x01 \x01(\t\x12\x0b\n\x03seq\x18\x02 \x01(\x05\x12\x0f\n\x07user_id\x18\x03 \x01(\t\x12\x0e\n\x06\x66ields\x18\x04 \x03(\t"l\n\x1f\x42\x61tchGetStrategyVersionsRequest\x12\x38\n\x08versions\x18\x01 \x03(\x0b\x32&.strategy.v1.StrategyVersionIdentifier\x12\x0f\n\x07user_id\x18\x02 \x01(\t"=\n\x19StrategyVersionIdentifier\x12\x13\n\x0bstrategy_id\x18\x01 \x01(\t\x12\x0b\n\x03seq\x18\x02 \x01(\x05"\x14\n\x12HealthCheckRequest":\n\x12GetTemplateRequest\x12\x13\n\x0btemplate_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t"]\n\x14ListTemplatesRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x0c\n\x04tags\x18\x02 \x03(\t\x12\x17\n\nvisibility\x18\x03 \x01(\tH\x00\x88\x01\x01\x42\r\n\x0b_visibility"B\n\x19\x42\x61tchGetStrategiesRequest\x12\x14\n\x0cstrategy_ids\x18\x01 \x03(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t"\x98\x01\n\x19ListUserStrategiesRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x12\n\x05limit\x18\x02 \x01(\x05H\x00\x88\x01\x01\x12\x13\n\x06offset\x18\x03 \x01(\x05H\x01\x88\x01\x01\x12\x13\n\x06status\x18\x04 \x01(\tH\x02\x88\x01\x01\x12\x0c\n\x04tags\x18\x05 \x03(\tB\x08\n\x06_limitB\t\n\x07_offsetB\t\n\x07_status"\x8b\x03\n\x17StrategyVersionResponse\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\x12\x13\n\x0bstrategy_id\x18\x03 \x01(\t\x12\x0b\n\x03seq\x18\x04 \x01(\x05\x12\r\n\x05state\x18\x05 \x01(\t\x12\x10\n\x08\x64sl_code\x18\x06 \x01(\t\x12\x15\n\rdsl_code_hash\x18\x07 \x01(\t\x12\x17\n\x0foriginal_source\x18\x08 \x01(\t\x12\x18\n\x0bgraph_cache\x18\t \x01(\tH\x00\x88\x01\x01\x12\x18\n\x0brules_cache\x18\n \x01(\tH\x01\x88\x01\x01\x12\x18\n\x0btemplate_id\x18\x0b \x01(\tH\x02\x88\x01\x01\x12:\n\x13validation_pipeline\x18\x0c \x03(\x0b\x32\x1d.strategy.v1.ValidationResult\x12\x12\n\ncreated_at\x18\r \x01(\t\x12\x12\n\nupdated_at\x18\x0e \x01(\tB\x0e\n\x0c_graph_cacheB\x0e\n\x0c_rules_cacheB\x0e\n\x0c_template_id"y\n\x10ValidationResult\x12\r\n\x05stage\x18\x01 \x01(\t\x12\x0e\n\x06status\x18\x02 \x01(\t\x12\x0e\n\x06\x65rrors\x18\x03 \x03(\t\x12\x10\n\x08warnings\x18\x04 \x03(\t\x12\x16\n\ttimestamp\x18\x05 \x01(\tH\x00\x88\x01\x01\x42\x0c\n\n_timestamp"\xe4\x01\n\x1eStrategyVersionMinimalResponse\x12\x13\n\x0bstrategy_id\x18\x01 \x01(\t\x12\x0b\n\x03seq\x18\x02 \x01(\x05\x12\x15\n\x08\x64sl_code\x18\x03 \x01(\tH\x00\x88\x01\x01\x12\x1a\n\rdsl_code_hash\x18\x04 \x01(\tH\x01\x88\x01\x01\x12\x12\n\x05state\x18\x05 \x01(\tH\x02\x88\x01\x01\x12\x1c\n\x0foriginal_source\x18\x06 \x01(\tH\x03\x88\x01\x01\x42\x0b\n\t_dsl_codeB\x10\n\x0e_dsl_code_hashB\x08\n\x06_stateB\x12\n\x10_original_source"G\n\x13HealthCheckResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07service\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\t"\x90\x02\n\x10TemplateResponse\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x04 \x01(\t\x12\x12\n\nvisibility\x18\x05 \x01(\t\x12\x0c\n\x04tags\x18\x06 \x03(\t\x12\x13\n\x0b\x64\x65\x66\x61ult_dsl\x18\x07 \x01(\t\x12?\n\x19\x64\x65\x66\x61ult_execution_profile\x18\x08 \x01(\x0b\x32\x17.google.protobuf.StructH\x00\x88\x01\x01\x12\x12\n\ncreated_at\x18\t \x01(\t\x12\x12\n\nupdated_at\x18\n \x01(\tB\x1c\n\x1a_default_execution_profile"\x98\x01\n\x10StrategyResponse\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x04 \x01(\t\x12\x0e\n\x06status\x18\x05 \x01(\t\x12\x0c\n\x04tags\x18\x06 \x03(\t\x12\x12\n\ncreated_at\x18\x07 \x01(\t\x12\x12\n\nupdated_at\x18\x08 \x01(\t2\xa4\x06\n\x0fStrategyService\x12\x62\n\x12GetStrategyVersion\x12&.strategy.v1.GetStrategyVersionRequest\x1a$.strategy.v1.StrategyVersionResponse\x12w\n\x19GetStrategyVersionMinimal\x12-.strategy.v1.GetStrategyVersionMinimalRequest\x1a+.strategy.v1.StrategyVersionMinimalResponse\x12p\n\x18\x42\x61tchGetStrategyVersions\x12,.strategy.v1.BatchGetStrategyVersionsRequest\x1a$.strategy.v1.StrategyVersionResponse0\x01\x12P\n\x0bHealthCheck\x12\x1f.strategy.v1.HealthCheckRequest\x1a .strategy.v1.HealthCheckResponse\x12U\n\x13GetStrategyTemplate\x12\x1f.strategy.v1.GetTemplateRequest\x1a\x1d.strategy.v1.TemplateResponse\x12[\n\x15ListStrategyTemplates\x12!.strategy.v1.ListTemplatesRequest\x1a\x1d.strategy.v1.TemplateResponse0\x01\x12]\n\x12\x42\x61tchGetStrategies\x12&.strategy.v1.BatchGetStrategiesRequest\x1a\x1d.strategy.v1.StrategyResponse0\x01\x12]\n\x12ListUserStrategies\x12&.strategy.v1.ListUserStrategiesRequest\x1a\x1d.strategy.v1.StrategyResponse0\x01\x62\x06proto3'
 )
 
 _globals = globals()
@@ -43,70 +39,36 @@ _builder.BuildTopDescriptorsAndMessages(
 )
 if not _descriptor._USE_C_DESCRIPTORS:
     DESCRIPTOR._loaded_options = None
-    _globals["_VALIDATIONERROR_METADATAENTRY"]._loaded_options = None
-    _globals["_VALIDATIONERROR_METADATAENTRY"]._serialized_options = b"8\001"
-    _globals["_GETSTRATEGYVERSIONREQUEST"]._serialized_start = 123
-    _globals["_GETSTRATEGYVERSIONREQUEST"]._serialized_end = 201
-    _globals["_BATCHGETSTRATEGYVERSIONSREQUEST"]._serialized_start = 203
-    _globals["_BATCHGETSTRATEGYVERSIONSREQUEST"]._serialized_end = 311
-    _globals["_STRATEGYVERSIONIDENTIFIER"]._serialized_start = 313
-    _globals["_STRATEGYVERSIONIDENTIFIER"]._serialized_end = 374
-    _globals["_HEALTHCHECKREQUEST"]._serialized_start = 376
-    _globals["_HEALTHCHECKREQUEST"]._serialized_end = 396
-    _globals["_VALIDATEIRREQUEST"]._serialized_start = 398
-    _globals["_VALIDATEIRREQUEST"]._serialized_end = 496
-    _globals["_GETTEMPLATEREQUEST"]._serialized_start = 498
-    _globals["_GETTEMPLATEREQUEST"]._serialized_end = 556
-    _globals["_LISTTEMPLATESREQUEST"]._serialized_start = 558
-    _globals["_LISTTEMPLATESREQUEST"]._serialized_end = 651
-    _globals["_BATCHGETSTRATEGIESREQUEST"]._serialized_start = 653
-    _globals["_BATCHGETSTRATEGIESREQUEST"]._serialized_end = 719
-    _globals["_LISTUSERSTRATEGIESREQUEST"]._serialized_start = 722
-    _globals["_LISTUSERSTRATEGIESREQUEST"]._serialized_end = 874
-    _globals["_STRATEGYVERSIONRESPONSE"]._serialized_start = 877
-    _globals["_STRATEGYVERSIONRESPONSE"]._serialized_end = 1272
-    _globals["_VALIDATIONRESULT"]._serialized_start = 1274
-    _globals["_VALIDATIONRESULT"]._serialized_end = 1395
-    _globals["_HEALTHCHECKRESPONSE"]._serialized_start = 1397
-    _globals["_HEALTHCHECKRESPONSE"]._serialized_end = 1468
-    _globals["_VALIDATIONRESPONSE"]._serialized_start = 1471
-    _globals["_VALIDATIONRESPONSE"]._serialized_end = 1620
-    _globals["_VALIDATIONERROR"]._serialized_start = 1623
-    _globals["_VALIDATIONERROR"]._serialized_end = 1802
-    _globals["_VALIDATIONERROR_METADATAENTRY"]._serialized_start = 1755
-    _globals["_VALIDATIONERROR_METADATAENTRY"]._serialized_end = 1802
-    _globals["_VALIDATIONWARNING"]._serialized_start = 1804
-    _globals["_VALIDATIONWARNING"]._serialized_end = 1894
-    _globals["_TEMPLATERESPONSE"]._serialized_start = 1897
-    _globals["_TEMPLATERESPONSE"]._serialized_end = 2169
-    _globals["_STRATEGYRESPONSE"]._serialized_start = 2172
-    _globals["_STRATEGYRESPONSE"]._serialized_end = 2324
-    _globals["_GETSTRATEGYREQUEST"]._serialized_start = 2326
-    _globals["_GETSTRATEGYREQUEST"]._serialized_end = 2384
-    _globals["_STRATEGY"]._serialized_start = 2386
-    _globals["_STRATEGY"]._serialized_end = 2479
-    _globals["_GETSTRATEGYRESPONSE"]._serialized_start = 2481
-    _globals["_GETSTRATEGYRESPONSE"]._serialized_end = 2543
-    _globals["_LISTSTRATEGIESREQUEST"]._serialized_start = 2545
-    _globals["_LISTSTRATEGIESREQUEST"]._serialized_end = 2633
-    _globals["_LISTSTRATEGIESRESPONSE"]._serialized_start = 2635
-    _globals["_LISTSTRATEGIESRESPONSE"]._serialized_end = 2717
-    _globals["_VALIDATESTRATEGYREQUEST"]._serialized_start = 2719
-    _globals["_VALIDATESTRATEGYREQUEST"]._serialized_end = 2782
-    _globals["_VALIDATESTRATEGYRESPONSE"]._serialized_start = 2784
-    _globals["_VALIDATESTRATEGYRESPONSE"]._serialized_end = 2862
-    _globals["_POSITION"]._serialized_start = 2864
-    _globals["_POSITION"]._serialized_end = 2923
-    _globals["_PORTFOLIOHISTORYPOINT"]._serialized_start = 2925
-    _globals["_PORTFOLIOHISTORYPOINT"]._serialized_end = 3010
-    _globals["_GETPORTFOLIOSUMMARYREQUEST"]._serialized_start = 3012
-    _globals["_GETPORTFOLIOSUMMARYREQUEST"]._serialized_end = 3078
-    _globals["_GETPORTFOLIOSUMMARYRESPONSE"]._serialized_start = 3081
-    _globals["_GETPORTFOLIOSUMMARYRESPONSE"]._serialized_end = 3265
-    _globals["_ARCHIVESTRATEGYREQUEST"]._serialized_start = 3267
-    _globals["_ARCHIVESTRATEGYREQUEST"]._serialized_end = 3329
-    _globals["_ARCHIVESTRATEGYRESPONSE"]._serialized_start = 3331
-    _globals["_ARCHIVESTRATEGYRESPONSE"]._serialized_end = 3443
-    _globals["_STRATEGYSERVICE"]._serialized_start = 3446
-    _globals["_STRATEGYSERVICE"]._serialized_end = 4686
+    _globals["_GETSTRATEGYVERSIONREQUEST"]._serialized_start = 90
+    _globals["_GETSTRATEGYVERSIONREQUEST"]._serialized_end = 168
+    _globals["_GETSTRATEGYVERSIONMINIMALREQUEST"]._serialized_start = 170
+    _globals["_GETSTRATEGYVERSIONMINIMALREQUEST"]._serialized_end = 271
+    _globals["_BATCHGETSTRATEGYVERSIONSREQUEST"]._serialized_start = 273
+    _globals["_BATCHGETSTRATEGYVERSIONSREQUEST"]._serialized_end = 381
+    _globals["_STRATEGYVERSIONIDENTIFIER"]._serialized_start = 383
+    _globals["_STRATEGYVERSIONIDENTIFIER"]._serialized_end = 444
+    _globals["_HEALTHCHECKREQUEST"]._serialized_start = 446
+    _globals["_HEALTHCHECKREQUEST"]._serialized_end = 466
+    _globals["_GETTEMPLATEREQUEST"]._serialized_start = 468
+    _globals["_GETTEMPLATEREQUEST"]._serialized_end = 526
+    _globals["_LISTTEMPLATESREQUEST"]._serialized_start = 528
+    _globals["_LISTTEMPLATESREQUEST"]._serialized_end = 621
+    _globals["_BATCHGETSTRATEGIESREQUEST"]._serialized_start = 623
+    _globals["_BATCHGETSTRATEGIESREQUEST"]._serialized_end = 689
+    _globals["_LISTUSERSTRATEGIESREQUEST"]._serialized_start = 692
+    _globals["_LISTUSERSTRATEGIESREQUEST"]._serialized_end = 844
+    _globals["_STRATEGYVERSIONRESPONSE"]._serialized_start = 847
+    _globals["_STRATEGYVERSIONRESPONSE"]._serialized_end = 1242
+    _globals["_VALIDATIONRESULT"]._serialized_start = 1244
+    _globals["_VALIDATIONRESULT"]._serialized_end = 1365
+    _globals["_STRATEGYVERSIONMINIMALRESPONSE"]._serialized_start = 1368
+    _globals["_STRATEGYVERSIONMINIMALRESPONSE"]._serialized_end = 1596
+    _globals["_HEALTHCHECKRESPONSE"]._serialized_start = 1598
+    _globals["_HEALTHCHECKRESPONSE"]._serialized_end = 1669
+    _globals["_TEMPLATERESPONSE"]._serialized_start = 1672
+    _globals["_TEMPLATERESPONSE"]._serialized_end = 1944
+    _globals["_STRATEGYRESPONSE"]._serialized_start = 1947
+    _globals["_STRATEGYRESPONSE"]._serialized_end = 2099
+    _globals["_STRATEGYSERVICE"]._serialized_start = 2102
+    _globals["_STRATEGYSERVICE"]._serialized_end = 2906
 # @@protoc_insertion_point(module_scope)

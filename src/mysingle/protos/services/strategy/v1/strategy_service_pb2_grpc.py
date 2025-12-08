@@ -48,6 +48,12 @@ class StrategyServiceStub(object):
             response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionResponse.FromString,
             _registered_method=True,
         )
+        self.GetStrategyVersionMinimal = channel.unary_unary(
+            "/strategy.v1.StrategyService/GetStrategyVersionMinimal",
+            request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyVersionMinimalRequest.SerializeToString,
+            response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionMinimalResponse.FromString,
+            _registered_method=True,
+        )
         self.BatchGetStrategyVersions = channel.unary_stream(
             "/strategy.v1.StrategyService/BatchGetStrategyVersions",
             request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.BatchGetStrategyVersionsRequest.SerializeToString,
@@ -58,12 +64,6 @@ class StrategyServiceStub(object):
             "/strategy.v1.StrategyService/HealthCheck",
             request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.HealthCheckRequest.SerializeToString,
             response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.HealthCheckResponse.FromString,
-            _registered_method=True,
-        )
-        self.ValidateStrategyIR = channel.unary_unary(
-            "/strategy.v1.StrategyService/ValidateStrategyIR",
-            request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateIRRequest.SerializeToString,
-            response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidationResponse.FromString,
             _registered_method=True,
         )
         self.GetStrategyTemplate = channel.unary_unary(
@@ -90,36 +90,6 @@ class StrategyServiceStub(object):
             response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyResponse.FromString,
             _registered_method=True,
         )
-        self.ArchiveStrategy = channel.unary_unary(
-            "/strategy.v1.StrategyService/ArchiveStrategy",
-            request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ArchiveStrategyRequest.SerializeToString,
-            response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ArchiveStrategyResponse.FromString,
-            _registered_method=True,
-        )
-        self.GetStrategy = channel.unary_unary(
-            "/strategy.v1.StrategyService/GetStrategy",
-            request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyRequest.SerializeToString,
-            response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyResponse.FromString,
-            _registered_method=True,
-        )
-        self.ListStrategies = channel.unary_unary(
-            "/strategy.v1.StrategyService/ListStrategies",
-            request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListStrategiesRequest.SerializeToString,
-            response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListStrategiesResponse.FromString,
-            _registered_method=True,
-        )
-        self.ValidateStrategy = channel.unary_unary(
-            "/strategy.v1.StrategyService/ValidateStrategy",
-            request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateStrategyRequest.SerializeToString,
-            response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateStrategyResponse.FromString,
-            _registered_method=True,
-        )
-        self.GetPortfolioSummary = channel.unary_unary(
-            "/strategy.v1.StrategyService/GetPortfolioSummary",
-            request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryRequest.SerializeToString,
-            response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryResponse.FromString,
-            _registered_method=True,
-        )
 
 
 class StrategyServiceServicer(object):
@@ -131,6 +101,15 @@ class StrategyServiceServicer(object):
     def GetStrategyVersion(self, request, context):
         """Get a single strategy version
         GetStrategyVersion RPC.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def GetStrategyVersionMinimal(self, request, context):
+        """Get strategy version with minimal fields (optimized for Backtest Service)
+        Phase B-1: Partial Field Selection RPC
+        GetStrategyVersionMinimal RPC.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
@@ -152,18 +131,10 @@ class StrategyServiceServicer(object):
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
-    def ValidateStrategyIR(self, request, context):
+    def GetStrategyTemplate(self, request, context):
         """--- New RPCs for GenAI Service ---
 
-        Validate StrategyIR across multiple stages
-        ValidateStrategyIR RPC.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetStrategyTemplate(self, request, context):
-        """Get a single strategy template
+        Get a single strategy template
         GetStrategyTemplate RPC.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -194,41 +165,6 @@ class StrategyServiceServicer(object):
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
-    def ArchiveStrategy(self, request, context):
-        """Archive a strategy (soft delete)
-        ArchiveStrategy RPC.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetStrategy(self, request, context):
-        """---- ml-service compatibility RPCs ----
-        These RPCs are required by `ml-service` and added for backward/forward compatibility.
-        GetStrategy RPC.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def ListStrategies(self, request, context):
-        """ListStrategies RPC."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def ValidateStrategy(self, request, context):
-        """ValidateStrategy RPC."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetPortfolioSummary(self, request, context):
-        """GetPortfolioSummary RPC."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
 
 def add_StrategyServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -236,6 +172,11 @@ def add_StrategyServiceServicer_to_server(servicer, server):
             servicer.GetStrategyVersion,
             request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyVersionRequest.FromString,
             response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionResponse.SerializeToString,
+        ),
+        "GetStrategyVersionMinimal": grpc.unary_unary_rpc_method_handler(
+            servicer.GetStrategyVersionMinimal,
+            request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyVersionMinimalRequest.FromString,
+            response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionMinimalResponse.SerializeToString,
         ),
         "BatchGetStrategyVersions": grpc.unary_stream_rpc_method_handler(
             servicer.BatchGetStrategyVersions,
@@ -246,11 +187,6 @@ def add_StrategyServiceServicer_to_server(servicer, server):
             servicer.HealthCheck,
             request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.HealthCheckRequest.FromString,
             response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.HealthCheckResponse.SerializeToString,
-        ),
-        "ValidateStrategyIR": grpc.unary_unary_rpc_method_handler(
-            servicer.ValidateStrategyIR,
-            request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateIRRequest.FromString,
-            response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidationResponse.SerializeToString,
         ),
         "GetStrategyTemplate": grpc.unary_unary_rpc_method_handler(
             servicer.GetStrategyTemplate,
@@ -271,31 +207,6 @@ def add_StrategyServiceServicer_to_server(servicer, server):
             servicer.ListUserStrategies,
             request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListUserStrategiesRequest.FromString,
             response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyResponse.SerializeToString,
-        ),
-        "ArchiveStrategy": grpc.unary_unary_rpc_method_handler(
-            servicer.ArchiveStrategy,
-            request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ArchiveStrategyRequest.FromString,
-            response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ArchiveStrategyResponse.SerializeToString,
-        ),
-        "GetStrategy": grpc.unary_unary_rpc_method_handler(
-            servicer.GetStrategy,
-            request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyRequest.FromString,
-            response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyResponse.SerializeToString,
-        ),
-        "ListStrategies": grpc.unary_unary_rpc_method_handler(
-            servicer.ListStrategies,
-            request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListStrategiesRequest.FromString,
-            response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListStrategiesResponse.SerializeToString,
-        ),
-        "ValidateStrategy": grpc.unary_unary_rpc_method_handler(
-            servicer.ValidateStrategy,
-            request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateStrategyRequest.FromString,
-            response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateStrategyResponse.SerializeToString,
-        ),
-        "GetPortfolioSummary": grpc.unary_unary_rpc_method_handler(
-            servicer.GetPortfolioSummary,
-            request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryRequest.FromString,
-            response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryResponse.SerializeToString,
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -333,6 +244,36 @@ class StrategyService(object):
             "/strategy.v1.StrategyService/GetStrategyVersion",
             services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyVersionRequest.SerializeToString,
             services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def GetStrategyVersionMinimal(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/strategy.v1.StrategyService/GetStrategyVersionMinimal",
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyVersionMinimalRequest.SerializeToString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionMinimalResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -393,36 +334,6 @@ class StrategyService(object):
             "/strategy.v1.StrategyService/HealthCheck",
             services_dot_strategy_dot_v1_dot_strategy__service__pb2.HealthCheckRequest.SerializeToString,
             services_dot_strategy_dot_v1_dot_strategy__service__pb2.HealthCheckResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def ValidateStrategyIR(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/strategy.v1.StrategyService/ValidateStrategyIR",
-            services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateIRRequest.SerializeToString,
-            services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidationResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -543,156 +454,6 @@ class StrategyService(object):
             "/strategy.v1.StrategyService/ListUserStrategies",
             services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListUserStrategiesRequest.SerializeToString,
             services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def ArchiveStrategy(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/strategy.v1.StrategyService/ArchiveStrategy",
-            services_dot_strategy_dot_v1_dot_strategy__service__pb2.ArchiveStrategyRequest.SerializeToString,
-            services_dot_strategy_dot_v1_dot_strategy__service__pb2.ArchiveStrategyResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def GetStrategy(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/strategy.v1.StrategyService/GetStrategy",
-            services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyRequest.SerializeToString,
-            services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def ListStrategies(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/strategy.v1.StrategyService/ListStrategies",
-            services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListStrategiesRequest.SerializeToString,
-            services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListStrategiesResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def ValidateStrategy(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/strategy.v1.StrategyService/ValidateStrategy",
-            services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateStrategyRequest.SerializeToString,
-            services_dot_strategy_dot_v1_dot_strategy__service__pb2.ValidateStrategyResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def GetPortfolioSummary(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/strategy.v1.StrategyService/GetPortfolioSummary",
-            services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryRequest.SerializeToString,
-            services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryResponse.FromString,
             options,
             channel_credentials,
             insecure,
