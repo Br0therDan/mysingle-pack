@@ -679,3 +679,473 @@ class AnalyzeMLBacktestPerformanceResponse(_message.Message):
         success: bool = ...,
         message: _Optional[str] = ...,
     ) -> None: ...
+
+class ListModelsRequest(_message.Message):
+    __slots__ = ("user_id", "model_type", "status")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    MODEL_TYPE_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    model_type: str
+    status: str
+    def __init__(
+        self,
+        user_id: _Optional[str] = ...,
+        model_type: _Optional[str] = ...,
+        status: _Optional[str] = ...,
+    ) -> None: ...
+
+class ListModelsResponse(_message.Message):
+    __slots__ = ("models", "total_count")
+    MODELS_FIELD_NUMBER: _ClassVar[int]
+    TOTAL_COUNT_FIELD_NUMBER: _ClassVar[int]
+    models: _containers.RepeatedCompositeFieldContainer[ModelSummary]
+    total_count: int
+    def __init__(
+        self,
+        models: _Optional[_Iterable[_Union[ModelSummary, _Mapping]]] = ...,
+        total_count: _Optional[int] = ...,
+    ) -> None: ...
+
+class ModelSummary(_message.Message):
+    __slots__ = (
+        "model_id",
+        "name",
+        "type",
+        "version",
+        "status",
+        "accuracy",
+        "f1_score",
+        "sharpe_ratio",
+        "created_at",
+        "updated_at",
+    )
+    MODEL_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    TYPE_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    ACCURACY_FIELD_NUMBER: _ClassVar[int]
+    F1_SCORE_FIELD_NUMBER: _ClassVar[int]
+    SHARPE_RATIO_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    model_id: str
+    name: str
+    type: str
+    version: str
+    status: str
+    accuracy: float
+    f1_score: float
+    sharpe_ratio: float
+    created_at: str
+    updated_at: str
+    def __init__(
+        self,
+        model_id: _Optional[str] = ...,
+        name: _Optional[str] = ...,
+        type: _Optional[str] = ...,
+        version: _Optional[str] = ...,
+        status: _Optional[str] = ...,
+        accuracy: _Optional[float] = ...,
+        f1_score: _Optional[float] = ...,
+        sharpe_ratio: _Optional[float] = ...,
+        created_at: _Optional[str] = ...,
+        updated_at: _Optional[str] = ...,
+    ) -> None: ...
+
+class GetModelInfoRequest(_message.Message):
+    __slots__ = ("model_id", "user_id")
+    MODEL_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    model_id: str
+    user_id: str
+    def __init__(
+        self, model_id: _Optional[str] = ..., user_id: _Optional[str] = ...
+    ) -> None: ...
+
+class GetModelInfoResponse(_message.Message):
+    __slots__ = (
+        "model_id",
+        "name",
+        "type",
+        "version",
+        "status",
+        "metrics",
+        "hyperparameters",
+        "feature_names",
+        "training_samples",
+        "trained_at",
+        "best_strategy_types",
+        "best_regimes",
+        "metadata",
+    )
+    class HyperparametersEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[str] = ...
+        ) -> None: ...
+
+    class MetadataEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[str] = ...
+        ) -> None: ...
+
+    MODEL_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    TYPE_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    METRICS_FIELD_NUMBER: _ClassVar[int]
+    HYPERPARAMETERS_FIELD_NUMBER: _ClassVar[int]
+    FEATURE_NAMES_FIELD_NUMBER: _ClassVar[int]
+    TRAINING_SAMPLES_FIELD_NUMBER: _ClassVar[int]
+    TRAINED_AT_FIELD_NUMBER: _ClassVar[int]
+    BEST_STRATEGY_TYPES_FIELD_NUMBER: _ClassVar[int]
+    BEST_REGIMES_FIELD_NUMBER: _ClassVar[int]
+    METADATA_FIELD_NUMBER: _ClassVar[int]
+    model_id: str
+    name: str
+    type: str
+    version: str
+    status: str
+    metrics: ModelPerformanceMetrics
+    hyperparameters: _containers.ScalarMap[str, str]
+    feature_names: _containers.RepeatedScalarFieldContainer[str]
+    training_samples: int
+    trained_at: str
+    best_strategy_types: _containers.RepeatedScalarFieldContainer[str]
+    best_regimes: _containers.RepeatedScalarFieldContainer[str]
+    metadata: _containers.ScalarMap[str, str]
+    def __init__(
+        self,
+        model_id: _Optional[str] = ...,
+        name: _Optional[str] = ...,
+        type: _Optional[str] = ...,
+        version: _Optional[str] = ...,
+        status: _Optional[str] = ...,
+        metrics: _Optional[_Union[ModelPerformanceMetrics, _Mapping]] = ...,
+        hyperparameters: _Optional[_Mapping[str, str]] = ...,
+        feature_names: _Optional[_Iterable[str]] = ...,
+        training_samples: _Optional[int] = ...,
+        trained_at: _Optional[str] = ...,
+        best_strategy_types: _Optional[_Iterable[str]] = ...,
+        best_regimes: _Optional[_Iterable[str]] = ...,
+        metadata: _Optional[_Mapping[str, str]] = ...,
+    ) -> None: ...
+
+class ModelPerformanceMetrics(_message.Message):
+    __slots__ = (
+        "accuracy",
+        "precision",
+        "recall",
+        "f1_score",
+        "sharpe_ratio",
+        "total_return",
+        "max_drawdown",
+        "win_rate",
+    )
+    ACCURACY_FIELD_NUMBER: _ClassVar[int]
+    PRECISION_FIELD_NUMBER: _ClassVar[int]
+    RECALL_FIELD_NUMBER: _ClassVar[int]
+    F1_SCORE_FIELD_NUMBER: _ClassVar[int]
+    SHARPE_RATIO_FIELD_NUMBER: _ClassVar[int]
+    TOTAL_RETURN_FIELD_NUMBER: _ClassVar[int]
+    MAX_DRAWDOWN_FIELD_NUMBER: _ClassVar[int]
+    WIN_RATE_FIELD_NUMBER: _ClassVar[int]
+    accuracy: float
+    precision: float
+    recall: float
+    f1_score: float
+    sharpe_ratio: float
+    total_return: float
+    max_drawdown: float
+    win_rate: float
+    def __init__(
+        self,
+        accuracy: _Optional[float] = ...,
+        precision: _Optional[float] = ...,
+        recall: _Optional[float] = ...,
+        f1_score: _Optional[float] = ...,
+        sharpe_ratio: _Optional[float] = ...,
+        total_return: _Optional[float] = ...,
+        max_drawdown: _Optional[float] = ...,
+        win_rate: _Optional[float] = ...,
+    ) -> None: ...
+
+class RecommendModelRequest(_message.Message):
+    __slots__ = ("user_id", "strategy_type", "market_regime", "top_n")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    STRATEGY_TYPE_FIELD_NUMBER: _ClassVar[int]
+    MARKET_REGIME_FIELD_NUMBER: _ClassVar[int]
+    TOP_N_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    strategy_type: str
+    market_regime: str
+    top_n: int
+    def __init__(
+        self,
+        user_id: _Optional[str] = ...,
+        strategy_type: _Optional[str] = ...,
+        market_regime: _Optional[str] = ...,
+        top_n: _Optional[int] = ...,
+    ) -> None: ...
+
+class RecommendModelResponse(_message.Message):
+    __slots__ = ("recommendations",)
+    RECOMMENDATIONS_FIELD_NUMBER: _ClassVar[int]
+    recommendations: _containers.RepeatedCompositeFieldContainer[ModelRecommendation]
+    def __init__(
+        self,
+        recommendations: _Optional[
+            _Iterable[_Union[ModelRecommendation, _Mapping]]
+        ] = ...,
+    ) -> None: ...
+
+class ModelRecommendation(_message.Message):
+    __slots__ = ("model", "score", "reason", "context_performance")
+    class ContextPerformanceEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: float
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[float] = ...
+        ) -> None: ...
+
+    MODEL_FIELD_NUMBER: _ClassVar[int]
+    SCORE_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    CONTEXT_PERFORMANCE_FIELD_NUMBER: _ClassVar[int]
+    model: ModelSummary
+    score: float
+    reason: str
+    context_performance: _containers.ScalarMap[str, float]
+    def __init__(
+        self,
+        model: _Optional[_Union[ModelSummary, _Mapping]] = ...,
+        score: _Optional[float] = ...,
+        reason: _Optional[str] = ...,
+        context_performance: _Optional[_Mapping[str, float]] = ...,
+    ) -> None: ...
+
+class SuggestParametersRequest(_message.Message):
+    __slots__ = (
+        "user_id",
+        "strategy_type",
+        "parameter_space",
+        "objective_metric",
+        "n_trials",
+        "symbols",
+        "optimization_period",
+    )
+    class ParameterSpaceEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: ParameterSpec
+        def __init__(
+            self,
+            key: _Optional[str] = ...,
+            value: _Optional[_Union[ParameterSpec, _Mapping]] = ...,
+        ) -> None: ...
+
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    STRATEGY_TYPE_FIELD_NUMBER: _ClassVar[int]
+    PARAMETER_SPACE_FIELD_NUMBER: _ClassVar[int]
+    OBJECTIVE_METRIC_FIELD_NUMBER: _ClassVar[int]
+    N_TRIALS_FIELD_NUMBER: _ClassVar[int]
+    SYMBOLS_FIELD_NUMBER: _ClassVar[int]
+    OPTIMIZATION_PERIOD_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    strategy_type: str
+    parameter_space: _containers.MessageMap[str, ParameterSpec]
+    objective_metric: str
+    n_trials: int
+    symbols: _containers.RepeatedScalarFieldContainer[str]
+    optimization_period: Period
+    def __init__(
+        self,
+        user_id: _Optional[str] = ...,
+        strategy_type: _Optional[str] = ...,
+        parameter_space: _Optional[_Mapping[str, ParameterSpec]] = ...,
+        objective_metric: _Optional[str] = ...,
+        n_trials: _Optional[int] = ...,
+        symbols: _Optional[_Iterable[str]] = ...,
+        optimization_period: _Optional[_Union[Period, _Mapping]] = ...,
+    ) -> None: ...
+
+class ParameterSpec(_message.Message):
+    __slots__ = ("type", "low", "high", "choices", "step")
+    TYPE_FIELD_NUMBER: _ClassVar[int]
+    LOW_FIELD_NUMBER: _ClassVar[int]
+    HIGH_FIELD_NUMBER: _ClassVar[int]
+    CHOICES_FIELD_NUMBER: _ClassVar[int]
+    STEP_FIELD_NUMBER: _ClassVar[int]
+    type: str
+    low: float
+    high: float
+    choices: _containers.RepeatedScalarFieldContainer[str]
+    step: float
+    def __init__(
+        self,
+        type: _Optional[str] = ...,
+        low: _Optional[float] = ...,
+        high: _Optional[float] = ...,
+        choices: _Optional[_Iterable[str]] = ...,
+        step: _Optional[float] = ...,
+    ) -> None: ...
+
+class SuggestParametersResponse(_message.Message):
+    __slots__ = (
+        "best_params",
+        "best_value",
+        "total_trials",
+        "execution_time_seconds",
+        "trials",
+        "optimization_run_id",
+    )
+    class BestParamsEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: float
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[float] = ...
+        ) -> None: ...
+
+    BEST_PARAMS_FIELD_NUMBER: _ClassVar[int]
+    BEST_VALUE_FIELD_NUMBER: _ClassVar[int]
+    TOTAL_TRIALS_FIELD_NUMBER: _ClassVar[int]
+    EXECUTION_TIME_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    TRIALS_FIELD_NUMBER: _ClassVar[int]
+    OPTIMIZATION_RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    best_params: _containers.ScalarMap[str, float]
+    best_value: float
+    total_trials: int
+    execution_time_seconds: float
+    trials: _containers.RepeatedCompositeFieldContainer[ParameterTrialHistory]
+    optimization_run_id: str
+    def __init__(
+        self,
+        best_params: _Optional[_Mapping[str, float]] = ...,
+        best_value: _Optional[float] = ...,
+        total_trials: _Optional[int] = ...,
+        execution_time_seconds: _Optional[float] = ...,
+        trials: _Optional[_Iterable[_Union[ParameterTrialHistory, _Mapping]]] = ...,
+        optimization_run_id: _Optional[str] = ...,
+    ) -> None: ...
+
+class ParameterTrialHistory(_message.Message):
+    __slots__ = ("trial_number", "params", "value", "state")
+    class ParamsEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: float
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[float] = ...
+        ) -> None: ...
+
+    TRIAL_NUMBER_FIELD_NUMBER: _ClassVar[int]
+    PARAMS_FIELD_NUMBER: _ClassVar[int]
+    VALUE_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    trial_number: int
+    params: _containers.ScalarMap[str, float]
+    value: float
+    state: str
+    def __init__(
+        self,
+        trial_number: _Optional[int] = ...,
+        params: _Optional[_Mapping[str, float]] = ...,
+        value: _Optional[float] = ...,
+        state: _Optional[str] = ...,
+    ) -> None: ...
+
+class DriftNotificationRequest(_message.Message):
+    __slots__ = (
+        "user_id",
+        "model_name",
+        "version",
+        "drift_type",
+        "drift_severity",
+        "metrics_diff",
+        "retraining_status",
+        "context",
+    )
+    class MetricsDiffEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: float
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[float] = ...
+        ) -> None: ...
+
+    class ContextEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[str] = ...
+        ) -> None: ...
+
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    MODEL_NAME_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    DRIFT_TYPE_FIELD_NUMBER: _ClassVar[int]
+    DRIFT_SEVERITY_FIELD_NUMBER: _ClassVar[int]
+    METRICS_DIFF_FIELD_NUMBER: _ClassVar[int]
+    RETRAINING_STATUS_FIELD_NUMBER: _ClassVar[int]
+    CONTEXT_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    model_name: str
+    version: str
+    drift_type: str
+    drift_severity: str
+    metrics_diff: _containers.ScalarMap[str, float]
+    retraining_status: str
+    context: _containers.ScalarMap[str, str]
+    def __init__(
+        self,
+        user_id: _Optional[str] = ...,
+        model_name: _Optional[str] = ...,
+        version: _Optional[str] = ...,
+        drift_type: _Optional[str] = ...,
+        drift_severity: _Optional[str] = ...,
+        metrics_diff: _Optional[_Mapping[str, float]] = ...,
+        retraining_status: _Optional[str] = ...,
+        context: _Optional[_Mapping[str, str]] = ...,
+    ) -> None: ...
+
+class DriftNotificationResponse(_message.Message):
+    __slots__ = ("success", "notification_id", "error")
+    SUCCESS_FIELD_NUMBER: _ClassVar[int]
+    NOTIFICATION_ID_FIELD_NUMBER: _ClassVar[int]
+    ERROR_FIELD_NUMBER: _ClassVar[int]
+    success: bool
+    notification_id: str
+    error: str
+    def __init__(
+        self,
+        success: bool = ...,
+        notification_id: _Optional[str] = ...,
+        error: _Optional[str] = ...,
+    ) -> None: ...
