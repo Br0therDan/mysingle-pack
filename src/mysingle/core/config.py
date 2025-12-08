@@ -49,10 +49,16 @@ class CommonSettings(BaseSettings):
     REDIS_DB_GRPC: int = 2  # gRPC response cache
     REDIS_DB_RATE_LIMIT: int = 3  # Rate limiting counters
     REDIS_DB_SESSION: int = 4  # Session storage
+    REDIS_DB_DSL: int = 5  # DSL bytecode cache
 
     # USER CACHE SETTINGS
     USER_CACHE_TTL_SECONDS: int = 300
     USER_CACHE_KEY_PREFIX: str = "user"
+
+    # DSL CACHE SETTINGS
+    DSL_CACHE_TTL_SECONDS: int = 3600  # 1 hour default TTL
+    DSL_CACHE_KEY_PREFIX: str = "dsl:bytecode"
+    DSL_CACHE_WARMING_TTL_SECONDS: int = 86400  # 24 hours for warmed cache
 
     ##################################################################
     # REDIS SETTINGS

@@ -81,6 +81,106 @@ class SecurityValidator:
         "__closure__",
         "__dict__",
         "__module__",
+        "__builtins__",
+        "__import__",
+        "__loader__",
+        "__spec__",
+        "__cached__",
+        "__file__",
+        "__name__",
+        "__package__",
+    }
+
+    # 허용된 pandas/numpy 속성 (whitelist)
+    ALLOWED_PANDAS_ATTRS = {
+        # DataFrame/Series methods
+        "rolling",
+        "mean",
+        "std",
+        "sum",
+        "max",
+        "min",
+        "shift",
+        "diff",
+        "pct_change",
+        "fillna",
+        "dropna",
+        "iloc",
+        "loc",
+        "at",
+        "iat",
+        "head",
+        "tail",
+        "index",
+        "values",
+        "columns",
+        "shape",
+        "dtype",
+        "dtypes",
+        # Aggregation
+        "groupby",
+        "agg",
+        "aggregate",
+        "apply",
+        "transform",
+        "cumsum",
+        "cumprod",
+        "cummax",
+        "cummin",
+        # Statistical
+        "corr",
+        "cov",
+        "describe",
+        "quantile",
+        "rank",
+        # EWM
+        "ewm",
+        "expanding",
+    }
+
+    ALLOWED_NUMPY_ATTRS = {
+        # Array operations
+        "array",
+        "asarray",
+        "zeros",
+        "ones",
+        "full",
+        "arange",
+        "linspace",
+        "logspace",
+        # Math functions
+        "abs",
+        "sqrt",
+        "exp",
+        "log",
+        "log10",
+        "log2",
+        "sin",
+        "cos",
+        "tan",
+        "arcsin",
+        "arccos",
+        "arctan",
+        "floor",
+        "ceil",
+        "round",
+        # Statistical
+        "mean",
+        "median",
+        "std",
+        "var",
+        "percentile",
+        "min",
+        "max",
+        "sum",
+        "prod",
+        # Comparison
+        "isnan",
+        "isinf",
+        "isfinite",
+        "where",
+        "select",
+        "choose",
     }
 
     def __init__(self):
@@ -146,6 +246,14 @@ class SecurityValidator:
                     )
                 )
 
+            # Subscript with slice 검사 (임의 메모리 접근 방지)
+            elif isinstance(node, ast.Subscript):
+                violations.extend(self._check_subscript(node))
+
+            # Name 바인딩 검사 (위험한 변수명)
+            elif isinstance(node, ast.Name):
+                violations.extend(self._check_name(node))
+
         return violations
 
     def _check_import(self, node: ast.Import) -> list[SecurityViolation]:
@@ -201,11 +309,78 @@ class SecurityValidator:
         """속성 접근 검사"""
         violations = []
 
+        # 금지된 속성 접근
         if node.attr in self.FORBIDDEN_ATTRIBUTES:
             violations.append(
                 SecurityViolation(
+                    level="ERROR",
+                    message=f"Forbidden attribute access: {node.attr}",
+                    line=node.lineno,
+                )
+            )
+
+        # pandas/numpy 속성 화이트리스트 검증
+        if isinstance(node.value, ast.Name):
+            var_name = node.value.id
+            # pd.* 또는 np.* 접근 검사
+            if var_name in ("pd", "pandas"):
+                if node.attr not in self.ALLOWED_PANDAS_ATTRS:
+                    violations.append(
+                        SecurityViolation(
+                            level="WARNING",
+                            message=f"Unverified pandas attribute: {node.attr}",
+                            line=node.lineno,
+                        )
+                    )
+            elif (
+                var_name in ("np", "numpy")
+                and node.attr not in self.ALLOWED_NUMPY_ATTRS
+            ):
+                violations.append(
+                    SecurityViolation(
+                        level="WARNING",
+                        message=f"Unverified numpy attribute: {node.attr}",
+                        line=node.lineno,
+                    )
+                )
+
+        return violations
+
+    def _check_subscript(self, node: ast.Subscript) -> list[SecurityViolation]:
+        """Subscript 접근 검사 (임의 메모리 접근 방지)"""
+        violations = []
+
+        # 복잡한 slice 패턴 검사
+        if (
+            isinstance(node.slice, ast.Slice)
+            and isinstance(node.slice.step, ast.UnaryOp)
+            and isinstance(node.slice.step.op, ast.USub)
+        ):
+            violations.append(
+                SecurityViolation(
                     level="WARNING",
-                    message=f"Suspicious attribute access: {node.attr}",
+                    message="Negative slice step detected",
+                    line=node.lineno,
+                )
+            )
+
+        return violations
+
+    def _check_name(self, node: ast.Name) -> list[SecurityViolation]:
+        """Name 바인딩 검사 (위험한 변수명)"""
+        violations = []
+
+        # 언더스코어로 시작하는 변수명 경고 (private 규약)
+        if (
+            isinstance(node.ctx, ast.Store)
+            and node.id.startswith("_")
+            and node.id.startswith("__")
+            and node.id.endswith("__")
+        ):
+            violations.append(
+                SecurityViolation(
+                    level="ERROR",
+                    message=f"Dunder name assignment forbidden: {node.id}",
                     line=node.lineno,
                 )
             )

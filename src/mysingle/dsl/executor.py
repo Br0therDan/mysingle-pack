@@ -3,6 +3,7 @@
 import marshal
 import resource
 import signal
+import threading
 from contextlib import contextmanager
 from types import CodeType
 from typing import Any
@@ -171,12 +172,13 @@ class DSLExecutor:
         """
         리소스 제한 컨텍스트 매니저
 
-        CPU 시간 및 메모리 제한 적용
+        CPU 시간 및 메모리 제한 적용 (크로스 플랫폼 지원)
         """
         # 기존 제한 값 저장
         old_recursion_limit = None
         old_alarm_handler = None
         old_memory_limit = None
+        timeout_timer = None
 
         try:
             # 재귀 깊이 제한
@@ -185,17 +187,24 @@ class DSLExecutor:
             old_recursion_limit = sys.getrecursionlimit()
             sys.setrecursionlimit(self.MAX_RECURSION_DEPTH)
 
-            # CPU 시간 제한 (UNIX 시스템만)
+            # CPU 시간 제한 (크로스 플랫폼)
             try:
-
+                # UNIX: signal.SIGALRM 사용
                 def timeout_handler(signum, frame):
                     raise TimeoutError("Execution time limit exceeded")
 
                 old_alarm_handler = signal.signal(signal.SIGALRM, timeout_handler)
                 signal.alarm(self.MAX_EXECUTION_TIME_SECONDS)
             except (AttributeError, ValueError):
-                # Windows 등 signal.SIGALRM 미지원 시스템
-                pass
+                # Windows: threading.Timer 대체 사용
+                def timeout_callback():
+                    raise TimeoutError("Execution time limit exceeded (Windows)")
+
+                timeout_timer = threading.Timer(
+                    self.MAX_EXECUTION_TIME_SECONDS, timeout_callback
+                )
+                timeout_timer.daemon = True
+                timeout_timer.start()
 
             # 메모리 제한 (UNIX 시스템만)
             try:
@@ -204,8 +213,9 @@ class DSLExecutor:
 
                 new_limit = self.MAX_MEMORY_MB * 1024 * 1024
                 resource.setrlimit(resource.RLIMIT_AS, (new_limit, new_limit))
-            except (AttributeError, ValueError):
+            except (AttributeError, ValueError, OSError):
                 # Windows 등 resource 미지원 시스템
+                # psutil로 메모리 모니터링 (선택적)
                 pass
 
             yield
@@ -221,8 +231,11 @@ class DSLExecutor:
                 signal.alarm(0)
                 signal.signal(signal.SIGALRM, old_alarm_handler)
 
+            if timeout_timer is not None:
+                timeout_timer.cancel()
+
             if old_memory_limit is not None:
                 try:
                     resource.setrlimit(resource.RLIMIT_AS, old_memory_limit)
-                except (AttributeError, ValueError):
+                except (AttributeError, ValueError, OSError):
                     pass
