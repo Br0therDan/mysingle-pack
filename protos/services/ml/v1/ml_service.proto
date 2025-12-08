@@ -424,11 +424,11 @@ message ListModelsResponse {
 // Summary information about an ML model.
 message ModelSummary {
   // Unique model identifier.
-  string model_id = 1;
+  string id = 1;
   // Human-readable model name.
   string name = 2;
   // Model type (e.g., "signal_prediction", "regime_detection").
-  string type = 3;
+  string model_type = 3;
   // Current model version.
   string version = 4;
   // Model status (e.g., "active", "training", "archived").
@@ -453,34 +453,44 @@ message GetModelInfoRequest {
   string user_id = 2;
 }
 
-// Response with detailed model information.
-message GetModelInfoResponse {
+// Detailed model information (used in GetModelInfoResponse).
+message ModelDetail {
   // Model identifier.
-  string model_id = 1;
+  string id = 1;
   // Model name.
   string name = 2;
   // Model type.
-  string type = 3;
+  string model_type = 3;
   // Model version.
   string version = 4;
   // Model status.
   string status = 5;
-  // Performance metrics.
-  ModelPerformanceMetrics metrics = 6;
-  // Model hyperparameters.
-  map<string, string> hyperparameters = 7;
-  // Feature names used by the model.
-  repeated string feature_names = 8;
-  // Number of training samples.
-  int32 training_samples = 9;
-  // ISO 8601 timestamp when training was completed.
-  string trained_at = 10;
   // Best strategy types for this model.
-  repeated string best_strategy_types = 11;
+  repeated string best_strategy_types = 6;
   // Best market regimes for this model.
-  repeated string best_regimes = 12;
+  repeated string best_regimes = 7;
+  // ISO 8601 timestamp when the model was created.
+  string created_at = 8;
+  // ISO 8601 timestamp when the model was last updated.
+  string updated_at = 9;
+  // Model hyperparameters.
+  map<string, string> hyperparameters = 10;
+  // Feature names used by the model.
+  repeated string feature_names = 11;
+  // Number of training samples.
+  int32 training_samples = 12;
+  // ISO 8601 timestamp when training was completed.
+  string trained_at = 13;
   // Additional metadata.
-  map<string, string> metadata = 13;
+  map<string, string> metadata = 14;
+}
+
+// Response with detailed model information.
+message GetModelInfoResponse {
+  // Detailed model information.
+  ModelDetail model = 1;
+  // Performance metrics.
+  ModelPerformanceMetrics performance_metrics = 2;
 }
 
 // Performance metrics for an ML model.

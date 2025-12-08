@@ -709,9 +709,9 @@ class ListModelsResponse(_message.Message):
 
 class ModelSummary(_message.Message):
     __slots__ = (
-        "model_id",
+        "id",
         "name",
-        "type",
+        "model_type",
         "version",
         "status",
         "accuracy",
@@ -720,9 +720,9 @@ class ModelSummary(_message.Message):
         "created_at",
         "updated_at",
     )
-    MODEL_ID_FIELD_NUMBER: _ClassVar[int]
+    ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
-    TYPE_FIELD_NUMBER: _ClassVar[int]
+    MODEL_TYPE_FIELD_NUMBER: _ClassVar[int]
     VERSION_FIELD_NUMBER: _ClassVar[int]
     STATUS_FIELD_NUMBER: _ClassVar[int]
     ACCURACY_FIELD_NUMBER: _ClassVar[int]
@@ -730,9 +730,9 @@ class ModelSummary(_message.Message):
     SHARPE_RATIO_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
     UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
-    model_id: str
+    id: str
     name: str
-    type: str
+    model_type: str
     version: str
     status: str
     accuracy: float
@@ -742,9 +742,9 @@ class ModelSummary(_message.Message):
     updated_at: str
     def __init__(
         self,
-        model_id: _Optional[str] = ...,
+        id: _Optional[str] = ...,
         name: _Optional[str] = ...,
-        type: _Optional[str] = ...,
+        model_type: _Optional[str] = ...,
         version: _Optional[str] = ...,
         status: _Optional[str] = ...,
         accuracy: _Optional[float] = ...,
@@ -764,20 +764,21 @@ class GetModelInfoRequest(_message.Message):
         self, model_id: _Optional[str] = ..., user_id: _Optional[str] = ...
     ) -> None: ...
 
-class GetModelInfoResponse(_message.Message):
+class ModelDetail(_message.Message):
     __slots__ = (
-        "model_id",
+        "id",
         "name",
-        "type",
+        "model_type",
         "version",
         "status",
-        "metrics",
+        "best_strategy_types",
+        "best_regimes",
+        "created_at",
+        "updated_at",
         "hyperparameters",
         "feature_names",
         "training_samples",
         "trained_at",
-        "best_strategy_types",
-        "best_regimes",
         "metadata",
     )
     class HyperparametersEntry(_message.Message):
@@ -800,47 +801,62 @@ class GetModelInfoResponse(_message.Message):
             self, key: _Optional[str] = ..., value: _Optional[str] = ...
         ) -> None: ...
 
-    MODEL_ID_FIELD_NUMBER: _ClassVar[int]
+    ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
-    TYPE_FIELD_NUMBER: _ClassVar[int]
+    MODEL_TYPE_FIELD_NUMBER: _ClassVar[int]
     VERSION_FIELD_NUMBER: _ClassVar[int]
     STATUS_FIELD_NUMBER: _ClassVar[int]
-    METRICS_FIELD_NUMBER: _ClassVar[int]
+    BEST_STRATEGY_TYPES_FIELD_NUMBER: _ClassVar[int]
+    BEST_REGIMES_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
     HYPERPARAMETERS_FIELD_NUMBER: _ClassVar[int]
     FEATURE_NAMES_FIELD_NUMBER: _ClassVar[int]
     TRAINING_SAMPLES_FIELD_NUMBER: _ClassVar[int]
     TRAINED_AT_FIELD_NUMBER: _ClassVar[int]
-    BEST_STRATEGY_TYPES_FIELD_NUMBER: _ClassVar[int]
-    BEST_REGIMES_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]
-    model_id: str
+    id: str
     name: str
-    type: str
+    model_type: str
     version: str
     status: str
-    metrics: ModelPerformanceMetrics
+    best_strategy_types: _containers.RepeatedScalarFieldContainer[str]
+    best_regimes: _containers.RepeatedScalarFieldContainer[str]
+    created_at: str
+    updated_at: str
     hyperparameters: _containers.ScalarMap[str, str]
     feature_names: _containers.RepeatedScalarFieldContainer[str]
     training_samples: int
     trained_at: str
-    best_strategy_types: _containers.RepeatedScalarFieldContainer[str]
-    best_regimes: _containers.RepeatedScalarFieldContainer[str]
     metadata: _containers.ScalarMap[str, str]
     def __init__(
         self,
-        model_id: _Optional[str] = ...,
+        id: _Optional[str] = ...,
         name: _Optional[str] = ...,
-        type: _Optional[str] = ...,
+        model_type: _Optional[str] = ...,
         version: _Optional[str] = ...,
         status: _Optional[str] = ...,
-        metrics: _Optional[_Union[ModelPerformanceMetrics, _Mapping]] = ...,
+        best_strategy_types: _Optional[_Iterable[str]] = ...,
+        best_regimes: _Optional[_Iterable[str]] = ...,
+        created_at: _Optional[str] = ...,
+        updated_at: _Optional[str] = ...,
         hyperparameters: _Optional[_Mapping[str, str]] = ...,
         feature_names: _Optional[_Iterable[str]] = ...,
         training_samples: _Optional[int] = ...,
         trained_at: _Optional[str] = ...,
-        best_strategy_types: _Optional[_Iterable[str]] = ...,
-        best_regimes: _Optional[_Iterable[str]] = ...,
         metadata: _Optional[_Mapping[str, str]] = ...,
+    ) -> None: ...
+
+class GetModelInfoResponse(_message.Message):
+    __slots__ = ("model", "performance_metrics")
+    MODEL_FIELD_NUMBER: _ClassVar[int]
+    PERFORMANCE_METRICS_FIELD_NUMBER: _ClassVar[int]
+    model: ModelDetail
+    performance_metrics: ModelPerformanceMetrics
+    def __init__(
+        self,
+        model: _Optional[_Union[ModelDetail, _Mapping]] = ...,
+        performance_metrics: _Optional[_Union[ModelPerformanceMetrics, _Mapping]] = ...,
     ) -> None: ...
 
 class ModelPerformanceMetrics(_message.Message):
