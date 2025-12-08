@@ -124,10 +124,10 @@ message RefreshTokenResponse {
   string access_token = 1;
   // New refresh token (optional, may reuse existing)
   optional string refresh_token = 2;
-  // Token type (always "Bearer")
-  string token_type = 3;
-  // Expiry time in seconds
-  int32 expires_in = 4;
+  // Token type (optional, defaults to "Bearer")
+  optional string token_type = 3;
+  // Expiry time in seconds (optional)
+  optional int32 expires_in = 4;
 }
 
 // HealthCheckResponse defines the response payload for HealthCheck
