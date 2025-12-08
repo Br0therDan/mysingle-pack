@@ -59,7 +59,7 @@ class CommonSettings(BaseSettings):
     ##################################################################
 
     # GRPC SERVER SETTINGS
-    GRPC_SERVER_PORT: int = 50051  # Default gRPC port (override per service)
+
     GRPC_SERVER_MAX_WORKERS: int = 10  # Thread pool size
     GRPC_SERVER_ENABLE_REFLECTION: bool = False  # Enable in development only
 

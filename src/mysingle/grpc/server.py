@@ -155,7 +155,7 @@ class GrpcServerConfig(BaseModel):
         # CommonSettings에서 기본값 추출
         config_dict = {
             "service_name": service_name,
-            "port": port or settings.GRPC_SERVER_PORT,
+            "port": port,
             "max_workers": settings.GRPC_SERVER_MAX_WORKERS,
             "enable_auth": settings.GRPC_ENABLE_AUTH,
             "enable_rate_limiting": settings.GRPC_ENABLE_RATE_LIMITING,
