@@ -36,6 +36,7 @@ from typing import TYPE_CHECKING, Any, Callable, Optional, TypeVar
 
 from google.protobuf.message import Message as ProtoMessage
 
+from mysingle.core.config import settings
 from mysingle.core.logging import get_structured_logger
 from mysingle.database.redis_cache import BaseRedisCache
 
@@ -106,7 +107,7 @@ class GrpcCache(BaseRedisCache[T]):
         self,
         *,
         service_name: str,
-        redis_db: int = 2,  # gRPC 전용 DB (0: user, 1: market, 2: grpc)
+        redis_db: int = settings.REDIS_DB_GRPC,
         memory_ttl: int = 300,  # L1 TTL (5분)
         memory_max_size: int = 100,  # L1 LRU 크기
         default_ttl: int = 3600,  # L2 Redis TTL (1시간)

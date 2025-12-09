@@ -34,6 +34,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from mysingle.auth.models import User
+from mysingle.core.config import settings
 from mysingle.core.logging import get_structured_logger
 from mysingle.database.redis import get_redis_client
 
@@ -95,7 +96,7 @@ class RedisUserCache(BaseUserCache):
         *,
         key_prefix: str = "user",
         default_ttl: int = 300,
-        redis_db: int = 0,
+        redis_db: int = settings.REDIS_DB_USER,
     ):
         """
         Redis 캐시 초기화

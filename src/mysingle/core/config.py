@@ -46,7 +46,7 @@ class CommonSettings(BaseSettings):
 
     # REDIS DB ALLOCATION
     REDIS_DB_USER: int = 0  # User authentication cache
-    REDIS_DB_GRPC: int = 2  # gRPC response cache
+    REDIS_DB_GRPC: int = 1  # gRPC response cache
     REDIS_DB_RATE_LIMIT: int = 3  # Rate limiting counters
     REDIS_DB_SESSION: int = 4  # Session storage
     REDIS_DB_DSL: int = 5  # DSL bytecode cache

@@ -644,7 +644,7 @@ def generate_config_py(
     if grpc_enabled:
         grpc_settings = f"""
     # gRPC Settings
-    USE_GRPC: bool = False
+    USE_GRPC: bool = True
     GRPC_CLIENT_TIMEOUT: float = 10.0
     {service_name_snake.upper()}_GRPC_PORT: int = 50051
 """
