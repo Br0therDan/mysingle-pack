@@ -239,7 +239,7 @@ class BaseGrpcClient:
         환경 기반 호스트 결정
 
         우선순위:
-        1. 환경변수 {SERVICE}_GRPC_HOST (예: INDICATOR_GRPC_HOST)
+        1. 환경변수 {SERVICE}_HOST (예: INDICATOR_HOST)
         2. Docker 환경: service_name (예: indicator-service)
         3. 기본값: localhost
 
@@ -249,7 +249,7 @@ class BaseGrpcClient:
         # 환경변수로 서비스명 변환 (indicator-service -> INDICATOR)
         env_key = (
             self.service_name.upper().replace("-SERVICE", "").replace("-", "_")
-            + "_GRPC_HOST"
+            + "_HOST"
         )
         env_host = os.getenv(env_key)
         if env_host:
