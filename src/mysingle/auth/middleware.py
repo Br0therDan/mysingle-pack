@@ -527,6 +527,10 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 path=path,
                 reason="public_endpoint",
             )
+            # 공개 경로에서도 request.state를 초기화 (downstream middleware/handlers가 안전하게 접근 가능)
+            request.state.user = None
+            request.state.authenticated = False
+            request.state.service_type = self.service_config.service_type
             return await call_next(request)
 
         # 인증이 비활성화된 경우 건너뛰기
