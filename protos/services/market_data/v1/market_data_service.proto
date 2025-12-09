@@ -1656,6 +1656,81 @@ message CacheStats {
 }
 
 // ============================================================================
+// Real-time Streaming Messages (Phase 2)
+// ============================================================================
+// StreamQuotesRequest defines the request payload for streaming quotes.
+message StreamQuotesRequest {
+  // Symbol identifiers to stream
+  repeated string symbols = 1;
+}
+
+// StreamQuoteUpdate message definition for real-time quote updates.
+message StreamQuoteUpdate {
+  // Symbol identifier.
+  string symbol = 1;
+  // Price value.
+  double price = 2;
+  // Volume value.
+  int64 volume = 3;
+  // Change percent value.
+  double change_percent = 4;
+  // Timestamp value (ISO 8601 format).
+  string timestamp = 5;
+  // Source identifier ("alpha_vantage", etc.)
+  string source = 6;
+}
+
+// StreamForexRateRequest defines the request payload for streaming forex rates.
+message StreamForexRateRequest {
+  // Currency pairs to stream (e.g., ["EUR/USD", "GBP/USD"])
+  repeated string pairs = 1;
+}
+
+// StreamForexUpdate message definition for real-time forex rate updates.
+message StreamForexUpdate {
+  // From currency value.
+  string from_currency = 1;
+  // To currency value.
+  string to_currency = 2;
+  // Exchange rate value.
+  double exchange_rate = 3;
+  // Bid price value.
+  double bid_price = 4;
+  // Ask price value.
+  double ask_price = 5;
+  // Timestamp value (ISO 8601 format).
+  string timestamp = 6;
+  // Source identifier.
+  string source = 7;
+}
+
+// StreamCryptoQuoteRequest defines the request payload for streaming crypto quotes.
+message StreamCryptoQuoteRequest {
+  // Crypto symbols to stream
+  repeated string symbols = 1;
+  // Market identifier (e.g., "USD", "EUR")
+  string market = 2;
+}
+
+// StreamCryptoUpdate message definition for real-time crypto quote updates.
+message StreamCryptoUpdate {
+  // Symbol identifier.
+  string symbol = 1;
+  // Market value.
+  string market = 2;
+  // Price value.
+  double price = 3;
+  // Volume value.
+  int64 volume = 4;
+  // Change percent value.
+  double change_percent = 5;
+  // Timestamp value (ISO 8601 format).
+  string timestamp = 6;
+  // Source identifier.
+  string source = 7;
+}
+
+// ============================================================================
 // Main Service Definition
 // ============================================================================
 // MarketDataService service definition.
@@ -1784,4 +1859,12 @@ service MarketDataService {
   rpc GetHistoricalOptions(GetHistoricalOptionsRequest) returns (HistoricalOptionsResponse);
   // GetOptionContract RPC.
   rpc GetOptionContract(GetOptionContractRequest) returns (OptionContractResponse);
+
+  // Real-time Streaming (Phase 2)
+  // StreamStockQuotes provides server-side streaming for real-time stock quotes.
+  rpc StreamStockQuotes(StreamQuotesRequest) returns (stream StreamQuoteUpdate);
+  // StreamForexRates provides server-side streaming for real-time forex rates.
+  rpc StreamForexRates(StreamForexRateRequest) returns (stream StreamForexUpdate);
+  // StreamCryptoQuotes provides server-side streaming for real-time crypto quotes.
+  rpc StreamCryptoQuotes(StreamCryptoQuoteRequest) returns (stream StreamCryptoUpdate);
 }
