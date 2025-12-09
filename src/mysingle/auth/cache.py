@@ -28,10 +28,12 @@ Usage:
     await cache.invalidate_user(user_id)
 """
 
-import json
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import Optional
+
+from beanie import PydanticObjectId
+from pydantic import BaseModel, EmailStr
 
 from mysingle.auth.models import User
 from mysingle.core.config import settings
@@ -39,6 +41,51 @@ from mysingle.core.logging import get_structured_logger
 from mysingle.database.redis import get_redis_client
 
 logger = get_structured_logger(__name__)
+
+
+# =============================================================================
+# Cached User Model (Lightweight for Cache)
+# =============================================================================
+
+
+class CachedUser(BaseModel):
+    """
+    캐시 전용 경량 User 모델
+
+    인증/인가에 필요한 최소 필드만 포함하며,
+    보안상 hashed_password는 제외합니다.
+    """
+
+    id: str
+    email: EmailStr
+    is_active: bool = True
+    is_verified: bool = False
+    is_superuser: bool = False
+    full_name: str | None = None
+
+    @classmethod
+    def from_user(cls, user: User) -> "CachedUser":
+        """User 모델에서 CachedUser 생성"""
+        return cls(
+            id=str(user.id),
+            email=user.email,
+            is_active=user.is_active,
+            is_verified=user.is_verified,
+            is_superuser=user.is_superuser,
+            full_name=user.full_name,
+        )
+
+    def to_user(self) -> User:
+        """CachedUser를 User 모델로 변환 (hashed_password는 빈 문자열)"""
+        return User(
+            id=PydanticObjectId(self.id),
+            email=self.email,
+            hashed_password="",  # 캐시에서는 사용하지 않음
+            is_active=self.is_active,
+            is_verified=self.is_verified,
+            is_superuser=self.is_superuser,
+            full_name=self.full_name,
+        )
 
 
 # =============================================================================
@@ -129,27 +176,14 @@ class RedisUserCache(BaseUserCache):
         return f"{self.key_prefix}:{user_id}"
 
     def _serialize_user(self, user: User) -> str:
-        """User 객체를 JSON 문자열로 직렬화"""
-        user_dict = {
-            "id": str(user.id),
-            "email": user.email,
-            "is_active": user.is_active,
-            "is_verified": user.is_verified,
-            "is_superuser": user.is_superuser,
-        }
-
-        # 선택적 필드 추가
-        optional_fields = ["full_name", "first_name", "last_name"]
-        for field in optional_fields:
-            if hasattr(user, field):
-                user_dict[field] = getattr(user, field)
-
-        return json.dumps(user_dict)
+        """User 객체를 JSON 문자열로 직렬화 (캐시 전용 경량 모델 사용)"""
+        cached_user = CachedUser.from_user(user)
+        return cached_user.model_dump_json()
 
     def _deserialize_user(self, data: str) -> User:
         """JSON 문자열을 User 객체로 역직렬화"""
-        user_dict = json.loads(data)
-        return User(**user_dict)
+        cached_user = CachedUser.model_validate_json(data)
+        return cached_user.to_user()
 
     async def get_user(self, user_id: str) -> Optional[User]:
         """Redis에서 사용자 조회"""

@@ -178,7 +178,7 @@ config = GrpcServerConfig.from_settings(
     settings,
     service_name="my-service",
     # 환경별 오버라이드
-    enable_reflection=settings.ENVIRONMENT == "development",
+    enable_reflection=settings.ENVIRONMENT in ["development", "local"],
     reflection_service_names=[
         "my_service.v1.MyService",
         "grpc.reflection.v1alpha.ServerReflection",
