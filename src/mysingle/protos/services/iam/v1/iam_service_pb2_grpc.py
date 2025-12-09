@@ -48,6 +48,12 @@ class IAMServiceStub(object):
             response_deserializer=services_dot_iam_dot_v1_dot_iam__service__pb2.GetUserInfoResponse.FromString,
             _registered_method=True,
         )
+        self.GetUserByEmail = channel.unary_unary(
+            "/iam.v1.IAMService/GetUserByEmail",
+            request_serializer=services_dot_iam_dot_v1_dot_iam__service__pb2.GetUserByEmailRequest.SerializeToString,
+            response_deserializer=services_dot_iam_dot_v1_dot_iam__service__pb2.GetUserInfoResponse.FromString,
+            _registered_method=True,
+        )
         self.VerifyUserAccess = channel.unary_unary(
             "/iam.v1.IAMService/VerifyUserAccess",
             request_serializer=services_dot_iam_dot_v1_dot_iam__service__pb2.VerifyUserAccessRequest.SerializeToString,
@@ -92,6 +98,12 @@ class IAMServiceServicer(object):
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
+    def GetUserByEmail(self, request, context):
+        """Get user information by email address"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
     def VerifyUserAccess(self, request, context):
         """Verify user access to a resource"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -128,6 +140,11 @@ def add_IAMServiceServicer_to_server(servicer, server):
         "GetUserInfo": grpc.unary_unary_rpc_method_handler(
             servicer.GetUserInfo,
             request_deserializer=services_dot_iam_dot_v1_dot_iam__service__pb2.GetUserInfoRequest.FromString,
+            response_serializer=services_dot_iam_dot_v1_dot_iam__service__pb2.GetUserInfoResponse.SerializeToString,
+        ),
+        "GetUserByEmail": grpc.unary_unary_rpc_method_handler(
+            servicer.GetUserByEmail,
+            request_deserializer=services_dot_iam_dot_v1_dot_iam__service__pb2.GetUserByEmailRequest.FromString,
             response_serializer=services_dot_iam_dot_v1_dot_iam__service__pb2.GetUserInfoResponse.SerializeToString,
         ),
         "VerifyUserAccess": grpc.unary_unary_rpc_method_handler(
@@ -188,6 +205,36 @@ class IAMService(object):
             target,
             "/iam.v1.IAMService/GetUserInfo",
             services_dot_iam_dot_v1_dot_iam__service__pb2.GetUserInfoRequest.SerializeToString,
+            services_dot_iam_dot_v1_dot_iam__service__pb2.GetUserInfoResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def GetUserByEmail(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/iam.v1.IAMService/GetUserByEmail",
+            services_dot_iam_dot_v1_dot_iam__service__pb2.GetUserByEmailRequest.SerializeToString,
             services_dot_iam_dot_v1_dot_iam__service__pb2.GetUserInfoResponse.FromString,
             options,
             channel_credentials,

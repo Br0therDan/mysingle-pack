@@ -11,6 +11,9 @@ service IAMService {
   // Get user information by user ID
   rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoResponse);
 
+  // Get user information by email address
+  rpc GetUserByEmail(GetUserByEmailRequest) returns (GetUserInfoResponse);
+
   // Verify user access to a resource
   rpc VerifyUserAccess(VerifyUserAccessRequest) returns (VerifyUserAccessResponse);
 
@@ -33,6 +36,12 @@ service IAMService {
 message GetUserInfoRequest {
   // User ID to retrieve
   string user_id = 1;
+}
+
+// GetUserByEmailRequest defines the request payload for GetUserByEmail
+message GetUserByEmailRequest {
+  // Email address to look up
+  string email = 1;
 }
 
 // VerifyUserAccessRequest defines the request payload for VerifyUserAccess

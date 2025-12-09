@@ -18,6 +18,12 @@ class GetUserInfoRequest(_message.Message):
     user_id: str
     def __init__(self, user_id: _Optional[str] = ...) -> None: ...
 
+class GetUserByEmailRequest(_message.Message):
+    __slots__ = ("email",)
+    EMAIL_FIELD_NUMBER: _ClassVar[int]
+    email: str
+    def __init__(self, email: _Optional[str] = ...) -> None: ...
+
 class VerifyUserAccessRequest(_message.Message):
     __slots__ = ("user_id", "resource", "permission")
     USER_ID_FIELD_NUMBER: _ClassVar[int]
