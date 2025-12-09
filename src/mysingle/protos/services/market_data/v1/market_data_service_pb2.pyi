@@ -2751,3 +2751,119 @@ class CacheStats(_message.Message):
         misses: _Optional[int] = ...,
         entries_by_domain: _Optional[_Mapping[str, int]] = ...,
     ) -> None: ...
+
+class StreamQuotesRequest(_message.Message):
+    __slots__ = ("symbols",)
+    SYMBOLS_FIELD_NUMBER: _ClassVar[int]
+    symbols: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, symbols: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class StreamQuoteUpdate(_message.Message):
+    __slots__ = ("symbol", "price", "volume", "change_percent", "timestamp", "source")
+    SYMBOL_FIELD_NUMBER: _ClassVar[int]
+    PRICE_FIELD_NUMBER: _ClassVar[int]
+    VOLUME_FIELD_NUMBER: _ClassVar[int]
+    CHANGE_PERCENT_FIELD_NUMBER: _ClassVar[int]
+    TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    symbol: str
+    price: float
+    volume: int
+    change_percent: float
+    timestamp: str
+    source: str
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        price: _Optional[float] = ...,
+        volume: _Optional[int] = ...,
+        change_percent: _Optional[float] = ...,
+        timestamp: _Optional[str] = ...,
+        source: _Optional[str] = ...,
+    ) -> None: ...
+
+class StreamForexRateRequest(_message.Message):
+    __slots__ = ("pairs",)
+    PAIRS_FIELD_NUMBER: _ClassVar[int]
+    pairs: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, pairs: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class StreamForexUpdate(_message.Message):
+    __slots__ = (
+        "from_currency",
+        "to_currency",
+        "exchange_rate",
+        "bid_price",
+        "ask_price",
+        "timestamp",
+        "source",
+    )
+    FROM_CURRENCY_FIELD_NUMBER: _ClassVar[int]
+    TO_CURRENCY_FIELD_NUMBER: _ClassVar[int]
+    EXCHANGE_RATE_FIELD_NUMBER: _ClassVar[int]
+    BID_PRICE_FIELD_NUMBER: _ClassVar[int]
+    ASK_PRICE_FIELD_NUMBER: _ClassVar[int]
+    TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    from_currency: str
+    to_currency: str
+    exchange_rate: float
+    bid_price: float
+    ask_price: float
+    timestamp: str
+    source: str
+    def __init__(
+        self,
+        from_currency: _Optional[str] = ...,
+        to_currency: _Optional[str] = ...,
+        exchange_rate: _Optional[float] = ...,
+        bid_price: _Optional[float] = ...,
+        ask_price: _Optional[float] = ...,
+        timestamp: _Optional[str] = ...,
+        source: _Optional[str] = ...,
+    ) -> None: ...
+
+class StreamCryptoQuoteRequest(_message.Message):
+    __slots__ = ("symbols", "market")
+    SYMBOLS_FIELD_NUMBER: _ClassVar[int]
+    MARKET_FIELD_NUMBER: _ClassVar[int]
+    symbols: _containers.RepeatedScalarFieldContainer[str]
+    market: str
+    def __init__(
+        self, symbols: _Optional[_Iterable[str]] = ..., market: _Optional[str] = ...
+    ) -> None: ...
+
+class StreamCryptoUpdate(_message.Message):
+    __slots__ = (
+        "symbol",
+        "market",
+        "price",
+        "volume",
+        "change_percent",
+        "timestamp",
+        "source",
+    )
+    SYMBOL_FIELD_NUMBER: _ClassVar[int]
+    MARKET_FIELD_NUMBER: _ClassVar[int]
+    PRICE_FIELD_NUMBER: _ClassVar[int]
+    VOLUME_FIELD_NUMBER: _ClassVar[int]
+    CHANGE_PERCENT_FIELD_NUMBER: _ClassVar[int]
+    TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    symbol: str
+    market: str
+    price: float
+    volume: int
+    change_percent: float
+    timestamp: str
+    source: str
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        market: _Optional[str] = ...,
+        price: _Optional[float] = ...,
+        volume: _Optional[int] = ...,
+        change_percent: _Optional[float] = ...,
+        timestamp: _Optional[str] = ...,
+        source: _Optional[str] = ...,
+    ) -> None: ...

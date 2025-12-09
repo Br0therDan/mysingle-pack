@@ -361,6 +361,24 @@ class MarketDataServiceStub(object):
             response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.OptionContractResponse.FromString,
             _registered_method=True,
         )
+        self.StreamStockQuotes = channel.unary_stream(
+            "/market_data.MarketDataService/StreamStockQuotes",
+            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamQuotesRequest.SerializeToString,
+            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamQuoteUpdate.FromString,
+            _registered_method=True,
+        )
+        self.StreamForexRates = channel.unary_stream(
+            "/market_data.MarketDataService/StreamForexRates",
+            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamForexRateRequest.SerializeToString,
+            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamForexUpdate.FromString,
+            _registered_method=True,
+        )
+        self.StreamCryptoQuotes = channel.unary_stream(
+            "/market_data.MarketDataService/StreamCryptoQuotes",
+            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamCryptoQuoteRequest.SerializeToString,
+            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamCryptoUpdate.FromString,
+            _registered_method=True,
+        )
 
 
 class MarketDataServiceServicer(object):
@@ -708,6 +726,26 @@ class MarketDataServiceServicer(object):
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
+    def StreamStockQuotes(self, request, context):
+        """Real-time Streaming (Phase 2)
+        StreamStockQuotes provides server-side streaming for real-time stock quotes.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def StreamForexRates(self, request, context):
+        """StreamForexRates provides server-side streaming for real-time forex rates."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def StreamCryptoQuotes(self, request, context):
+        """StreamCryptoQuotes provides server-side streaming for real-time crypto quotes."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
 
 def add_MarketDataServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -975,6 +1013,21 @@ def add_MarketDataServiceServicer_to_server(servicer, server):
             servicer.GetOptionContract,
             request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetOptionContractRequest.FromString,
             response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.OptionContractResponse.SerializeToString,
+        ),
+        "StreamStockQuotes": grpc.unary_stream_rpc_method_handler(
+            servicer.StreamStockQuotes,
+            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamQuotesRequest.FromString,
+            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamQuoteUpdate.SerializeToString,
+        ),
+        "StreamForexRates": grpc.unary_stream_rpc_method_handler(
+            servicer.StreamForexRates,
+            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamForexRateRequest.FromString,
+            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamForexUpdate.SerializeToString,
+        ),
+        "StreamCryptoQuotes": grpc.unary_stream_rpc_method_handler(
+            servicer.StreamCryptoQuotes,
+            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamCryptoQuoteRequest.FromString,
+            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamCryptoUpdate.SerializeToString,
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -2573,6 +2626,96 @@ class MarketDataService(object):
             "/market_data.MarketDataService/GetOptionContract",
             services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetOptionContractRequest.SerializeToString,
             services_dot_market__data_dot_v1_dot_market__data__service__pb2.OptionContractResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def StreamStockQuotes(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_stream(
+            request,
+            target,
+            "/market_data.MarketDataService/StreamStockQuotes",
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamQuotesRequest.SerializeToString,
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamQuoteUpdate.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def StreamForexRates(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_stream(
+            request,
+            target,
+            "/market_data.MarketDataService/StreamForexRates",
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamForexRateRequest.SerializeToString,
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamForexUpdate.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def StreamCryptoQuotes(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_stream(
+            request,
+            target,
+            "/market_data.MarketDataService/StreamCryptoQuotes",
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamCryptoQuoteRequest.SerializeToString,
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamCryptoUpdate.FromString,
             options,
             channel_credentials,
             insecure,
