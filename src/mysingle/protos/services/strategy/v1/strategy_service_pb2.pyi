@@ -44,6 +44,16 @@ class GetStrategyVersionMinimalRequest(_message.Message):
         fields: _Optional[_Iterable[str]] = ...,
     ) -> None: ...
 
+class GetStrategyVersionByIdRequest(_message.Message):
+    __slots__ = ("version_id", "user_id")
+    VERSION_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    version_id: str
+    user_id: str
+    def __init__(
+        self, version_id: _Optional[str] = ..., user_id: _Optional[str] = ...
+    ) -> None: ...
+
 class BatchGetStrategyVersionsRequest(_message.Message):
     __slots__ = ("versions", "user_id")
     VERSIONS_FIELD_NUMBER: _ClassVar[int]

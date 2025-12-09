@@ -17,6 +17,10 @@ service StrategyService {
   // GetStrategyVersionMinimal RPC.
   rpc GetStrategyVersionMinimal(GetStrategyVersionMinimalRequest) returns (StrategyVersionMinimalResponse);
 
+  // Get strategy version by MongoDB ObjectId (supports legacy clients)
+  // GetStrategyVersionById RPC.
+  rpc GetStrategyVersionById(GetStrategyVersionByIdRequest) returns (StrategyVersionResponse);
+
   // Batch get multiple strategy versions (streaming response)
   // BatchGetStrategyVersions RPC.
   rpc BatchGetStrategyVersions(BatchGetStrategyVersionsRequest) returns (stream StrategyVersionResponse);
@@ -67,6 +71,15 @@ message GetStrategyVersionMinimalRequest {
   // Optional: Requested fields (default: ["dsl_code", "dsl_code_hash"])
   // Valid fields: "dsl_code", "dsl_code_hash", "state", "original_source"
   repeated string fields = 4;
+}
+
+// GetStrategyVersionByIdRequest defines the request payload for GetStrategyVersionById.
+// Allows querying by MongoDB ObjectId for legacy client compatibility
+message GetStrategyVersionByIdRequest {
+  // MongoDB ObjectId of the strategy version
+  string version_id = 1;
+  // User ID for authorization
+  string user_id = 2;
 }
 
 // BatchGetStrategyVersionsRequest defines the request payload for BatchGetStrategyVersions.

@@ -54,6 +54,12 @@ class StrategyServiceStub(object):
             response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionMinimalResponse.FromString,
             _registered_method=True,
         )
+        self.GetStrategyVersionById = channel.unary_unary(
+            "/strategy.v1.StrategyService/GetStrategyVersionById",
+            request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyVersionByIdRequest.SerializeToString,
+            response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionResponse.FromString,
+            _registered_method=True,
+        )
         self.BatchGetStrategyVersions = channel.unary_stream(
             "/strategy.v1.StrategyService/BatchGetStrategyVersions",
             request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.BatchGetStrategyVersionsRequest.SerializeToString,
@@ -110,6 +116,14 @@ class StrategyServiceServicer(object):
         """Get strategy version with minimal fields (optimized for Backtest Service)
         Phase B-1: Partial Field Selection RPC
         GetStrategyVersionMinimal RPC.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def GetStrategyVersionById(self, request, context):
+        """Get strategy version by MongoDB ObjectId (supports legacy clients)
+        GetStrategyVersionById RPC.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
@@ -177,6 +191,11 @@ def add_StrategyServiceServicer_to_server(servicer, server):
             servicer.GetStrategyVersionMinimal,
             request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyVersionMinimalRequest.FromString,
             response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionMinimalResponse.SerializeToString,
+        ),
+        "GetStrategyVersionById": grpc.unary_unary_rpc_method_handler(
+            servicer.GetStrategyVersionById,
+            request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyVersionByIdRequest.FromString,
+            response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionResponse.SerializeToString,
         ),
         "BatchGetStrategyVersions": grpc.unary_stream_rpc_method_handler(
             servicer.BatchGetStrategyVersions,
@@ -274,6 +293,36 @@ class StrategyService(object):
             "/strategy.v1.StrategyService/GetStrategyVersionMinimal",
             services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyVersionMinimalRequest.SerializeToString,
             services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionMinimalResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def GetStrategyVersionById(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/strategy.v1.StrategyService/GetStrategyVersionById",
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetStrategyVersionByIdRequest.SerializeToString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyVersionResponse.FromString,
             options,
             channel_credentials,
             insecure,
