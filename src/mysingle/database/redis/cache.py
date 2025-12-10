@@ -32,10 +32,12 @@ Usage:
 import json
 import pickle
 from abc import ABC
-from typing import Generic, Optional, TypeVar
+from typing import TYPE_CHECKING, Generic, Optional, TypeVar
 
 from mysingle.core.logging import get_structured_logger
-from mysingle.database.redis import get_redis_client
+
+if TYPE_CHECKING:
+    pass
 
 logger = get_structured_logger(__name__)
 
@@ -104,6 +106,9 @@ class BaseRedisCache(ABC, Generic[T]):
     async def _get_redis(self):
         """Redis 클라이언트 가져오기 (lazy loading)"""
         if self._redis_client is None:
+            # Import at runtime to avoid circular dependency
+            from mysingle.database.redis.client import get_redis_client
+
             self._redis_client = await get_redis_client(db=self.redis_db)
         return self._redis_client
 

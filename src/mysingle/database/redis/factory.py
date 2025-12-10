@@ -17,7 +17,7 @@ Usage:
 
 from mysingle.core.config import settings
 from mysingle.core.logging import get_structured_logger
-from mysingle.database.redis_cache import BaseRedisCache
+from mysingle.database.redis.cache import BaseRedisCache
 
 logger = get_structured_logger(__name__)
 
