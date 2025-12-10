@@ -140,6 +140,76 @@ class ListUserStrategiesRequest(_message.Message):
         tags: _Optional[_Iterable[str]] = ...,
     ) -> None: ...
 
+class CreateStrategyVersionRequest(_message.Message):
+    __slots__ = (
+        "user_id",
+        "strategy_id",
+        "dsl_code",
+        "original_source",
+        "template_id",
+        "graph_cache",
+        "rules_cache",
+    )
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
+    DSL_CODE_FIELD_NUMBER: _ClassVar[int]
+    ORIGINAL_SOURCE_FIELD_NUMBER: _ClassVar[int]
+    TEMPLATE_ID_FIELD_NUMBER: _ClassVar[int]
+    GRAPH_CACHE_FIELD_NUMBER: _ClassVar[int]
+    RULES_CACHE_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    strategy_id: str
+    dsl_code: str
+    original_source: str
+    template_id: str
+    graph_cache: str
+    rules_cache: str
+    def __init__(
+        self,
+        user_id: _Optional[str] = ...,
+        strategy_id: _Optional[str] = ...,
+        dsl_code: _Optional[str] = ...,
+        original_source: _Optional[str] = ...,
+        template_id: _Optional[str] = ...,
+        graph_cache: _Optional[str] = ...,
+        rules_cache: _Optional[str] = ...,
+    ) -> None: ...
+
+class UpdateStrategyVersionRequest(_message.Message):
+    __slots__ = (
+        "user_id",
+        "strategy_id",
+        "seq",
+        "dsl_code",
+        "graph_cache",
+        "rules_cache",
+        "state",
+    )
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
+    SEQ_FIELD_NUMBER: _ClassVar[int]
+    DSL_CODE_FIELD_NUMBER: _ClassVar[int]
+    GRAPH_CACHE_FIELD_NUMBER: _ClassVar[int]
+    RULES_CACHE_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    strategy_id: str
+    seq: int
+    dsl_code: str
+    graph_cache: str
+    rules_cache: str
+    state: str
+    def __init__(
+        self,
+        user_id: _Optional[str] = ...,
+        strategy_id: _Optional[str] = ...,
+        seq: _Optional[int] = ...,
+        dsl_code: _Optional[str] = ...,
+        graph_cache: _Optional[str] = ...,
+        rules_cache: _Optional[str] = ...,
+        state: _Optional[str] = ...,
+    ) -> None: ...
+
 class StrategyVersionResponse(_message.Message):
     __slots__ = (
         "id",
@@ -358,4 +428,34 @@ class StrategyResponse(_message.Message):
         tags: _Optional[_Iterable[str]] = ...,
         created_at: _Optional[str] = ...,
         updated_at: _Optional[str] = ...,
+    ) -> None: ...
+
+class CreateStrategyVersionResponse(_message.Message):
+    __slots__ = ("strategy_version", "new_strategy_created", "strategy_id", "seq")
+    STRATEGY_VERSION_FIELD_NUMBER: _ClassVar[int]
+    NEW_STRATEGY_CREATED_FIELD_NUMBER: _ClassVar[int]
+    STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
+    SEQ_FIELD_NUMBER: _ClassVar[int]
+    strategy_version: StrategyVersionResponse
+    new_strategy_created: bool
+    strategy_id: str
+    seq: int
+    def __init__(
+        self,
+        strategy_version: _Optional[_Union[StrategyVersionResponse, _Mapping]] = ...,
+        new_strategy_created: bool = ...,
+        strategy_id: _Optional[str] = ...,
+        seq: _Optional[int] = ...,
+    ) -> None: ...
+
+class UpdateStrategyVersionResponse(_message.Message):
+    __slots__ = ("strategy_version", "validation_triggered")
+    STRATEGY_VERSION_FIELD_NUMBER: _ClassVar[int]
+    VALIDATION_TRIGGERED_FIELD_NUMBER: _ClassVar[int]
+    strategy_version: StrategyVersionResponse
+    validation_triggered: bool
+    def __init__(
+        self,
+        strategy_version: _Optional[_Union[StrategyVersionResponse, _Mapping]] = ...,
+        validation_triggered: bool = ...,
     ) -> None: ...

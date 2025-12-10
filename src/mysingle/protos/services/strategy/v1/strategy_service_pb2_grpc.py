@@ -96,6 +96,18 @@ class StrategyServiceStub(object):
             response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyResponse.FromString,
             _registered_method=True,
         )
+        self.CreateStrategyVersion = channel.unary_unary(
+            "/strategy.v1.StrategyService/CreateStrategyVersion",
+            request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.CreateStrategyVersionRequest.SerializeToString,
+            response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.CreateStrategyVersionResponse.FromString,
+            _registered_method=True,
+        )
+        self.UpdateStrategyVersion = channel.unary_unary(
+            "/strategy.v1.StrategyService/UpdateStrategyVersion",
+            request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.UpdateStrategyVersionRequest.SerializeToString,
+            response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.UpdateStrategyVersionResponse.FromString,
+            _registered_method=True,
+        )
 
 
 class StrategyServiceServicer(object):
@@ -179,6 +191,24 @@ class StrategyServiceServicer(object):
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
+    def CreateStrategyVersion(self, request, context):
+        """--- Phase 3: Write Operations for GenAI Service ---
+
+        Create a new strategy version
+        CreateStrategyVersion RPC.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def UpdateStrategyVersion(self, request, context):
+        """Update an existing strategy version
+        UpdateStrategyVersion RPC.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
 
 def add_StrategyServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -226,6 +256,16 @@ def add_StrategyServiceServicer_to_server(servicer, server):
             servicer.ListUserStrategies,
             request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListUserStrategiesRequest.FromString,
             response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyResponse.SerializeToString,
+        ),
+        "CreateStrategyVersion": grpc.unary_unary_rpc_method_handler(
+            servicer.CreateStrategyVersion,
+            request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.CreateStrategyVersionRequest.FromString,
+            response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.CreateStrategyVersionResponse.SerializeToString,
+        ),
+        "UpdateStrategyVersion": grpc.unary_unary_rpc_method_handler(
+            servicer.UpdateStrategyVersion,
+            request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.UpdateStrategyVersionRequest.FromString,
+            response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.UpdateStrategyVersionResponse.SerializeToString,
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -503,6 +543,66 @@ class StrategyService(object):
             "/strategy.v1.StrategyService/ListUserStrategies",
             services_dot_strategy_dot_v1_dot_strategy__service__pb2.ListUserStrategiesRequest.SerializeToString,
             services_dot_strategy_dot_v1_dot_strategy__service__pb2.StrategyResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def CreateStrategyVersion(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/strategy.v1.StrategyService/CreateStrategyVersion",
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.CreateStrategyVersionRequest.SerializeToString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.CreateStrategyVersionResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def UpdateStrategyVersion(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/strategy.v1.StrategyService/UpdateStrategyVersion",
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.UpdateStrategyVersionRequest.SerializeToString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.UpdateStrategyVersionResponse.FromString,
             options,
             channel_credentials,
             insecure,

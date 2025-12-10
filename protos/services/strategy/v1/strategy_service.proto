@@ -46,6 +46,16 @@ service StrategyService {
   // List user's strategies (auto-discovery by user_id) - NEW
   // ListUserStrategies RPC.
   rpc ListUserStrategies(ListUserStrategiesRequest) returns (stream StrategyResponse);
+
+  // --- Phase 3: Write Operations for GenAI Service ---
+
+  // Create a new strategy version
+  // CreateStrategyVersion RPC.
+  rpc CreateStrategyVersion(CreateStrategyVersionRequest) returns (CreateStrategyVersionResponse);
+
+  // Update an existing strategy version
+  // UpdateStrategyVersion RPC.
+  rpc UpdateStrategyVersion(UpdateStrategyVersionRequest) returns (UpdateStrategyVersionResponse);
 }
 
 // Request Messages
@@ -142,6 +152,44 @@ message ListUserStrategiesRequest {
   optional string status = 4;
   // Optional filter by tags
   repeated string tags = 5;
+}
+
+// --- Phase 3: Write Operation Request Messages ---
+
+// CreateStrategyVersionRequest defines the request payload for CreateStrategyVersion.
+message CreateStrategyVersionRequest {
+  // User ID for authorization and ownership
+  string user_id = 1;
+  // Strategy ID (if empty, auto-generate new strategy)
+  optional string strategy_id = 2;
+  // DSL code (REQUIRED - single source of truth)
+  string dsl_code = 3;
+  // Original source: "template" | "graph_ui" | "rule_ui" | "dsl_ui" | "genai"
+  optional string original_source = 4;
+  // Optional template ID used for generation
+  optional string template_id = 5;
+  // Optional graph cache (frontend rendering)
+  optional string graph_cache = 6;
+  // Optional rules cache (frontend rendering)
+  optional string rules_cache = 7;
+}
+
+// UpdateStrategyVersionRequest defines the request payload for UpdateStrategyVersion.
+message UpdateStrategyVersionRequest {
+  // User ID for authorization
+  string user_id = 1;
+  // Strategy ID (REQUIRED)
+  string strategy_id = 2;
+  // Version sequence number (REQUIRED)
+  int32 seq = 3;
+  // Updated DSL code (optional - if provided, triggers re-validation)
+  optional string dsl_code = 4;
+  // Updated graph cache (optional)
+  optional string graph_cache = 5;
+  // Updated rules cache (optional)
+  optional string rules_cache = 6;
+  // Updated state (optional): "DRAFT" | "VALIDATED" | "COMPILED" | "READY_FOR_BACKTEST" | "DEPRECATED"
+  optional string state = 7;
 }
 
 // Response Messages
@@ -273,6 +321,28 @@ message StrategyResponse {
   string created_at = 7;
   // Updated at timestamp.
   string updated_at = 8;
+}
+
+// --- Phase 3: Write Operation Response Messages ---
+
+// CreateStrategyVersionResponse defines the response payload for CreateStrategyVersion.
+message CreateStrategyVersionResponse {
+  // Created strategy version
+  StrategyVersionResponse strategy_version = 1;
+  // Whether a new strategy was created (true) or existing strategy used (false)
+  bool new_strategy_created = 2;
+  // Strategy ID (useful if auto-generated)
+  string strategy_id = 3;
+  // Version sequence number
+  int32 seq = 4;
+}
+
+// UpdateStrategyVersionResponse defines the response payload for UpdateStrategyVersion.
+message UpdateStrategyVersionResponse {
+  // Updated strategy version
+  StrategyVersionResponse strategy_version = 1;
+  // Whether validation was triggered (true if dsl_code was updated)
+  bool validation_triggered = 2;
 }
 
 // Error handling (standard gRPC status codes)
