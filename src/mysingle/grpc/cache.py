@@ -107,16 +107,28 @@ class GrpcCache(BaseRedisCache[T]):
         self,
         *,
         service_name: str,
-        redis_db: int = settings.REDIS_DB_GRPC,
         memory_ttl: int = 300,  # L1 TTL (5분)
         memory_max_size: int = 100,  # L1 LRU 크기
         default_ttl: int = 3600,  # L2 Redis TTL (1시간)
     ):
-        # BaseRedisCache 초기화 (key_prefix="grpc:{service_name}")
+        """
+        gRPC 캐시 초기화 (Redis DB 1 전용)
+
+        Args:
+            service_name: 서비스 이름 (캐시 키 prefix)
+            memory_ttl: L1 in-memory TTL (초)
+            memory_max_size: L1 LRU 캐시 최대 크기
+            default_ttl: L2 Redis TTL (초)
+
+        Note:
+            Redis DB는 자동으로 settings.REDIS_DB_GRPC(=1)로 고정됩니다.
+            플랫폼 표준을 준수하기 위해 변경할 수 없습니다.
+        """
+        # BaseRedisCache 초기화 (key_prefix="grpc:{service_name}", DB=1)
         super().__init__(
             key_prefix=f"grpc:{service_name}",
             default_ttl=default_ttl,
-            redis_db=redis_db,
+            redis_db=settings.REDIS_DB_GRPC,  # Always use DB 1 for gRPC cache
             use_json=False,  # Protobuf는 pickle 사용
         )
 
@@ -159,19 +171,28 @@ class GrpcCache(BaseRedisCache[T]):
         """
         cache_config = {
             "service_name": service_name,
-            "redis_db": settings.REDIS_DB_GRPC,
             "memory_ttl": settings.GRPC_CACHE_L1_TTL_SECONDS,
             "memory_max_size": settings.GRPC_CACHE_L1_MAX_SIZE,
             "default_ttl": settings.GRPC_CACHE_L2_TTL_SECONDS,
         }
 
-        # 오버라이드 적용
-        cache_config.update(overrides)
+        # 오버라이드 적용 (redis_db는 제외 - 항상 REDIS_DB_GRPC 사용)
+        allowed_overrides = {k: v for k, v in overrides.items() if k != "redis_db"}
+        cache_config.update(allowed_overrides)
+
+        if "redis_db" in overrides:
+            logger.warning(
+                "redis_db override ignored for GrpcCache (always uses REDIS_DB_GRPC)",
+                extra={
+                    "service_name": service_name,
+                    "attempted_db": overrides["redis_db"],
+                },
+            )
 
         logger.info(
             f"Creating GrpcCache for {service_name} from CommonSettings",
             extra={
-                "redis_db": cache_config["redis_db"],
+                "redis_db": settings.REDIS_DB_GRPC,
                 "memory_ttl": cache_config["memory_ttl"],
                 "default_ttl": cache_config["default_ttl"],
             },

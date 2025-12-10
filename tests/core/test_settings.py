@@ -28,7 +28,7 @@ def test_settings_defaults():
 
     assert settings.ENVIRONMENT == "development"
     assert settings.DEBUG is True
-    assert settings.PROJECT_NAME == "MySingle Quant"  # Actual default value
+    assert settings.PROJECT_NAME == "My Project"  # Updated default value
 
 
 def test_settings_mongodb_config():
@@ -44,12 +44,14 @@ def test_settings_mongodb_config():
 
 
 def test_settings_redis_url():
-    """Test Redis URL configuration."""
+    """Test Redis URL configuration (computed field in v2.2.1+)."""
     settings = CommonSettings(
-        REDIS_URL="redis://localhost:6379/0",
+        REDIS_HOST="localhost",
+        REDIS_PORT=6379,
     )
 
-    assert settings.REDIS_URL == "redis://localhost:6379/0"
+    # redis_url is now a computed field, auto-generated from HOST/PORT/PASSWORD
+    assert settings.redis_url == "redis://localhost:6379"
 
 
 def test_settings_project_name_default():
@@ -59,7 +61,7 @@ def test_settings_project_name_default():
     # PROJECT_NAME has a default value
     assert settings.PROJECT_NAME is not None
     assert isinstance(settings.PROJECT_NAME, str)
-    assert settings.PROJECT_NAME == "MySingle Quant"  # Actual default value
+    assert settings.PROJECT_NAME == "My Project"  # Updated default value
 
 
 def test_settings_case_sensitivity():

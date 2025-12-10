@@ -77,7 +77,68 @@ def test_token_expiry_settings():
 def test_redis_configuration():
     """Test Redis configuration."""
     settings = CommonSettings(
-        REDIS_URL="redis://localhost:6379/1",
+        REDIS_HOST="localhost",
+        REDIS_PORT=6379,
+        REDIS_PASSWORD=None,
     )
 
-    assert settings.REDIS_URL == "redis://localhost:6379/1"
+    # Test that redis_url is computed correctly
+    assert settings.redis_url == "redis://localhost:6379"
+    assert settings.REDIS_HOST == "localhost"
+    assert settings.REDIS_PORT == 6379
+
+    # Test with password
+    settings_with_pass = CommonSettings(
+        REDIS_HOST="localhost",
+        REDIS_PORT=6379,
+        REDIS_PASSWORD="secret",
+    )
+
+    assert settings_with_pass.redis_url == "redis://:secret@localhost:6379"
+
+
+def test_redis_db_allocation():
+    """Test Redis DB allocation constants."""
+    settings = CommonSettings()
+
+    # Test all DB allocations are unique (except RESERVED)
+    db_values = [
+        settings.REDIS_DB_USER,
+        settings.REDIS_DB_GRPC,
+        settings.REDIS_DB_RATE_LIMIT,
+        settings.REDIS_DB_SESSION,
+        settings.REDIS_DB_DSL,
+        settings.REDIS_DB_MARKET_DATA,
+        settings.REDIS_DB_BACKTEST,
+        settings.REDIS_DB_INDICATOR,
+        settings.REDIS_DB_STRATEGY_CACHE,
+        settings.REDIS_DB_NOTIFICATION,
+        settings.REDIS_DB_CELERY_BROKER,
+        settings.REDIS_DB_CELERY_RESULT,
+        settings.REDIS_DB_ML,
+        settings.REDIS_DB_GENAI,
+        settings.REDIS_DB_SUBSCRIPTION,
+    ]
+
+    # All should be unique
+    assert len(db_values) == len(set(db_values))
+
+    # All should be in valid range
+    for db in db_values:
+        assert 0 <= db <= 15
+
+
+def test_redis_validation():
+    """Test Redis configuration validation."""
+    import pytest
+
+    # Test invalid port
+    with pytest.raises(ValueError, match="REDIS_PORT must be between 1-65535"):
+        CommonSettings(REDIS_PORT=70000)
+
+    # Test empty host
+    with pytest.raises(ValueError, match="REDIS_HOST cannot be empty"):
+        CommonSettings(REDIS_HOST="")
+
+    # Test duplicate DB assignments would fail
+    # (This is prevented by the validator)

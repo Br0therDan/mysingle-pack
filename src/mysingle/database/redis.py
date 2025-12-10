@@ -298,31 +298,32 @@ _global_redis_manager: Optional[RedisClientManager] = None
 
 
 def _get_redis_config_from_settings() -> RedisConfig:
-    """CommonSettings에서 Redis 설정 가져오기"""
+    """CommonSettings에서 Redis 설정 가져오기 (HOST/PORT/PASSWORD 기반)"""
     try:
         from mysingle.core.config import settings
 
-        # URL 파싱 또는 개별 설정 사용
-        redis_url = getattr(settings, "REDIS_URL", "redis://localhost:6379/0")
-        redis_password = getattr(settings, "REDIS_PASSWORD", None)
-
-        # URL에 비밀번호가 없고 설정에 있으면 추가
-        if ":" not in redis_url.split("//")[1].split("@")[0] and redis_password:
-            # redis://host:port/db -> redis://:password@host:port/db
-            parts = redis_url.split("//")
-            parts[1] = f":{redis_password}@{parts[1]}"
-            redis_url = "//".join(parts)
-
-        config = RedisConfig.from_url(redis_url)
+        config = RedisConfig(
+            host=settings.REDIS_HOST,
+            port=settings.REDIS_PORT,
+            password=settings.REDIS_PASSWORD,
+            db=0,  # Default DB, actual DB is specified when getting client
+        )
 
         logger.info(
-            f"Redis config loaded from settings: {config.host}:{config.port}/{config.db}"
+            "Redis config loaded from settings",
+            extra={
+                "host": config.host,
+                "port": config.port,
+                "has_password": bool(config.password),
+            },
         )
         return config
 
     except Exception as e:
-        logger.warning(
-            f"Failed to load Redis config from settings: {e}, using defaults"
+        logger.error(
+            "Failed to load Redis config from settings, using defaults",
+            extra={"error": str(e)},
+            exc_info=True,
         )
         return RedisConfig()
 

@@ -132,10 +132,12 @@ class BaseUserCache(ABC):
 
 class RedisUserCache(BaseUserCache):
     """
-    Redis 기반 User 캐시
+    Redis 기반 User 캐시 (DB 0 전용)
 
     mysingle.database.redis 표준 인프라를 활용합니다.
     다중 서비스 인스턴스 간 캐시를 공유할 수 있습니다.
+
+    플랫폼 표준: REDIS_DB_USER (DB 0) 고정 사용, 오버라이드 불가
     """
 
     def __init__(
@@ -143,28 +145,35 @@ class RedisUserCache(BaseUserCache):
         *,
         key_prefix: str = "user",
         default_ttl: int = 300,
-        redis_db: int = settings.REDIS_DB_USER,
     ):
         """
         Redis 캐시 초기화
 
         Args:
-            key_prefix: 캐시 키 접두사
-            default_ttl: 기본 TTL (초)
-            redis_db: Redis DB 번호
+            key_prefix: 캐시 키 접두사 (기본값: "user")
+            default_ttl: 기본 TTL 초 (기본값: 300 = 5분)
+
+        Note:
+            Redis DB는 항상 settings.REDIS_DB_USER (DB 0) 사용
+            플랫폼 표준화를 위해 오버라이드 불가
         """
         self.key_prefix = key_prefix
         self.default_ttl = default_ttl
-        self.redis_db = redis_db
         self._redis_client = None
 
     async def _get_redis(self):
-        """Redis 클라이언트 가져오기 (lazy loading)"""
+        """
+        Redis 클라이언트 가져오기 (lazy loading)
+
+        항상 settings.REDIS_DB_USER (DB 0) 사용
+        """
         if self._redis_client is None:
             try:
-                self._redis_client = await get_redis_client(db=self.redis_db)
+                self._redis_client = await get_redis_client(db=settings.REDIS_DB_USER)
                 if self._redis_client:
-                    logger.info(f"Redis User Cache initialized (DB {self.redis_db})")
+                    logger.info(
+                        f"Redis User Cache initialized (DB {settings.REDIS_DB_USER})"
+                    )
             except Exception as e:
                 logger.warning(f"Failed to get Redis client: {e}")
                 return None
@@ -352,9 +361,10 @@ class InMemoryUserCache(BaseUserCache):
 
 class HybridUserCache(BaseUserCache):
     """
-    Redis + In-Memory 하이브리드 캐시
+    Redis + In-Memory 하이브리드 캐시 (DB 0 전용)
 
     표준 Redis 인프라를 우선 사용하고, Redis가 없으면 In-Memory로 폴백합니다.
+    플랫폼 표준: REDIS_DB_USER (DB 0) 고정 사용, 오버라이드 불가
     """
 
     def __init__(
@@ -362,21 +372,22 @@ class HybridUserCache(BaseUserCache):
         *,
         key_prefix: str = "user",
         default_ttl: int = 300,
-        redis_db: int = 0,
     ):
         """
         하이브리드 캐시 초기화
 
         Args:
-            key_prefix: 캐시 키 접두사
-            default_ttl: 기본 TTL (초)
-            redis_db: Redis DB 번호
+            key_prefix: 캐시 키 접두사 (기본값: "user")
+            default_ttl: 기본 TTL 초 (기본값: 300 = 5분)
+
+        Note:
+            Redis DB는 항상 settings.REDIS_DB_USER (DB 0) 사용
+            플랫폼 표준화를 위해 오버라이드 불가
         """
         # Redis 캐시 (Primary)
         self.redis_cache = RedisUserCache(
             key_prefix=key_prefix,
             default_ttl=default_ttl,
-            redis_db=redis_db,
         )
 
         # In-Memory 캐시 (Fallback)
@@ -454,7 +465,7 @@ def get_user_cache() -> BaseUserCache:
     """
     User 캐시 싱글톤 인스턴스 반환
 
-    표준 Redis 인프라를 활용하며, Redis가 없으면 In-Memory 캐시로 폴백합니다.
+    표준 Redis 인프라(DB 0)를 활용하며, Redis가 없으면 In-Memory 캐시로 폴백합니다.
 
     Returns:
         BaseUserCache: 캐시 인스턴스
@@ -462,6 +473,10 @@ def get_user_cache() -> BaseUserCache:
     Example:
         cache = get_user_cache()
         user = await cache.get_user(user_id)
+
+    Note:
+        Redis DB는 항상 settings.REDIS_DB_USER (DB 0) 사용
+        플랫폼 표준화를 위해 오버라이드 불가
     """
     global _user_cache_instance
 
@@ -469,25 +484,22 @@ def get_user_cache() -> BaseUserCache:
         # 환경설정에서 캐시 설정 가져오기
         key_prefix = "user"
         default_ttl = 300
-        redis_db = 0
 
         try:
             from mysingle.core.config import settings
 
             key_prefix = getattr(settings, "USER_CACHE_KEY_PREFIX", "user")
             default_ttl = getattr(settings, "USER_CACHE_TTL_SECONDS", 300)
-            redis_db = getattr(settings, "REDIS_DB_USER", 0)
         except Exception as e:
             logger.warning(f"Failed to load cache settings: {e}, using defaults")
 
-        # 하이브리드 캐시 생성 (Redis + In-Memory)
+        # 하이브리드 캐시 생성 (Redis DB 0 + In-Memory)
         _user_cache_instance = HybridUserCache(
             key_prefix=key_prefix,
             default_ttl=default_ttl,
-            redis_db=redis_db,
         )
         logger.info(
-            f"User cache singleton initialized (Hybrid: Redis DB {redis_db} + In-Memory, prefix='{key_prefix}', ttl={default_ttl}s)"
+            f"User cache singleton initialized (Hybrid: Redis DB {settings.REDIS_DB_USER} + In-Memory, prefix='{key_prefix}', ttl={default_ttl}s)"
         )
 
     return _user_cache_instance

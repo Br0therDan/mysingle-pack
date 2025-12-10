@@ -75,6 +75,112 @@ with MyDataManager(db_path="data/analytics.duckdb") as db:
 
 ### Redis Usage
 
+---
+
+### Redis DB Allocation Standards
+
+**Platform-Wide Redis DB Allocation (v2.2.1+)**
+
+MySingle Quant uses a standardized Redis DB allocation scheme across all services to ensure consistency and prevent conflicts.
+
+| DB  | Purpose                | Owner Service(s)  | Key Prefix Examples                            | TTL Guidance |
+| --- | ---------------------- | ----------------- | ---------------------------------------------- | ------------ |
+| 0   | User Authentication    | IAM               | `user:{user_id}`                               | 300s (5min)  |
+| 1   | gRPC Response Cache    | All Services      | `grpc:{service_name}:{method}:{hash}`          | 3600s (1h)   |
+| 2   | Rate Limiting          | Kong/Gateway      | `ratelimit:{user_id}:{endpoint}`               | 60-3600s     |
+| 3   | Session Storage        | IAM               | `session:{session_id}`                         | 86400s (24h) |
+| 4   | DSL Bytecode Cache     | Strategy          | `dsl:bytecode:{strategy_id}`                   | 3600-86400s  |
+| 5   | Market Data Cache      | Market Data       | `market:{symbol}:{interval}:{date_range_hash}` | 300-3600s    |
+| 6   | Backtest Service Cache | Backtest          | `walkforward:{job_id}:{window}`                | 3600-86400s  |
+| 7   | Indicator Cache        | Indicator         | `indicator:{name}:{symbol}:{params_hash}`      | 1800-7200s   |
+| 8   | Strategy Cache         | Strategy          | `strategy:{strategy_id}`                       | 600-3600s    |
+| 9   | Notification Queue     | Notification      | `notif:{user_id}:{timestamp}`                  | 300-1800s    |
+| 10  | Celery Broker          | Backtest (Celery) | `celery:task:{task_id}`                        | Managed      |
+| 11  | Celery Result Backend  | Backtest (Celery) | `celery-task-meta-{task_id}`                   | Managed      |
+| 12  | ML Model Cache         | ML                | `ml:model:{model_id}`                          | 3600-86400s  |
+| 13  | GenAI Response Cache   | GenAI             | `genai:{prompt_hash}`                          | 1800-7200s   |
+| 14  | Subscription Cache     | Subscription      | `subscription:{user_id}`                       | 3600s        |
+| 15  | Reserved               | Platform          | -                                              | -            |
+
+**Usage Guidelines:**
+
+✅ **DO:**
+- Use `BaseRedisCache` for service-specific caching
+- Reference `REDIS_DB_*` constants from `CommonSettings`
+- Follow key_prefix standards for your service
+- Set appropriate TTL based on data volatility
+- Use `get_redis_client(db=N)` for direct operations when needed
+
+❌ **DON'T:**
+- Hard-code DB numbers in your code
+- Use `redis.asyncio` directly without `BaseRedisCache`
+- Share DB numbers across unrelated purposes
+- Use DB 15 (reserved for future platform needs)
+- Create keys without proper prefix namespacing
+
+---
+
+### Cache Factory Functions
+
+**New in v2.2.1:** Standardized factory functions for common cache types.
+
+#### create_user_cache
+
+Create a user authentication cache (DB 0).
+
+```python
+from mysingle.database import create_user_cache
+
+cache = create_user_cache()
+await cache.set("user_id_123", user_data, ttl=300)
+user = await cache.get("user_id_123")
+```
+
+#### create_grpc_cache
+
+Create a gRPC response cache for a specific service (DB 1).
+
+```python
+from mysingle.database import create_grpc_cache
+
+# Service-specific gRPC cache
+cache = create_grpc_cache(service_name="strategy")
+await cache.set("GetStrategy:abc123", response_data)
+result = await cache.get("GetStrategy:abc123")
+```
+
+#### create_service_cache
+
+Create a service-specific cache with custom DB allocation.
+
+```python
+from mysingle.database import create_service_cache
+from mysingle.core.config import settings
+
+# Market data cache (DB 5)
+market_cache = create_service_cache(
+    service_name="market",
+    db_constant=settings.REDIS_DB_MARKET_DATA,
+)
+
+# Indicator cache (DB 7)
+indicator_cache = create_service_cache(
+    service_name="indicator",
+    db_constant=settings.REDIS_DB_INDICATOR,
+)
+```
+
+**Factory Function Benefits:**
+- ✅ Enforces platform-wide DB allocation standards
+- ✅ Prevents accidental DB number conflicts
+- ✅ Simplifies cache creation with sensible defaults
+- ✅ Centralizes cache configuration management
+- ✅ Automatic key_prefix and TTL standardization
+
+---
+
+### Redis Usage (Legacy)
+
 #### Standard Redis Client
 
 ```python
@@ -107,7 +213,8 @@ class MarketDataCache(BaseRedisCache[dict]):
         super().__init__(
             key_prefix="market",
             default_ttl=60,
-            redis_db=1,  # Dedicated DB for market data
+            # Note: redis_db is now internal (_redis_db), cannot be set directly
+            # Use factory functions or get_redis_client(db=N) for DB selection
         )
 
 # Usage
@@ -136,7 +243,7 @@ class IndicatorCache(BaseRedisCache[Indicator]):
         super().__init__(
             key_prefix="indicator",
             default_ttl=120,
-            redis_db=2,  # Dedicated DB for indicators
+            # Note: redis_db is now internal, use factory functions
             use_json=True,  # JSON serialization
         )
 
@@ -1550,7 +1657,15 @@ class RedisUserCache:
         await client.setex(key, self.ttl, json.dumps(user_data))
         return True
 
-# New: Using BaseRedisCache
+# New: Using BaseRedisCache (v2.2.1+)
+from mysingle.database import create_user_cache
+
+# Option 1: Use factory function (recommended)
+cache = create_user_cache()
+user = await cache.get("user_id_123")
+await cache.set("user_id_123", user_data)
+
+# Option 2: Custom cache class (if needed)
 from mysingle.database import BaseRedisCache
 
 class RedisUserCache(BaseRedisCache[dict]):
@@ -1560,7 +1675,8 @@ class RedisUserCache(BaseRedisCache[dict]):
         super().__init__(
             key_prefix=settings.USER_CACHE_KEY_PREFIX,
             default_ttl=settings.USER_CACHE_TTL_SECONDS,
-            redis_db=0,  # IAM service uses DB 0
+            # Note: redis_db is now internal (_redis_db)
+            # DB 0 is automatically used for user cache
             use_json=True,
         )
 
@@ -1577,6 +1693,7 @@ class RedisUserCache(BaseRedisCache[dict]):
 # - Automatic serialization
 # - Built-in error handling
 # - Connection pooling
+# - Platform-wide DB allocation enforcement (v2.2.1+)
 # - Health checks
 # - Consistent logging
 ```

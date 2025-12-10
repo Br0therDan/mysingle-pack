@@ -47,6 +47,21 @@ class BaseRedisCache(ABC, Generic[T]):
     범용 Redis 캐시 기본 클래스
 
     서비스별 캐시를 구현할 때 이 클래스를 상속받습니다.
+
+    **중요**: redis_db 파라미터는 내부 전용입니다.
+    직접 지정하지 말고 CommonSettings의 REDIS_DB_* 상수를 사용하세요.
+
+    권장 사용법:
+        from mysingle.core.config import settings
+        from mysingle.database import BaseRedisCache
+
+        class MyServiceCache(BaseRedisCache):
+            def __init__(self):
+                super().__init__(
+                    key_prefix="myservice",
+                    default_ttl=3600,
+                    redis_db=settings.REDIS_DB_MYSERVICE,  # Use constant
+                )
     """
 
     def __init__(
@@ -61,14 +76,30 @@ class BaseRedisCache(ABC, Generic[T]):
         Args:
             key_prefix: 캐시 키 접두사 (예: "market", "indicator")
             default_ttl: 기본 TTL (초)
-            redis_db: Redis DB 번호
+            redis_db: Redis DB 번호 (내부 전용 - CommonSettings의 REDIS_DB_* 상수 사용 권장)
             use_json: JSON 직렬화 사용 (False면 pickle 사용)
+
+        Warning:
+            redis_db를 직접 하드코딩하지 마세요.
+            반드시 settings.REDIS_DB_* 상수를 사용하세요.
         """
         self.key_prefix = key_prefix
         self.default_ttl = default_ttl
-        self.redis_db = redis_db
+        self._redis_db = redis_db  # Internal use only
         self.use_json = use_json
         self._redis_client = None
+
+        # Log warning if redis_db seems to be hardcoded (not using common values)
+        if redis_db not in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]:
+            logger.warning(
+                "Invalid Redis DB number. Must be 0-15.",
+                extra={"redis_db": redis_db, "key_prefix": key_prefix},
+            )
+
+    @property
+    def redis_db(self) -> int:
+        """Redis DB 번호 (read-only)"""
+        return self._redis_db
 
     async def _get_redis(self):
         """Redis 클라이언트 가져오기 (lazy loading)"""

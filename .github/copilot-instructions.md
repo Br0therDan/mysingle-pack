@@ -124,6 +124,100 @@ async with MyServiceClient(user_id=user_id) as client:
 
 ---
 
+## Redis Cache Standards
+
+### Database Allocation
+
+All services MUST use `BaseRedisCache` from `mysingle.database` and follow the platform-wide DB allocation policy:
+
+| DB  | Purpose                | Owner Service(s)  | Key Prefix Examples                                   | TTL Guidance |
+| --- | ---------------------- | ----------------- | ----------------------------------------------------- | ------------ |
+| 0   | User Authentication    | IAM               | `user:{user_id}`                                      | 300s (5min)  |
+| 1   | gRPC Response Cache    | All Services      | `grpc:{service_name}:{method}:{hash}`                 | 3600s (1h)   |
+| 2   | Rate Limiting          | Kong/Gateway      | `ratelimit:{user_id}:{endpoint}`, `quota:{user_id}`   | 60-3600s     |
+| 3   | Session Storage        | IAM               | `session:{session_id}`                                | 86400s (24h) |
+| 4   | DSL Bytecode Cache     | Strategy          | `dsl:bytecode:{strategy_id}`, `dsl:warmed:{hash}`     | 3600-86400s  |
+| 5   | Market Data Cache      | Market Data       | `market:{symbol}:{interval}:{date_range_hash}`        | 300-3600s    |
+| 6   | Backtest Service Cache | Backtest          | `walkforward:{job_id}:{window}`, `progress:{task_id}` | 3600-86400s  |
+| 7   | Indicator Cache        | Indicator         | `indicator:{name}:{symbol}:{params_hash}`             | 1800-7200s   |
+| 8   | Strategy Cache         | Strategy          | `strategy:{strategy_id}`, `version:{version_id}`      | 600-3600s    |
+| 9   | Notification Queue     | Notification      | `notif:{user_id}:{timestamp}`, `email_queue:{id}`     | 300-1800s    |
+| 10  | Celery Broker          | Backtest (Celery) | `celery:task:{task_id}`, `celery:group:{group_id}`    | Managed      |
+| 11  | Celery Result Backend  | Backtest (Celery) | `celery-task-meta-{task_id}`                          | Managed      |
+| 12  | ML Model Cache         | ML                | `ml:model:{model_id}`, `ml:prediction:{request_hash}` | 3600-86400s  |
+| 13  | GenAI Response Cache   | GenAI             | `genai:{prompt_hash}`, `genai:context:{session_id}`   | 1800-7200s   |
+| 14  | Subscription Cache     | Subscription      | `subscription:{user_id}`, `plan:{plan_id}`            | 3600s        |
+| 15  | Reserved               | Platform          | -                                                     | -            |
+
+### Usage Guidelines
+
+**DO:**
+
+- ✅ Use `BaseRedisCache` for service-specific caching
+- ✅ Reference `REDIS_DB_*` constants from `CommonSettings`
+- ✅ Follow key_prefix standards for your service
+- ✅ Set appropriate TTL based on data volatility
+- ✅ Use `get_redis_client(db=N)` for direct operations when needed
+
+**DON'T:**
+
+- ❌ Hard-code DB numbers in your code
+- ❌ Use `redis.asyncio` directly without `BaseRedisCache`
+- ❌ Share DB numbers across unrelated purposes
+- ❌ Use DB 15 (reserved for future platform needs)
+- ❌ Create keys without proper prefix namespacing
+
+### Implementation Example
+
+**New in v2.2.1:** Use factory functions (recommended)
+
+```python
+from mysingle.database import create_service_cache
+from mysingle.core.config import settings
+
+# Option 1: Factory function (recommended)
+cache = create_service_cache(
+    service_name="myservice",
+    db_constant=settings.REDIS_DB_MYSERVICE,
+)
+
+# Option 2: Custom cache class (if custom logic needed)
+from mysingle.database import BaseRedisCache
+
+class MyServiceCache(BaseRedisCache):
+    """Service-specific cache following platform standards"""
+
+    def __init__(self):
+        super().__init__(
+            key_prefix="myservice",  # Service-specific prefix
+            default_ttl=3600,
+            # Note: redis_db is now internal (_redis_db)
+            # Use factory functions or direct client for DB selection
+        )
+```
+
+**Factory Functions (v2.2.1+):**
+
+```python
+from mysingle.database import (
+    create_user_cache,      # User auth cache (DB 0)
+    create_grpc_cache,      # gRPC response cache (DB 1)
+    create_service_cache,   # Service-specific cache (custom DB)
+)
+
+# User cache (DB 0)
+user_cache = create_user_cache()
+
+# gRPC cache (DB 1)
+grpc_cache = create_grpc_cache(service_name="strategy")
+
+# Service cache (custom DB)
+from mysingle.core.config import settings
+market_cache = create_service_cache("market", settings.REDIS_DB_MARKET_DATA)
+```
+
+---
+
 ## Required Standards
 
 ### Headers

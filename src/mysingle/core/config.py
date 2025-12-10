@@ -40,16 +40,33 @@ class CommonSettings(BaseSettings):
     ##################################################################
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
-    REDIS_DB: int = 0  # Default DB for user cache
     REDIS_PASSWORD: str | None = None  # Set to enable AUTH
-    REDIS_URL: str = "redis://localhost:6379/0"  # Override for custom URL
 
-    # REDIS DB ALLOCATION
-    REDIS_DB_USER: int = 0  # User authentication cache
-    REDIS_DB_GRPC: int = 1  # gRPC response cache
-    REDIS_DB_RATE_LIMIT: int = 3  # Rate limiting counters
-    REDIS_DB_SESSION: int = 4  # Session storage
-    REDIS_DB_DSL: int = 5  # DSL bytecode cache
+    # REDIS DB ALLOCATION - Platform-wide standard
+    REDIS_DB_USER: int = 0  # User authentication cache (IAM)
+    REDIS_DB_GRPC: int = 1  # gRPC response cache (All services)
+    REDIS_DB_RATE_LIMIT: int = 2  # Rate limiting counters (Kong/Gateway)
+    REDIS_DB_SESSION: int = 3  # Session storage (IAM)
+    REDIS_DB_DSL: int = 4  # DSL bytecode cache (Strategy)
+    REDIS_DB_MARKET_DATA: int = 5  # Market data cache (Market Data)
+    REDIS_DB_BACKTEST: int = 6  # Backtest service cache (Backtest)
+    REDIS_DB_INDICATOR: int = 7  # Indicator cache (Indicator)
+    REDIS_DB_STRATEGY_CACHE: int = 8  # Strategy cache (Strategy)
+    REDIS_DB_NOTIFICATION: int = 9  # Notification queue (Notification)
+    REDIS_DB_CELERY_BROKER: int = 10  # Celery broker (Backtest)
+    REDIS_DB_CELERY_RESULT: int = 11  # Celery result backend (Backtest)
+    REDIS_DB_ML: int = 12  # ML model cache (ML)
+    REDIS_DB_GENAI: int = 13  # GenAI response cache (GenAI)
+    REDIS_DB_SUBSCRIPTION: int = 14  # Subscription cache (Subscription)
+    REDIS_DB_RESERVED: int = 15  # Reserved for future platform needs
+
+    @computed_field
+    @property
+    def redis_url(self) -> str:
+        """Construct Redis URL from HOST/PORT/PASSWORD (read-only)."""
+        if self.REDIS_PASSWORD:
+            return f"redis://:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}"
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}"
 
     # USER CACHE SETTINGS
     USER_CACHE_TTL_SECONDS: int = 300
@@ -179,6 +196,54 @@ class CommonSettings(BaseSettings):
     SMTP_PASSWORD: str | None = None
     EMAILS_FROM_EMAIL: str = "your_email@example.com"
     EMAILS_FROM_NAME: str = "Admin Name"
+
+    @model_validator(mode="after")
+    def _validate_redis_config(self) -> Self:
+        """Validate Redis configuration settings."""
+        # Validate REDIS_HOST is not empty
+        if not self.REDIS_HOST or self.REDIS_HOST.strip() == "":
+            raise ValueError("REDIS_HOST cannot be empty")
+
+        # Validate REDIS_PORT range
+        if not (1 <= self.REDIS_PORT <= 65535):
+            raise ValueError(
+                f"REDIS_PORT must be between 1-65535, got {self.REDIS_PORT}"
+            )
+
+        # Validate all REDIS_DB_* values are within valid range (0-15)
+        db_fields = {
+            "REDIS_DB_USER": self.REDIS_DB_USER,
+            "REDIS_DB_GRPC": self.REDIS_DB_GRPC,
+            "REDIS_DB_RATE_LIMIT": self.REDIS_DB_RATE_LIMIT,
+            "REDIS_DB_SESSION": self.REDIS_DB_SESSION,
+            "REDIS_DB_DSL": self.REDIS_DB_DSL,
+            "REDIS_DB_MARKET_DATA": self.REDIS_DB_MARKET_DATA,
+            "REDIS_DB_BACKTEST": self.REDIS_DB_BACKTEST,
+            "REDIS_DB_INDICATOR": self.REDIS_DB_INDICATOR,
+            "REDIS_DB_STRATEGY_CACHE": self.REDIS_DB_STRATEGY_CACHE,
+            "REDIS_DB_NOTIFICATION": self.REDIS_DB_NOTIFICATION,
+            "REDIS_DB_CELERY_BROKER": self.REDIS_DB_CELERY_BROKER,
+            "REDIS_DB_CELERY_RESULT": self.REDIS_DB_CELERY_RESULT,
+            "REDIS_DB_ML": self.REDIS_DB_ML,
+            "REDIS_DB_GENAI": self.REDIS_DB_GENAI,
+            "REDIS_DB_SUBSCRIPTION": self.REDIS_DB_SUBSCRIPTION,
+            "REDIS_DB_RESERVED": self.REDIS_DB_RESERVED,
+        }
+
+        for field_name, db_value in db_fields.items():
+            if not (0 <= db_value <= 15):
+                raise ValueError(f"{field_name} must be between 0-15, got {db_value}")
+
+        # Check for duplicate DB assignments (excluding RESERVED)
+        db_values = [v for k, v in db_fields.items() if k != "REDIS_DB_RESERVED"]
+        if len(db_values) != len(set(db_values)):
+            duplicates = {x for x in db_values if db_values.count(x) > 1}
+            raise ValueError(
+                f"Duplicate Redis DB assignments detected: {duplicates}. "
+                "Each service must use a unique DB number."
+            )
+
+        return self
 
     @model_validator(mode="after")
     def _set_default_emails_from(self) -> Self:

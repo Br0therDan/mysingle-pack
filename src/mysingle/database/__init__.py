@@ -1,5 +1,10 @@
 """Database utilities for DuckDB and Redis"""
 
+from .cache_factory import (
+    create_grpc_cache,
+    create_service_cache,
+    create_user_cache,
+)
 from .duckdb_manager import BaseDuckDBManager
 from .redis import (
     RedisClientManager,
@@ -21,4 +26,8 @@ __all__ = [
     "reset_redis_manager",
     # Redis Cache
     "BaseRedisCache",
+    # Cache Factories
+    "create_user_cache",
+    "create_grpc_cache",
+    "create_service_cache",
 ]
