@@ -61,10 +61,8 @@ class CommonSettings(BaseSettings):
     DSL_CACHE_WARMING_TTL_SECONDS: int = 86400  # 24 hours for warmed cache
 
     ##################################################################
-    # REDIS SETTINGS
-    ##################################################################
-
     # GRPC SERVER SETTINGS
+    ##################################################################
 
     GRPC_SERVER_MAX_WORKERS: int = 10  # Thread pool size
     GRPC_SERVER_ENABLE_REFLECTION: bool = False  # Enable in development only
