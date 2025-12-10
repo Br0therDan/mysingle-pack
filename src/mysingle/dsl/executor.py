@@ -157,6 +157,11 @@ class DSLExecutor:
             }
         )
 
+        # DataFrame 컬럼을 개별 변수로 주입 (DSL 편의성)
+        # 표준 OHLCV 컬럼: open, high, low, close, volume
+        for col in data.columns:
+            namespace[col] = data[col]
+
         # 파라미터를 개별 변수로도 주입 (하위 호환성)
         namespace.update(params)
 
