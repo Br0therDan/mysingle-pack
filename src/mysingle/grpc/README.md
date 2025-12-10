@@ -316,8 +316,8 @@ async def UpdateStrategyVersion(self, request, context):
 # .env 파일
 
 # Redis DB 할당
-REDIS_DB_GRPC=2          # gRPC 캐시 전용
-REDIS_DB_RATE_LIMIT=3    # Rate Limiting 전용
+REDIS_DB_GRPC=1          # gRPC 캐시 전용 (L2 Redis cache)
+REDIS_DB_RATE_LIMIT=2    # Rate Limiting 전용
 
 # gRPC 서버 기본 설정
 GRPC_SERVER_PORT=50051
