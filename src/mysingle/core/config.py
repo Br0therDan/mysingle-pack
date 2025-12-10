@@ -63,9 +63,12 @@ class CommonSettings(BaseSettings):
     @computed_field
     @property
     def redis_url(self) -> str:
-        """Construct Redis URL from HOST/PORT/PASSWORD (read-only)."""
+        """Construct Redis URL from HOST/PORT/PASSWORD (read-only).
+
+        Uses 'default' username for Redis 7.x ACL compatibility.
+        """
         if self.REDIS_PASSWORD:
-            return f"redis://:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}"
+            return f"redis://default:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}"
         return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}"
 
     # USER CACHE SETTINGS

@@ -306,6 +306,7 @@ def _get_redis_config_from_settings() -> RedisConfig:
             host=settings.REDIS_HOST,
             port=settings.REDIS_PORT,
             password=settings.REDIS_PASSWORD,
+            username="default" if settings.REDIS_PASSWORD else None,  # Redis 7.x ACL
             db=0,  # Default DB, actual DB is specified when getting client
         )
 
