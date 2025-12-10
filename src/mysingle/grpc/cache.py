@@ -38,7 +38,7 @@ from google.protobuf.message import Message as ProtoMessage
 
 from mysingle.core.config import settings
 from mysingle.core.logging import get_structured_logger
-from mysingle.database.redis_cache import BaseRedisCache
+from mysingle.database.redis import BaseRedisCache
 
 if TYPE_CHECKING:
     from mysingle.core.config import CommonSettings
