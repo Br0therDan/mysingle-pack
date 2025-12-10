@@ -4,6 +4,11 @@ Base gRPC Client
 모든 마이크로서비스 gRPC 클라이언트의 베이스 클래스
 공통 기능: 채널 관리, 메타데이터 주입, 컨텍스트 매니저, 환경별 연결 설정
 
+Note:
+    - 이 클라이언트는 gRPC 연결 관리만 담당합니다.
+    - 응답 캐싱이 필요한 경우 `mysingle.grpc.cache.GrpcCache`를 별도로 사용하세요.
+    - GrpcCache는 Redis DB 1 (REDIS_DB_GRPC)을 사용하여 응답을 캐싱합니다.
+
 Usage:
     ```python
     from mysingle.clients import BaseGrpcClient
@@ -40,6 +45,23 @@ Usage:
         data = await client.get_data("req_id")
     finally:
         await client.close()
+
+    # 사용 3: 캐싱과 함께 사용 (선택적)
+    from mysingle.grpc.cache import GrpcCache
+
+    cache = GrpcCache(service_name="my-service")
+    cache_key = "get_data:req_id"
+
+    # 캐시 확인
+    cached = await cache.get(cache_key)
+    if cached:
+        return cached
+
+    # 캐시 미스 시 gRPC 호출
+    async with MyServiceGrpcClient(user_id="user123") as client:
+        data = await client.get_data("req_id")
+        await cache.set(cache_key, data, ttl=3600)
+        return data
     ```
 """
 
