@@ -108,6 +108,12 @@ class StrategyServiceStub(object):
             response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.UpdateStrategyVersionResponse.FromString,
             _registered_method=True,
         )
+        self.GetPortfolioSummary = channel.unary_unary(
+            "/strategy.v1.StrategyService/GetPortfolioSummary",
+            request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryRequest.SerializeToString,
+            response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.PortfolioSummaryResponse.FromString,
+            _registered_method=True,
+        )
 
 
 class StrategyServiceServicer(object):
@@ -209,6 +215,17 @@ class StrategyServiceServicer(object):
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
+    def GetPortfolioSummary(self, request, context):
+        """--- Phase 4: ML Service Portfolio Summary ---
+
+        Get portfolio summary for ML model training
+        Provides aggregated strategy performance data for ML Service
+        GetPortfolioSummary RPC.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
 
 def add_StrategyServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -266,6 +283,11 @@ def add_StrategyServiceServicer_to_server(servicer, server):
             servicer.UpdateStrategyVersion,
             request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.UpdateStrategyVersionRequest.FromString,
             response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.UpdateStrategyVersionResponse.SerializeToString,
+        ),
+        "GetPortfolioSummary": grpc.unary_unary_rpc_method_handler(
+            servicer.GetPortfolioSummary,
+            request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryRequest.FromString,
+            response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.PortfolioSummaryResponse.SerializeToString,
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -603,6 +625,36 @@ class StrategyService(object):
             "/strategy.v1.StrategyService/UpdateStrategyVersion",
             services_dot_strategy_dot_v1_dot_strategy__service__pb2.UpdateStrategyVersionRequest.SerializeToString,
             services_dot_strategy_dot_v1_dot_strategy__service__pb2.UpdateStrategyVersionResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def GetPortfolioSummary(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/strategy.v1.StrategyService/GetPortfolioSummary",
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryRequest.SerializeToString,
+            services_dot_strategy_dot_v1_dot_strategy__service__pb2.PortfolioSummaryResponse.FromString,
             options,
             channel_credentials,
             insecure,

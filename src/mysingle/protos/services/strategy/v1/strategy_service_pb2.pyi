@@ -459,3 +459,143 @@ class UpdateStrategyVersionResponse(_message.Message):
         strategy_version: _Optional[_Union[StrategyVersionResponse, _Mapping]] = ...,
         validation_triggered: bool = ...,
     ) -> None: ...
+
+class GetPortfolioSummaryRequest(_message.Message):
+    __slots__ = ("strategy_id", "user_id", "start_date", "end_date")
+    STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    START_DATE_FIELD_NUMBER: _ClassVar[int]
+    END_DATE_FIELD_NUMBER: _ClassVar[int]
+    strategy_id: str
+    user_id: str
+    start_date: str
+    end_date: str
+    def __init__(
+        self,
+        strategy_id: _Optional[str] = ...,
+        user_id: _Optional[str] = ...,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+    ) -> None: ...
+
+class PortfolioSummaryResponse(_message.Message):
+    __slots__ = (
+        "strategy_id",
+        "strategy_name",
+        "user_id",
+        "positions",
+        "history",
+        "stats",
+        "has_backtest_data",
+        "last_backtest_date",
+    )
+    STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
+    STRATEGY_NAME_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    POSITIONS_FIELD_NUMBER: _ClassVar[int]
+    HISTORY_FIELD_NUMBER: _ClassVar[int]
+    STATS_FIELD_NUMBER: _ClassVar[int]
+    HAS_BACKTEST_DATA_FIELD_NUMBER: _ClassVar[int]
+    LAST_BACKTEST_DATE_FIELD_NUMBER: _ClassVar[int]
+    strategy_id: str
+    strategy_name: str
+    user_id: str
+    positions: _containers.RepeatedCompositeFieldContainer[Position]
+    history: _containers.RepeatedCompositeFieldContainer[HistoryPoint]
+    stats: PortfolioStats
+    has_backtest_data: bool
+    last_backtest_date: str
+    def __init__(
+        self,
+        strategy_id: _Optional[str] = ...,
+        strategy_name: _Optional[str] = ...,
+        user_id: _Optional[str] = ...,
+        positions: _Optional[_Iterable[_Union[Position, _Mapping]]] = ...,
+        history: _Optional[_Iterable[_Union[HistoryPoint, _Mapping]]] = ...,
+        stats: _Optional[_Union[PortfolioStats, _Mapping]] = ...,
+        has_backtest_data: bool = ...,
+        last_backtest_date: _Optional[str] = ...,
+    ) -> None: ...
+
+class Position(_message.Message):
+    __slots__ = (
+        "symbol",
+        "quantity",
+        "entry_price",
+        "current_price",
+        "unrealized_pnl",
+        "entry_date",
+    )
+    SYMBOL_FIELD_NUMBER: _ClassVar[int]
+    QUANTITY_FIELD_NUMBER: _ClassVar[int]
+    ENTRY_PRICE_FIELD_NUMBER: _ClassVar[int]
+    CURRENT_PRICE_FIELD_NUMBER: _ClassVar[int]
+    UNREALIZED_PNL_FIELD_NUMBER: _ClassVar[int]
+    ENTRY_DATE_FIELD_NUMBER: _ClassVar[int]
+    symbol: str
+    quantity: float
+    entry_price: float
+    current_price: float
+    unrealized_pnl: float
+    entry_date: str
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        quantity: _Optional[float] = ...,
+        entry_price: _Optional[float] = ...,
+        current_price: _Optional[float] = ...,
+        unrealized_pnl: _Optional[float] = ...,
+        entry_date: _Optional[str] = ...,
+    ) -> None: ...
+
+class HistoryPoint(_message.Message):
+    __slots__ = ("date", "portfolio_value", "total_pnl", "win_rate", "trade_count")
+    DATE_FIELD_NUMBER: _ClassVar[int]
+    PORTFOLIO_VALUE_FIELD_NUMBER: _ClassVar[int]
+    TOTAL_PNL_FIELD_NUMBER: _ClassVar[int]
+    WIN_RATE_FIELD_NUMBER: _ClassVar[int]
+    TRADE_COUNT_FIELD_NUMBER: _ClassVar[int]
+    date: str
+    portfolio_value: float
+    total_pnl: float
+    win_rate: float
+    trade_count: int
+    def __init__(
+        self,
+        date: _Optional[str] = ...,
+        portfolio_value: _Optional[float] = ...,
+        total_pnl: _Optional[float] = ...,
+        win_rate: _Optional[float] = ...,
+        trade_count: _Optional[int] = ...,
+    ) -> None: ...
+
+class PortfolioStats(_message.Message):
+    __slots__ = (
+        "total_return",
+        "sharpe_ratio",
+        "max_drawdown",
+        "win_rate",
+        "total_trades",
+        "avg_trade_pnl",
+    )
+    TOTAL_RETURN_FIELD_NUMBER: _ClassVar[int]
+    SHARPE_RATIO_FIELD_NUMBER: _ClassVar[int]
+    MAX_DRAWDOWN_FIELD_NUMBER: _ClassVar[int]
+    WIN_RATE_FIELD_NUMBER: _ClassVar[int]
+    TOTAL_TRADES_FIELD_NUMBER: _ClassVar[int]
+    AVG_TRADE_PNL_FIELD_NUMBER: _ClassVar[int]
+    total_return: float
+    sharpe_ratio: float
+    max_drawdown: float
+    win_rate: float
+    total_trades: int
+    avg_trade_pnl: float
+    def __init__(
+        self,
+        total_return: _Optional[float] = ...,
+        sharpe_ratio: _Optional[float] = ...,
+        max_drawdown: _Optional[float] = ...,
+        win_rate: _Optional[float] = ...,
+        total_trades: _Optional[int] = ...,
+        avg_trade_pnl: _Optional[float] = ...,
+    ) -> None: ...
