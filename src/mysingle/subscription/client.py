@@ -68,7 +68,7 @@ class SubscriptionServiceClient(BaseGrpcClient):
             GetSubscriptionResponse (proto)
         """
         request = subscription_service_pb2.GetSubscriptionRequest(user_id=user_id)
-        return await self.stub.GetSubscription(request)
+        return await self.stub.GetSubscription(request, metadata=self.metadata)
 
     async def check_quota(
         self,
@@ -93,7 +93,7 @@ class SubscriptionServiceClient(BaseGrpcClient):
             metric=metric,
             amount=amount,
         )
-        return await self.stub.CheckQuota(request)
+        return await self.stub.CheckQuota(request, metadata=self.metadata)
 
     async def get_entitlements(self, user_id: str):
         """Get user's tier-based entitlements.
@@ -107,7 +107,7 @@ class SubscriptionServiceClient(BaseGrpcClient):
             GetEntitlementsResponse (proto): tier, features, limits
         """
         request = subscription_service_pb2.GetEntitlementsRequest(user_id=user_id)
-        return await self.stub.GetEntitlements(request)
+        return await self.stub.GetEntitlements(request, metadata=self.metadata)
 
     async def get_usage(
         self,
@@ -131,7 +131,7 @@ class SubscriptionServiceClient(BaseGrpcClient):
         )
         if date:
             request.date = date
-        return await self.stub.GetUsage(request)
+        return await self.stub.GetUsage(request, metadata=self.metadata)
 
     async def get_all_quotas(
         self,
@@ -150,7 +150,7 @@ class SubscriptionServiceClient(BaseGrpcClient):
         request = subscription_service_pb2.GetAllQuotasRequest(user_id=user_id)
         if date:
             request.date = date
-        return await self.stub.GetAllQuotas(request)
+        return await self.stub.GetAllQuotas(request, metadata=self.metadata)
 
     async def health_check(self):
         """Check Subscription Service health.
@@ -159,4 +159,4 @@ class SubscriptionServiceClient(BaseGrpcClient):
             HealthCheckResponse (proto)
         """
         request = subscription_service_pb2.HealthCheckRequest()
-        return await self.stub.HealthCheck(request)
+        return await self.stub.HealthCheck(request, metadata=self.metadata)
