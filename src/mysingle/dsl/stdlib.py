@@ -510,7 +510,8 @@ def obv(close: pd.Series, volume: pd.Series) -> pd.Series:
     """
     direction = np.sign(close.diff())
     direction[direction == 0] = 1  # 변화 없으면 양수로 처리
-    return (direction * volume).cumsum()
+    result = (direction * volume).cumsum()
+    return pd.Series(result, index=close.index)
 
 
 # ============================================================================
@@ -650,7 +651,9 @@ def check_missing_data(data: pd.DataFrame, threshold: float = 0.05) -> dict[str,
         dict: 컬럼별 결측치 비율
     """
     missing_pct = data.isnull().sum() / len(data)
-    issues = {col: pct for col, pct in missing_pct.items() if pct > threshold}
+    issues = {
+        str(col): float(pct) for col, pct in missing_pct.items() if pct > threshold
+    }
     return issues
 
 
@@ -721,13 +724,18 @@ def get_stdlib_functions() -> dict[str, Callable[..., Any]]:
         dict: 함수명 -> 함수 매핑
     """
     return {
-        # Moving Averages
+        # Moving Averages (대소문자 별칭 지원)
         "SMA": SMA,
+        "sma": SMA,
         "EMA": EMA,
+        "ema": EMA,
         "WMA": WMA,
-        # Technical Indicators (Basic)
+        "wma": WMA,
+        # Technical Indicators (Basic) (대소문자 별칭 지원)
         "RSI": RSI,
+        "rsi": RSI,
         "MACD": MACD,
+        "macd": MACD,
         "stochastic": stochastic,
         "ichimoku": ichimoku,
         # Crossover Signals
@@ -743,12 +751,15 @@ def get_stdlib_functions() -> dict[str, Callable[..., Any]]:
         "stdev": stdev,
         "bbands": bbands,
         "atr": atr,
+        "ATR": atr,
         # Support/Resistance
         "pivot_points": pivot_points,
         "fibonacci_retracement": fibonacci_retracement,
         # Volume Indicators
         "vwap": vwap,
+        "VWAP": vwap,
         "obv": obv,
+        "OBV": obv,
         # Strategy Functions
         "generate_signal": generate_signal,
         "entry_exit_signals": entry_exit_signals,
