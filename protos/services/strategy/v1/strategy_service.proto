@@ -56,6 +56,13 @@ service StrategyService {
   // Update an existing strategy version
   // UpdateStrategyVersion RPC.
   rpc UpdateStrategyVersion(UpdateStrategyVersionRequest) returns (UpdateStrategyVersionResponse);
+
+  // --- Phase 4: ML Service Portfolio Summary ---
+
+  // Get portfolio summary for ML model training
+  // Provides aggregated strategy performance data for ML Service
+  // GetPortfolioSummary RPC.
+  rpc GetPortfolioSummary(GetPortfolioSummaryRequest) returns (PortfolioSummaryResponse);
 }
 
 // Request Messages
@@ -343,6 +350,91 @@ message UpdateStrategyVersionResponse {
   StrategyVersionResponse strategy_version = 1;
   // Whether validation was triggered (true if dsl_code was updated)
   bool validation_triggered = 2;
+}
+
+// --- Phase 4: Portfolio Summary Messages ---
+
+// GetPortfolioSummaryRequest defines the request payload for GetPortfolioSummary.
+message GetPortfolioSummaryRequest {
+  // Strategy ID
+  string strategy_id = 1;
+  // User ID for authorization
+  string user_id = 2;
+  // Optional: Start date for performance history (ISO 8601)
+  string start_date = 3;
+  // Optional: End date for performance history (ISO 8601)
+  string end_date = 4;
+}
+
+// PortfolioSummaryResponse defines the response payload for GetPortfolioSummary.
+// Provides aggregated portfolio data for ML model training
+message PortfolioSummaryResponse {
+  // Strategy ID (ObjectId as string)
+  string strategy_id = 1;
+  // Human-readable strategy name
+  string strategy_name = 2;
+  // User ID who owns the strategy
+  string user_id = 3;
+
+  // Current positions (if available from latest backtest)
+  repeated Position positions = 4;
+
+  // Performance history points
+  repeated HistoryPoint history = 5;
+
+  // Aggregated statistics
+  PortfolioStats stats = 6;
+
+  // Whether backtest data is available for this strategy
+  bool has_backtest_data = 7;
+  // Last backtest execution date (ISO 8601 format)
+  string last_backtest_date = 8;
+}
+
+// Position represents a current portfolio position
+message Position {
+  // Trading symbol (e.g., "AAPL", "BTC-USD")
+  string symbol = 1;
+  // Position quantity (positive for long, negative for short)
+  double quantity = 2;
+  // Entry price per unit
+  double entry_price = 3;
+  // Current market price
+  double current_price = 4;
+  // Unrealized profit/loss in account currency
+  double unrealized_pnl = 5;
+  // Position entry date (ISO 8601 format)
+  string entry_date = 6;
+}
+
+// HistoryPoint represents a point in portfolio performance history
+message HistoryPoint {
+  // Date of this history point (ISO 8601 format)
+  string date = 1;
+  // Total portfolio value at this date
+  double portfolio_value = 2;
+  // Cumulative profit/loss at this date
+  double total_pnl = 3;
+  // Win rate percentage (0-100) at this date
+  double win_rate = 4;
+  // Total number of trades executed up to this date
+  int32 trade_count = 5;
+}
+
+// PortfolioStats contains aggregated portfolio statistics
+message PortfolioStats {
+  // Total return percentage (e.g., 15.5 for 15.5%)
+  double total_return = 1;
+  // Sharpe ratio (risk-adjusted return metric)
+  double sharpe_ratio = 2;
+  // Maximum drawdown percentage (e.g., 10.2 for 10.2% drawdown)
+  double max_drawdown = 3;
+  // Overall win rate percentage (0-100)
+  double win_rate = 4;
+  // Total number of trades in the period
+  int32 total_trades = 5;
+  // Average profit/loss per trade
+  double avg_trade_pnl = 6;
 }
 
 // Error handling (standard gRPC status codes)
