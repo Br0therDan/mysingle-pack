@@ -1,44 +1,35 @@
 """
-mysingle.auth - Authentication & Authorization Module
+Kong Gateway Authentication Module
 
-Public API for microservices authentication with Kong Gateway support.
+Simplified authentication based on Kong Gateway headers.
 """
 
+from .decorators import admin_only, authorized, resource_owner_required
 from .deps import (
-    # Admin authentication
-    get_current_active_superuser,
-    get_current_active_user,
-    # Primary authentication functions (권장)
-    get_current_active_verified_user,
-    get_current_user,
-    get_current_user_optional,
-    # Kong Gateway integration (simplified)
-    get_kong_user_id,
-    is_kong_authenticated,
+    get_correlation_id,
+    get_request_id,
+    get_request_security_context,
+    get_user_display_name,
+    get_user_email,
+    get_user_id,
+    get_user_id_optional,
 )
 from .middleware import AuthMiddleware
-from .models import User
 
 __all__ = [
-    # ==========================================
-    # Core Authentication (Most Used)
-    # ==========================================
-    "get_current_user",  # 기본 인증 (활성 여부 체크 안 함)
-    "get_current_active_user",  # 활성 사용자 (is_active=True)
-    "get_current_active_verified_user",  # 이메일 검증된 사용자 (권장)
-    "get_current_user_optional",  # 선택적 인증 (공개 API용)
-    # ==========================================
-    # Admin Authentication
-    # ==========================================
-    "get_current_active_superuser",  # 관리자 권한 필요
-    # ==========================================
-    # Kong Gateway Integration (Simplified)
-    # ==========================================
-    "get_kong_user_id",  # Kong 헤더에서 user_id 추출
-    "is_kong_authenticated",  # Kong 헤더 존재 여부 확인
-    # ==========================================
-    # Core Components
-    # ==========================================
-    "User",  # User 모델
-    "AuthMiddleware",  # 인증 미들웨어
+    # Core Functions
+    "get_user_id",
+    "get_user_id_optional",
+    "get_user_email",
+    "get_correlation_id",
+    "get_request_id",
+    # Utilities
+    "get_user_display_name",
+    "get_request_security_context",
+    # Decorators
+    "authorized",
+    "admin_only",
+    "resource_owner_required",
+    # Middleware
+    "AuthMiddleware",
 ]

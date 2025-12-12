@@ -20,7 +20,7 @@ from .logging.middleware import (
     setup_request_id_dependency,
 )
 from .metrics import MetricsCollector, get_metrics_collector
-from .service_types import ServiceType, create_service_config
+from .service_types import create_service_config
 
 __all__ = [
     # Core Settings
@@ -34,8 +34,6 @@ __all__ = [
     "init_mongo",
     "get_mongodb_url",
     "get_database_name",
-    # Service Types
-    "ServiceType",
     "create_service_config",
     # Middleware
     "LoggingMiddleware",

@@ -9,7 +9,7 @@ from typing import Callable
 from fastapi import HTTPException, Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from mysingle.auth import get_current_user
+from mysingle.auth import get_user_id_optional
 from mysingle.core.logging import get_structured_logger
 from mysingle.subscription.client import SubscriptionServiceClient
 from mysingle.subscription.models import UsageMetric
@@ -61,16 +61,16 @@ class QuotaEnforcementMiddleware(BaseHTTPMiddleware):
             HTTPException(429): If quota exceeded
             HTTPException(503): If Subscription Service unavailable
         """
-        user = get_current_user(request)
-        if not user:
+        user_id = get_user_id_optional(request)
+        if not user_id:
             # No user authenticated - skip quota check
             return await call_next(request)
 
         # Call Subscription Service via gRPC
-        async with SubscriptionServiceClient(user_id=str(user.id)) as client:
+        async with SubscriptionServiceClient(user_id=user_id) as client:
             try:
                 response = await client.check_quota(
-                    user_id=str(user.id),
+                    user_id=user_id,
                     metric=self.metric.value,
                     amount=1,
                 )
@@ -79,7 +79,7 @@ class QuotaEnforcementMiddleware(BaseHTTPMiddleware):
                     logger.warning(
                         "Quota exceeded",
                         extra={
-                            "user_id": str(user.id),
+                            "user_id": user_id,
                             "metric": self.metric.value,
                             "current_usage": response.current_usage,
                             "limit": response.limit,
@@ -103,7 +103,7 @@ class QuotaEnforcementMiddleware(BaseHTTPMiddleware):
                 logger.error(
                     "Subscription service unavailable",
                     extra={
-                        "user_id": str(user.id),
+                        "user_id": user_id,
                         "metric": self.metric.value,
                         "error": str(e),
                     },

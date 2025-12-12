@@ -95,8 +95,8 @@ git commit -m "Phase {{N}} completed: {{Phase Name}}
 - Include context: `user_id`, `correlation_id`, `operation`
 
 ### Authentication
-- External API: `get_current_active_verified_user(request)`
-- Internal API: `get_current_user(request)`
+- External API: `get_verified_user_id(request)`
+- Internal API: `get_user_id(request)`
 - ALWAYS filter user-owned resources by `user_id`
 
 ### Error Handling
@@ -147,9 +147,9 @@ git commit -m "Phase {{N}} completed: {{Phase Name}}
 - Override defaults via environment variables only
 
 ### Authentication (NON_IAM Service)
-- Import from `mysingle.auth`: `get_current_user`, `get_current_active_verified_user`
-- External API: `get_current_active_verified_user(request)` - raises 401/403
-- Internal API: `get_current_user(request)` - service-to-service only
+- Import from `mysingle.auth`: `get_user_id`, `get_verified_user_id`
+- External API: `get_verified_user_id(request)` - raises 401/403
+- Internal API: `get_user_id(request)` - service-to-service only
 - User info from Kong Gateway headers (`X-User-Id`, `X-Correlation-Id`)
 - NO MongoDB user lookup in NON_IAM services
 
@@ -162,12 +162,12 @@ git commit -m "Phase {{N}} completed: {{Phase Name}}
 ### Dependencies Pattern
 ```python
 from fastapi import Request
-from mysingle.auth import get_current_active_verified_user
+from mysingle.auth import get_verified_user_id
 from app.core.config import get_settings
 
 # Direct usage (recommended)
 async def route(request: Request):
-    user = get_current_active_verified_user(request)
+    user_id = get_verified_user_id(request)
     settings = get_settings()
 ```
 
@@ -246,9 +246,9 @@ def generate_copilot_instructions_md(
 
 ## Authentication
 
-**Import:** `mysingle.auth` provides `get_current_user`, `get_current_active_verified_user`, `get_kong_user_id`, `get_kong_correlation_id`.
-**External API:** Use `get_current_active_verified_user(request)` (raises 401).
-**Internal API:** Use `get_current_user(request)` (service-to-service only).
+**Import:** `mysingle.auth` provides `get_user_id`, `get_verified_user_id`, `get_kong_user_id`, `get_kong_correlation_id`.
+**External API:** Use `get_verified_user_id(request)` (raises 401).
+**Internal API:** Use `get_user_id(request)` (service-to-service only).
 **User Ownership:** ALWAYS filter by `user_id` before returning/modifying resources.
 **Testing:** Set `MYSINGLE_AUTH_BYPASS=true` and `ENVIRONMENT=development`.
 
@@ -284,8 +284,8 @@ def generate_copilot_instructions_md(
 
 ## Routing
 
-**External Router:** Public CRUD endpoints. Use `get_current_active_verified_user(request)`.
-**Internal Router:** Service-to-service triggers. Use `get_current_user(request)`. NOT exposed via Kong.
+**External Router:** Public CRUD endpoints. Use `get_verified_user_id(request)`.
+**Internal Router:** Service-to-service triggers. Use `get_user_id(request)`. NOT exposed via Kong.
 **Registration:** Include router with prefix, tags, dependencies (auth required).
 
 ---
@@ -795,8 +795,7 @@ from typing import Annotated
 
 from beanie import PydanticObjectId
 from fastapi import APIRouter, HTTPException, Request, status
-from mysingle.auth import get_current_active_verified_user
-from mysingle.auth.models import User
+from mysingle.auth import get_verified_user_id
 from mysingle.core import get_structured_logger
 
 from app.models.item import SampleItem
@@ -819,12 +818,12 @@ async def create_item(
     - **quantity**: Item quantity (default: 0)
     - **is_active**: Whether item is active (default: true)
     """
-    # Get authenticated user from Kong Gateway
-    user = get_current_active_verified_user(request)
+    # Get authenticated user ID from Kong Gateway
+    user_id = get_verified_user_id(request)
 
     logger.info(
         "Creating sample item",
-        user_id=str(user.id),
+        user_id=user_id,
         item_name=item_data.name,
     )
 

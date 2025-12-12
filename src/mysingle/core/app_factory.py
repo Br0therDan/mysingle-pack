@@ -9,12 +9,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 
-from mysingle.auth.exception_handlers import register_auth_exception_handlers
 from mysingle.core.config import settings
 from mysingle.core.db import init_mongo
 from mysingle.core.health import create_health_router
 from mysingle.core.logging import get_structured_logger, setup_logging
-from mysingle.core.service_types import ServiceConfig, ServiceType
+from mysingle.core.service_types import ServiceConfig
 
 if TYPE_CHECKING:
     pass
@@ -61,26 +60,6 @@ def create_lifespan(
                 if AuditLog not in models_to_init:
                     models_to_init.append(AuditLog)
 
-            # Ensure auth models are included ONLY for IAM service
-            # NON_IAM services use Kong Gateway auth and don't need User/OAuthAccount collections
-            if (
-                service_config.enable_auth
-                and service_config.service_type == ServiceType.IAM_SERVICE
-            ):
-                from ..auth.models import OAuthAccount, User
-
-                auth_models = [User, OAuthAccount]
-                for model in auth_models:
-                    if model not in models_to_init:
-                        models_to_init.append(model)
-                logger.info(
-                    f"📦 IAM Service: Added User and OAuthAccount models for {service_config.service_name}"
-                )
-            elif service_config.enable_auth:
-                logger.info(
-                    f"⏭️ Non-IAM Service: Skipping User/OAuthAccount models for {service_config.service_name}"
-                )
-
             if models_to_init:
                 try:
                     client = await init_mongo(
@@ -95,32 +74,6 @@ def create_lifespan(
                     logger.info(
                         f"✅ Connected to MongoDB for {service_config.database_name or service_config.service_name}"
                     )
-
-                    # Create first super admin and test users (IAM service only)
-                    if service_config.service_type == ServiceType.IAM_SERVICE:
-                        logger.info(
-                            f"👤 IAM Service: Creating super admin and test users for {service_config.service_name}"
-                        )
-                        # Import lazily to avoid circular dependency
-                        from mysingle.auth.init_data import (
-                            create_first_super_admin,
-                            create_test_users,
-                        )
-
-                        await create_first_super_admin()
-
-                        # Test users only in development/local environments
-                        if is_development:
-                            await create_test_users()
-                            logger.info("👥 Test users created (development mode)")
-                        else:
-                            logger.info(
-                                "⏭️ Skipping test user creation (production mode)"
-                            )
-                    else:
-                        logger.info(
-                            f"⏭️ Non-IAM Service: Skipping user creation for {service_config.service_name}"
-                        )
 
                 except Exception as e:
                     logger.error(f"❌ Failed to connect to MongoDB: {e}")
@@ -219,13 +172,6 @@ def create_fastapi_app(
 
             logger.info(
                 f"🔐 Authentication middleware {auth_status} for {service_config.service_name}"
-            )
-
-            # Register auth exception handlers for ALL services with auth enabled
-            # Both IAM and Non-IAM services need proper 401/403 error handling
-            register_auth_exception_handlers(app)
-            logger.info(
-                f"🔐 Auth exception handlers registered for {service_config.service_name}"
             )
 
         except ImportError as e:
@@ -379,34 +325,5 @@ def create_fastapi_app(
         )
         app.include_router(health_router)
         logger.info(f"❤️ Health check endpoints added for {service_config.service_name}")
-
-    # Include auth routers only for IAM service
-    if service_config.service_type == ServiceType.IAM_SERVICE:
-        from ..auth.router import auth_router, user_router
-
-        app.include_router(auth_router, prefix="/api/v1/auth", tags=["Auth"])
-        app.include_router(user_router, prefix="/api/v1/users", tags=["User"])
-        logger.info(f"🔐 Auth routes added for {service_config.service_name}")
-
-        # Include OAuth2 routers if enabled (IAM only)
-        if service_config.enable_oauth:
-            try:
-                from ..auth.router import oauth2_router
-
-                app.include_router(
-                    oauth2_router,
-                    prefix="/api/v1",
-                )
-                logger.info(f"🔐 OAuth2 routes added for {service_config.service_name}")
-            except Exception as e:
-                logger.error(f"⚠️ Failed to include OAuth2 router: {e}")
-
-        # Log auth public paths for IAM service
-        if service_config.service_type == ServiceType.IAM_SERVICE:
-            public_path_count = len(settings.AUTH_PUBLIC_PATHS)
-            logger.info(
-                f"🔐 Auth Public Paths configured: {public_path_count} paths",
-                extra={"paths": settings.AUTH_PUBLIC_PATHS[:3]},  # Show first 3 paths
-            )
 
     return app

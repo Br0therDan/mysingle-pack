@@ -9,7 +9,7 @@ from typing import Callable, List, Union
 
 from fastapi import HTTPException, Request
 
-from mysingle.auth import get_current_user
+from mysingle.auth import get_user_id
 from mysingle.core.logging import get_structured_logger
 from mysingle.subscription.client import SubscriptionServiceClient
 from mysingle.subscription.models import TierLevel
@@ -45,20 +45,18 @@ def require_tier(required_tier: Union[TierLevel, List[TierLevel]]) -> Callable:
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         async def wrapper(request: Request, *args, **kwargs):
-            user = get_current_user(request)
-            if not user:
-                raise HTTPException(status_code=401, detail="Not authenticated")
+            user_id = get_user_id(request)
 
             # Call Subscription Service via gRPC
-            async with SubscriptionServiceClient(user_id=str(user.id)) as client:
+            async with SubscriptionServiceClient(user_id=user_id) as client:
                 try:
-                    response = await client.get_entitlements(str(user.id))
+                    response = await client.get_entitlements(user_id)
                     user_tier = TierLevel(response.tier)
                 except Exception as e:
                     logger.error(
                         "Failed to get entitlements",
                         extra={
-                            "user_id": str(user.id),
+                            "user_id": user_id,
                             "error": str(e),
                         },
                         exc_info=True,
@@ -79,7 +77,7 @@ def require_tier(required_tier: Union[TierLevel, List[TierLevel]]) -> Callable:
                 logger.warning(
                     "Tier requirement not met",
                     extra={
-                        "user_id": str(user.id),
+                        "user_id": user_id,
                         "user_tier": user_tier.value,
                         "required_tiers": [t.value for t in allowed_tiers],
                     },
@@ -119,19 +117,17 @@ def require_feature(feature: str) -> Callable:
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         async def wrapper(request: Request, *args, **kwargs):
-            user = get_current_user(request)
-            if not user:
-                raise HTTPException(status_code=401, detail="Not authenticated")
+            user_id = get_user_id(request)
 
             # Call Subscription Service via gRPC
-            async with SubscriptionServiceClient(user_id=str(user.id)) as client:
+            async with SubscriptionServiceClient(user_id=user_id) as client:
                 try:
-                    response = await client.get_entitlements(str(user.id))
+                    response = await client.get_entitlements(user_id)
                 except Exception as e:
                     logger.error(
                         "Failed to get entitlements",
                         extra={
-                            "user_id": str(user.id),
+                            "user_id": user_id,
                             "error": str(e),
                         },
                         exc_info=True,
@@ -146,7 +142,7 @@ def require_feature(feature: str) -> Callable:
                 logger.warning(
                     "Feature not available",
                     extra={
-                        "user_id": str(user.id),
+                        "user_id": user_id,
                         "feature": feature,
                         "available_features": list(response.features),
                     },

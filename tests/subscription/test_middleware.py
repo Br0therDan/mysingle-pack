@@ -38,8 +38,10 @@ def test_quota_enforcement_allowed(app_with_middleware):
         mock_client.return_value.__aenter__.return_value = mock_instance
 
         # Mock user
-        with patch("mysingle.subscription.middleware.get_current_user") as mock_user:
-            mock_user.return_value = MagicMock(id="test_user")
+        with patch(
+            "mysingle.subscription.middleware.get_user_id_optional"
+        ) as mock_user_id:
+            mock_user_id.return_value = "test_user"
 
             client = TestClient(app_with_middleware)
             response = client.get("/test")
@@ -69,8 +71,10 @@ def test_quota_enforcement_exceeded(app_with_middleware):
         mock_client.return_value.__aenter__.return_value = mock_instance
 
         # Mock user
-        with patch("mysingle.subscription.middleware.get_current_user") as mock_user:
-            mock_user.return_value = MagicMock(id="test_user")
+        with patch(
+            "mysingle.subscription.middleware.get_user_id_optional"
+        ) as mock_user_id:
+            mock_user_id.return_value = "test_user"
 
             client = TestClient(app_with_middleware)
             response = client.get("/test")
@@ -83,8 +87,8 @@ def test_quota_enforcement_exceeded(app_with_middleware):
 
 def test_quota_enforcement_no_user(app_with_middleware):
     """Test middleware skips quota check when no user authenticated."""
-    with patch("mysingle.subscription.middleware.get_current_user") as mock_user:
-        mock_user.return_value = None
+    with patch("mysingle.subscription.middleware.get_user_id_optional") as mock_user_id:
+        mock_user_id.return_value = None
 
         client = TestClient(app_with_middleware)
         response = client.get("/test")
@@ -105,8 +109,10 @@ def test_quota_enforcement_grpc_error(app_with_middleware):
         mock_client.return_value.__aenter__.return_value = mock_instance
 
         # Mock user
-        with patch("mysingle.subscription.middleware.get_current_user") as mock_user:
-            mock_user.return_value = MagicMock(id="test_user")
+        with patch(
+            "mysingle.subscription.middleware.get_user_id_optional"
+        ) as mock_user_id:
+            mock_user_id.return_value = "test_user"
 
             client = TestClient(app_with_middleware)
             response = client.get("/test")
@@ -136,8 +142,10 @@ def test_quota_enforcement_different_metrics():
         )
         mock_client.return_value.__aenter__.return_value = mock_instance
 
-        with patch("mysingle.subscription.middleware.get_current_user") as mock_user:
-            mock_user.return_value = MagicMock(id="test_user")
+        with patch(
+            "mysingle.subscription.middleware.get_user_id_optional"
+        ) as mock_user_id:
+            mock_user_id.return_value = "test_user"
 
             client = TestClient(app)
             response = client.post("/backtests")
