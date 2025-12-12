@@ -9,7 +9,6 @@ from .db import (
     get_mongodb_url,
     init_mongo,
 )
-from .email import send_email
 from .health import HealthStatus, create_health_router, get_health_checker
 from .logging import get_logger, get_structured_logger, setup_logging
 from .logging.middleware import (
@@ -57,8 +56,6 @@ __all__ = [
     "HealthStatus",
     "get_health_checker",
     "create_health_router",
-    # Email (consolidated)
-    "send_email",
     # Audit (consolidated)
     "AuditLog",
     "AuditLoggingMiddleware",
