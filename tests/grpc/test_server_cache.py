@@ -157,8 +157,8 @@ class TestGrpcCache:
 
     @pytest.mark.asyncio
     async def test_cache_initialization(self):
-        """캐시 초기화 테스트"""
-        cache = GrpcCache(service_name="test-service", redis_db=2)
+        """캐시 초기화 테스트 (redis_db는 자동으로 settings.REDIS_DB_GRPC 사용)"""
+        cache = GrpcCache(service_name="test-service")
 
         assert cache.service_name == "test-service"
         assert cache.key_prefix == "grpc:test-service"

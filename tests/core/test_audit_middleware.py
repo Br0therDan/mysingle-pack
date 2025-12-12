@@ -241,7 +241,7 @@ async def test_audit_user_id_none_when_not_provided():
 @pytest.mark.asyncio
 async def test_app_factory_audit_exclusion():
     """Test that app factory properly configures audit log exclusions from settings."""
-    from mysingle.core import ServiceType, create_fastapi_app, create_service_config
+    from mysingle.core import create_fastapi_app, create_service_config
 
     recorded = []
 
@@ -252,36 +252,36 @@ async def test_app_factory_audit_exclusion():
         async def insert(self):
             recorded.append({"path": self.path})
 
-    config = create_service_config(
-        service_name="test-service", service_type=ServiceType.NON_IAM_SERVICE
-    )
+    config = create_service_config(service_name="test-service")
 
     with override_settings(
         ENVIRONMENT="development",
         AUDIT_LOGGING_ENABLED=True,
         AUDIT_EXCLUDE_PATHS="/health,/ready,/metrics",
     ):
-        app = create_fastapi_app(service_config=config)
+        # Mock MongoDB initialization to avoid connection errors
+        with patch("mysingle.core.app_factory.init_mongo"):
+            app = create_fastapi_app(service_config=config)
 
-        @app.get("/api/data")
-        def get_data():
-            return {"data": "test"}
+            @app.get("/api/data")
+            def get_data():
+                return {"data": "test"}
 
-        with patch("mysingle.core.audit.middleware.AuditLog", MockAuditLog):
-            with TestClient(app) as client:
-                # Health check should NOT create audit log
-                client.get("/health")
-                assert len(recorded) == 0
+            with patch("mysingle.core.audit.middleware.AuditLog", MockAuditLog):
+                with TestClient(app) as client:
+                    # Health check should NOT create audit log
+                    client.get("/health")
+                    assert len(recorded) == 0
 
-                # Ready check should NOT create audit log
-                client.get("/ready")
-                assert len(recorded) == 0
+                    # Ready check should NOT create audit log
+                    client.get("/ready")
+                    assert len(recorded) == 0
 
-                # Metrics should NOT create audit log
-                client.get("/metrics")
-                assert len(recorded) == 0
+                    # Metrics should NOT create audit log
+                    client.get("/metrics")
+                    assert len(recorded) == 0
 
-                # API endpoint SHOULD create audit log
-                client.get("/api/data")
-                assert len(recorded) == 1
-                assert recorded[0]["path"] == "/api/data"
+                    # API endpoint SHOULD create audit log
+                    client.get("/api/data")
+                    assert len(recorded) == 1
+                    assert recorded[0]["path"] == "/api/data"

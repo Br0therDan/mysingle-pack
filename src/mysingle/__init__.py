@@ -39,8 +39,6 @@ __all__ = [
     "HealthStatus",
     "get_health_checker",
     "create_health_router",
-    # Core: Email (consolidated)
-    "send_email",
     # Core: Audit (consolidated)
     "AuditLog",
     "AuditLoggingMiddleware",
@@ -53,7 +51,7 @@ __all__ = [
     "create_lifespan",
     # Database: DuckDB
     "BaseDuckDBManager",
-    # Clients: gRPC Service Clients
+    # gRPC: Client
     "BaseGrpcClient",
     # Constants: HTTP Headers
     "HEADER_AUTHORIZATION",
@@ -106,8 +104,8 @@ _EXPORTS = {
     "AuditLoggingMiddleware": ("mysingle.core.audit", "AuditLoggingMiddleware"),
     # Database
     "BaseDuckDBManager": ("mysingle.database", "BaseDuckDBManager"),
-    # Clients: gRPC
-    "BaseGrpcClient": ("mysingle.clients", "BaseGrpcClient"),
+    # gRPC: Client
+    "BaseGrpcClient": ("mysingle.grpc", "BaseGrpcClient"),
     # Constants: HTTP Headers
     "HEADER_AUTHORIZATION": ("mysingle.constants", "HEADER_AUTHORIZATION"),
     "HEADER_USER_ID": ("mysingle.constants", "HEADER_USER_ID"),
@@ -154,7 +152,6 @@ def __dir__():  # pragma: no cover
 
 
 if TYPE_CHECKING:  # 타입체커를 위한 정적 import (런타임에는 지연 로딩)
-    from .clients import BaseGrpcClient as BaseGrpcClient
     from .constants import GRPC_METADATA_AUTHORIZATION as GRPC_METADATA_AUTHORIZATION
     from .constants import GRPC_METADATA_CORRELATION_ID as GRPC_METADATA_CORRELATION_ID
     from .constants import GRPC_METADATA_REQUEST_ID as GRPC_METADATA_REQUEST_ID
@@ -178,7 +175,6 @@ if TYPE_CHECKING:  # 타입체커를 위한 정적 import (런타임에는 지�
     from .core.db import get_database_name as get_database_name
     from .core.db import get_mongodb_url as get_mongodb_url
     from .core.db import init_mongo as init_mongo
-    from .core.email import send_email as send_email
     from .core.health import HealthStatus as HealthStatus
     from .core.health import create_health_router as create_health_router
     from .core.health import get_health_checker as get_health_checker
@@ -188,6 +184,7 @@ if TYPE_CHECKING:  # 타입체커를 위한 정적 import (런타임에는 지�
     from .core.metrics import get_metrics_collector as get_metrics_collector
     from .database import BaseDuckDBManager as BaseDuckDBManager
     from .grpc import AuthInterceptor as AuthInterceptor
+    from .grpc import BaseGrpcClient as BaseGrpcClient
     from .grpc import ClientAuthInterceptor as ClientAuthInterceptor
     from .grpc import LoggingInterceptor as LoggingInterceptor
     from .grpc import MetadataInterceptor as MetadataInterceptor

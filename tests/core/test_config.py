@@ -63,15 +63,7 @@ def test_cors_origins_configuration():
     assert custom_origins == settings.CORS_ORIGINS
 
 
-def test_token_expiry_settings():
-    """Test token expiry configurations."""
-    settings = CommonSettings()
-
-    assert settings.ACCESS_TOKEN_EXPIRE_MINUTES > 0
-    assert settings.REFRESH_TOKEN_EXPIRE_DAYS > 0
-    assert settings.SERVICE_TOKEN_EXPIRE_MINUTES > 0
-    assert settings.RESET_TOKEN_EXPIRE_MINUTES > 0
-    assert settings.VERIFY_TOKEN_EXPIRE_MINUTES > 0
+# Removed test_token_expiry_settings - TOKEN settings moved to IAM service
 
 
 def test_redis_configuration():
@@ -82,19 +74,19 @@ def test_redis_configuration():
         REDIS_PASSWORD=None,
     )
 
-    # Test that redis_url is computed correctly
+    # Test that redis_url is computed correctly (no auth when password is None)
     assert settings.redis_url == "redis://localhost:6379"
     assert settings.REDIS_HOST == "localhost"
     assert settings.REDIS_PORT == 6379
 
-    # Test with password
+    # Test with password (includes default: username)
     settings_with_pass = CommonSettings(
         REDIS_HOST="localhost",
         REDIS_PORT=6379,
         REDIS_PASSWORD="secret",
     )
 
-    assert settings_with_pass.redis_url == "redis://:secret@localhost:6379"
+    assert settings_with_pass.redis_url == "redis://default:secret@localhost:6379"
 
 
 def test_redis_db_allocation():

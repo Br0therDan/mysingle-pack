@@ -4,6 +4,7 @@ gRPC 패키지
 gRPC 서버 및 클라이언트를 위한 공통 유틸리티
 """
 
+from .base_grpc_client import BaseGrpcClient
 from .cache import GrpcCache, grpc_cached
 from .interceptors import (
     AuthInterceptor,
@@ -17,6 +18,8 @@ from .interceptors import (
 from .server import BaseGrpcServer, GrpcServerConfig
 
 __all__ = [
+    # Client
+    "BaseGrpcClient",
     # Server
     "BaseGrpcServer",
     "GrpcServerConfig",

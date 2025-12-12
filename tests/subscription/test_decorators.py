@@ -48,9 +48,9 @@ def test_require_tier_allowed(app_with_tier_decorator):
         )
         mock_client.return_value.__aenter__.return_value = mock_instance
 
-        # Mock user
-        with patch("mysingle.subscription.decorators.get_current_user") as mock_user:
-            mock_user.return_value = MagicMock(id="test_user")
+        # Mock user_id from request.state
+        with patch("mysingle.subscription.decorators.get_user_id") as mock_get_user_id:
+            mock_get_user_id.return_value = "test_user"
 
             client = TestClient(app_with_tier_decorator)
             response = client.get("/premium")
@@ -72,9 +72,9 @@ def test_require_tier_denied(app_with_tier_decorator):
         )
         mock_client.return_value.__aenter__.return_value = mock_instance
 
-        # Mock user
-        with patch("mysingle.subscription.decorators.get_current_user") as mock_user:
-            mock_user.return_value = MagicMock(id="test_user")
+        # Mock user_id from request.state
+        with patch("mysingle.subscription.decorators.get_user_id") as mock_get_user_id:
+            mock_get_user_id.return_value = "test_user"
 
             client = TestClient(app_with_tier_decorator)
             response = client.get("/premium")
@@ -102,8 +102,8 @@ def test_require_tier_multiple_allowed():
         )
         mock_client.return_value.__aenter__.return_value = mock_instance
 
-        with patch("mysingle.subscription.decorators.get_current_user") as mock_user:
-            mock_user.return_value = MagicMock(id="test_user")
+        with patch("mysingle.subscription.decorators.get_user_id") as mock_get_user_id:
+            mock_get_user_id.return_value = "test_user"
 
             client = TestClient(app)
             response = client.get("/enterprise")
@@ -112,14 +112,17 @@ def test_require_tier_multiple_allowed():
 
 
 def test_require_tier_no_user(app_with_tier_decorator):
-    """Test tier decorator returns 401 when no user authenticated."""
-    with patch("mysingle.subscription.decorators.get_current_user") as mock_user:
-        mock_user.return_value = None
+    """Test tier decorator returns 403 when no user authenticated."""
+    from mysingle.auth.decorators import AuthorizationFailed
+
+    with patch("mysingle.subscription.decorators.get_user_id") as mock_get_user_id:
+        # get_user_id raises AuthorizationFailed when not authenticated (403 Forbidden)
+        mock_get_user_id.side_effect = AuthorizationFailed("Not authenticated")
 
         client = TestClient(app_with_tier_decorator)
         response = client.get("/premium")
 
-        assert response.status_code == 401
+        assert response.status_code == 403
         assert "Not authenticated" in response.json()["detail"]
 
 
@@ -136,9 +139,9 @@ def test_require_feature_allowed(app_with_feature_decorator):
         )
         mock_client.return_value.__aenter__.return_value = mock_instance
 
-        # Mock user
-        with patch("mysingle.subscription.decorators.get_current_user") as mock_user:
-            mock_user.return_value = MagicMock(id="test_user")
+        # Mock user_id from request.state
+        with patch("mysingle.subscription.decorators.get_user_id") as mock_get_user_id:
+            mock_get_user_id.return_value = "test_user"
 
             client = TestClient(app_with_feature_decorator)
             response = client.post("/ai-chat")
@@ -160,9 +163,9 @@ def test_require_feature_denied(app_with_feature_decorator):
         )
         mock_client.return_value.__aenter__.return_value = mock_instance
 
-        # Mock user
-        with patch("mysingle.subscription.decorators.get_current_user") as mock_user:
-            mock_user.return_value = MagicMock(id="test_user")
+        # Mock user_id from request.state
+        with patch("mysingle.subscription.decorators.get_user_id") as mock_get_user_id:
+            mock_get_user_id.return_value = "test_user"
 
             client = TestClient(app_with_feature_decorator)
             response = client.post("/ai-chat")
@@ -182,9 +185,9 @@ def test_require_feature_grpc_error(app_with_feature_decorator):
         mock_instance.get_entitlements.side_effect = Exception("gRPC failed")
         mock_client.return_value.__aenter__.return_value = mock_instance
 
-        # Mock user
-        with patch("mysingle.subscription.decorators.get_current_user") as mock_user:
-            mock_user.return_value = MagicMock(id="test_user")
+        # Mock user_id from request.state
+        with patch("mysingle.subscription.decorators.get_user_id") as mock_get_user_id:
+            mock_get_user_id.return_value = "test_user"
 
             client = TestClient(app_with_feature_decorator)
             response = client.post("/ai-chat")
@@ -213,8 +216,8 @@ def test_combined_decorators():
         )
         mock_client.return_value.__aenter__.return_value = mock_instance
 
-        with patch("mysingle.subscription.decorators.get_current_user") as mock_user:
-            mock_user.return_value = MagicMock(id="test_user")
+        with patch("mysingle.subscription.decorators.get_user_id") as mock_get_user_id:
+            mock_get_user_id.return_value = "test_user"
 
             client = TestClient(app)
             response = client.post("/advanced-optimization")
