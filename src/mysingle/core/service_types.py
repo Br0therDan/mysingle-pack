@@ -28,7 +28,8 @@ class ServiceConfig:
 
     # Gateway 관련
     is_gateway_downstream: bool = True
-    public_paths: list[str] = None
+    public_paths: Optional[list[str]] = None
+    auth_public_paths: Optional[list[str]] = None  # 인증 불필요 경로 (추가)
 
     # 기능
     enable_metrics: bool = True

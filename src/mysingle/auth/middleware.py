@@ -72,7 +72,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
             "/favicon.ico",
         ]
         service_public_paths = self.service_config.public_paths or []
-        return default_public_paths + service_public_paths
+        auth_public_paths = self.service_config.auth_public_paths or []
+        return default_public_paths + service_public_paths + auth_public_paths
 
     def _is_public_path(self, path: str) -> bool:
         """공개 경로 확인"""
