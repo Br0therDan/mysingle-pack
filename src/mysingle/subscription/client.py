@@ -10,7 +10,7 @@ Port Configuration:
 
 from typing import Optional
 
-from mysingle.clients import BaseGrpcClient
+from mysingle.grpc import BaseGrpcClient
 from mysingle.protos.services.subscription.v1 import (
     subscription_service_pb2,
     subscription_service_pb2_grpc,
