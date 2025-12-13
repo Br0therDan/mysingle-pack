@@ -62,7 +62,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
         return bypass_enabled
 
     def _prepare_public_paths(self) -> list[str]:
-        """공개 경로 목록"""
+        """공개 경로 목록 (중복 제거 및 정규화)"""
+        # 기본 공개 경로
         default_public_paths = [
             "/health",
             "/metrics",
@@ -71,13 +72,40 @@ class AuthMiddleware(BaseHTTPMiddleware):
             "/openapi.json",
             "/favicon.ico",
         ]
+
+        # ServiceConfig에서 추가 경로 수집
+        # Note: ServiceConfig.__post_init__이 기본값을 설정하지만,
+        # 사용자가 명시적으로 제공한 경우만 추가하여 중복 방지
         service_public_paths = self.service_config.public_paths or []
         auth_public_paths = self.service_config.auth_public_paths or []
-        return default_public_paths + service_public_paths + auth_public_paths
+
+        # 모든 경로 결합 및 중복 제거
+        all_paths = default_public_paths + service_public_paths + auth_public_paths
+
+        # Trailing slash 정규화 및 중복 제거
+        normalized_paths = set()
+        for path in all_paths:
+            # 경로 정규화 (trailing slash 제거)
+            normalized = path.rstrip("/") if path != "/" else path
+            normalized_paths.add(normalized)
+
+        return sorted(normalized_paths)  # 정렬로 예측 가능한 순서 보장
 
     def _is_public_path(self, path: str) -> bool:
-        """공개 경로 확인"""
-        return any(path.startswith(public_path) for public_path in self.public_paths)
+        """공개 경로 확인 (정확한 경로 또는 접두사 매칭)"""
+        # Trailing slash 정규화
+        normalized_path = path.rstrip("/") if path != "/" else path
+
+        for public_path in self.public_paths:
+            # 정확한 매칭
+            if normalized_path == public_path:
+                return True
+            # 접두사 매칭 (하위 경로 포함, 예: /docs → /docs/swagger)
+            # 단, 부분 문자열이 아닌 경로 세그먼트 단위로 매칭
+            if normalized_path.startswith(public_path + "/"):
+                return True
+
+        return False
 
     def _extract_kong_headers(self, request: Request) -> Optional[dict]:
         """Kong Gateway 헤더 추출"""
