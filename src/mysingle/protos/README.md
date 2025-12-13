@@ -33,7 +33,7 @@ from mysingle.protos.services.strategy.v1 import strategy_service_pb2_grpc
 ### gRPC 클라이언트 예시
 
 ```python
-from mysingle.clients import BaseGrpcClient
+from mysingle.grpc import BaseGrpcClient
 from mysingle.protos.services.strategy.v1 import (
     strategy_service_pb2,
     strategy_service_pb2_grpc,

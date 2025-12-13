@@ -88,7 +88,7 @@ from mysingle.core import create_fastapi_app, create_service_config, ServiceType
 # Configure service
 config = create_service_config(
     service_name="strategy-service",
-    service_type=ServiceType.NON_IAM_SERVICE,
+
     service_version="1.0.0",
 )
 
@@ -107,13 +107,13 @@ app = create_fastapi_app(service_config=config)
 ### 2. Use Authentication
 
 ```python
-from mysingle.auth import get_current_active_verified_user
+from mysingle.auth import get_user_id, authorized
 from fastapi import Request
 
 @app.get("/strategies")
 async def list_strategies(request: Request):
     user = get_current_active_verified_user(request)
-    return await get_user_strategies(str(user.id))
+    return await get_user_strategies(user_id)
 ```
 
 ### 3. Database Operations
@@ -138,7 +138,7 @@ await redis.setex("ticker:AAPL", 60, "150.25")
 ### 4. Service Communication
 
 ```python
-from mysingle.clients import BaseGrpcClient
+from mysingle.grpc import BaseGrpcClient
 
 class BacktestClient(BaseGrpcClient):
     def __init__(self, user_id=None):

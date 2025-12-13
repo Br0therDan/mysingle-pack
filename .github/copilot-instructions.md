@@ -30,7 +30,7 @@ from mysingle.core import create_fastapi_app, create_service_config, ServiceType
 
 config = create_service_config(
     service_name="my-service",
-    service_type=ServiceType.NON_IAM_SERVICE,
+
 )
 app = create_fastapi_app(service_config=config)
 ```
@@ -94,19 +94,19 @@ mysingle-proto validate --breaking # Check breaking changes
 ### Authentication
 
 ```python
-from mysingle.auth import get_current_active_verified_user
+from mysingle.auth import get_user_id, authorized
 from fastapi import Request
 
 @router.get("/items")
 async def list_items(request: Request):
     user = get_current_active_verified_user(request)
-    return await get_user_items(str(user.id))
+    return await get_user_items(user_id)
 ```
 
 ### gRPC Client
 
 ```python
-from mysingle.clients import BaseGrpcClient
+from mysingle.grpc import BaseGrpcClient
 
 class MyServiceClient(BaseGrpcClient):
     def __init__(self, user_id=None, correlation_id=None):

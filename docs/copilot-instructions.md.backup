@@ -135,13 +135,13 @@ git push origin proto/strategy-get-details
 All services receive authenticated user via `Request.state.user`.
 
 ```python
-from mysingle.auth import get_current_active_verified_user
+from mysingle.auth import get_user_id, authorized
 from fastapi import Request
 
 @router.get("/strategies")
 async def list_strategies(request: Request):
     user = get_current_active_verified_user(request)  # Raises 401 if unauthenticated
-    return await get_user_strategies(str(user.id))
+    return await get_user_strategies(user_id)
 ```
 
 ### **User-Scoped Endpoints**
@@ -179,7 +179,7 @@ async def public_strategies(request: Request):
 ### **Service-to-Service (gRPC)**
 
 ```python
-from mysingle.clients import BaseGrpcClient
+from mysingle.grpc import BaseGrpcClient
 
 class StrategyClient(BaseGrpcClient):
     def __init__(self, user_id: str):
@@ -204,7 +204,7 @@ from mysingle.core import ServiceType, create_service_config
 # Most services
 config = create_service_config(
     service_name="strategy-service",
-    service_type=ServiceType.NON_IAM_SERVICE,  # ← Standard
+      # ← Standard
 )
 ```
 

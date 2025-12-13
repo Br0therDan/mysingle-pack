@@ -34,7 +34,7 @@ from mysingle.core import create_fastapi_app, create_service_config, ServiceType
 # Enable quota enforcement in service config
 config = create_service_config(
     service_name="strategy-service",
-    service_type=ServiceType.NON_IAM_SERVICE,
+
     enable_quota_enforcement=True,
     quota_metric="strategies",  # Enforces strategy creation quota
 )

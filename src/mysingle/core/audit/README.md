@@ -25,7 +25,7 @@ from mysingle.core import create_fastapi_app, create_service_config, ServiceType
 
 config = create_service_config(
     service_name="my-service",
-    service_type=ServiceType.NON_IAM_SERVICE,
+
     enable_audit_logging=True,  # 감사 로깅 활성화
 )
 

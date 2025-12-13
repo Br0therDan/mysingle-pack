@@ -247,7 +247,7 @@ async def login(
     if not user.is_active:
         logger.warning(
             "Inactive user login attempt blocked",
-            user_id=str(user.id),
+            user_id=user_id,
             email=user.email,
         )
         raise HTTPException(

@@ -177,7 +177,7 @@ from mysingle.core import create_fastapi_app, create_service_config, ServiceType
 
 config = create_service_config(
     service_name="{service_name}",
-    service_type=ServiceType.NON_IAM_SERVICE,
+
 )
 
 app = create_fastapi_app(
@@ -607,7 +607,7 @@ def create_app() -> FastAPI:
     """Create and configure FastAPI application."""
     # Create ServiceConfig for Non-IAM service (gateway handles auth)
     service_config = create_service_config(
-        service_type=ServiceType.NON_IAM_SERVICE,
+
         service_name=settings.SERVICE_NAME,
         service_version=settings.APP_VERSION,
         description="{service_name.replace("-", " ").title()}",
@@ -837,7 +837,7 @@ async def create_item(
 
     logger.info(
         "Sample item created",
-        user_id=str(user.id),
+        user_id=user_id,
         item_id=str(item.id),
         item_name=item.name,
     )
@@ -863,7 +863,7 @@ async def list_items(
 
     logger.info(
         "Listing sample items",
-        user_id=str(user.id),
+        user_id=user_id,
         skip=skip,
         limit=limit,
     )
@@ -878,7 +878,7 @@ async def list_items(
 
     logger.info(
         "Sample items retrieved",
-        user_id=str(user.id),
+        user_id=user_id,
         count=len(items),
     )
 
@@ -899,7 +899,7 @@ async def get_item(
 
     logger.info(
         "Retrieving sample item",
-        user_id=str(user.id),
+        user_id=user_id,
         item_id=item_id,
     )
 
@@ -912,7 +912,7 @@ async def get_item(
     if not item:
         logger.warning(
             "Sample item not found",
-            user_id=str(user.id),
+            user_id=user_id,
             item_id=item_id,
         )
         raise HTTPException(
@@ -942,7 +942,7 @@ async def update_item(
 
     logger.info(
         "Updating sample item",
-        user_id=str(user.id),
+        user_id=user_id,
         item_id=item_id,
     )
 
@@ -955,7 +955,7 @@ async def update_item(
     if not item:
         logger.warning(
             "Sample item not found for update",
-            user_id=str(user.id),
+            user_id=user_id,
             item_id=item_id,
         )
         raise HTTPException(
@@ -972,7 +972,7 @@ async def update_item(
 
     logger.info(
         "Sample item updated",
-        user_id=str(user.id),
+        user_id=user_id,
         item_id=str(item.id),
     )
 
@@ -993,7 +993,7 @@ async def delete_item(
 
     logger.info(
         "Deleting sample item",
-        user_id=str(user.id),
+        user_id=user_id,
         item_id=item_id,
     )
 
@@ -1006,7 +1006,7 @@ async def delete_item(
     if not item:
         logger.warning(
             "Sample item not found for deletion",
-            user_id=str(user.id),
+            user_id=user_id,
             item_id=item_id,
         )
         raise HTTPException(
@@ -1018,7 +1018,7 @@ async def delete_item(
 
     logger.info(
         "Sample item deleted",
-        user_id=str(user.id),
+        user_id=user_id,
         item_id=str(item.id),
     )
 '''

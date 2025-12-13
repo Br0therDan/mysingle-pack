@@ -34,7 +34,7 @@ from mysingle.core import create_fastapi_app, create_service_config, ServiceType
 
 config = create_service_config(
     service_name="strategy-service",
-    service_type=ServiceType.NON_IAM_SERVICE,
+
     enable_audit_logging=True,  # Default: True
 )
 
@@ -218,7 +218,7 @@ def _extract_user_id(self, request: Request) -> str | None:
     try:
         user = getattr(request.state, "user", None)
         if user and hasattr(user, "id"):
-            return str(user.id)
+            return user_id
     except Exception:
         return None
 

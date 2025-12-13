@@ -782,7 +782,7 @@ user_id = get_user_id(request)  # Proper error handling
 
 ```python
 # Old (v1.x)
-from mysingle.auth import get_current_active_verified_user
+from mysingle.auth import get_user_id, authorized
 
 # New (v2.x)
 from mysingle.auth import get_user_id
@@ -792,7 +792,7 @@ from mysingle.auth import get_user_id
 
 **Before (v1.x):**
 ```python
-from mysingle.auth import get_current_active_verified_user
+from mysingle.auth import get_user_id, authorized
 
 @router.get("/items")
 async def list_items(

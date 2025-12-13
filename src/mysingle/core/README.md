@@ -67,7 +67,7 @@ from mysingle.core import (
 # 1. Create service configuration
 config = create_service_config(
     service_name="strategy-service",
-    service_type=ServiceType.NON_IAM_SERVICE,
+
     service_version="1.0.0",
 )
 
@@ -274,7 +274,7 @@ config = create_service_config(
 ```python
 config = create_service_config(
     service_name="backtest-service",
-    service_type=ServiceType.NON_IAM_SERVICE,
+
 )
 ```
 
@@ -520,7 +520,7 @@ from mysingle.core import create_service_config, ServiceType
 def test_service_config():
     config = create_service_config(
         service_name="test-service",
-        service_type=ServiceType.NON_IAM_SERVICE,
+
     )
 
     assert config.service_name == "test-service"
@@ -538,7 +538,7 @@ from mysingle.core import create_fastapi_app, create_service_config, ServiceType
 def client():
     config = create_service_config(
         service_name="test-service",
-        service_type=ServiceType.NON_IAM_SERVICE,
+
     )
     app = create_fastapi_app(service_config=config)
     return TestClient(app)
@@ -609,7 +609,7 @@ pip install mysingle[full]
 ```python
 config = create_service_config(
     service_name="my-service",
-    service_type=ServiceType.NON_IAM_SERVICE,
+
     enable_metrics=True,        # Enable metrics
     enable_audit_logging=True,  # Enable audit
 )

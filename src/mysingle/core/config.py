@@ -29,6 +29,16 @@ class CommonSettings(BaseSettings):
     AUDIT_EXCLUDE_PATHS: str = "/health,/ready,/metrics,/docs,/openapi.json,/redoc"
 
     ##################################################################
+    # JWT COMMON SETTINGS (used by all services)
+    ##################################################################
+
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 30
+    SERVICE_TOKEN_EXPIRE_MINUTES: int = 10
+    RESET_TOKEN_EXPIRE_MINUTES: int = 60
+    VERIFY_TOKEN_EXPIRE_MINUTES: int = 60
+
+    ##################################################################
     # MONGODB SETTINGS
     ##################################################################
     MONGODB_SERVER: str = "localhost:27017"
@@ -158,19 +168,6 @@ class CommonSettings(BaseSettings):
         """Check if debug mode is enabled (considers both DEBUG and ENVIRONMENT)."""
         return self.DEBUG and self.ENVIRONMENT != "production"
 
-    ##################################################################
-    # SMTP SETTINGS
-    ##################################################################
-
-    SMTP_TLS: bool = True
-    SMTP_SSL: bool = False
-    SMTP_PORT: int = 587
-    SMTP_HOST: str = "your_smtp_host"
-    SMTP_USER: str = "your_smtp_user"
-    SMTP_PASSWORD: str | None = None
-    EMAILS_FROM_EMAIL: str = "your_email@example.com"
-    EMAILS_FROM_NAME: str = "Admin Name"
-
     @model_validator(mode="after")
     def _validate_redis_config(self) -> Self:
         """Validate Redis configuration settings."""
@@ -218,28 +215,6 @@ class CommonSettings(BaseSettings):
             )
 
         return self
-
-    @model_validator(mode="after")
-    def _set_default_emails_from(self) -> Self:
-        if not self.EMAILS_FROM_NAME:
-            self.EMAILS_FROM_NAME = self.PROJECT_NAME
-        return self
-
-    @computed_field
-    def emails_enabled(self) -> bool:
-        """Check if email sending is properly configured."""
-        return bool(
-            self.SMTP_HOST
-            and self.SMTP_HOST != "your_smtp_host"
-            and self.EMAILS_FROM_EMAIL != "your_email@example.com"
-        )
-
-    ##################################################################
-    # JWT COMMON SETTINGS (used by all services)
-    ##################################################################
-
-    ALGORITHM: str = "HS256"
-    DEFAULT_AUDIENCE: str = "quant-users"
 
 
 # Global settings instance

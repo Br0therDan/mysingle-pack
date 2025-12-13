@@ -11,7 +11,7 @@ Note:
 
 Usage:
     ```python
-    from mysingle.clients import BaseGrpcClient
+    from mysingle.grpc import BaseGrpcClient
     from app.grpc import my_service_pb2_grpc
 
     class MyServiceGrpcClient(BaseGrpcClient):
@@ -216,7 +216,7 @@ class BaseGrpcClient:
         try:
             user = getattr(request.state, "user", None)
             if user and hasattr(user, "id"):
-                return str(user.id)
+                return user_id
         except Exception as e:
             logger.debug(f"Failed to extract user from request.state: {e}")
 

@@ -134,7 +134,7 @@ from mysingle.core import (
 
 # Set context at request start
 set_correlation_id(request.headers.get("X-Correlation-Id", str(uuid.uuid4())))
-set_user_id(str(user.id))
+set_user_id(user_id)
 set_request_id(str(uuid.uuid4()))
 
 # Log with automatic context injection

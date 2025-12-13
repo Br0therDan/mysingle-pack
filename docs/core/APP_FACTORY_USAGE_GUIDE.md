@@ -136,7 +136,7 @@ setup_logging()
 # ServiceConfig 생성
 service_config = create_service_config(
     service_name=settings.SERVICE_NAME,
-    service_type=ServiceType.NON_IAM_SERVICE,
+
     service_version="1.0.0",
     description="My Awesome Service",
 )
@@ -319,7 +319,7 @@ def create_app() -> FastAPI:
     # ServiceConfig 생성 (NON_IAM_SERVICE)
     service_config = create_service_config(
         service_name=settings.SERVICE_NAME,
-        service_type=ServiceType.NON_IAM_SERVICE,
+
         service_version="1.0.0",
         description="Backtesting Engine Service",
         enable_audit_logging=True,  # API 호출 추적
@@ -423,7 +423,7 @@ app = create_fastapi_app(
 ```python
 service_config = create_service_config(
     service_name="my-service",
-    service_type=ServiceType.NON_IAM_SERVICE,
+
     service_version="1.0.0",
     cors_origins=[
         "https://app.example.com",
@@ -440,7 +440,7 @@ from mysingle.metrics import MetricsConfig
 # app/main.py 내에서
 service_config = create_service_config(
     service_name="my-service",
-    service_type=ServiceType.NON_IAM_SERVICE,
+
     service_version="1.0.0",
     enable_metrics=True,  # 메트릭 활성화
 )
@@ -459,7 +459,7 @@ app = create_fastapi_app(service_config=service_config)
 ```python
 service_config = create_service_config(
     service_name="my-service",
-    service_type=ServiceType.NON_IAM_SERVICE,
+
     service_version="1.0.0",
     enable_audit_logging=settings.AUDIT_LOGGING_ENABLED,  # 감사 로그 비활성화
 )
@@ -470,7 +470,7 @@ service_config = create_service_config(
 ```python
 service_config = create_service_config(
     service_name="proxy-service",
-    service_type=ServiceType.NON_IAM_SERVICE,
+
     service_version="1.0.0",
     enable_database=False,  # DB 연결 없음
 )
@@ -571,7 +571,7 @@ async def lifespan(app: FastAPI):
 
 service_config = create_service_config(
     service_name="my-service",
-    service_type=ServiceType.NON_IAM_SERVICE,
+
     service_version="1.0.0",
     lifespan=lifespan,  # 커스텀 lifespan 전달
 )
@@ -612,7 +612,7 @@ from app.core.config import settings
 
 service_config = create_service_config(
     service_name=settings.SERVICE_NAME,
-    service_type=ServiceType.NON_IAM_SERVICE,
+
     service_version=settings.APP_VERSION,
     cors_origins=settings.ALLOWED_ORIGINS,
 )
@@ -735,7 +735,7 @@ def create_app() -> FastAPI:
     """테스트 가능한 앱 팩토리"""
     service_config = create_service_config(
         service_name="my-service",
-        service_type=ServiceType.NON_IAM_SERVICE,
+
         service_version="1.0.0",
     )
 
@@ -858,7 +858,7 @@ has been blocked by CORS policy
 ```python
 service_config = create_service_config(
     service_name="my-service",
-    service_type=ServiceType.NON_IAM_SERVICE,
+
     service_version="1.0.0",
     cors_origins=[
         "http://localhost:3000",
@@ -891,7 +891,7 @@ curl http://localhost:8000/metrics
    ```python
    service_config = create_service_config(
        service_name="my-service",
-       service_type=ServiceType.NON_IAM_SERVICE,
+
        service_version="1.0.0",
        enable_metrics=True,  # 확인
    )

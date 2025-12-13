@@ -655,7 +655,7 @@ A: gRPC 클라이언트에서 `user-id` 메타데이터를 전송해야 합니�
 
 ```python
 # gRPC 클라이언트
-from mysingle.clients import BaseGrpcClient
+from mysingle.grpc import BaseGrpcClient
 
 async with MyServiceClient(user_id=user_id) as client:
     response = await client.stub.GetStrategy(request)

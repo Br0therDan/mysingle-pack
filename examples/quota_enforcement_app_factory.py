@@ -4,12 +4,11 @@ This example shows how to enable quota enforcement when creating a FastAPI app
 using mysingle's app factory pattern.
 """
 
-from mysingle.core import ServiceType, create_fastapi_app, create_service_config
+from mysingle.core import create_fastapi_app, create_service_config
 
 # Example 1: Strategy Service with quota enforcement enabled
 strategy_config = create_service_config(
     service_name="strategy-service",
-    service_type=ServiceType.NON_IAM_SERVICE,
     enable_quota_enforcement=True,
     quota_metric="strategies",  # Will enforce strategy creation quota
 )
@@ -20,7 +19,6 @@ strategy_app = create_fastapi_app(service_config=strategy_config)
 # Example 2: Backtest Service with quota enforcement enabled
 backtest_config = create_service_config(
     service_name="backtest-service",
-    service_type=ServiceType.NON_IAM_SERVICE,
     enable_quota_enforcement=True,
     quota_metric="backtests",  # Will enforce backtest quota
 )
@@ -31,7 +29,6 @@ backtest_app = create_fastapi_app(service_config=backtest_config)
 # Example 3: GenAI Service with quota enforcement enabled
 genai_config = create_service_config(
     service_name="genai-service",
-    service_type=ServiceType.NON_IAM_SERVICE,
     enable_quota_enforcement=True,
     quota_metric="ai_chat_messages",  # Will enforce AI chat quota
 )
@@ -42,7 +39,6 @@ genai_app = create_fastapi_app(service_config=genai_config)
 # Example 4: Service WITHOUT quota enforcement (default)
 indicator_config = create_service_config(
     service_name="indicator-service",
-    service_type=ServiceType.NON_IAM_SERVICE,
     # enable_quota_enforcement=False (default)
 )
 
@@ -52,7 +48,6 @@ indicator_app = create_fastapi_app(service_config=indicator_config)
 # Example 5: Service with multiple configurations
 ml_config = create_service_config(
     service_name="ml-service",
-    service_type=ServiceType.NON_IAM_SERVICE,
     enable_quota_enforcement=True,
     quota_metric="optimizations",
     enable_metrics=True,

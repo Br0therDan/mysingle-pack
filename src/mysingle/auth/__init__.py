@@ -14,6 +14,7 @@ from .deps import (
     get_user_id,
     get_user_id_optional,
 )
+from .jwt import JWTManager
 from .middleware import AuthMiddleware
 
 __all__ = [
@@ -32,4 +33,6 @@ __all__ = [
     "resource_owner_required",
     # Middleware
     "AuthMiddleware",
+    # JWT Manager
+    "JWTManager",
 ]

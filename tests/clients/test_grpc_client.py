@@ -5,7 +5,7 @@ Tests for mysingle.clients.base_grpc_client module.
 import pytest
 
 try:
-    from mysingle.clients import BaseGrpcClient
+    from mysingle.grpc import BaseGrpcClient
 
     GRPC_AVAILABLE = True
 except ImportError:

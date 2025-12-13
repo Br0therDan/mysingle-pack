@@ -304,7 +304,7 @@ from mysingle.core import (
 )
 
 service_config = create_service_config(
-    service_type=ServiceType.NON_IAM_SERVICE,
+
     service_name=settings.SERVICE_NAME,
     service_version=settings.APP_VERSION,
     description="My Service",
