@@ -3,7 +3,7 @@ from .audit import AuditLog, AuditLoggingMiddleware
 
 # Consolidated modules (base, logging, metrics, health, email, audit → core)
 from .base import BaseDoc, BaseResponseSchema, BaseTimeDoc, BaseTimeDocWithUserId
-from .config import CommonSettings, get_settings, settings
+from .config import CommonSettings, settings
 from .db import (
     get_database_name,
     get_mongodb_url,
@@ -25,7 +25,6 @@ __all__ = [
     # Core Settings
     "settings",
     "CommonSettings",
-    "get_settings",
     # App Factory
     "create_lifespan",
     "create_fastapi_app",

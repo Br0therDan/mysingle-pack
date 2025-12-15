@@ -2,7 +2,7 @@
 Tests for mysingle.core.config module.
 """
 
-from mysingle.core.config import CommonSettings, get_settings
+from mysingle.core.config import CommonSettings
 
 
 def test_common_settings_defaults():
@@ -25,14 +25,6 @@ def test_common_settings_from_env(monkeypatch):
     assert settings.ENVIRONMENT == "production"
     assert settings.DEBUG is False
     assert settings.PROJECT_NAME == "Test Project"
-
-
-def test_get_settings():
-    """Test get_settings function."""
-    settings = get_settings()
-
-    assert isinstance(settings, CommonSettings)
-    assert settings.ENVIRONMENT in ["development", "production", "staging"]
 
 
 def test_mongodb_url_computed():

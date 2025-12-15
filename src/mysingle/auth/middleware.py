@@ -19,7 +19,7 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
-from mysingle.core.config import get_settings
+from mysingle.core.config import settings
 from mysingle.core.logging import get_logger
 from mysingle.core.service_types import ServiceConfig
 
@@ -36,7 +36,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
     def __init__(self, app: ASGIApp, service_config: ServiceConfig):
         super().__init__(app)
         self.service_config = service_config
-        self.settings = get_settings()
+        self.settings = settings
         self.auth_bypass = self._check_auth_bypass()
         self.public_paths = self._prepare_public_paths()
 

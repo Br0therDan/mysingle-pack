@@ -20,7 +20,7 @@ Usage:
 from datetime import UTC, datetime
 from typing import Any, Dict, Optional
 
-from mysingle.core.config import get_settings
+from mysingle.core.config import settings
 from mysingle.core.logging import get_structured_logger
 from mysingle.database import BaseRedisCache
 
@@ -47,7 +47,6 @@ class DSLBytecodeCache(BaseRedisCache[bytes]):
             - DSL_CACHE_TTL_SECONDS: Default TTL (default: 3600)
             - DSL_CACHE_KEY_PREFIX: Key prefix (default: "dsl:bytecode")
         """
-        settings = get_settings()
 
         super().__init__(
             key_prefix=settings.DSL_CACHE_KEY_PREFIX,
@@ -243,7 +242,6 @@ class DSLCacheManager:
 
         from mysingle.dsl.parser import DSLParser
 
-        settings = get_settings()
         parser = DSLParser()
         warmed_count = 0
 

@@ -22,7 +22,6 @@ __all__ = [
     "__version__",
     # Core: Config
     "settings",
-    "get_settings",
     "CommonSettings",
     # Core: Logging (consolidated)
     "get_logger",
@@ -75,7 +74,6 @@ __all__ = [
 _EXPORTS = {
     # Core
     "settings": ("mysingle.core.config", "settings"),
-    "get_settings": ("mysingle.core.config", "get_settings"),
     "CommonSettings": ("mysingle.core.config", "CommonSettings"),
     "create_fastapi_app": ("mysingle.core.app_factory", "create_fastapi_app"),
     "create_lifespan": ("mysingle.core.app_factory", "create_lifespan"),
@@ -170,7 +168,6 @@ if TYPE_CHECKING:  # 타입체커를 위한 정적 import (런타임에는 지�
     from .core.base import BaseTimeDoc as BaseTimeDoc
     from .core.base import BaseTimeDocWithUserId as BaseTimeDocWithUserId
     from .core.config import CommonSettings as CommonSettings
-    from .core.config import get_settings as get_settings
     from .core.config import settings as settings
     from .core.db import get_database_name as get_database_name
     from .core.db import get_mongodb_url as get_mongodb_url

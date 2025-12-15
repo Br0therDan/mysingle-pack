@@ -322,7 +322,7 @@ class KongHeaderMiddleware(BaseHTTPMiddleware):
     def __init__(self, app: ASGIApp, service_config: ServiceConfig):
         super().__init__(app)
         self.service_config = service_config
-        self.settings = get_settings()
+        self.settings = settings
         self.auth_bypass = self._check_auth_bypass()
         self.public_paths = self._prepare_public_paths()
 

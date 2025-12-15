@@ -163,12 +163,10 @@ git commit -m "Phase {{N}} completed: {{Phase Name}}
 ```python
 from fastapi import Request
 from mysingle.auth import get_verified_user_id
-from app.core.config import get_settings
 
 # Direct usage (recommended)
 async def route(request: Request):
     user_id = get_verified_user_id(request)
-    settings = get_settings()
 ```
 
 ### App Factory (NON_IAM Service)
@@ -238,7 +236,7 @@ def generate_copilot_instructions_md(
 
 ## Configuration & Logging
 
-**Settings:** Extend `CommonSettings` from mysingle.core. Env vars: `<SERVICE>_<FEATURE>_<PROPERTY>`. Access via `get_settings()`.
+**Settings:** Extend `CommonSettings` from mysingle.core. Env vars: `<SERVICE>_<FEATURE>_<PROPERTY>`. Access via `settings`.
 **Logging:** Use `get_structured_logger(__name__)` from mysingle.core.logging. Never `print()` or standard logging. Include context keys (user_id, correlation_id).
 **Audit:** Auto-enabled in production. Add custom metadata via `request.state.audit_metadata`.
 
@@ -516,7 +514,7 @@ async def setup_db(init_test_db):
 def test_app():
     """Create FastAPI test app with settings mock."""
     # Mock settings before importing app
-    with patch("app.core.config.get_settings") as mock_settings:
+    with patch("app.core.config.settings") as mock_settings:
         mock_settings.return_value.SERVICE_NAME = "{service_name}"
         mock_settings.return_value.MONGODB_URL = "mongodb://localhost:27017"
         from app.main import app
