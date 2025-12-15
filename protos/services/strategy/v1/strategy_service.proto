@@ -6,439 +6,195 @@ import "google/protobuf/struct.proto";
 
 // Strategy Service - gRPC API
 // Used by Backtest Service and GenAI Service for high-performance strategy operations
-// StrategyService service definition.
 service StrategyService {
   // Get a single strategy version
-  // GetStrategyVersion RPC.
   rpc GetStrategyVersion(GetStrategyVersionRequest) returns (StrategyVersionResponse);
 
   // Get strategy version with minimal fields (optimized for Backtest Service)
-  // Phase B-1: Partial Field Selection RPC
-  // GetStrategyVersionMinimal RPC.
   rpc GetStrategyVersionMinimal(GetStrategyVersionMinimalRequest) returns (StrategyVersionMinimalResponse);
 
   // Get strategy version by MongoDB ObjectId (supports legacy clients)
-  // GetStrategyVersionById RPC.
   rpc GetStrategyVersionById(GetStrategyVersionByIdRequest) returns (StrategyVersionResponse);
 
   // Batch get multiple strategy versions (streaming response)
-  // BatchGetStrategyVersions RPC.
   rpc BatchGetStrategyVersions(BatchGetStrategyVersionsRequest) returns (stream StrategyVersionResponse);
 
   // Health check
-  // HealthCheck RPC.
   rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
 
   // --- New RPCs for GenAI Service ---
 
   // Get a single strategy template
-  // GetStrategyTemplate RPC.
   rpc GetStrategyTemplate(GetTemplateRequest) returns (TemplateResponse);
 
   // List all accessible templates (streaming)
-  // ListStrategyTemplates RPC.
   rpc ListStrategyTemplates(ListTemplatesRequest) returns (stream TemplateResponse);
 
   // Batch get multiple strategies (streaming)
-  // BatchGetStrategies RPC.
   rpc BatchGetStrategies(BatchGetStrategiesRequest) returns (stream StrategyResponse);
 
   // List user's strategies (auto-discovery by user_id) - NEW
-  // ListUserStrategies RPC.
   rpc ListUserStrategies(ListUserStrategiesRequest) returns (stream StrategyResponse);
 
   // --- Phase 3: Write Operations for GenAI Service ---
 
   // Create a new strategy version
-  // CreateStrategyVersion RPC.
   rpc CreateStrategyVersion(CreateStrategyVersionRequest) returns (CreateStrategyVersionResponse);
 
   // Update an existing strategy version
-  // UpdateStrategyVersion RPC.
   rpc UpdateStrategyVersion(UpdateStrategyVersionRequest) returns (UpdateStrategyVersionResponse);
-
-  // --- Phase 4: ML Service Portfolio Summary ---
-
-  // Get portfolio summary for ML model training
-  // Provides aggregated strategy performance data for ML Service
-  // GetPortfolioSummary RPC.
-  rpc GetPortfolioSummary(GetPortfolioSummaryRequest) returns (PortfolioSummaryResponse);
 }
 
 // Request Messages
-// GetStrategyVersionRequest defines the request payload for GetStrategyVersion.
+
 message GetStrategyVersionRequest {
-  // Strategy ID
   string strategy_id = 1;
-  // Version sequence number
   int32 seq = 2;
-  // User ID for authorization
   string user_id = 3;
 }
 
-// GetStrategyVersionMinimalRequest defines the request payload for GetStrategyVersionMinimal.
-// Phase B-1: Optimized for Backtest Service
 message GetStrategyVersionMinimalRequest {
-  // Strategy ID
   string strategy_id = 1;
-  // Version sequence number
   int32 seq = 2;
-  // User ID for authorization
   string user_id = 3;
-  // Optional: Requested fields (default: ["dsl_code", "dsl_code_hash"])
-  // Valid fields: "dsl_code", "dsl_code_hash", "state", "original_source"
   repeated string fields = 4;
 }
 
-// GetStrategyVersionByIdRequest defines the request payload for GetStrategyVersionById.
-// Allows querying by MongoDB ObjectId for legacy client compatibility
 message GetStrategyVersionByIdRequest {
-  // MongoDB ObjectId of the strategy version
   string version_id = 1;
-  // User ID for authorization
   string user_id = 2;
 }
 
-// BatchGetStrategyVersionsRequest defines the request payload for BatchGetStrategyVersions.
 message BatchGetStrategyVersionsRequest {
-  // Versions value.
   repeated StrategyVersionIdentifier versions = 1;
-  // User identifier for authorization.
   string user_id = 2;
 }
 
-// StrategyVersionIdentifier message definition.
 message StrategyVersionIdentifier {
-  // Strategy identifier.
   string strategy_id = 1;
-  // Version sequence number.
   int32 seq = 2;
 }
 
-// HealthCheckRequest defines the request payload for HealthCheck.
 message HealthCheckRequest {}
 
-// --- New Request Messages for GenAI Service ---
-
-// GetTemplateRequest defines the request payload for GetTemplate.
 message GetTemplateRequest {
-  // Template identifier.
   string template_id = 1;
-  // User identifier for authorization.
   string user_id = 2;
 }
 
-// ListTemplatesRequest defines the request payload for ListTemplates.
 message ListTemplatesRequest {
-  // User identifier for authorization.
   string user_id = 1;
-  // Optional filter by tags
   repeated string tags = 2;
-  // Optional filter: "public", "system", "private"
   optional string visibility = 3;
 }
 
-// BatchGetStrategiesRequest defines the request payload for BatchGetStrategies.
 message BatchGetStrategiesRequest {
-  // List of strategy ids.
   repeated string strategy_ids = 1;
-  // User identifier for authorization.
   string user_id = 2;
 }
 
-// NEW: List user's strategies with pagination and filtering
-// ListUserStrategiesRequest defines the request payload for ListUserStrategies.
 message ListUserStrategiesRequest {
-  // User identifier for authorization.
   string user_id = 1;
-  // Default: 50, Max: 100
   optional int32 limit = 2;
-  // Default: 0
   optional int32 offset = 3;
-  // Optional filter: "draft", "active", "archived"
   optional string status = 4;
-  // Optional filter by tags
   repeated string tags = 5;
 }
 
-// --- Phase 3: Write Operation Request Messages ---
-
-// CreateStrategyVersionRequest defines the request payload for CreateStrategyVersion.
 message CreateStrategyVersionRequest {
-  // User ID for authorization and ownership
   string user_id = 1;
-  // Strategy ID (if empty, auto-generate new strategy)
   optional string strategy_id = 2;
-  // DSL code (REQUIRED - single source of truth)
   string dsl_code = 3;
-  // Original source: "template" | "graph_ui" | "rule_ui" | "dsl_ui" | "genai"
   optional string original_source = 4;
-  // Optional template ID used for generation
   optional string template_id = 5;
-  // Optional graph cache (frontend rendering)
   optional string graph_cache = 6;
-  // Optional rules cache (frontend rendering)
   optional string rules_cache = 7;
 }
 
-// UpdateStrategyVersionRequest defines the request payload for UpdateStrategyVersion.
 message UpdateStrategyVersionRequest {
-  // User ID for authorization
   string user_id = 1;
-  // Strategy ID (REQUIRED)
   string strategy_id = 2;
-  // Version sequence number (REQUIRED)
   int32 seq = 3;
-  // Updated DSL code (optional - if provided, triggers re-validation)
   optional string dsl_code = 4;
-  // Updated graph cache (optional)
   optional string graph_cache = 5;
-  // Updated rules cache (optional)
   optional string rules_cache = 6;
-  // Updated state (optional): "DRAFT" | "VALIDATED" | "COMPILED" | "READY_FOR_BACKTEST" | "DEPRECATED"
   optional string state = 7;
 }
 
 // Response Messages
-// StrategyVersionResponse defines the response payload for StrategyVersion.
+
 message StrategyVersionResponse {
-  // MongoDB _id
   string id = 1;
-  // User identifier for authorization.
   string user_id = 2;
-  // Strategy identifier.
   string strategy_id = 3;
-  // Version sequence number.
   int32 seq = 4;
-  // DRAFT, VALIDATED, COMPILED, READY_FOR_BACKTEST, INVALID, DEPRECATED
   string state = 5;
-
-  // Phase 3: DSL Single Source of Truth (v2.0.0)
-  // Executable DSL code (REQUIRED - single source of truth)
   string dsl_code = 6;
-  // SHA256 hash for cache invalidation
   string dsl_code_hash = 7;
-  // "template" | "graph_ui" | "rule_ui" | "dsl_ui"
   string original_source = 8;
-
-  // Frontend rendering caches (optional, generated from dsl_code)
-  // JSON-encoded graph structure for Graph Editor
   optional string graph_cache = 9;
-  // JSON-encoded rules structure for Rule Builder
   optional string rules_cache = 10;
-
-  // Template used for instantiation (if any)
   optional string template_id = 11;
-
-  // Validation results
   repeated ValidationResult validation_pipeline = 12;
-
-  // Timestamps
-  // ISO 8601 format
   string created_at = 13;
-  // ISO 8601 format
   string updated_at = 14;
 }
 
-// ValidationResult message definition.
 message ValidationResult {
-  // STRUCT, STATIC, TYPE_INFERENCE, COMPILE, FINALIZE
   string stage = 1;
-  // PENDING, PASS, FAIL
   string status = 2;
-  // Collection of errors.
   repeated string errors = 3;
-  // Collection of warnings.
   repeated string warnings = 4;
-  // Timestamp value.
   optional string timestamp = 5;
 }
 
-// StrategyVersionMinimalResponse defines the minimal response payload for GetStrategyVersionMinimal.
-// Phase B-1: Optimized for Backtest Service (70% data reduction)
 message StrategyVersionMinimalResponse {
-  // Strategy identifier
   string strategy_id = 1;
-  // Version sequence number
   int32 seq = 2;
-  // Executable DSL code (REQUIRED)
   optional string dsl_code = 3;
-  // SHA256 hash for cache invalidation
   optional string dsl_code_hash = 4;
-  // DRAFT, VALIDATED, COMPILED, READY_FOR_BACKTEST, INVALID, DEPRECATED
   optional string state = 5;
-  // "template" | "graph_ui" | "rule_ui" | "dsl_ui"
   optional string original_source = 6;
 }
 
-// HealthCheckResponse defines the response payload for HealthCheck.
 message HealthCheckResponse {
-  // "healthy"
   string status = 1;
-  // "strategy-service"
   string service = 2;
-  // Semantic version string.
   string version = 3;
 }
 
-// --- New Response Messages for GenAI Service ---
-
-// TemplateResponse defines the response payload for Template.
 message TemplateResponse {
-  // Unique identifier.
   string id = 1;
-  // User identifier for authorization.
   string user_id = 2;
-  // Human-readable name.
   string name = 3;
-  // Description text.
   string description = 4;
-  // "public" | "system" | "private"
   string visibility = 5;
-  // Associated tags.
   repeated string tags = 6;
-
-  // Phase 3: DSL Single Source
-  // Pre-generated DSL code (REQUIRED for templates)
   string default_dsl = 7;
-
-  // Default execution profile value.
   optional google.protobuf.Struct default_execution_profile = 8;
-  // Created at timestamp.
   string created_at = 9;
-  // Updated at timestamp.
   string updated_at = 10;
 }
 
-// StrategyResponse defines the response payload for Strategy.
 message StrategyResponse {
-  // Unique identifier.
   string id = 1;
-  // User identifier for authorization.
   string user_id = 2;
-  // Human-readable name.
   string name = 3;
-  // Description text.
   string description = 4;
-  // "draft" | "active" | "archived"
   string status = 5;
-  // Associated tags.
   repeated string tags = 6;
-  // Created at timestamp.
   string created_at = 7;
-  // Updated at timestamp.
   string updated_at = 8;
 }
 
-// --- Phase 3: Write Operation Response Messages ---
-
-// CreateStrategyVersionResponse defines the response payload for CreateStrategyVersion.
 message CreateStrategyVersionResponse {
-  // Created strategy version
   StrategyVersionResponse strategy_version = 1;
-  // Whether a new strategy was created (true) or existing strategy used (false)
   bool new_strategy_created = 2;
-  // Strategy ID (useful if auto-generated)
   string strategy_id = 3;
-  // Version sequence number
   int32 seq = 4;
 }
 
-// UpdateStrategyVersionResponse defines the response payload for UpdateStrategyVersion.
 message UpdateStrategyVersionResponse {
-  // Updated strategy version
   StrategyVersionResponse strategy_version = 1;
-  // Whether validation was triggered (true if dsl_code was updated)
   bool validation_triggered = 2;
 }
-
-// --- Phase 4: Portfolio Summary Messages ---
-
-// GetPortfolioSummaryRequest defines the request payload for GetPortfolioSummary.
-message GetPortfolioSummaryRequest {
-  // Strategy ID
-  string strategy_id = 1;
-  // User ID for authorization
-  string user_id = 2;
-  // Optional: Start date for performance history (ISO 8601)
-  string start_date = 3;
-  // Optional: End date for performance history (ISO 8601)
-  string end_date = 4;
-}
-
-// PortfolioSummaryResponse defines the response payload for GetPortfolioSummary.
-// Provides aggregated portfolio data for ML model training
-message PortfolioSummaryResponse {
-  // Strategy ID (ObjectId as string)
-  string strategy_id = 1;
-  // Human-readable strategy name
-  string strategy_name = 2;
-  // User ID who owns the strategy
-  string user_id = 3;
-
-  // Current positions (if available from latest backtest)
-  repeated Position positions = 4;
-
-  // Performance history points
-  repeated HistoryPoint history = 5;
-
-  // Aggregated statistics
-  PortfolioStats stats = 6;
-
-  // Whether backtest data is available for this strategy
-  bool has_backtest_data = 7;
-  // Last backtest execution date (ISO 8601 format)
-  string last_backtest_date = 8;
-}
-
-// Position represents a current portfolio position
-message Position {
-  // Trading symbol (e.g., "AAPL", "BTC-USD")
-  string symbol = 1;
-  // Position quantity (positive for long, negative for short)
-  double quantity = 2;
-  // Entry price per unit
-  double entry_price = 3;
-  // Current market price
-  double current_price = 4;
-  // Unrealized profit/loss in account currency
-  double unrealized_pnl = 5;
-  // Position entry date (ISO 8601 format)
-  string entry_date = 6;
-}
-
-// HistoryPoint represents a point in portfolio performance history
-message HistoryPoint {
-  // Date of this history point (ISO 8601 format)
-  string date = 1;
-  // Total portfolio value at this date
-  double portfolio_value = 2;
-  // Cumulative profit/loss at this date
-  double total_pnl = 3;
-  // Win rate percentage (0-100) at this date
-  double win_rate = 4;
-  // Total number of trades executed up to this date
-  int32 trade_count = 5;
-}
-
-// PortfolioStats contains aggregated portfolio statistics
-message PortfolioStats {
-  // Total return percentage (e.g., 15.5 for 15.5%)
-  double total_return = 1;
-  // Sharpe ratio (risk-adjusted return metric)
-  double sharpe_ratio = 2;
-  // Maximum drawdown percentage (e.g., 10.2 for 10.2% drawdown)
-  double max_drawdown = 3;
-  // Overall win rate percentage (0-100)
-  double win_rate = 4;
-  // Total number of trades in the period
-  int32 total_trades = 5;
-  // Average profit/loss per trade
-  double avg_trade_pnl = 6;
-}
-
-// Error handling (standard gRPC status codes)
-// - NOT_FOUND: Strategy version/template not found
-// - PERMISSION_DENIED: User not authorized
-// - INVALID_ARGUMENT: Invalid request parameters
-// - UNAVAILABLE: Service temporarily unavailable

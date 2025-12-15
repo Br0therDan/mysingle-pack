@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+package portfolio.v1;
+
+import "google/protobuf/timestamp.proto";
+
+service PortfolioService {
+  // Get current portfolio summary
+  rpc GetPortfolioSummary(GetPortfolioSummaryRequest) returns (PortfolioSummaryResponse);
+
+  // Get detailed positions
+  rpc GetPositions(GetPositionsRequest) returns (GetPositionsResponse);
+
+  // Get transaction history
+  rpc GetTransactions(GetTransactionsRequest) returns (GetTransactionsResponse);
+
+  // Create a new portfolio (e.g. for a new strategy deployment)
+  rpc CreatePortfolio(CreatePortfolioRequest) returns (PortfolioResponse);
+
+  // Health check
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+message HealthCheckRequest {}
+message HealthCheckResponse {
+  string status = 1;
+  string service = 2;
+  string version = 3;
+}
+
+message GetPortfolioSummaryRequest {
+  string portfolio_id = 1; // Optional if strategy_id is provided
+  string strategy_id = 2;  // Optional if portfolio_id is provided
+  string user_id = 3;
+}
+
+message PortfolioSummaryResponse {
+  string portfolio_id = 1;
+  string strategy_id = 2;
+  string user_id = 3;
+  double total_value = 4;
+  double cash_balance = 5;
+  double unrealized_pnl = 6;
+  double realized_pnl = 7;
+  double total_return_pct = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+message GetPositionsRequest {
+  string portfolio_id = 1;
+  string user_id = 2;
+}
+
+message GetPositionsResponse {
+  repeated Position positions = 1;
+}
+
+message Position {
+  string symbol = 1;
+  double quantity = 2;
+  double average_price = 3;
+  double current_price = 4;
+  double market_value = 5;
+  double unrealized_pnl = 6;
+  double unrealized_pnl_pct = 7;
+  string side = 8; // LONG, SHORT
+}
+
+message GetTransactionsRequest {
+  string portfolio_id = 1;
+  string user_id = 2;
+  google.protobuf.Timestamp start_date = 3;
+  google.protobuf.Timestamp end_date = 4;
+  int32 limit = 5;
+  int32 offset = 6;
+}
+
+message GetTransactionsResponse {
+  repeated Transaction transactions = 1;
+  int32 total_count = 2;
+}
+
+message Transaction {
+  string id = 1;
+  string portfolio_id = 2;
+  string symbol = 3;
+  string type = 4; // BUY, SELL, DEPOSIT, WITHDRAW
+  double quantity = 5;
+  double price = 6;
+  double amount = 7;
+  double fee = 8;
+  google.protobuf.Timestamp timestamp = 9;
+}
+
+message CreatePortfolioRequest {
+  string user_id = 1;
+  string strategy_id = 2;
+  double initial_capital = 3;
+  string currency = 4;
+}
+
+message PortfolioResponse {
+  string id = 1;
+  string user_id = 2;
+  string strategy_id = 3;
+  double initial_capital = 4;
+  string currency = 5;
+  string status = 6; // ACTIVE, CLOSED
+  google.protobuf.Timestamp created_at = 7;
+}
