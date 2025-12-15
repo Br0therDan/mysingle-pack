@@ -203,8 +203,8 @@ class CommonSettings(BaseSettings):
         }
 
         for field_name, db_value in db_fields.items():
-            if not (0 <= db_value <= 15):
-                raise ValueError(f"{field_name} must be between 0-15, got {db_value}")
+            if not (0 <= db_value <= 20):
+                raise ValueError(f"{field_name} must be between 0-20, got {db_value}")
 
         # Check for duplicate DB assignments (excluding RESERVED)
         db_values = [v for k, v in db_fields.items() if k != "REDIS_DB_RESERVED"]
