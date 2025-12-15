@@ -68,7 +68,8 @@ class CommonSettings(BaseSettings):
     REDIS_DB_ML: int = 12  # ML model cache (ML)
     REDIS_DB_GENAI: int = 13  # GenAI response cache (GenAI)
     REDIS_DB_SUBSCRIPTION: int = 14  # Subscription cache (Subscription)
-    REDIS_DB_RESERVED: int = 15  # Reserved for future platform needs
+    REDIS_DB_PORTFOLIO: int = 15  # Portfolio service cache (Portfolio)
+    REDIS_DB_RESERVED: int = 16  # Reserved for future platform needs
 
     @computed_field
     @property
