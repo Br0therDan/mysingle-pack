@@ -222,11 +222,6 @@ class CommonSettings(BaseSettings):
 settings = CommonSettings()
 
 
-def get_settings() -> CommonSettings:
-    """Get the global settings instance."""
-    return settings
-
-
 def get_environment() -> str:
     """
     현재 실행 환경 반환
