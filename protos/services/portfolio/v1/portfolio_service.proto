@@ -4,6 +4,8 @@ package portfolio.v1;
 
 import "google/protobuf/timestamp.proto";
 
+// Portfolio Service - gRPC API
+// Manages portfolio state, positions, and transaction history.
 service PortfolioService {
   // Get current portfolio summary
   rpc GetPortfolioSummary(GetPortfolioSummaryRequest) returns (PortfolioSummaryResponse);
@@ -21,90 +23,157 @@ service PortfolioService {
   rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
 }
 
+// HealthCheckRequest defines the request payload for HealthCheck.
 message HealthCheckRequest {}
+
+// HealthCheckResponse defines the response payload for HealthCheck.
 message HealthCheckResponse {
+  // Service health status string ("ok" or "error").
   string status = 1;
+  // Human-readable service identifier.
   string service = 2;
+  // Semantic version reported by the service.
   string version = 3;
 }
 
+// GetPortfolioSummaryRequest defines the request payload for GetPortfolioSummary.
 message GetPortfolioSummaryRequest {
-  string portfolio_id = 1; // Optional if strategy_id is provided
-  string strategy_id = 2;  // Optional if portfolio_id is provided
+  // Portfolio ID (Optional if strategy_id is provided)
+  string portfolio_id = 1;
+  // Strategy ID (Optional if portfolio_id is provided)
+  string strategy_id = 2;
+  // User ID for authorization
   string user_id = 3;
 }
 
+// PortfolioSummaryResponse defines the response payload for GetPortfolioSummary.
 message PortfolioSummaryResponse {
+  // Portfolio ID
   string portfolio_id = 1;
+  // Strategy ID associated with the portfolio
   string strategy_id = 2;
+  // User ID who owns the portfolio
   string user_id = 3;
+  // Total portfolio value (cash + positions)
   double total_value = 4;
+  // Available cash balance
   double cash_balance = 5;
+  // Total unrealized profit/loss
   double unrealized_pnl = 6;
+  // Total realized profit/loss
   double realized_pnl = 7;
+  // Total return percentage
   double total_return_pct = 8;
+  // Last update timestamp
   google.protobuf.Timestamp updated_at = 9;
 }
 
+// GetPositionsRequest defines the request payload for GetPositions.
 message GetPositionsRequest {
+  // Portfolio ID
   string portfolio_id = 1;
+  // User ID for authorization
   string user_id = 2;
 }
 
+// GetPositionsResponse defines the response payload for GetPositions.
 message GetPositionsResponse {
+  // List of positions
   repeated Position positions = 1;
 }
 
+// Position represents a single holding in the portfolio.
 message Position {
+  // Trading symbol (e.g., "AAPL", "BTC-USD")
   string symbol = 1;
+  // Position quantity
   double quantity = 2;
+  // Average entry price
   double average_price = 3;
+  // Current market price
   double current_price = 4;
+  // Current market value of the position
   double market_value = 5;
+  // Unrealized profit/loss
   double unrealized_pnl = 6;
+  // Unrealized profit/loss percentage
   double unrealized_pnl_pct = 7;
-  string side = 8; // LONG, SHORT
+  // Position side: "LONG" or "SHORT"
+  string side = 8;
 }
 
+// GetTransactionsRequest defines the request payload for GetTransactions.
 message GetTransactionsRequest {
+  // Portfolio ID
   string portfolio_id = 1;
+  // User ID for authorization
   string user_id = 2;
+  // Start date filter
   google.protobuf.Timestamp start_date = 3;
+  // End date filter
   google.protobuf.Timestamp end_date = 4;
+  // Pagination limit
   int32 limit = 5;
+  // Pagination offset
   int32 offset = 6;
 }
 
+// GetTransactionsResponse defines the response payload for GetTransactions.
 message GetTransactionsResponse {
+  // List of transactions
   repeated Transaction transactions = 1;
+  // Total count of transactions matching the filter
   int32 total_count = 2;
 }
 
+// Transaction represents a single financial event (trade, deposit, withdrawal).
 message Transaction {
+  // Transaction ID
   string id = 1;
+  // Portfolio ID
   string portfolio_id = 2;
+  // Trading symbol (optional for deposits/withdrawals)
   string symbol = 3;
-  string type = 4; // BUY, SELL, DEPOSIT, WITHDRAW
+  // Transaction type: "BUY", "SELL", "DEPOSIT", "WITHDRAW"
+  string type = 4;
+  // Quantity traded
   double quantity = 5;
+  // Execution price
   double price = 6;
+  // Total amount (price * quantity)
   double amount = 7;
+  // Transaction fee
   double fee = 8;
+  // Transaction timestamp
   google.protobuf.Timestamp timestamp = 9;
 }
 
+// CreatePortfolioRequest defines the request payload for CreatePortfolio.
 message CreatePortfolioRequest {
+  // User ID
   string user_id = 1;
+  // Strategy ID to associate with the portfolio
   string strategy_id = 2;
+  // Initial capital amount
   double initial_capital = 3;
+  // Currency code (e.g., "USD", "KRW")
   string currency = 4;
 }
 
+// PortfolioResponse defines the response payload for CreatePortfolio.
 message PortfolioResponse {
+  // Portfolio ID
   string id = 1;
+  // User ID
   string user_id = 2;
+  // Strategy ID
   string strategy_id = 3;
+  // Initial capital
   double initial_capital = 4;
+  // Currency code
   string currency = 5;
-  string status = 6; // ACTIVE, CLOSED
+  // Portfolio status: "ACTIVE", "CLOSED"
+  string status = 6;
+  // Creation timestamp
   google.protobuf.Timestamp created_at = 7;
 }

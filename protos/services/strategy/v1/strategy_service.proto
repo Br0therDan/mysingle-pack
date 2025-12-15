@@ -47,154 +47,265 @@ service StrategyService {
 
 // Request Messages
 
+// GetStrategyVersionRequest defines the request payload for GetStrategyVersion.
 message GetStrategyVersionRequest {
+  // Strategy ID
   string strategy_id = 1;
+  // Version sequence number
   int32 seq = 2;
+  // User ID for authorization
   string user_id = 3;
 }
 
+// GetStrategyVersionMinimalRequest defines the request payload for GetStrategyVersionMinimal.
 message GetStrategyVersionMinimalRequest {
+  // Strategy ID
   string strategy_id = 1;
+  // Version sequence number
   int32 seq = 2;
+  // User ID for authorization
   string user_id = 3;
+  // Optional: Requested fields (default: ["dsl_code", "dsl_code_hash"])
   repeated string fields = 4;
 }
 
+// GetStrategyVersionByIdRequest defines the request payload for GetStrategyVersionById.
 message GetStrategyVersionByIdRequest {
+  // MongoDB ObjectId of the strategy version
   string version_id = 1;
+  // User ID for authorization
   string user_id = 2;
 }
 
+// BatchGetStrategyVersionsRequest defines the request payload for BatchGetStrategyVersions.
 message BatchGetStrategyVersionsRequest {
+  // List of version identifiers
   repeated StrategyVersionIdentifier versions = 1;
+  // User ID for authorization
   string user_id = 2;
 }
 
+// StrategyVersionIdentifier message definition.
 message StrategyVersionIdentifier {
+  // Strategy ID
   string strategy_id = 1;
+  // Version sequence number
   int32 seq = 2;
 }
 
+// HealthCheckRequest defines the request payload for HealthCheck.
 message HealthCheckRequest {}
 
+// GetTemplateRequest defines the request payload for GetTemplate.
 message GetTemplateRequest {
+  // Template ID
   string template_id = 1;
+  // User ID for authorization
   string user_id = 2;
 }
 
+// ListTemplatesRequest defines the request payload for ListTemplates.
 message ListTemplatesRequest {
+  // User ID for authorization
   string user_id = 1;
+  // Optional filter by tags
   repeated string tags = 2;
+  // Optional filter: "public", "system", "private"
   optional string visibility = 3;
 }
 
+// BatchGetStrategiesRequest defines the request payload for BatchGetStrategies.
 message BatchGetStrategiesRequest {
+  // List of strategy IDs
   repeated string strategy_ids = 1;
+  // User ID for authorization
   string user_id = 2;
 }
 
+// ListUserStrategiesRequest defines the request payload for ListUserStrategies.
 message ListUserStrategiesRequest {
+  // User ID for authorization
   string user_id = 1;
+  // Pagination limit
   optional int32 limit = 2;
+  // Pagination offset
   optional int32 offset = 3;
+  // Optional filter: "draft", "active", "archived"
   optional string status = 4;
+  // Optional filter by tags
   repeated string tags = 5;
 }
 
+// CreateStrategyVersionRequest defines the request payload for CreateStrategyVersion.
 message CreateStrategyVersionRequest {
+  // User ID for authorization
   string user_id = 1;
+  // Strategy ID (optional, if creating new strategy)
   optional string strategy_id = 2;
+  // DSL code content
   string dsl_code = 3;
+  // Original source: "template" | "graph_ui" | "rule_ui" | "dsl_ui" | "genai"
   optional string original_source = 4;
+  // Template ID used for generation
   optional string template_id = 5;
+  // Graph cache for frontend
   optional string graph_cache = 6;
+  // Rules cache for frontend
   optional string rules_cache = 7;
 }
 
+// UpdateStrategyVersionRequest defines the request payload for UpdateStrategyVersion.
 message UpdateStrategyVersionRequest {
+  // User ID for authorization
   string user_id = 1;
+  // Strategy ID
   string strategy_id = 2;
+  // Version sequence number
   int32 seq = 3;
+  // Updated DSL code
   optional string dsl_code = 4;
+  // Updated graph cache
   optional string graph_cache = 5;
+  // Updated rules cache
   optional string rules_cache = 6;
+  // Updated state
   optional string state = 7;
 }
 
 // Response Messages
 
+// StrategyVersionResponse defines the response payload for StrategyVersion.
 message StrategyVersionResponse {
+  // MongoDB _id
   string id = 1;
+  // User ID
   string user_id = 2;
+  // Strategy ID
   string strategy_id = 3;
+  // Version sequence number
   int32 seq = 4;
+  // State: DRAFT, VALIDATED, COMPILED, READY_FOR_BACKTEST, INVALID, DEPRECATED
   string state = 5;
+  // DSL code content
   string dsl_code = 6;
+  // SHA256 hash of DSL code
   string dsl_code_hash = 7;
+  // Original source
   string original_source = 8;
+  // Graph cache
   optional string graph_cache = 9;
+  // Rules cache
   optional string rules_cache = 10;
+  // Template ID
   optional string template_id = 11;
+  // Validation results
   repeated ValidationResult validation_pipeline = 12;
+  // Creation timestamp
   string created_at = 13;
+  // Update timestamp
   string updated_at = 14;
 }
 
+// ValidationResult message definition.
 message ValidationResult {
+  // Stage: STRUCT, STATIC, TYPE_INFERENCE, COMPILE, FINALIZE
   string stage = 1;
+  // Status: PENDING, PASS, FAIL
   string status = 2;
+  // List of errors
   repeated string errors = 3;
+  // List of warnings
   repeated string warnings = 4;
+  // Timestamp
   optional string timestamp = 5;
 }
 
+// StrategyVersionMinimalResponse defines the minimal response payload for GetStrategyVersionMinimal.
 message StrategyVersionMinimalResponse {
+  // Strategy ID
   string strategy_id = 1;
+  // Version sequence number
   int32 seq = 2;
+  // DSL code content
   optional string dsl_code = 3;
+  // SHA256 hash of DSL code
   optional string dsl_code_hash = 4;
+  // State
   optional string state = 5;
+  // Original source
   optional string original_source = 6;
 }
 
+// HealthCheckResponse defines the response payload for HealthCheck.
 message HealthCheckResponse {
+  // Service health status
   string status = 1;
+  // Service name
   string service = 2;
+  // Service version
   string version = 3;
 }
 
+// TemplateResponse defines the response payload for Template.
 message TemplateResponse {
+  // Template ID
   string id = 1;
+  // User ID
   string user_id = 2;
+  // Template name
   string name = 3;
+  // Template description
   string description = 4;
+  // Visibility: "public", "system", "private"
   string visibility = 5;
+  // Tags
   repeated string tags = 6;
+  // Default DSL code
   string default_dsl = 7;
+  // Default execution profile
   optional google.protobuf.Struct default_execution_profile = 8;
+  // Creation timestamp
   string created_at = 9;
+  // Update timestamp
   string updated_at = 10;
 }
 
+// StrategyResponse defines the response payload for Strategy.
 message StrategyResponse {
+  // Strategy ID
   string id = 1;
+  // User ID
   string user_id = 2;
+  // Strategy name
   string name = 3;
+  // Strategy description
   string description = 4;
+  // Status: "draft", "active", "archived"
   string status = 5;
+  // Tags
   repeated string tags = 6;
+  // Creation timestamp
   string created_at = 7;
+  // Update timestamp
   string updated_at = 8;
 }
 
+// CreateStrategyVersionResponse defines the response payload for CreateStrategyVersion.
 message CreateStrategyVersionResponse {
+  // Created strategy version
   StrategyVersionResponse strategy_version = 1;
+  // Whether a new strategy was created
   bool new_strategy_created = 2;
+  // Strategy ID
   string strategy_id = 3;
+  // Version sequence number
   int32 seq = 4;
 }
 
+// UpdateStrategyVersionResponse defines the response payload for UpdateStrategyVersion.
 message UpdateStrategyVersionResponse {
+  // Updated strategy version
   StrategyVersionResponse strategy_version = 1;
+  // Whether validation was triggered
   bool validation_triggered = 2;
 }

@@ -1289,7 +1289,7 @@ description = "{service_name_pascal} for MySingle Quant Platform"
 requires-python = ">=3.12"
 dependencies = [
     # Common dependencies
-    "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.8.5",
+    "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.8.7",
 {grpc_deps}    # Specific dependencies
     # Add here any additional dependencies your service needs
 ]

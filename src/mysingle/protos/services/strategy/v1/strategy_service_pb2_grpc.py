@@ -33,7 +33,6 @@ if _version_not_supported:
 class StrategyServiceStub(object):
     """Strategy Service - gRPC API
     Used by Backtest Service and GenAI Service for high-performance strategy operations
-    StrategyService service definition.
     """
 
     def __init__(self, channel):
@@ -108,57 +107,39 @@ class StrategyServiceStub(object):
             response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.UpdateStrategyVersionResponse.FromString,
             _registered_method=True,
         )
-        self.GetPortfolioSummary = channel.unary_unary(
-            "/strategy.v1.StrategyService/GetPortfolioSummary",
-            request_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryRequest.SerializeToString,
-            response_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.PortfolioSummaryResponse.FromString,
-            _registered_method=True,
-        )
 
 
 class StrategyServiceServicer(object):
     """Strategy Service - gRPC API
     Used by Backtest Service and GenAI Service for high-performance strategy operations
-    StrategyService service definition.
     """
 
     def GetStrategyVersion(self, request, context):
-        """Get a single strategy version
-        GetStrategyVersion RPC.
-        """
+        """Get a single strategy version"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
     def GetStrategyVersionMinimal(self, request, context):
-        """Get strategy version with minimal fields (optimized for Backtest Service)
-        Phase B-1: Partial Field Selection RPC
-        GetStrategyVersionMinimal RPC.
-        """
+        """Get strategy version with minimal fields (optimized for Backtest Service)"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
     def GetStrategyVersionById(self, request, context):
-        """Get strategy version by MongoDB ObjectId (supports legacy clients)
-        GetStrategyVersionById RPC.
-        """
+        """Get strategy version by MongoDB ObjectId (supports legacy clients)"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
     def BatchGetStrategyVersions(self, request, context):
-        """Batch get multiple strategy versions (streaming response)
-        BatchGetStrategyVersions RPC.
-        """
+        """Batch get multiple strategy versions (streaming response)"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
     def HealthCheck(self, request, context):
-        """Health check
-        HealthCheck RPC.
-        """
+        """Health check"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
@@ -167,32 +148,25 @@ class StrategyServiceServicer(object):
         """--- New RPCs for GenAI Service ---
 
         Get a single strategy template
-        GetStrategyTemplate RPC.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
     def ListStrategyTemplates(self, request, context):
-        """List all accessible templates (streaming)
-        ListStrategyTemplates RPC.
-        """
+        """List all accessible templates (streaming)"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
     def BatchGetStrategies(self, request, context):
-        """Batch get multiple strategies (streaming)
-        BatchGetStrategies RPC.
-        """
+        """Batch get multiple strategies (streaming)"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
     def ListUserStrategies(self, request, context):
-        """List user's strategies (auto-discovery by user_id) - NEW
-        ListUserStrategies RPC.
-        """
+        """List user's strategies (auto-discovery by user_id) - NEW"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
@@ -201,27 +175,13 @@ class StrategyServiceServicer(object):
         """--- Phase 3: Write Operations for GenAI Service ---
 
         Create a new strategy version
-        CreateStrategyVersion RPC.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
     def UpdateStrategyVersion(self, request, context):
-        """Update an existing strategy version
-        UpdateStrategyVersion RPC.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetPortfolioSummary(self, request, context):
-        """--- Phase 4: ML Service Portfolio Summary ---
-
-        Get portfolio summary for ML model training
-        Provides aggregated strategy performance data for ML Service
-        GetPortfolioSummary RPC.
-        """
+        """Update an existing strategy version"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
@@ -284,11 +244,6 @@ def add_StrategyServiceServicer_to_server(servicer, server):
             request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.UpdateStrategyVersionRequest.FromString,
             response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.UpdateStrategyVersionResponse.SerializeToString,
         ),
-        "GetPortfolioSummary": grpc.unary_unary_rpc_method_handler(
-            servicer.GetPortfolioSummary,
-            request_deserializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryRequest.FromString,
-            response_serializer=services_dot_strategy_dot_v1_dot_strategy__service__pb2.PortfolioSummaryResponse.SerializeToString,
-        ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
         "strategy.v1.StrategyService", rpc_method_handlers
@@ -303,7 +258,6 @@ def add_StrategyServiceServicer_to_server(servicer, server):
 class StrategyService(object):
     """Strategy Service - gRPC API
     Used by Backtest Service and GenAI Service for high-performance strategy operations
-    StrategyService service definition.
     """
 
     @staticmethod
@@ -625,36 +579,6 @@ class StrategyService(object):
             "/strategy.v1.StrategyService/UpdateStrategyVersion",
             services_dot_strategy_dot_v1_dot_strategy__service__pb2.UpdateStrategyVersionRequest.SerializeToString,
             services_dot_strategy_dot_v1_dot_strategy__service__pb2.UpdateStrategyVersionResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def GetPortfolioSummary(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/strategy.v1.StrategyService/GetPortfolioSummary",
-            services_dot_strategy_dot_v1_dot_strategy__service__pb2.GetPortfolioSummaryRequest.SerializeToString,
-            services_dot_strategy_dot_v1_dot_strategy__service__pb2.PortfolioSummaryResponse.FromString,
             options,
             channel_credentials,
             insecure,
