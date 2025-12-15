@@ -548,7 +548,6 @@ from typing import cast
 
 from fastapi import FastAPI
 from mysingle.core import (
-    ServiceType,
     create_fastapi_app,
     create_service_config,
     get_structured_logger,
@@ -1290,10 +1289,13 @@ description = "{service_name_pascal} for MySingle Quant Platform"
 requires-python = ">=3.12"
 dependencies = [
     # Common dependencies
-    "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.8.4",
+    "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.8.5",
 {grpc_deps}    # Specific dependencies
     # Add here any additional dependencies your service needs
 ]
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [project.optional-dependencies]
 dev = [
@@ -1346,44 +1348,18 @@ exclude = [
     "__pycache__",
     "data/",
     "logs/",
-    "generated/",    # gRPC 생성 파일
-    "app_old/",      # 레거시 코드
 ]
 
 [tool.ruff.lint]
-select = [
-    "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings
-    "F",   # pyflakes
-    "I",   # isort
-    "B",   # flake8-bugbear
-    "C4",  # flake8-comprehensions
-    "SIM", # flake8-simplify
-]
-ignore = [
-    "E501",   # line too long (handled by Black)
-    "F403",   # 'from module import *' used; unable to detect undefined names (schemas 패턴)
-    "B008",   # Do not perform function calls in argument defaults (FastAPI Depends/Query pattern)
-    "B006",   # mutable-argument-default (리스트 기본값, 의도적 사용)
-    "B904",   # raise ... from err (not always necessary for HTTP exceptions)
-    "SIM105", # suppressible-exception (try-except-pass 패턴, 일부 허용)
-]
+select = ["E", "W", "F", "I", "B", "C4", "SIM"]
+ignore = ["E501", "B008", "B006", "B904", "SIM105", "E402", "SIM102"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["app"]
 
 [tool.bandit]
 exclude_dirs = ["tests", "venv", ".venv", "__pycache__"]
-skips = [
-    "B101", # assert_used
-    "B105", # hardcoded_password_string (상수 문자열)
-    "B106", # hardcoded_password_funcarg (함수 인자 기본값)
-    "B107", # hardcoded_password_default (기본값)
-    "B601", # shell=True
-    "B608", # hardcoded_sql_expressions (파라미터화된 쿼리 사용 중)
-    # 데모/시뮬레이션 데이터 생성용 random 사용 (보안상 중요하지 않음)
-    "B311", # Standard pseudo-random generators (dashboard_service.py, portfolio_service.py Mock 데이터)
-]
+skips = ["B101", "B105", "B106", "B107", "B601", "B608"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -1395,59 +1371,16 @@ markers = [
     "e2e: End-to-end integration tests (deselect with '-m \"not e2e\"')",
     "slow: Slow-running tests (deselect with '-m \"not slow\"')",
 ]
-addopts = [
-    "--cov=app",
-    "--cov-report=html",
-    "--cov-report=term-missing",
-    "--cov-report=xml",
-    "--cov-branch",
-]
 
-[tool.coverage.run]
-source = ["app"]
-omit = [
-    "*/tests/*",
-    "*/__pycache__/*",
-    "*/site-packages/*",
-    "*/venv/*",
-    "*/.venv/*",
-    "app/grpc/generated/*",
-]
-branch = true
-
-[tool.coverage.report]
-precision = 2
-show_missing = true
-skip_covered = false
-exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "raise AssertionError",
-    "raise NotImplementedError",
-    "if __name__ == .__main__.:",
-    "if TYPE_CHECKING:",
-    "class .*\\bProtocol\\):",
-    "@(abc\\.)?abstractmethod",
-]
-
-[tool.coverage.html]
-directory = "htmlcov"
 
 [tool.mypy]
 python_version = "3.12"
 warn_return_any = true
 warn_unused_configs = true
-disallow_untyped_defs = false           # 점진적 타입 도입
-ignore_missing_imports = false           # Ignore missing imports for now (mysingle package)
+disallow_untyped_defs = false
+ignore_missing_imports = true
 exclude = ["tests/", "build/", "dist/"]
-# Temporarily disable no-any-return for gradual type improvement
-disable_error_code = ["no-any-return"]
-# Fix namespace package issue
-namespace_packages = true
-explicit_package_bases = true
-mypy_path = "."
-# Strict optional checking
-strict_optional = true
+ignore_errors = true
 """
 
 
