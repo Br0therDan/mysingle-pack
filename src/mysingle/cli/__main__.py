@@ -3,7 +3,6 @@ MySingle CLI - 통합 명령줄 도구.
 
 현재 제공 기능:
 - 버전 관리
-- Submodule 관리
 - 서비스 스캐폴딩
 - Proto 관리
 
@@ -27,7 +26,6 @@ def show_interactive_menu() -> int:
 
     console.print("[cyan]사용 가능한 명령:[/cyan]\n")
     console.print("  [green]1.[/green] version    - 패키지 버전 관리")
-    console.print("  [green]2.[/green] submodule  - Git Submodule 관리")
     console.print("  [green]3.[/green] scaffold   - 서비스 스캐폴딩")
     console.print("  [green]4.[/green] proto      - Proto 파일 관리")
     console.print("  [green]5.[/green] help       - 도움말 표시")

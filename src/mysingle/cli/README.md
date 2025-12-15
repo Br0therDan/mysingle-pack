@@ -20,13 +20,12 @@ which mysingle mysingle-proto
 
 ### ✨ 주요 기능
 
-1. **Git Submodule 관리**: 마이크로서비스에서 MySingle을 submodule로 관리 ⭐ NEW
-2. **서비스 스캐폴딩**: 표준화된 마이크로서비스 구조 자동 생성 ⭐ NEW
-3. **자동 버전 관리**: Conventional Commits 분석 기반 자동 버전 결정 ⭐ NEW
-4. **명령어 간소화**: `mysingle-cli` → `mysingle`
-5. **한국어 인터페이스**: 모든 메시지가 한국어로 제공
-6. **컬러 출력**: Rich 라이브러리 기반의 시각적 개선
-7. **대화형 모드**: 인자 없이 실행 시 단계별 메뉴 제공
+1. **서비스 스캐폴딩**: 표준화된 마이크로서비스 구조 자동 생성 ⭐ NEW
+2. **자동 버전 관리**: Conventional Commits 분석 기반 자동 버전 결정 ⭐ NEW
+3. **명령어 간소화**: `mysingle-cli` → `mysingle`
+4. **한국어 인터페이스**: 모든 메시지가 한국어로 제공
+5. **컬러 출력**: Rich 라이브러리 기반의 시각적 개선
+6. **대화형 모드**: 인자 없이 실행 시 단계별 메뉴 제공
 
 ### 🚀 대화형 모드
 
@@ -39,149 +38,15 @@ $ mysingle
 사용 가능한 명령:
 
   1. version    - 패키지 버전 관리
-  2. submodule  - Git Submodule 관리
-  3. scaffold   - 서비스 스캐폴딩
-  4. proto      - Proto 파일 관리
-  5. help       - 도움말 표시
+  2. scaffold   - 서비스 스캐폴딩
+  3. proto      - Proto 파일 관리
+  4. help       - 도움말 표시
   q. quit       - 종료
 
 명령을 선택하세요 [1/2/3/4/5/q] (기본: q):
 ```
 
 ## 🔧 사용 가능한 도구
-
-### 1. mysingle submodule - Git Submodule 관리 ⭐ NEW
-
-마이크로서비스에서 MySingle 패키지를 submodule로 관리하는 도구입니다.
-
-#### 사용 시나리오
-
-MySingle은 **중앙 집중식 공유 패키지**로, 여러 마이크로서비스에서 공통으로 사용됩니다.
-각 서비스에서 Proto나 공통 코드를 수정할 필요가 있을 때 submodule로 추가하여 작업 후 PR을 제출합니다.
-
-#### 워크플로우
-
-```bash
-# 1. 마이크로서비스 저장소에 MySingle submodule 추가
-cd ~/my-microservice
-mysingle submodule add
-
-# 2. Submodule 상태 확인
-mysingle submodule status
-
-# 3. Proto 파일 수정
-cd libs/mysingle
-vim protos/services/user/v1/user_service.proto
-
-# 4. 변경사항 PR 준비 (자동으로 브랜치 생성, 커밋, 푸시)
-mysingle submodule sync
-
-# 5. GitHub에서 PR 생성
-# https://github.com/Br0therDan/mysingle-pack/compare
-
-# 6. PR 머지 후 최신 버전 업데이트
-mysingle submodule update
-```
-
-#### 명령어
-
-```bash
-# Submodule 추가
-mysingle submodule add                           # 기본 경로(libs/mysingle)에 추가
-mysingle submodule add --path packages/mysingle  # 커스텀 경로 지정
-mysingle submodule add --branch develop          # 특정 브랜치 추가
-mysingle submodule add --force                   # 기존 디렉토리 덮어쓰기
-
-# 상태 확인
-mysingle submodule status    # 현재 브랜치, 버전, 변경사항 확인
-
-# 업데이트
-mysingle submodule update              # 원격 저장소에서 최신 변경사항 가져오기
-mysingle submodule update --no-remote  # 부모 저장소에 기록된 커밋으로 업데이트
-
-# 변경사항 동기화 (PR 준비)
-mysingle submodule sync    # 브랜치 생성 → 커밋 → 푸시 (대화형)
-```
-
-#### 예시: Proto 파일 수정 및 PR
-
-```bash
-# 1. 마이크로서비스에서 submodule 추가
-$ cd ~/projects/user-service
-$ mysingle submodule add
-
-MySingle 패키지를 submodule로 추가합니다...
-  저장소: https://github.com/Br0therDan/mysingle-pack.git
-  경로: libs/mysingle
-  브랜치: main
-
-✅ Submodule 추가 완료: libs/mysingle
-✅ Submodule 초기화 완료
-
-다음 단계:
-  1. 변경사항 커밋: git add libs/mysingle .gitmodules && git commit -m 'chore: add mysingle submodule'
-  2. 상태 확인: mysingle submodule status
-  3. Proto 생성: cd libs/mysingle && mysingle-proto generate
-
-# 2. Proto 파일 수정
-$ cd libs/mysingle
-$ vim protos/services/user/v1/user_service.proto
-# ... 수정 작업 ...
-
-# 3. 변경사항 PR 준비
-$ cd ~/projects/user-service
-$ mysingle submodule sync
-
-로컬 변경사항:
- M protos/services/user/v1/user_service.proto
-
-⚠️  main 브랜치에서 작업 중입니다.
-새 브랜치를 생성하시겠습니까? [Y/n]: y
-브랜치 이름을 입력하세요 [feature/update-from-user-service]: feature/add-user-avatar-field
-✅ 새 브랜치 생성: feature/add-user-avatar-field
-
-변경사항을 커밋하시겠습니까? [Y/n]: y
-커밋 메시지를 입력하세요 [feat: update from user-service]: feat(proto): add avatar field to user service
-✅ 커밋 완료
-
-'feature/add-user-avatar-field' 브랜치를 origin에 푸시하시겠습니까? [Y/n]: y
-✅ 푸시 완료
-
-✅ 동기화 완료!
-
-다음 단계:
-  1. GitHub에서 PR 생성
-  2. https://github.com/Br0therDan/mysingle-pack/compare
-  3. base: main ← compare: feature/add-user-avatar-field
-
-# 4. PR 생성 및 머지 (GitHub에서)
-
-# 5. 머지 후 최신 버전 업데이트
-$ mysingle submodule update
-
-MySingle submodule 업데이트 중...
-✅ 원격 저장소에서 업데이트 완료: libs/mysingle
-```
-
-#### Fork 설정
-
-MySingle에 변경사항을 PR하려면 fork가 필요합니다:
-
-```bash
-# 1. GitHub에서 mysingle-pack을 fork
-
-# 2. Submodule 디렉토리로 이동
-cd libs/mysingle
-
-# 3. Origin을 fork로 변경
-git remote set-url origin https://github.com/YOUR_USERNAME/mysingle-pack.git
-
-# 4. Upstream 추가
-git remote add upstream https://github.com/Br0therDan/mysingle-pack.git
-
-# 5. 확인
-git remote -v
-```
 
 ### 2. mysingle scaffold - 서비스 스캐폴딩 ⭐ NEW
 
@@ -636,9 +501,6 @@ src/mysingle/cli/
 ├── core/                    # 패키지 버전 관리
 │   ├── __init__.py
 │   └── version.py           # 버전 bump 및 Git 태깅
-├── submodule/               # Git Submodule 관리
-│   ├── __init__.py
-│   └── commands.py          # Submodule 명령어
 ├── scaffold/                # 서비스 스캐폴딩 ⭐ NEW
 │   ├── __init__.py
 │   ├── commands.py          # Scaffold 명령어
@@ -833,7 +695,6 @@ src/mysingle/cli/
 
 3. **저장소 구조**:
    - 메인 저장소: 모든 명령어 사용 가능
-   - 서비스 submodule: init, validate, info, generate만 사용
    - status 명령은 메인 저장소에서만 동작
 
 4. **Breaking Change 검사**:
@@ -911,7 +772,6 @@ mysingle-proto generate
 # 메인 저장소인지 확인
 ls -la | grep services
 
-# services 디렉터리가 없으면 submodule 환경
 # 대신 다른 명령어 사용
 mysingle-proto info
 mysingle-proto validate
@@ -952,13 +812,6 @@ mysingle-proto validate
 **패키지 버전**: v2.2.0
 
 ### 추가된 기능 (v2.2.0)
-
-#### Git Submodule 관리
-- ✅ `mysingle submodule add`: Submodule 추가 (대화형 경로/브랜치 선택)
-- ✅ `mysingle submodule status`: 상태 확인 (브랜치, 버전, 변경사항, 업스트림 차이)
-- ✅ `mysingle submodule update`: 업데이트 (원격/기록된 커밋)
-- ✅ `mysingle submodule sync`: PR 준비 (브랜치 생성, 커밋, 푸시)
-- ✅ Fork 자동 감지 및 설정 안내
 
 #### Conventional Commits 자동 버전 관리
 - ✅ `mysingle version auto`: 커밋 메시지 분석으로 자동 버전 결정

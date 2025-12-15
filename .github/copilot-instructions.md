@@ -71,21 +71,21 @@ app = create_fastapi_app(
 
 ## CLI Tools
 
-### Package Management
-
-```bash
-mysingle version auto              # Auto-detect version from commits
-mysingle submodule add             # Add MySingle as git submodule
-mysingle submodule update          # Update to latest version
-```
-
 ### Proto Management
 
-```bash
-mysingle-proto generate            # Generate Python stubs
-mysingle-proto validate            # Lint + format check
-mysingle-proto validate --breaking # Check breaking changes
-```
+**Submodule add / update / Sync:**:
+- To add: `uv run mysingle submodule add`
+- To update: `uv run mysingle submodule update`
+- To sync: `uv run mysingle submodule sync`
+
+**Proto Changes (Owner):**
+
+1. Edit `packages/mysingle/protos/services/{service}/v1/*.proto`
+2. Validate: `uv run mysingle-proto validate`
+3. Generate: `uv run mysingle-proto generate`
+4. Submit PR: `uv run mysingle submodule sync`
+
+**Proto Changes (Consumer):** Create issue or PR in mysingle-pack repo.
 
 ---
 
@@ -274,7 +274,6 @@ from mysingle.core.base import BaseDocument
 
 - **Module Guides:** See `src/mysingle/{module}/README.md`
 - **App Factory:** `docs/MYSINGLE_APP_FACTORY_USAGE_GUIDE.md`
-- **Submodule PR:** `docs/SUBMODULE_PR_WORKFLOW.md`
 - **Full Guide:** `AGENTS.md`
 
 ---

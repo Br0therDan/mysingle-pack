@@ -259,7 +259,7 @@ def generate_copilot_instructions_md(
 **MongoDB:**
 
 - Inherit `BaseTimeDocWithUserId` for user-scoped
-- Filter: `Model.find(Model.user_id == user.id)`
+- Filter: `Model.find(Model.user_id == user_id)`
 - Avoid N+1: batch fetch → map join
 - Index: `(user_id, created_at desc)`
 
@@ -313,7 +313,7 @@ def generate_copilot_instructions_md(
 
 **Proto Changes (Owner):**
 
-1. Edit `packages/mysingle/protos/services/{{service}}/v1/*.proto`
+1. Edit `packages/mysingle/protos/services/{'service'}/v1/*.proto`
 2. Validate: `uv run mysingle-proto validate`
 3. Generate: `uv run mysingle-proto generate`
 4. Submit PR: `uv run mysingle submodule sync`
@@ -347,7 +347,7 @@ def generate_copilot_instructions_md(
 | Strategy     | :8003 | :50053 | /strategy     |
 | Backtest     | :8004 | :50054 | /backtest     |
 | Indicator    | :8005 | :50055 | /indicator    |
-| Optimization | :8006 | :50056 | /optimization |
+| Portfolio    | :8006 | :50056 | /portfolio    |
 | Dashboard    | :8007 | :50057 | /dashboard    |
 | Notification | :8008 | :50058 | /notification |
 | Market Data  | :8009 | :50059 | /market-data  |
@@ -654,7 +654,7 @@ def generate_config_py(
 from mysingle.core import CommonSettings
 
 
-class {service_name.replace("-", "").title()}Settings(CommonSettings):
+class Settings(CommonSettings):
     """{service_name.replace("-", " ").title()} settings extending CommonSettings."""
 
     # Service Info
@@ -669,6 +669,8 @@ class {service_name.replace("-", "").title()}Settings(CommonSettings):
     STRATEGY_HOST: str = "localhost"
     BACKTEST_HOST: str = "localhost"
     INDICATOR_HOST: str = "localhost"
+    PORTFOLIO_HOST: str = "localhost"
+    NOTIFICATION_HOST: str = "localhost"
     MARKET_DATA_HOST: str = "localhost"
     GENAI_HOST: str = "localhost"
     ML_HOST: str = "localhost"
@@ -678,20 +680,16 @@ class {service_name.replace("-", "").title()}Settings(CommonSettings):
     STRATEGY_GRPC_PORT: int = 50053
     BACKTEST_GRPC_PORT: int = 50054
     INDICATOR_GRPC_PORT: int = 50055
+    PORTFOLIO_GRPC_PORT: int = 50056
+    NOTIFICATION_GRPC_PORT: int = 50058
     MARKET_DATA_GRPC_PORT: int = 50059
     GENAI_GRPC_PORT: int = 50060
     ML_GRPC_PORT: int = 50061
 
 
-_settings: {service_name.replace("-", "").title()}Settings | None = None
+settings = Settings()
 
 
-def get_settings() -> {service_name.replace("-", "").title()}Settings:
-    """Get application settings singleton."""
-    global _settings
-    if _settings is None:
-        _settings = {service_name.replace("-", "").title()}Settings()
-    return _settings
 '''
 
 
@@ -704,9 +702,6 @@ from fastapi import APIRouter
 from app.api.v1.routes import health, items
 
 api_router = APIRouter(prefix="/api/v1")
-
-# Health check routes
-api_router.include_router(health.router, tags=["health"])
 
 # Sample Item routes
 api_router.include_router(items.router, prefix="/items", tags=["items"])
@@ -794,8 +789,8 @@ def generate_sample_item_router() -> str:
 from typing import Annotated
 
 from beanie import PydanticObjectId
-from fastapi import APIRouter, HTTPException, Request, status
-from mysingle.auth import get_verified_user_id
+from fastapi import APIRouter, HTTPException, Request, status, Depends
+from mysingle.auth import get_user_id, authorized
 from mysingle.core import get_structured_logger
 
 from app.models.item import SampleItem
@@ -806,9 +801,10 @@ logger = get_structured_logger(__name__)
 
 
 @router.post("", status_code=status.HTTP_201_CREATED, response_model=SampleItemResponse)
+@authorized
 async def create_item(
-    request: Request,
     item_data: SampleItemCreate,
+    user_id: str = Depends(get_user_id),
 ) -> SampleItemResponse:
     """
     Create a new sample item.
@@ -818,8 +814,6 @@ async def create_item(
     - **quantity**: Item quantity (default: 0)
     - **is_active**: Whether item is active (default: true)
     """
-    # Get authenticated user ID from Kong Gateway
-    user_id = get_verified_user_id(request)
 
     logger.info(
         "Creating sample item",
@@ -829,7 +823,7 @@ async def create_item(
 
     # Create item with user ownership
     item = SampleItem(
-        user_id=user.id,
+        user_id=user_id,
         **item_data.model_dump(exclude_unset=True),
     )
 
@@ -846,11 +840,12 @@ async def create_item(
 
 
 @router.get("", response_model=list[SampleItemResponse])
+@authorized
 async def list_items(
-    request: Request,
     skip: int = 0,
     limit: int = 100,
     is_active: bool | None = None,
+    user_id: str = Depends(get_user_id),
 ) -> list[SampleItemResponse]:
     """
     List user's sample items.
@@ -859,7 +854,6 @@ async def list_items(
     - **limit**: Maximum number of items to return (default: 100)
     - **is_active**: Filter by active status (optional)
     """
-    user = get_current_active_verified_user(request)
 
     logger.info(
         "Listing sample items",
@@ -869,7 +863,7 @@ async def list_items(
     )
 
     # Build query - ALWAYS filter by user_id
-    query = SampleItem.find(SampleItem.user_id == user.id)
+    query = SampleItem.find(SampleItem.user_id == user_id)
 
     if is_active is not None:
         query = query.find(SampleItem.is_active == is_active)
@@ -886,16 +880,16 @@ async def list_items(
 
 
 @router.get("/{item_id}", response_model=SampleItemResponse)
+@authorized
 async def get_item(
-    request: Request,
     item_id: str,
+    user_id: str = Depends(get_user_id),
 ) -> SampleItemResponse:
     """
     Get a specific sample item by ID.
 
     - **item_id**: Item ID
     """
-    user = get_current_active_verified_user(request)
 
     logger.info(
         "Retrieving sample item",
@@ -906,7 +900,7 @@ async def get_item(
     # Find item and verify ownership
     item = await SampleItem.find_one(
         SampleItem.id == PydanticObjectId(item_id),
-        SampleItem.user_id == user.id,  # Critical: user_id filter
+        SampleItem.user_id == user_id,  # Critical: user_id filter
     )
 
     if not item:
@@ -924,10 +918,11 @@ async def get_item(
 
 
 @router.put("/{item_id}", response_model=SampleItemResponse)
+@authorized
 async def update_item(
-    request: Request,
     item_id: str,
     item_data: SampleItemUpdate,
+    user_id: str = Depends(get_user_id),
 ) -> SampleItemResponse:
     """
     Update a sample item.
@@ -938,8 +933,6 @@ async def update_item(
     - **quantity**: Updated item quantity (optional)
     - **is_active**: Updated active status (optional)
     """
-    user = get_current_active_verified_user(request)
-
     logger.info(
         "Updating sample item",
         user_id=user_id,
@@ -949,7 +942,7 @@ async def update_item(
     # Find item and verify ownership
     item = await SampleItem.find_one(
         SampleItem.id == PydanticObjectId(item_id),
-        SampleItem.user_id == user.id,
+        SampleItem.user_id == user_id,
     )
 
     if not item:
@@ -980,16 +973,16 @@ async def update_item(
 
 
 @router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
+@authorized
 async def delete_item(
-    request: Request,
     item_id: str,
+    user_id: str = Depends(get_user_id),
 ) -> None:
     """
     Delete a sample item.
 
     - **item_id**: Item ID
     """
-    user = get_current_active_verified_user(request)
 
     logger.info(
         "Deleting sample item",
@@ -1000,7 +993,7 @@ async def delete_item(
     # Find item and verify ownership
     item = await SampleItem.find_one(
         SampleItem.id == PydanticObjectId(item_id),
-        SampleItem.user_id == user.id,
+        SampleItem.user_id == user_id,
     )
 
     if not item:
@@ -1286,10 +1279,8 @@ def generate_pyproject_toml(
     grpc_deps = ""
     if grpc_enabled:
         grpc_deps = """    # gRPC
-    "grpcio>=1.60.0",
-    "grpcio-tools>=1.60.0",
+    "grpcio>=1.76.0",
     "grpcio-reflection>=1.76.0",
-    "mysingle-protos @ git+https://github.com/Br0therDan/grpc-protos.git@v1.0.0",
 """
 
     return f"""[project]
@@ -1298,49 +1289,165 @@ version = "0.1.0"
 description = "{service_name_pascal} for MySingle Quant Platform"
 requires-python = ">=3.12"
 dependencies = [
-    # FastAPI stack
-    "fastapi[standard]>=0.117.1",
-    "uvicorn[standard]>=0.27.0",
-    "pydantic>=2.5.3",
-    "pydantic-settings>=2.1.0",
-    # MongoDB ODM
-    "motor>=3.3.2",
-    "beanie>=1.24.0",
-    # Inter-service HTTP
-    "httpx>=0.26.0",
-    # MySingle shared library
-    "mysingle>=2.2.0",
-{grpc_deps}    # Utilities
-    "python-dateutil>=2.8.2",
-    "python-json-logger>=2.0.7",
-    "tenacity>=9.1.2",
+    # Common dependencies
+    "mysingle @ git+https://github.com/Br0therDan/mysingle-pack.git@v2.8.4",
+{grpc_deps}    # Specific dependencies
+    # Add here any additional dependencies your service needs
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.4.3",
-    "pytest-asyncio>=0.21.1",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "pytest-xdist>=3.5.0",
     "httpx>=0.26.0",
     "ruff>=0.1.9",
     "mypy>=1.8.0",
+    "mongomock_motor>=0.0.16",
 ]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "pytest-xdist>=3.5.0",
+    "httpx>=0.26.0",
+    "asgi-lifespan>=2.1.0",
+    "ruff>=0.1.9",
+    "mypy>=1.8.0",
+    "pre-commit>=4.3.0",
+    "bandit[toml]>=1.8.6",
+    "black>=24.10.0",
+    "mongomock-motor>=0.0.16",
+    "fakeredis>=2.32.1",
+    "protobuf>=6.33.1",
+    "grpcio-tools>=1.76.0",
+]
+
+# Ruff configuration (replaces Black + Flake8 + isort)
 [tool.ruff]
-line-length = 100
+line-length = 88
 target-version = "py312"
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    "__pycache__",
+    "data/",
+    "logs/",
+    "generated/",    # gRPC 생성 파일
+    "app_old/",      # 레거시 코드
+]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "W", "UP"]
-ignore = ["E501", "N805"]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+]
+ignore = [
+    "E501",   # line too long (handled by Black)
+    "F403",   # 'from module import *' used; unable to detect undefined names (schemas 패턴)
+    "B008",   # Do not perform function calls in argument defaults (FastAPI Depends/Query pattern)
+    "B006",   # mutable-argument-default (리스트 기본값, 의도적 사용)
+    "B904",   # raise ... from err (not always necessary for HTTP exceptions)
+    "SIM105", # suppressible-exception (try-except-pass 패턴, 일부 허용)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.bandit]
+exclude_dirs = ["tests", "venv", ".venv", "__pycache__"]
+skips = [
+    "B101", # assert_used
+    "B105", # hardcoded_password_string (상수 문자열)
+    "B106", # hardcoded_password_funcarg (함수 인자 기본값)
+    "B107", # hardcoded_password_default (기본값)
+    "B601", # shell=True
+    "B608", # hardcoded_sql_expressions (파라미터화된 쿼리 사용 중)
+    # 데모/시뮬레이션 데이터 생성용 random 사용 (보안상 중요하지 않음)
+    "B311", # Standard pseudo-random generators (dashboard_service.py, portfolio_service.py Mock 데이터)
+]
 
 [tool.pytest.ini_options]
-asyncio_mode = "auto"
 testpaths = ["tests"]
-pythonpath = ["."]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+markers = [
+    "e2e: End-to-end integration tests (deselect with '-m \"not e2e\"')",
+    "slow: Slow-running tests (deselect with '-m \"not slow\"')",
+]
+addopts = [
+    "--cov=app",
+    "--cov-report=html",
+    "--cov-report=term-missing",
+    "--cov-report=xml",
+    "--cov-branch",
+]
+
+[tool.coverage.run]
+source = ["app"]
+omit = [
+    "*/tests/*",
+    "*/__pycache__/*",
+    "*/site-packages/*",
+    "*/venv/*",
+    "*/.venv/*",
+    "app/grpc/generated/*",
+]
+branch = true
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false           # 점진적 타입 도입
+ignore_missing_imports = false           # Ignore missing imports for now (mysingle package)
+exclude = ["tests/", "build/", "dist/"]
+# Temporarily disable no-any-return for gradual type improvement
+disable_error_code = ["no-any-return"]
+# Fix namespace package issue
+namespace_packages = true
+explicit_package_bases = true
+mypy_path = "."
+# Strict optional checking
+strict_optional = true
 """
 
 

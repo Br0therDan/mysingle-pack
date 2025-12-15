@@ -2,7 +2,6 @@
 Proto CLI - gRPC Proto 파일 관리 도구.
 
 사용법:
-    mysingle-proto init              # 저장소 초기화 및 submodule 구성
     mysingle-proto status            # 서비스별 proto 파일 현황
     mysingle-proto generate          # 코드 생성
     mysingle-proto validate          # Proto 파일 검증
@@ -99,7 +98,6 @@ def build_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 사용 예시:
-  %(prog)s init                    # 저장소 환경 확인 / Submodule 구성
   %(prog)s status                  # 서비스별 proto 현황
   %(prog)s status -v               # 상세 파일 목록 포함
   %(prog)s validate --fix          # Proto 검증 및 자동 수정

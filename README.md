@@ -556,8 +556,6 @@ vim .env
 - **[Audit Logging](docs/core/AUDIT_LOGGING_USAGE_GUIDE.md)** - Compliance tracking
 - **[Common Settings](docs/core/COMMON_SETTINGS_GUIDE.md)** - Configuration patterns
 
-### Workflow Guides
-- **[Submodule PR Workflow](docs/cicd/SUBMODULE_PR_WORKFLOW.md)** - Cross-repo development process
 
 ---
 
@@ -576,19 +574,6 @@ MIT License - see [LICENSE](LICENSE) for details
 ---
 
 ## Version History
-
-### v2.2.1 (2025-12-02)
-- ✨ Redis infrastructure with multi-DB support
-- 📚 Comprehensive module documentation
-- 🔧 CLI tools for submodule management
-- 🏗️ App factory improvements
-
-### v2.0.0 (2025-11-15)
-- 🎯 Module restructuring (Phase 0)
-- 📦 Optional dependencies
-- 🚀 Git-based installation
-
-**For full changelog:** [CHANGELOG.md](CHANGELOG.md)
 
 ---
 

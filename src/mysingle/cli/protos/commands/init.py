@@ -1,7 +1,6 @@
 """
 Init 명령 - mysingle 패키지 초기화.
 
-통합 구조에서는 더 이상 submodule이 아닌 단일 패키지로 관리됩니다.
 """
 
 from __future__ import annotations
