@@ -32,6 +32,18 @@ service BacktestService {
 // Request Messages
 // ============================================================================
 
+// BacktestMode enum definition.
+enum BacktestMode {
+  // Default unspecified mode
+  BACKTEST_MODE_UNSPECIFIED = 0;
+  // Standard backtest mode
+  BACKTEST_MODE_STANDARD = 1;
+  // Machine Learning backtest mode
+  BACKTEST_MODE_ML = 2;
+  // Walk Forward Analysis mode
+  BACKTEST_MODE_WALK_FORWARD = 3;
+}
+
 // ExecuteBacktestRequest defines the request payload for ExecuteBacktest.
 message ExecuteBacktestRequest {
   // User ID for authorization
@@ -40,13 +52,69 @@ message ExecuteBacktestRequest {
   string strategy_id = 2;
   // Optional: specific version (default: latest)
   optional int32 strategy_version_seq = 3;
-  // Backtest configuration
+  // Backtest configuration (Standard / ML)
   BacktestConfig config = 4;
+  // Walk Forward configuration
+  optional WalkForwardConfig walk_forward_config = 5;
+  // Backtest mode
+  BacktestMode mode = 6;
+}
+
+// MLConfig message definition.
+message MLConfig {
+  // Model ID to use
+  string model_id = 1;
+  // Confidence threshold (Decimal)
+  string confidence_threshold = 2;
+  // Whether to use ensemble
+  bool use_ensemble = 3;
+  // List of ensemble model IDs
+  repeated string ensemble_models = 4;
+  // Whether to use regime filter
+  bool regime_filter = 5;
+  // Minimum regime confidence (Decimal)
+  string min_regime_confidence = 6;
+}
+
+// Constraint message definition.
+message Constraint {
+  // Constraint type ("min", "max")
+  string type = 1;
+  // Constraint value
+  double value = 2;
+}
+
+// WalkForwardConfig message definition.
+message WalkForwardConfig {
+  // Start date (ISO 8601)
+  string start_date = 1;
+  // End date (ISO 8601)
+  string end_date = 2;
+  // Training window size in days
+  int32 train_window_size_days = 3;
+  // Test window size in days
+  int32 test_window_size_days = 4;
+  // Step size in days
+  int32 step_size_days = 5;
+  // Parameter grid JSON string
+  string parameter_grid_json = 6;
+  // Optimization metric
+  string optimization_metric = 7;
+  // Metric objective ("maximize", "minimize")
+  string metric_objective = 8;
+  // Constraints map
+  map<string, Constraint> constraints = 9;
+  // List of symbols
+  repeated string symbols = 10;
+  // Time interval
+  string interval = 11;
+  // Initial capital
+  double initial_capital = 12;
 }
 
 // BacktestConfig message definition.
 message BacktestConfig {
-  // Trading symbol (e.g., "BTCUSDT")
+  // Trading symbol (e.g., "BTCUSDT") - Deprecated, use symbols
   string symbol = 1;
   // Time interval (e.g., "1d", "1h", "5m")
   string interval = 2;
@@ -78,6 +146,12 @@ message BacktestConfig {
   // Snapshot settings
   // Portfolio snapshot interval
   optional int32 snapshot_interval_seconds = 12;
+
+  // New fields
+  // List of symbols (replaces single symbol)
+  repeated string symbols = 13;
+  // ML configuration
+  optional MLConfig ml_config = 14;
 }
 
 // GetBacktestResultRequest defines the request payload for GetBacktestResult.
@@ -169,6 +243,8 @@ message BacktestResultResponse {
   // Metadata
   // Original backtest configuration
   BacktestConfig config = 8;
+  // Walk Forward configuration
+  optional WalkForwardConfig walk_forward_config = 12;
   // Job creation time
   google.protobuf.Timestamp created_at = 9;
   // Job completion time

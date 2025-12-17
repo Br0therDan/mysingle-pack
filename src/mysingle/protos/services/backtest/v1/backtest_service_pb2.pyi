@@ -9,25 +9,159 @@ from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from google.protobuf.internal import containers as _containers
+from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
+class BacktestMode(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    BACKTEST_MODE_UNSPECIFIED: _ClassVar[BacktestMode]
+    BACKTEST_MODE_STANDARD: _ClassVar[BacktestMode]
+    BACKTEST_MODE_ML: _ClassVar[BacktestMode]
+    BACKTEST_MODE_WALK_FORWARD: _ClassVar[BacktestMode]
+
+BACKTEST_MODE_UNSPECIFIED: BacktestMode
+BACKTEST_MODE_STANDARD: BacktestMode
+BACKTEST_MODE_ML: BacktestMode
+BACKTEST_MODE_WALK_FORWARD: BacktestMode
+
 class ExecuteBacktestRequest(_message.Message):
-    __slots__ = ("user_id", "strategy_id", "strategy_version_seq", "config")
+    __slots__ = (
+        "user_id",
+        "strategy_id",
+        "strategy_version_seq",
+        "config",
+        "walk_forward_config",
+        "mode",
+    )
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
     STRATEGY_VERSION_SEQ_FIELD_NUMBER: _ClassVar[int]
     CONFIG_FIELD_NUMBER: _ClassVar[int]
+    WALK_FORWARD_CONFIG_FIELD_NUMBER: _ClassVar[int]
+    MODE_FIELD_NUMBER: _ClassVar[int]
     user_id: str
     strategy_id: str
     strategy_version_seq: int
     config: BacktestConfig
+    walk_forward_config: WalkForwardConfig
+    mode: BacktestMode
     def __init__(
         self,
         user_id: _Optional[str] = ...,
         strategy_id: _Optional[str] = ...,
         strategy_version_seq: _Optional[int] = ...,
         config: _Optional[_Union[BacktestConfig, _Mapping]] = ...,
+        walk_forward_config: _Optional[_Union[WalkForwardConfig, _Mapping]] = ...,
+        mode: _Optional[_Union[BacktestMode, str]] = ...,
+    ) -> None: ...
+
+class MLConfig(_message.Message):
+    __slots__ = (
+        "model_id",
+        "confidence_threshold",
+        "use_ensemble",
+        "ensemble_models",
+        "regime_filter",
+        "min_regime_confidence",
+    )
+    MODEL_ID_FIELD_NUMBER: _ClassVar[int]
+    CONFIDENCE_THRESHOLD_FIELD_NUMBER: _ClassVar[int]
+    USE_ENSEMBLE_FIELD_NUMBER: _ClassVar[int]
+    ENSEMBLE_MODELS_FIELD_NUMBER: _ClassVar[int]
+    REGIME_FILTER_FIELD_NUMBER: _ClassVar[int]
+    MIN_REGIME_CONFIDENCE_FIELD_NUMBER: _ClassVar[int]
+    model_id: str
+    confidence_threshold: str
+    use_ensemble: bool
+    ensemble_models: _containers.RepeatedScalarFieldContainer[str]
+    regime_filter: bool
+    min_regime_confidence: str
+    def __init__(
+        self,
+        model_id: _Optional[str] = ...,
+        confidence_threshold: _Optional[str] = ...,
+        use_ensemble: bool = ...,
+        ensemble_models: _Optional[_Iterable[str]] = ...,
+        regime_filter: bool = ...,
+        min_regime_confidence: _Optional[str] = ...,
+    ) -> None: ...
+
+class Constraint(_message.Message):
+    __slots__ = ("type", "value")
+    TYPE_FIELD_NUMBER: _ClassVar[int]
+    VALUE_FIELD_NUMBER: _ClassVar[int]
+    type: str
+    value: float
+    def __init__(
+        self, type: _Optional[str] = ..., value: _Optional[float] = ...
+    ) -> None: ...
+
+class WalkForwardConfig(_message.Message):
+    __slots__ = (
+        "start_date",
+        "end_date",
+        "train_window_size_days",
+        "test_window_size_days",
+        "step_size_days",
+        "parameter_grid_json",
+        "optimization_metric",
+        "metric_objective",
+        "constraints",
+        "symbols",
+        "interval",
+        "initial_capital",
+    )
+    class ConstraintsEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: Constraint
+        def __init__(
+            self,
+            key: _Optional[str] = ...,
+            value: _Optional[_Union[Constraint, _Mapping]] = ...,
+        ) -> None: ...
+
+    START_DATE_FIELD_NUMBER: _ClassVar[int]
+    END_DATE_FIELD_NUMBER: _ClassVar[int]
+    TRAIN_WINDOW_SIZE_DAYS_FIELD_NUMBER: _ClassVar[int]
+    TEST_WINDOW_SIZE_DAYS_FIELD_NUMBER: _ClassVar[int]
+    STEP_SIZE_DAYS_FIELD_NUMBER: _ClassVar[int]
+    PARAMETER_GRID_JSON_FIELD_NUMBER: _ClassVar[int]
+    OPTIMIZATION_METRIC_FIELD_NUMBER: _ClassVar[int]
+    METRIC_OBJECTIVE_FIELD_NUMBER: _ClassVar[int]
+    CONSTRAINTS_FIELD_NUMBER: _ClassVar[int]
+    SYMBOLS_FIELD_NUMBER: _ClassVar[int]
+    INTERVAL_FIELD_NUMBER: _ClassVar[int]
+    INITIAL_CAPITAL_FIELD_NUMBER: _ClassVar[int]
+    start_date: str
+    end_date: str
+    train_window_size_days: int
+    test_window_size_days: int
+    step_size_days: int
+    parameter_grid_json: str
+    optimization_metric: str
+    metric_objective: str
+    constraints: _containers.MessageMap[str, Constraint]
+    symbols: _containers.RepeatedScalarFieldContainer[str]
+    interval: str
+    initial_capital: float
+    def __init__(
+        self,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+        train_window_size_days: _Optional[int] = ...,
+        test_window_size_days: _Optional[int] = ...,
+        step_size_days: _Optional[int] = ...,
+        parameter_grid_json: _Optional[str] = ...,
+        optimization_metric: _Optional[str] = ...,
+        metric_objective: _Optional[str] = ...,
+        constraints: _Optional[_Mapping[str, Constraint]] = ...,
+        symbols: _Optional[_Iterable[str]] = ...,
+        interval: _Optional[str] = ...,
+        initial_capital: _Optional[float] = ...,
     ) -> None: ...
 
 class BacktestConfig(_message.Message):
@@ -44,6 +178,8 @@ class BacktestConfig(_message.Message):
         "max_position_size",
         "params",
         "snapshot_interval_seconds",
+        "symbols",
+        "ml_config",
     )
     class ParamsEntry(_message.Message):
         __slots__ = ("key", "value")
@@ -67,6 +203,8 @@ class BacktestConfig(_message.Message):
     MAX_POSITION_SIZE_FIELD_NUMBER: _ClassVar[int]
     PARAMS_FIELD_NUMBER: _ClassVar[int]
     SNAPSHOT_INTERVAL_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    SYMBOLS_FIELD_NUMBER: _ClassVar[int]
+    ML_CONFIG_FIELD_NUMBER: _ClassVar[int]
     symbol: str
     interval: str
     start_date: str
@@ -79,6 +217,8 @@ class BacktestConfig(_message.Message):
     max_position_size: float
     params: _containers.ScalarMap[str, str]
     snapshot_interval_seconds: int
+    symbols: _containers.RepeatedScalarFieldContainer[str]
+    ml_config: MLConfig
     def __init__(
         self,
         symbol: _Optional[str] = ...,
@@ -93,6 +233,8 @@ class BacktestConfig(_message.Message):
         max_position_size: _Optional[float] = ...,
         params: _Optional[_Mapping[str, str]] = ...,
         snapshot_interval_seconds: _Optional[int] = ...,
+        symbols: _Optional[_Iterable[str]] = ...,
+        ml_config: _Optional[_Union[MLConfig, _Mapping]] = ...,
     ) -> None: ...
 
 class GetBacktestResultRequest(_message.Message):
@@ -190,6 +332,7 @@ class BacktestResultResponse(_message.Message):
         "trades",
         "equity_curve",
         "config",
+        "walk_forward_config",
         "created_at",
         "completed_at",
         "error_message",
@@ -202,6 +345,7 @@ class BacktestResultResponse(_message.Message):
     TRADES_FIELD_NUMBER: _ClassVar[int]
     EQUITY_CURVE_FIELD_NUMBER: _ClassVar[int]
     CONFIG_FIELD_NUMBER: _ClassVar[int]
+    WALK_FORWARD_CONFIG_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
     COMPLETED_AT_FIELD_NUMBER: _ClassVar[int]
     ERROR_MESSAGE_FIELD_NUMBER: _ClassVar[int]
@@ -213,6 +357,7 @@ class BacktestResultResponse(_message.Message):
     trades: _containers.RepeatedCompositeFieldContainer[Trade]
     equity_curve: _containers.RepeatedCompositeFieldContainer[EquityPoint]
     config: BacktestConfig
+    walk_forward_config: WalkForwardConfig
     created_at: _timestamp_pb2.Timestamp
     completed_at: _timestamp_pb2.Timestamp
     error_message: str
@@ -226,6 +371,7 @@ class BacktestResultResponse(_message.Message):
         trades: _Optional[_Iterable[_Union[Trade, _Mapping]]] = ...,
         equity_curve: _Optional[_Iterable[_Union[EquityPoint, _Mapping]]] = ...,
         config: _Optional[_Union[BacktestConfig, _Mapping]] = ...,
+        walk_forward_config: _Optional[_Union[WalkForwardConfig, _Mapping]] = ...,
         created_at: _Optional[
             _Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]
         ] = ...,
