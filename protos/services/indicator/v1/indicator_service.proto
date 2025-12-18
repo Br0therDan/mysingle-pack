@@ -4,6 +4,9 @@ package indicator;
 
 // IndicatorService provides metadata about technical indicators
 service IndicatorService {
+  // List all available indicators
+  rpc ListIndicators(ListIndicatorsRequest) returns (ListIndicatorsResponse);
+
   // Get metadata for a single indicator
   rpc GetIndicatorMetadata(GetIndicatorMetadataRequest) returns (IndicatorMetadataResponse);
 
@@ -18,6 +21,24 @@ service IndicatorService {
 
   // Health check endpoint
   rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+// Request to list all available indicators
+message ListIndicatorsRequest {
+  // Optional: Filter by category (e.g., "trend", "momentum", "volatility", "volume")
+  optional string category = 1;
+  // Optional: Filter by tags
+  repeated string tags = 2;
+  // Optional: User ID for auth/logging
+  string user_id = 3;
+}
+
+// Response containing list of available indicators
+message ListIndicatorsResponse {
+  // List of indicator names
+  repeated string names = 1;
+  // Total count
+  int32 total_count = 2;
 }
 
 // Request to get metadata for a single indicator

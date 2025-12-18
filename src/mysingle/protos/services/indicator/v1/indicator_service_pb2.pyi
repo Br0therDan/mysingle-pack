@@ -10,6 +10,31 @@ from google.protobuf.internal import containers as _containers
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
+class ListIndicatorsRequest(_message.Message):
+    __slots__ = ("category", "tags", "user_id")
+    CATEGORY_FIELD_NUMBER: _ClassVar[int]
+    TAGS_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    category: str
+    tags: _containers.RepeatedScalarFieldContainer[str]
+    user_id: str
+    def __init__(
+        self,
+        category: _Optional[str] = ...,
+        tags: _Optional[_Iterable[str]] = ...,
+        user_id: _Optional[str] = ...,
+    ) -> None: ...
+
+class ListIndicatorsResponse(_message.Message):
+    __slots__ = ("names", "total_count")
+    NAMES_FIELD_NUMBER: _ClassVar[int]
+    TOTAL_COUNT_FIELD_NUMBER: _ClassVar[int]
+    names: _containers.RepeatedScalarFieldContainer[str]
+    total_count: int
+    def __init__(
+        self, names: _Optional[_Iterable[str]] = ..., total_count: _Optional[int] = ...
+    ) -> None: ...
+
 class GetIndicatorMetadataRequest(_message.Message):
     __slots__ = ("name", "user_id")
     NAME_FIELD_NUMBER: _ClassVar[int]

@@ -39,6 +39,12 @@ class IndicatorServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
+        self.ListIndicators = channel.unary_unary(
+            "/indicator.IndicatorService/ListIndicators",
+            request_serializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.ListIndicatorsRequest.SerializeToString,
+            response_deserializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.ListIndicatorsResponse.FromString,
+            _registered_method=True,
+        )
         self.GetIndicatorMetadata = channel.unary_unary(
             "/indicator.IndicatorService/GetIndicatorMetadata",
             request_serializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.GetIndicatorMetadataRequest.SerializeToString,
@@ -74,6 +80,12 @@ class IndicatorServiceStub(object):
 class IndicatorServiceServicer(object):
     """IndicatorService provides metadata about technical indicators"""
 
+    def ListIndicators(self, request, context):
+        """List all available indicators"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
     def GetIndicatorMetadata(self, request, context):
         """Get metadata for a single indicator"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -107,6 +119,11 @@ class IndicatorServiceServicer(object):
 
 def add_IndicatorServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
+        "ListIndicators": grpc.unary_unary_rpc_method_handler(
+            servicer.ListIndicators,
+            request_deserializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.ListIndicatorsRequest.FromString,
+            response_serializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.ListIndicatorsResponse.SerializeToString,
+        ),
         "GetIndicatorMetadata": grpc.unary_unary_rpc_method_handler(
             servicer.GetIndicatorMetadata,
             request_deserializer=services_dot_indicator_dot_v1_dot_indicator__service__pb2.GetIndicatorMetadataRequest.FromString,
@@ -145,6 +162,36 @@ def add_IndicatorServiceServicer_to_server(servicer, server):
 # This class is part of an EXPERIMENTAL API.
 class IndicatorService(object):
     """IndicatorService provides metadata about technical indicators"""
+
+    @staticmethod
+    def ListIndicators(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/indicator.IndicatorService/ListIndicators",
+            services_dot_indicator_dot_v1_dot_indicator__service__pb2.ListIndicatorsRequest.SerializeToString,
+            services_dot_indicator_dot_v1_dot_indicator__service__pb2.ListIndicatorsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
 
     @staticmethod
     def GetIndicatorMetadata(
