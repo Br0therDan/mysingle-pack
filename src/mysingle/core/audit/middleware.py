@@ -154,14 +154,15 @@ class AuditLoggingMiddleware(BaseHTTPMiddleware):
         if user_id:
             set_user_id(user_id)
 
-        # Log request start
-        logger.debug(
-            "HTTP request started",
-            method=method,
-            path=path,
-            correlation_id=correlation_id,
-            request_id=req_id,
-        )
+        # Log request start only if we should log
+        if should_log:
+            logger.debug(
+                "HTTP request started",
+                method=method,
+                path=path,
+                correlation_id=correlation_id,
+                request_id=req_id,
+            )
 
         response: Response = await call_next(request)
 
@@ -172,16 +173,17 @@ class AuditLoggingMiddleware(BaseHTTPMiddleware):
             resp_bytes = 0
         latency_ms = int((time.monotonic() - start) * 1000)
 
-        # Log request completion
-        logger.info(
-            "HTTP request completed",
-            method=method,
-            path=path,
-            status_code=response.status_code,
-            latency_ms=latency_ms,
-            req_bytes=req_bytes,
-            resp_bytes=resp_bytes,
-        )
+        # Log request completion only if we should log
+        if should_log:
+            logger.info(
+                "HTTP request completed",
+                method=method,
+                path=path,
+                status_code=response.status_code,
+                latency_ms=latency_ms,
+                req_bytes=req_bytes,
+                resp_bytes=resp_bytes,
+            )
 
         if should_log:
             try:
