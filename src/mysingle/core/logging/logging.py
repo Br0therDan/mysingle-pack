@@ -193,9 +193,11 @@ def log_user_action(
     action: str,
     resource_type: str,
     resource_id: Optional[str] = None,
+    user_id: Optional[str] = None,
     details: Optional[dict] = None,
     success: bool = True,
     error: Optional[str] = None,
+    logger=None,
 ) -> None:
     """
     Log user actions with standardized format
@@ -204,11 +206,14 @@ def log_user_action(
         action: Action performed (e.g., "create", "update", "delete")
         resource_type: Type of resource (e.g., "strategy", "backtest")
         resource_id: Resource identifier
+        user_id: User identifier (optional, will use context if not provided)
         details: Additional action details
         success: Whether action succeeded
         error: Error message if failed
+        logger: Optional logger instance (will create one if not provided)
     """
-    logger = get_structured_logger("user_action")
+    if logger is None:
+        logger = get_structured_logger("user_action")
 
     log_data = {
         "action": action,
@@ -219,22 +224,28 @@ def log_user_action(
     if resource_id:
         log_data["resource_id"] = resource_id
 
+    if user_id:
+        log_data["user_id"] = user_id
+
     if details:
         log_data.update(details)
 
     if error:
-        logger.error("User action failed", **log_data, error=error)
+        logger.error("User action failed", extra=log_data, error=error)
     else:
-        logger.info("User action completed", **log_data)
+        logger.info("User action completed", extra=log_data)
 
 
 def log_service_call(
     service_name: str,
     method: str,
-    endpoint: str,
-    duration: float,
+    success: bool = True,
+    endpoint: Optional[str] = None,
+    duration: Optional[float] = None,
     status_code: Optional[int] = None,
     error: Optional[str] = None,
+    details: Optional[dict] = None,
+    logger=None,
 ) -> None:
     """
     Log service-to-service calls
@@ -242,61 +253,91 @@ def log_service_call(
     Args:
         service_name: Target service name
         method: HTTP method or RPC method
-        endpoint: Endpoint or RPC name
-        duration: Call duration in seconds
-        status_code: HTTP status code
+        success: Whether call succeeded
+        endpoint: Endpoint or RPC name (optional)
+        duration: Call duration in seconds (optional)
+        status_code: HTTP status code (optional)
         error: Error message if failed
+        details: Additional call details
+        logger: Optional logger instance (will create one if not provided)
     """
-    logger = get_structured_logger("service_call")
+    if logger is None:
+        logger = get_structured_logger("service_call")
 
     log_data = {
         "target_service": service_name,
         "method": method,
-        "endpoint": endpoint,
-        "duration_ms": round(duration * 1000, 2),
+        "success": success,
     }
+
+    if endpoint:
+        log_data["endpoint"] = endpoint
+
+    if duration is not None:
+        log_data["duration_ms"] = round(duration * 1000, 2)
 
     if status_code:
         log_data["status_code"] = status_code
 
+    if details:
+        log_data.update(details)
+
     if error:
-        logger.error("Service call failed", **log_data, error=error)
+        logger.error("Service call failed", extra=log_data, error=error)
     else:
-        logger.info("Service call completed", **log_data)
+        logger.info("Service call completed", extra=log_data)
 
 
 def log_database_operation(
     operation: str,
     collection: str,
-    duration: float,
+    success: bool = True,
+    document_id: Optional[str] = None,
+    duration: Optional[float] = None,
     document_count: Optional[int] = None,
     error: Optional[str] = None,
+    details: Optional[dict] = None,
+    logger=None,
 ) -> None:
     """
     Log database operations
 
     Args:
-        operation: Operation type (e.g., "insert", "update", "find")
+        operation: Operation type (e.g., "insert", "update", "find", "create")
         collection: Collection/table name
-        duration: Operation duration in seconds
-        document_count: Number of documents affected
+        success: Whether operation succeeded
+        document_id: Document/record identifier
+        duration: Operation duration in seconds (optional)
+        document_count: Number of documents affected (optional)
         error: Error message if failed
+        details: Additional operation details
+        logger: Optional logger instance (will create one if not provided)
     """
-    logger = get_structured_logger("database")
+    if logger is None:
+        logger = get_structured_logger("database")
 
     log_data = {
         "operation": operation,
         "collection": collection,
-        "duration_ms": round(duration * 1000, 2),
+        "success": success,
     }
+
+    if document_id:
+        log_data["document_id"] = document_id
+
+    if duration is not None:
+        log_data["duration_ms"] = round(duration * 1000, 2)
 
     if document_count is not None:
         log_data["document_count"] = document_count
 
+    if details:
+        log_data.update(details)
+
     if error:
-        logger.error("Database operation failed", **log_data, error=error)
+        logger.error("Database operation failed", extra=log_data, error=error)
     else:
-        logger.info("Database operation completed", **log_data)
+        logger.info("Database operation completed", extra=log_data)
 
 
 # =============================================================================
