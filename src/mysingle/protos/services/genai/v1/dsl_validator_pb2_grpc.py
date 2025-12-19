@@ -57,6 +57,24 @@ class DSLValidatorServiceStub(object):
             response_deserializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.GetSyntaxHelpResponse.FromString,
             _registered_method=True,
         )
+        self.SuggestRefactoring = channel.unary_unary(
+            "/genai.dsl_validator.DSLValidatorService/SuggestRefactoring",
+            request_serializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.SuggestRefactoringRequest.SerializeToString,
+            response_deserializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.SuggestRefactoringResponse.FromString,
+            _registered_method=True,
+        )
+        self.ExplainError = channel.unary_unary(
+            "/genai.dsl_validator.DSLValidatorService/ExplainError",
+            request_serializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.ExplainErrorRequest.SerializeToString,
+            response_deserializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.ExplainErrorResponse.FromString,
+            _registered_method=True,
+        )
+        self.GenerateDocumentation = channel.unary_unary(
+            "/genai.dsl_validator.DSLValidatorService/GenerateDocumentation",
+            request_serializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.GenerateDocumentationRequest.SerializeToString,
+            response_deserializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.GenerateDocumentationResponse.FromString,
+            _registered_method=True,
+        )
 
 
 class DSLValidatorServiceServicer(object):
@@ -80,6 +98,24 @@ class DSLValidatorServiceServicer(object):
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
+    def SuggestRefactoring(self, request, context):
+        """LLM 기반 코드 리팩토링 제안"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def ExplainError(self, request, context):
+        """LLM 기반 에러 설명 및 수정 제안"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def GenerateDocumentation(self, request, context):
+        """LLM 기반 전략 문서화 생성"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
 
 def add_DSLValidatorServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -97,6 +133,21 @@ def add_DSLValidatorServiceServicer_to_server(servicer, server):
             servicer.GetSyntaxHelp,
             request_deserializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.GetSyntaxHelpRequest.FromString,
             response_serializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.GetSyntaxHelpResponse.SerializeToString,
+        ),
+        "SuggestRefactoring": grpc.unary_unary_rpc_method_handler(
+            servicer.SuggestRefactoring,
+            request_deserializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.SuggestRefactoringRequest.FromString,
+            response_serializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.SuggestRefactoringResponse.SerializeToString,
+        ),
+        "ExplainError": grpc.unary_unary_rpc_method_handler(
+            servicer.ExplainError,
+            request_deserializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.ExplainErrorRequest.FromString,
+            response_serializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.ExplainErrorResponse.SerializeToString,
+        ),
+        "GenerateDocumentation": grpc.unary_unary_rpc_method_handler(
+            servicer.GenerateDocumentation,
+            request_deserializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.GenerateDocumentationRequest.FromString,
+            response_serializer=services_dot_genai_dot_v1_dot_dsl__validator__pb2.GenerateDocumentationResponse.SerializeToString,
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -191,6 +242,96 @@ class DSLValidatorService(object):
             "/genai.dsl_validator.DSLValidatorService/GetSyntaxHelp",
             services_dot_genai_dot_v1_dot_dsl__validator__pb2.GetSyntaxHelpRequest.SerializeToString,
             services_dot_genai_dot_v1_dot_dsl__validator__pb2.GetSyntaxHelpResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def SuggestRefactoring(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/genai.dsl_validator.DSLValidatorService/SuggestRefactoring",
+            services_dot_genai_dot_v1_dot_dsl__validator__pb2.SuggestRefactoringRequest.SerializeToString,
+            services_dot_genai_dot_v1_dot_dsl__validator__pb2.SuggestRefactoringResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def ExplainError(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/genai.dsl_validator.DSLValidatorService/ExplainError",
+            services_dot_genai_dot_v1_dot_dsl__validator__pb2.ExplainErrorRequest.SerializeToString,
+            services_dot_genai_dot_v1_dot_dsl__validator__pb2.ExplainErrorResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def GenerateDocumentation(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/genai.dsl_validator.DSLValidatorService/GenerateDocumentation",
+            services_dot_genai_dot_v1_dot_dsl__validator__pb2.GenerateDocumentationRequest.SerializeToString,
+            services_dot_genai_dot_v1_dot_dsl__validator__pb2.GenerateDocumentationResponse.FromString,
             options,
             channel_credentials,
             insecure,

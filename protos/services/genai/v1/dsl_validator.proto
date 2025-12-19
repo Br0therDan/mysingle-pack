@@ -15,6 +15,15 @@ service DSLValidatorService {
 
   // DSL 문법 도움말
   rpc GetSyntaxHelp(GetSyntaxHelpRequest) returns (GetSyntaxHelpResponse);
+
+  // LLM 기반 코드 리팩토링 제안
+  rpc SuggestRefactoring(SuggestRefactoringRequest) returns (SuggestRefactoringResponse);
+
+  // LLM 기반 에러 설명 및 수정 제안
+  rpc ExplainError(ExplainErrorRequest) returns (ExplainErrorResponse);
+
+  // LLM 기반 전략 문서화 생성
+  rpc GenerateDocumentation(GenerateDocumentationRequest) returns (GenerateDocumentationResponse);
 }
 
 // DSL 검증 요청
@@ -139,4 +148,106 @@ message GetSyntaxHelpResponse {
   repeated string examples = 3;
   // 관련 주제
   repeated string related_topics = 4;
+}
+
+// 리팩토링 제안 요청
+message SuggestRefactoringRequest {
+  // DSL 코드
+  string dsl_code = 1;
+  // 리팩토링 초점 ("performance", "readability", "maintainability")
+  string focus = 2;
+  // 요청 메타데이터
+  common.Metadata metadata = 3;
+}
+
+// 리팩토링 제안 응답
+message SuggestRefactoringResponse {
+  // 리팩토링 제안 목록
+  repeated RefactoringSuggestion suggestions = 1;
+  // LLM 기반 여부
+  bool llm_powered = 2;
+}
+
+// 리팩토링 제안
+message RefactoringSuggestion {
+  // 제안 제목
+  string title = 1;
+  // 제안 설명
+  string description = 2;
+  // 원본 코드
+  string original_code = 3;
+  // 리팩토링된 코드
+  string refactored_code = 4;
+  // 리팩토링 이유
+  string reasoning = 5;
+  // 영향도 ("PERFORMANCE", "READABILITY", "MAINTAINABILITY")
+  string impact = 6;
+  // 신뢰도
+  common.ConfidenceScore confidence = 7;
+}
+
+// 에러 설명 요청
+message ExplainErrorRequest {
+  // 에러 메시지
+  string error_message = 1;
+  // DSL 코드
+  string dsl_code = 2;
+  // 에러 발생 라인
+  int32 error_line = 3;
+  // 요청 메타데이터
+  common.Metadata metadata = 4;
+}
+
+// 에러 설명 응답
+message ExplainErrorResponse {
+  // 에러 설명
+  string explanation = 1;
+  // 근본 원인
+  string root_cause = 2;
+  // 수정 제안 목록
+  repeated FixSuggestion fix_suggestions = 3;
+  // LLM 기반 여부
+  bool llm_powered = 4;
+}
+
+// 수정 제안
+message FixSuggestion {
+  // 수정 방법 설명
+  string description = 1;
+  // 수정된 코드
+  string corrected_code = 2;
+  // 신뢰도
+  common.ConfidenceScore confidence = 3;
+}
+
+// 문서화 생성 요청
+message GenerateDocumentationRequest {
+  // DSL 코드
+  string dsl_code = 1;
+  // 요청 메타데이터
+  common.Metadata metadata = 2;
+}
+
+// 문서화 생성 응답
+message GenerateDocumentationResponse {
+  // 전략 요약
+  string summary = 1;
+  // 전략 목적
+  string purpose = 2;
+  // 로직 단계별 설명
+  repeated string logic_steps = 3;
+  // 사용된 지표 목록
+  repeated string indicators = 4;
+  // 신호 조건
+  SignalConditions signals = 5;
+  // LLM 기반 여부
+  bool llm_powered = 6;
+}
+
+// 신호 조건
+message SignalConditions {
+  // 매수 조건
+  repeated string buy_conditions = 1;
+  // 매도 조건
+  repeated string sell_conditions = 2;
 }
