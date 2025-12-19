@@ -159,6 +159,22 @@ def create_fastapi_app(
             allow_headers=["*"],
         )
 
+    # Add logging middleware for request/response logging and context propagation
+    # ⚠️ IMPORTANT: Add BEFORE AuthMiddleware to capture all requests
+    try:
+        from .logging.middleware import LoggingMiddleware
+
+        app.add_middleware(LoggingMiddleware, service_name=service_config.service_name)
+        logger.info(
+            f"📝 Logging middleware enabled for {service_config.service_name} "
+            f"(correlation_id, user_id, request_id propagation)"
+        )
+    except ImportError as e:
+        logger.warning(f"⚠️ Logging middleware not available: {e}")
+    except Exception as e:
+        logger.error(f"❌ Failed to add logging middleware: {e}")
+        # Continue without logging middleware (non-critical)
+
     # Add authentication middleware (개선된 조건부 적용)
     if service_config.enable_auth:
         try:
