@@ -21,10 +21,27 @@ from .logging import (
 class LoggingMiddleware(BaseHTTPMiddleware):
     """요청/응답 로깅 및 Correlation ID 관리 미들웨어"""
 
-    def __init__(self, app, service_name: str = "unknown"):
+    def __init__(
+        self,
+        app,
+        service_name: str = "unknown",
+        exclude_paths: Optional[list[str]] = None,
+    ):
         super().__init__(app)
         self.service_name = service_name
         self.logger = get_structured_logger(__name__)
+        self.health_filter = HealthCheckLoggingFilter(
+            health_paths=exclude_paths
+            or [
+                "/health",
+                "/ready",
+                "/alive",
+                "/metrics",
+                "/docs",
+                "/redoc",
+                "/openapi.json",
+            ]
+        )
 
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         # 컨텍스트 초기화
@@ -51,41 +68,46 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         # 요청 시작 시간
         start_time = time.time()
 
-        # 요청 로깅
-        self.logger.info(
-            "Request started",
-            extra={
-                "method": request.method,
-                "url": str(request.url),
-                "path": request.url.path,
-                "query_params": (
-                    str(request.query_params) if request.query_params else None
-                ),
-                "user_agent": request.headers.get("user-agent"),
-                "client_ip": self._get_client_ip(request),
-            },
-        )
+        # 로깅 필터 확인 - health 엔드포인트는 로깅하지 않음
+        should_log = self.health_filter.should_log_request(request)
+
+        # 요청 로깅 (필터링된 경우 제외)
+        if should_log:
+            self.logger.info(
+                "Request started",
+                extra={
+                    "method": request.method,
+                    "url": str(request.url),
+                    "path": request.url.path,
+                    "query_params": (
+                        str(request.query_params) if request.query_params else None
+                    ),
+                    "user_agent": request.headers.get("user-agent"),
+                    "client_ip": self._get_client_ip(request),
+                },
+            )
 
         # 요청 처리
         try:
             response = await call_next(request)
             duration = time.time() - start_time
 
-            # 성공 응답 로깅
-            self.logger.info(
-                "Request completed",
-                extra={
-                    "method": request.method,
-                    "url": str(request.url),
-                    "status_code": response.status_code,
-                    "duration_ms": round(duration * 1000, 2),
-                },
-            )
+            # 성공 응답 로깅 (필터링된 경우 제외)
+            if should_log:
+                self.logger.info(
+                    "Request completed",
+                    extra={
+                        "method": request.method,
+                        "url": str(request.url),
+                        "status_code": response.status_code,
+                        "duration_ms": round(duration * 1000, 2),
+                    },
+                )
 
         except Exception as exc:
             duration = time.time() - start_time
 
-            # 에러 응답 로깅
+            # 에러 응답 로깅 (health 엔드포인트라도 에러는 항상 로깅)
             self.logger.error(
                 "Request failed",
                 extra={
@@ -125,13 +147,23 @@ class HealthCheckLoggingFilter:
     """헬스체크 요청 로깅 필터"""
 
     def __init__(self, health_paths: Optional[list[str]] = None):
-        self.health_paths = health_paths or ["/health", "/ready", "/alive"]
+        self.health_paths = health_paths or [
+            "/health",
+            "/ready",
+            "/alive",
+            "/metrics",
+            "/docs",
+            "/redoc",
+            "/openapi.json",
+            "/favicon.ico",
+            "/robots.txt",
+        ]
 
     def should_log_request(self, request: Request) -> bool:
         """요청을 로깅할지 결정"""
         path = request.url.path
 
-        # 헬스체크 경로는 로깅하지 않음
+        # 헬스체크 및 인프라 경로는 로깅하지 않음
         if path in self.health_paths:
             return False
 
@@ -172,7 +204,12 @@ class TimingLogMiddleware(BaseHTTPMiddleware):
         return response
 
 
-def add_logging_middleware(app, service_name: str, enable_timing_logs: bool = False):
+def add_logging_middleware(
+    app,
+    service_name: str,
+    enable_timing_logs: bool = False,
+    exclude_paths: Optional[list[str]] = None,
+):
     """로깅 미들웨어를 FastAPI 앱에 추가"""
 
     # 타이밍 로그 미들웨어 (선택적)
@@ -180,7 +217,9 @@ def add_logging_middleware(app, service_name: str, enable_timing_logs: bool = Fa
         app.add_middleware(TimingLogMiddleware, enable_timing_logs=True)
 
     # 메인 로깅 미들웨어
-    app.add_middleware(LoggingMiddleware, service_name=service_name)
+    app.add_middleware(
+        LoggingMiddleware, service_name=service_name, exclude_paths=exclude_paths
+    )
 
 
 def setup_request_id_dependency():

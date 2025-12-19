@@ -1,6 +1,6 @@
 # Structured Logging Guide
 
-**Version:** 2.2.1 | **Module:** `mysingle.core.logging`
+**Version:** 2.8.17 | **Module:** `mysingle.core.logging`
 
 > **📖 Core Module Overview:** [mysingle.core README](../../src/mysingle/core/README.md)
 
@@ -214,21 +214,36 @@ sequenceDiagram
 ### User Actions
 
 ```python
-from mysingle.core import log_user_action
+from mysingle.core import log_user_action, get_logger
 
+logger = get_logger(__name__)
+
+# Method 1: With explicit logger (recommended)
+log_user_action(
+    logger=logger,
+    action="create_strategy",
+    resource_type="strategy",
+    resource_id="strat-789",
+    user_id="user-456",  # Optional: auto-injected from context if not provided
+    details={"name": "My Strategy", "symbols": ["AAPL", "GOOGL"]},
+    success=True,
+)
+
+# Method 2: Without logger (uses default logger)
 log_user_action(
     action="create_strategy",
     resource_type="strategy",
     resource_id="strat-789",
-    details={"name": "My Strategy", "symbols": ["AAPL", "GOOGL"]},
     success=True,
 )
 
 # On error
 log_user_action(
+    logger=logger,
     action="delete_backtest",
     resource_type="backtest",
     resource_id="bt-456",
+    user_id="user-456",
     success=False,
     error="Backtest not found",
 )
@@ -252,51 +267,81 @@ log_user_action(
 ### Service Calls
 
 ```python
-from mysingle.core import log_service_call
+from mysingle.core import log_service_call, get_logger
 import time
 
+logger = get_logger(__name__)
+
+# Method 1: With explicit logger (recommended)
 start_time = time.time()
 try:
     response = await backtest_client.run_backtest(strategy_id)
     log_service_call(
+        logger=logger,
         service_name="backtest-service",
-        method="POST",
-        endpoint="/backtests/run",
-        duration=time.time() - start_time,
-        status_code=201,
+        method="GetStrategyVersion",  # gRPC method or HTTP verb
+        success=True,
+        details={
+            "strategy_id": "strat-123",
+            "duration_ms": round((time.time() - start_time) * 1000, 2),
+        },
     )
 except Exception as e:
     log_service_call(
+        logger=logger,
         service_name="backtest-service",
-        method="POST",
-        endpoint="/backtests/run",
-        duration=time.time() - start_time,
-        error=str(e),
+        method="GetStrategyVersion",
+        success=False,
+        details={"error": str(e)},
     )
+
+# Method 2: Without logger (uses default logger)
+log_service_call(
+    service_name="backtest-service",
+    method="POST",
+    success=True,
+)
 ```
 
 ### Database Operations
 
 ```python
-from mysingle.core import log_database_operation
+from mysingle.core import log_database_operation, get_logger
 import time
 
+logger = get_logger(__name__)
+
+# Method 1: With explicit logger (recommended)
 start_time = time.time()
 try:
     result = await Strategy.find({"user_id": user_id}).to_list()
     log_database_operation(
+        logger=logger,
         operation="find",
         collection="strategies",
-        duration=time.time() - start_time,
-        document_count=len(result),
+        document_id=None,  # Optional: for single-document operations
+        success=True,
+        details={
+            "duration_ms": round((time.time() - start_time) * 1000, 2),
+            "document_count": len(result),
+        },
     )
 except Exception as e:
     log_database_operation(
+        logger=logger,
         operation="find",
         collection="strategies",
-        duration=time.time() - start_time,
-        error=str(e),
+        success=False,
+        details={"error": str(e)},
     )
+
+# Method 2: Without logger (uses default logger)
+log_database_operation(
+    operation="create",
+    collection="backtest_jobs",
+    document_id="job-123",
+    success=True,
+)
 ```
 
 ---
@@ -531,6 +576,23 @@ logger.error("Operation failed", error=str(e))  # Errors
 
 # Log exceptions with stack traces
 logger.exception("Failed to process", request_id=request_id)
+
+# Use convenience functions with explicit logger (recommended)
+log_user_action(
+    logger=logger,
+    action="create",
+    resource_type="strategy",
+    resource_id="strat-123",
+    user_id="user-456",
+    success=True,
+)
+
+# Or without logger if in simple cases
+log_service_call(
+    service_name="strategy-service",
+    method="GetStrategyVersion",
+    success=True,
+)
 ```
 
 ### ❌ DON'T
@@ -723,11 +785,18 @@ setup_logging(
 
 ### Convenience Functions
 
-| Function                   | Description                           |
-| -------------------------- | ------------------------------------- |
-| `log_user_action()`        | Log user actions with standard format |
-| `log_service_call()`       | Log inter-service calls               |
-| `log_database_operation()` | Log database operations               |
+| Function                                                                                                                 | Description                                                                                         |
+| ------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| `log_user_action(logger=None, action, resource_type, resource_id, user_id=None, details=None, success=True, error=None)` | Log user actions with standard format. Logger and user_id are optional (auto-injected from context) |
+| `log_service_call(logger=None, service_name, method, success=True, details=None)`                                        | Log inter-service calls (gRPC/HTTP). Logger is optional                                             |
+| `log_database_operation(logger=None, operation, collection, document_id=None, success=True, details=None)`               | Log database operations. Logger and document_id are optional                                        |
+
+**Parameters:**
+- `logger` (optional): Structured logger instance. If not provided, uses default logger
+- `user_id` (optional): User ID for audit trail. Auto-injected from context if not provided
+- `details` (optional): Additional structured data to include in log entry
+- `success` (optional): Boolean indicating operation success (default: True)
+- `error` (optional): Error message for failed operations
 
 ---
 
@@ -755,11 +824,17 @@ configure_structured_logging(service_name="my-service")  # Separate calls
 setup_logging(service_name="my-service")  # Unified setup
 ```
 
-### Breaking Changes
+### Breaking Changes (v1.x → v2.x)
 
 - **Processors:** Removed `enable_correlation_id` and `enable_user_context` parameters (always enabled)
 - **Logger Factory:** `WriteLoggerFactory` → `PrintLoggerFactory` (better performance)
 - **Context:** Now uses `structlog.contextvars` for better async support
+
+### Changes in v2.8.17
+
+- **Convenience Functions:** Updated signatures to accept optional `logger`, `user_id`, and `details` parameters
+- **Flexibility:** All convenience functions can now work with or without explicit logger instance
+- **Context Auto-Injection:** `user_id` auto-injected from context if not provided to `log_user_action()`
 
 ---
 
@@ -771,6 +846,6 @@ setup_logging(service_name="my-service")  # Unified setup
 
 ---
 
-**Version:** 2.2.1
+**Version:** 2.8.17
 **Module:** `mysingle.core.logging`
 **License:** MIT

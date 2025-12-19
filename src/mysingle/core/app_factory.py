@@ -161,13 +161,28 @@ def create_fastapi_app(
 
     # Add logging middleware for request/response logging and context propagation
     # ⚠️ IMPORTANT: Add BEFORE AuthMiddleware to capture all requests
+    # Health endpoints are excluded to reduce log noise
     try:
         from .logging.middleware import LoggingMiddleware
 
-        app.add_middleware(LoggingMiddleware, service_name=service_config.service_name)
+        app.add_middleware(
+            LoggingMiddleware,
+            service_name=service_config.service_name,
+            exclude_paths=[
+                "/health",
+                "/ready",
+                "/alive",
+                "/metrics",
+                "/docs",
+                "/redoc",
+                "/openapi.json",
+                "/favicon.ico",
+                "/robots.txt",
+            ],
+        )
         logger.info(
             f"📝 Logging middleware enabled for {service_config.service_name} "
-            f"(correlation_id, user_id, request_id propagation)"
+            f"(correlation_id, user_id, request_id propagation, health endpoints excluded)"
         )
     except ImportError as e:
         logger.warning(f"⚠️ Logging middleware not available: {e}")
