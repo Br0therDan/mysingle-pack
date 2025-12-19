@@ -115,10 +115,11 @@ class AuditLoggingMiddleware(BaseHTTPMiddleware):
         path = request.url.path
         if should_log and self._should_exclude_path(path):
             should_log = False
-            logger.debug(
-                "Skipping audit log for excluded path",
-                path=path,
-            )
+            # Skip debug log for excluded paths to reduce noise
+            # logger.debug(
+            #     "Skipping audit log for excluded path",
+            #     path=path,
+            # )
 
         start = time.monotonic()
 
