@@ -204,6 +204,11 @@ message StrategyVersionResponse {
   string created_at = 13;
   // Update timestamp
   string updated_at = 14;
+
+  // Optional IRDocument snapshot (JSON-serialized)
+  // - Derived from DSL/Graph/Rules conversion pipeline
+  // - Intended for debugging/inspection and IR-based workflows
+  optional string ir_document = 15;
 }
 
 // ValidationResult message definition.
@@ -234,6 +239,9 @@ message StrategyVersionMinimalResponse {
   optional string state = 5;
   // Original source
   optional string original_source = 6;
+
+  // Optional IRDocument snapshot (JSON-serialized)
+  optional string ir_document = 7;
 }
 
 // HealthCheckResponse defines the response payload for HealthCheck.

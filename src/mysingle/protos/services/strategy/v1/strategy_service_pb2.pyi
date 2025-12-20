@@ -226,6 +226,7 @@ class StrategyVersionResponse(_message.Message):
         "validation_pipeline",
         "created_at",
         "updated_at",
+        "ir_document",
     )
     ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
@@ -241,6 +242,7 @@ class StrategyVersionResponse(_message.Message):
     VALIDATION_PIPELINE_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
     UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    IR_DOCUMENT_FIELD_NUMBER: _ClassVar[int]
     id: str
     user_id: str
     strategy_id: str
@@ -255,6 +257,7 @@ class StrategyVersionResponse(_message.Message):
     validation_pipeline: _containers.RepeatedCompositeFieldContainer[ValidationResult]
     created_at: str
     updated_at: str
+    ir_document: str
     def __init__(
         self,
         id: _Optional[str] = ...,
@@ -273,6 +276,7 @@ class StrategyVersionResponse(_message.Message):
         ] = ...,
         created_at: _Optional[str] = ...,
         updated_at: _Optional[str] = ...,
+        ir_document: _Optional[str] = ...,
     ) -> None: ...
 
 class ValidationResult(_message.Message):
@@ -304,6 +308,7 @@ class StrategyVersionMinimalResponse(_message.Message):
         "dsl_code_hash",
         "state",
         "original_source",
+        "ir_document",
     )
     STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
     SEQ_FIELD_NUMBER: _ClassVar[int]
@@ -311,12 +316,14 @@ class StrategyVersionMinimalResponse(_message.Message):
     DSL_CODE_HASH_FIELD_NUMBER: _ClassVar[int]
     STATE_FIELD_NUMBER: _ClassVar[int]
     ORIGINAL_SOURCE_FIELD_NUMBER: _ClassVar[int]
+    IR_DOCUMENT_FIELD_NUMBER: _ClassVar[int]
     strategy_id: str
     seq: int
     dsl_code: str
     dsl_code_hash: str
     state: str
     original_source: str
+    ir_document: str
     def __init__(
         self,
         strategy_id: _Optional[str] = ...,
@@ -325,6 +332,7 @@ class StrategyVersionMinimalResponse(_message.Message):
         dsl_code_hash: _Optional[str] = ...,
         state: _Optional[str] = ...,
         original_source: _Optional[str] = ...,
+        ir_document: _Optional[str] = ...,
     ) -> None: ...
 
 class HealthCheckResponse(_message.Message):
