@@ -1434,6 +1434,195 @@ message GetNonfarmPayrollRequest {
 }
 
 // ============================================================================
+// Indicator Domain Messages & Service
+// ============================================================================
+// ListIndicatorsRequest defines the request payload for ListIndicators.
+message ListIndicatorsRequest {
+  // Optional category filter
+  optional string category = 1;
+  // Optional tags filter
+  repeated string tags = 2;
+  // User ID for filtering user-specific indicators
+  optional string user_id = 3;
+}
+
+// ListIndicatorsResponse defines the response payload for ListIndicators.
+message ListIndicatorsResponse {
+  // List of indicator names
+  repeated string names = 1;
+  // Total count
+  int32 total_count = 2;
+}
+
+// GetIndicatorMetadataRequest defines the request payload for GetIndicatorMetadata.
+message GetIndicatorMetadataRequest {
+  // Indicator name
+  string name = 1;
+  // User ID
+  optional string user_id = 2;
+}
+
+// Parameter defines an indicator parameter.
+message Parameter {
+  // Parameter name
+  string name = 1;
+  // Parameter type (int, float, string, bool)
+  string type = 2;
+  // Parameter description
+  string description = 3;
+  // Whether parameter is required
+  bool required = 4;
+  // Default value (as string)
+  string default_value = 5;
+  // Parameter constraints
+  optional ParameterConstraints constraints = 6;
+}
+
+// ParameterConstraints defines constraints for a parameter.
+message ParameterConstraints {
+  // Minimum value
+  optional double min = 1;
+  // Maximum value
+  optional double max = 2;
+}
+
+// OutputColumn defines an indicator output column.
+message OutputColumn {
+  // Output name
+  string name = 1;
+  // Output type
+  string type = 2;
+  // Output description
+  string description = 3;
+}
+
+// IndicatorMetadataResponse defines the response payload for indicator metadata.
+message IndicatorMetadataResponse {
+  // Indicator name
+  string name = 1;
+  // Display name
+  string display_name = 2;
+  // Description
+  string description = 3;
+  // Category
+  string category = 4;
+  // Tags
+  repeated string tags = 5;
+  // Parameters
+  repeated Parameter parameters = 6;
+  // Outputs
+  repeated OutputColumn outputs = 7;
+  // Dependencies
+  repeated string dependencies = 8;
+  // Minimum lookback period
+  int32 min_lookback = 9;
+  // Is overlay indicator
+  bool is_overlay = 10;
+  // Version
+  string version = 11;
+  // Created at
+  string created_at = 12;
+  // Updated at
+  string updated_at = 13;
+}
+
+// BatchGetIndicatorMetadataRequest defines the request payload for batch metadata retrieval.
+message BatchGetIndicatorMetadataRequest {
+  // Indicator names
+  repeated string names = 1;
+  // User ID
+  optional string user_id = 2;
+}
+
+// BatchGetIndicatorMetadataResponse defines the response payload for batch metadata retrieval.
+message BatchGetIndicatorMetadataResponse {
+  // List of indicator metadata
+  repeated IndicatorMetadataResponse indicators = 1;
+  // List of not found indicators
+  repeated string not_found = 2;
+}
+
+// CalculateIndicatorRequest defines the request payload for indicator calculation.
+message CalculateIndicatorRequest {
+  // Indicator name
+  string indicator_name = 1;
+  // Parameters (key-value pairs as strings)
+  map<string, string> params = 2;
+  // Symbol
+  string symbol = 3;
+  // Interval
+  string interval = 4;
+  // Start date (YYYY-MM-DD)
+  optional string start_date = 5;
+  // End date (YYYY-MM-DD)
+  optional string end_date = 6;
+  // User ID
+  string user_id = 7;
+}
+
+// DoubleArray defines an array of double values.
+message DoubleArray {
+  // Values
+  repeated double values = 1;
+}
+
+// CalculateIndicatorResponse defines the response payload for indicator calculation.
+message CalculateIndicatorResponse {
+  // Indicator name
+  string indicator_name = 1;
+  // Parameters used
+  map<string, string> params = 2;
+  // Result type (series, multi_series, signal)
+  string result_type = 3;
+  // Values (for series type)
+  repeated double values = 4;
+  // Multi values (for multi_series type)
+  map<string, DoubleArray> multi_values = 5;
+  // Signals (for signal type)
+  repeated int32 signals = 6;
+  // Timestamps
+  repeated string timestamps = 7;
+  // Symbol
+  string symbol = 8;
+  // Interval
+  string interval = 9;
+  // Cached indicator
+  bool cached = 10;
+}
+
+// IndicatorSpec defines a specification for a single indicator in batch calculation.
+message IndicatorSpec {
+  // Indicator name
+  string name = 1;
+  // Parameters
+  map<string, string> params = 2;
+}
+
+// BatchCalculateIndicatorsRequest defines the request payload for batch indicator calculation.
+message BatchCalculateIndicatorsRequest {
+  // Indicator specifications
+  repeated IndicatorSpec indicators = 1;
+  // Symbol
+  string symbol = 2;
+  // Interval
+  string interval = 3;
+  // Start date (YYYY-MM-DD)
+  optional string start_date = 4;
+  // End date (YYYY-MM-DD)
+  optional string end_date = 5;
+  // User ID
+  string user_id = 6;
+}
+
+// BatchCalculateIndicatorsResponse defines the response payload for batch indicator calculation.
+message BatchCalculateIndicatorsResponse {
+  // Calculation results
+  repeated CalculateIndicatorResponse results = 1;
+  // Common timestamps
+  repeated string timestamps = 2;
+}
+
+// ============================================================================
 // Commodity Domain Messages & Service
 // ============================================================================
 // GetCommodityRequest defines the request payload for GetCommodity.
@@ -1924,4 +2113,21 @@ service MarketDataService {
   rpc StreamForexRates(StreamForexRateRequest) returns (stream StreamForexUpdate);
   // StreamCryptoQuotes provides server-side streaming for real-time crypto quotes.
   rpc StreamCryptoQuotes(StreamCryptoQuoteRequest) returns (stream StreamCryptoUpdate);
+}
+
+// ============================================================================
+// Indicator Service Definition
+// ============================================================================
+// IndicatorService provides indicator metadata and calculation functionality.
+service IndicatorService {
+  // ListIndicators returns a list of available indicators.
+  rpc ListIndicators(ListIndicatorsRequest) returns (ListIndicatorsResponse);
+  // GetIndicatorMetadata returns metadata for a single indicator.
+  rpc GetIndicatorMetadata(GetIndicatorMetadataRequest) returns (IndicatorMetadataResponse);
+  // BatchGetIndicatorMetadata returns metadata for multiple indicators.
+  rpc BatchGetIndicatorMetadata(BatchGetIndicatorMetadataRequest) returns (BatchGetIndicatorMetadataResponse);
+  // CalculateIndicator calculates a single indicator.
+  rpc CalculateIndicator(CalculateIndicatorRequest) returns (CalculateIndicatorResponse);
+  // BatchCalculateIndicators calculates multiple indicators in batch.
+  rpc BatchCalculateIndicators(BatchCalculateIndicatorsRequest) returns (BatchCalculateIndicatorsResponse);
 }

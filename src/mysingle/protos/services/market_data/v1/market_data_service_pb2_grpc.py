@@ -1874,3 +1874,282 @@ class MarketDataService(object):
             metadata,
             _registered_method=True,
         )
+
+
+class IndicatorServiceStub(object):
+    """============================================================================
+    Indicator Service Definition
+    ============================================================================
+    IndicatorService provides indicator metadata and calculation functionality.
+    """
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.ListIndicators = channel.unary_unary(
+            "/market_data.IndicatorService/ListIndicators",
+            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ListIndicatorsRequest.SerializeToString,
+            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ListIndicatorsResponse.FromString,
+            _registered_method=True,
+        )
+        self.GetIndicatorMetadata = channel.unary_unary(
+            "/market_data.IndicatorService/GetIndicatorMetadata",
+            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetIndicatorMetadataRequest.SerializeToString,
+            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.IndicatorMetadataResponse.FromString,
+            _registered_method=True,
+        )
+        self.BatchGetIndicatorMetadata = channel.unary_unary(
+            "/market_data.IndicatorService/BatchGetIndicatorMetadata",
+            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetIndicatorMetadataRequest.SerializeToString,
+            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetIndicatorMetadataResponse.FromString,
+            _registered_method=True,
+        )
+        self.CalculateIndicator = channel.unary_unary(
+            "/market_data.IndicatorService/CalculateIndicator",
+            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.CalculateIndicatorRequest.SerializeToString,
+            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.CalculateIndicatorResponse.FromString,
+            _registered_method=True,
+        )
+        self.BatchCalculateIndicators = channel.unary_unary(
+            "/market_data.IndicatorService/BatchCalculateIndicators",
+            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchCalculateIndicatorsRequest.SerializeToString,
+            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchCalculateIndicatorsResponse.FromString,
+            _registered_method=True,
+        )
+
+
+class IndicatorServiceServicer(object):
+    """============================================================================
+    Indicator Service Definition
+    ============================================================================
+    IndicatorService provides indicator metadata and calculation functionality.
+    """
+
+    def ListIndicators(self, request, context):
+        """ListIndicators returns a list of available indicators."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def GetIndicatorMetadata(self, request, context):
+        """GetIndicatorMetadata returns metadata for a single indicator."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def BatchGetIndicatorMetadata(self, request, context):
+        """BatchGetIndicatorMetadata returns metadata for multiple indicators."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def CalculateIndicator(self, request, context):
+        """CalculateIndicator calculates a single indicator."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def BatchCalculateIndicators(self, request, context):
+        """BatchCalculateIndicators calculates multiple indicators in batch."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+
+def add_IndicatorServiceServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+        "ListIndicators": grpc.unary_unary_rpc_method_handler(
+            servicer.ListIndicators,
+            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ListIndicatorsRequest.FromString,
+            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ListIndicatorsResponse.SerializeToString,
+        ),
+        "GetIndicatorMetadata": grpc.unary_unary_rpc_method_handler(
+            servicer.GetIndicatorMetadata,
+            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetIndicatorMetadataRequest.FromString,
+            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.IndicatorMetadataResponse.SerializeToString,
+        ),
+        "BatchGetIndicatorMetadata": grpc.unary_unary_rpc_method_handler(
+            servicer.BatchGetIndicatorMetadata,
+            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetIndicatorMetadataRequest.FromString,
+            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetIndicatorMetadataResponse.SerializeToString,
+        ),
+        "CalculateIndicator": grpc.unary_unary_rpc_method_handler(
+            servicer.CalculateIndicator,
+            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.CalculateIndicatorRequest.FromString,
+            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.CalculateIndicatorResponse.SerializeToString,
+        ),
+        "BatchCalculateIndicators": grpc.unary_unary_rpc_method_handler(
+            servicer.BatchCalculateIndicators,
+            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchCalculateIndicatorsRequest.FromString,
+            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchCalculateIndicatorsResponse.SerializeToString,
+        ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+        "market_data.IndicatorService", rpc_method_handlers
+    )
+    server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers(
+        "market_data.IndicatorService", rpc_method_handlers
+    )
+
+
+# This class is part of an EXPERIMENTAL API.
+class IndicatorService(object):
+    """============================================================================
+    Indicator Service Definition
+    ============================================================================
+    IndicatorService provides indicator metadata and calculation functionality.
+    """
+
+    @staticmethod
+    def ListIndicators(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/market_data.IndicatorService/ListIndicators",
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.ListIndicatorsRequest.SerializeToString,
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.ListIndicatorsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def GetIndicatorMetadata(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/market_data.IndicatorService/GetIndicatorMetadata",
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetIndicatorMetadataRequest.SerializeToString,
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.IndicatorMetadataResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def BatchGetIndicatorMetadata(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/market_data.IndicatorService/BatchGetIndicatorMetadata",
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetIndicatorMetadataRequest.SerializeToString,
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetIndicatorMetadataResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def CalculateIndicator(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/market_data.IndicatorService/CalculateIndicator",
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.CalculateIndicatorRequest.SerializeToString,
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.CalculateIndicatorResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def BatchCalculateIndicators(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/market_data.IndicatorService/BatchCalculateIndicators",
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchCalculateIndicatorsRequest.SerializeToString,
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchCalculateIndicatorsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
