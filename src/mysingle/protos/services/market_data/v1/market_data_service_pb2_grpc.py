@@ -61,126 +61,6 @@ class MarketDataServiceStub(object):
             response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.CacheStats.FromString,
             _registered_method=True,
         )
-        self.GetDailyOHLCV = channel.unary_unary(
-            "/market_data.MarketDataService/GetDailyOHLCV",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetDailyOHLCVRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.OHLCVResponse.FromString,
-            _registered_method=True,
-        )
-        self.GetIntradayOHLCV = channel.unary_unary(
-            "/market_data.MarketDataService/GetIntradayOHLCV",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetIntradayOHLCVRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.OHLCVResponse.FromString,
-            _registered_method=True,
-        )
-        self.GetWeeklyOHLCV = channel.unary_unary(
-            "/market_data.MarketDataService/GetWeeklyOHLCV",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetWeeklyOHLCVRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.OHLCVResponse.FromString,
-            _registered_method=True,
-        )
-        self.GetMonthlyOHLCV = channel.unary_unary(
-            "/market_data.MarketDataService/GetMonthlyOHLCV",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetMonthlyOHLCVRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.OHLCVResponse.FromString,
-            _registered_method=True,
-        )
-        self.GetQuote = channel.unary_unary(
-            "/market_data.MarketDataService/GetQuote",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetQuoteRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.QuoteResponse.FromString,
-            _registered_method=True,
-        )
-        self.SearchSymbols = channel.unary_unary(
-            "/market_data.MarketDataService/SearchSymbols",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.SearchSymbolsRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.SearchSymbolsResponse.FromString,
-            _registered_method=True,
-        )
-        self.BatchGetDailyOHLCV = channel.unary_unary(
-            "/market_data.MarketDataService/BatchGetDailyOHLCV",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetDailyOHLCVRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetDailyOHLCVResponse.FromString,
-            _registered_method=True,
-        )
-        self.BatchGetQuote = channel.unary_unary(
-            "/market_data.MarketDataService/BatchGetQuote",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetQuoteRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetQuoteResponse.FromString,
-            _registered_method=True,
-        )
-        self.GetForexDaily = channel.unary_unary(
-            "/market_data.MarketDataService/GetForexDaily",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetForexDailyRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ForexResponse.FromString,
-            _registered_method=True,
-        )
-        self.GetForexIntraday = channel.unary_unary(
-            "/market_data.MarketDataService/GetForexIntraday",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetForexIntradayRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ForexResponse.FromString,
-            _registered_method=True,
-        )
-        self.GetForexWeekly = channel.unary_unary(
-            "/market_data.MarketDataService/GetForexWeekly",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetForexWeeklyRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ForexResponse.FromString,
-            _registered_method=True,
-        )
-        self.GetForexMonthly = channel.unary_unary(
-            "/market_data.MarketDataService/GetForexMonthly",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetForexMonthlyRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ForexResponse.FromString,
-            _registered_method=True,
-        )
-        self.GetForexRate = channel.unary_unary(
-            "/market_data.MarketDataService/GetForexRate",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetForexRateRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ForexRateResponse.FromString,
-            _registered_method=True,
-        )
-        self.ListForexPairs = channel.unary_unary(
-            "/market_data.MarketDataService/ListForexPairs",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ListForexPairsRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ListForexPairsResponse.FromString,
-            _registered_method=True,
-        )
-        self.GetCryptoDaily = channel.unary_unary(
-            "/market_data.MarketDataService/GetCryptoDaily",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetCryptoDailyRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.CryptoResponse.FromString,
-            _registered_method=True,
-        )
-        self.GetCryptoIntraday = channel.unary_unary(
-            "/market_data.MarketDataService/GetCryptoIntraday",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetCryptoIntradayRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.CryptoResponse.FromString,
-            _registered_method=True,
-        )
-        self.GetCryptoWeekly = channel.unary_unary(
-            "/market_data.MarketDataService/GetCryptoWeekly",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetCryptoWeeklyRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.CryptoResponse.FromString,
-            _registered_method=True,
-        )
-        self.GetCryptoMonthly = channel.unary_unary(
-            "/market_data.MarketDataService/GetCryptoMonthly",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetCryptoMonthlyRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.CryptoResponse.FromString,
-            _registered_method=True,
-        )
-        self.ListCryptoSymbols = channel.unary_unary(
-            "/market_data.MarketDataService/ListCryptoSymbols",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ListCryptoSymbolsRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ListCryptoSymbolsResponse.FromString,
-            _registered_method=True,
-        )
-        self.BatchCryptoQuote = channel.unary_unary(
-            "/market_data.MarketDataService/BatchCryptoQuote",
-            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchCryptoQuoteRequest.SerializeToString,
-            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchCryptoQuoteResponse.FromString,
-            _registered_method=True,
-        )
         self.GetCompanyOverview = channel.unary_unary(
             "/market_data.MarketDataService/GetCompanyOverview",
             request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetCompanyOverviewRequest.SerializeToString,
@@ -361,6 +241,18 @@ class MarketDataServiceStub(object):
             response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.OptionContractResponse.FromString,
             _registered_method=True,
         )
+        self.GetPrices = channel.unary_unary(
+            "/market_data.MarketDataService/GetPrices",
+            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetPricesRequest.SerializeToString,
+            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.PricesResponse.FromString,
+            _registered_method=True,
+        )
+        self.BatchGetPrices = channel.unary_unary(
+            "/market_data.MarketDataService/BatchGetPrices",
+            request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetPricesRequest.SerializeToString,
+            response_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetPricesResponse.FromString,
+            _registered_method=True,
+        )
         self.StreamStockQuotes = channel.unary_stream(
             "/market_data.MarketDataService/StreamStockQuotes",
             request_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamQuotesRequest.SerializeToString,
@@ -404,134 +296,6 @@ class MarketDataServiceServicer(object):
 
     def GetCacheStats(self, request, context):
         """GetCacheStats RPC."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetDailyOHLCV(self, request, context):
-        """Stock Domain
-        GetDailyOHLCV RPC.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetIntradayOHLCV(self, request, context):
-        """GetIntradayOHLCV RPC."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetWeeklyOHLCV(self, request, context):
-        """GetWeeklyOHLCV RPC."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetMonthlyOHLCV(self, request, context):
-        """GetMonthlyOHLCV RPC."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetQuote(self, request, context):
-        """GetQuote RPC."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def SearchSymbols(self, request, context):
-        """SearchSymbols RPC."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def BatchGetDailyOHLCV(self, request, context):
-        """Batch operations for multiple symbols (Strategy/Backtest services)
-        BatchGetDailyOHLCV RPC.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def BatchGetQuote(self, request, context):
-        """BatchGetQuote RPC."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetForexDaily(self, request, context):
-        """Forex Domain
-        GetForexDaily RPC.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetForexIntraday(self, request, context):
-        """GetForexIntraday RPC."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetForexWeekly(self, request, context):
-        """GetForexWeekly RPC."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetForexMonthly(self, request, context):
-        """GetForexMonthly RPC."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetForexRate(self, request, context):
-        """GetForexRate RPC."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def ListForexPairs(self, request, context):
-        """ListForexPairs RPC."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetCryptoDaily(self, request, context):
-        """Crypto Domain
-        GetCryptoDaily RPC.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetCryptoIntraday(self, request, context):
-        """GetCryptoIntraday RPC."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetCryptoWeekly(self, request, context):
-        """GetCryptoWeekly RPC."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetCryptoMonthly(self, request, context):
-        """GetCryptoMonthly RPC."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def ListCryptoSymbols(self, request, context):
-        """ListCryptoSymbols RPC."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def BatchCryptoQuote(self, request, context):
-        """BatchCryptoQuote RPC."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
@@ -726,6 +490,20 @@ class MarketDataServiceServicer(object):
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
+    def GetPrices(self, request, context):
+        """Unified Prices Domain (Stock, Crypto, Forex)
+        GetPrices provides unified price data retrieval across all asset types.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def BatchGetPrices(self, request, context):
+        """BatchGetPrices provides batch price data retrieval for multiple symbols."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
     def StreamStockQuotes(self, request, context):
         """Real-time Streaming (Phase 2)
         StreamStockQuotes provides server-side streaming for real-time stock quotes.
@@ -763,106 +541,6 @@ def add_MarketDataServiceServicer_to_server(servicer, server):
             servicer.GetCacheStats,
             request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetCacheStatsRequest.FromString,
             response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.CacheStats.SerializeToString,
-        ),
-        "GetDailyOHLCV": grpc.unary_unary_rpc_method_handler(
-            servicer.GetDailyOHLCV,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetDailyOHLCVRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.OHLCVResponse.SerializeToString,
-        ),
-        "GetIntradayOHLCV": grpc.unary_unary_rpc_method_handler(
-            servicer.GetIntradayOHLCV,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetIntradayOHLCVRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.OHLCVResponse.SerializeToString,
-        ),
-        "GetWeeklyOHLCV": grpc.unary_unary_rpc_method_handler(
-            servicer.GetWeeklyOHLCV,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetWeeklyOHLCVRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.OHLCVResponse.SerializeToString,
-        ),
-        "GetMonthlyOHLCV": grpc.unary_unary_rpc_method_handler(
-            servicer.GetMonthlyOHLCV,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetMonthlyOHLCVRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.OHLCVResponse.SerializeToString,
-        ),
-        "GetQuote": grpc.unary_unary_rpc_method_handler(
-            servicer.GetQuote,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetQuoteRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.QuoteResponse.SerializeToString,
-        ),
-        "SearchSymbols": grpc.unary_unary_rpc_method_handler(
-            servicer.SearchSymbols,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.SearchSymbolsRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.SearchSymbolsResponse.SerializeToString,
-        ),
-        "BatchGetDailyOHLCV": grpc.unary_unary_rpc_method_handler(
-            servicer.BatchGetDailyOHLCV,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetDailyOHLCVRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetDailyOHLCVResponse.SerializeToString,
-        ),
-        "BatchGetQuote": grpc.unary_unary_rpc_method_handler(
-            servicer.BatchGetQuote,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetQuoteRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetQuoteResponse.SerializeToString,
-        ),
-        "GetForexDaily": grpc.unary_unary_rpc_method_handler(
-            servicer.GetForexDaily,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetForexDailyRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ForexResponse.SerializeToString,
-        ),
-        "GetForexIntraday": grpc.unary_unary_rpc_method_handler(
-            servicer.GetForexIntraday,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetForexIntradayRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ForexResponse.SerializeToString,
-        ),
-        "GetForexWeekly": grpc.unary_unary_rpc_method_handler(
-            servicer.GetForexWeekly,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetForexWeeklyRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ForexResponse.SerializeToString,
-        ),
-        "GetForexMonthly": grpc.unary_unary_rpc_method_handler(
-            servicer.GetForexMonthly,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetForexMonthlyRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ForexResponse.SerializeToString,
-        ),
-        "GetForexRate": grpc.unary_unary_rpc_method_handler(
-            servicer.GetForexRate,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetForexRateRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ForexRateResponse.SerializeToString,
-        ),
-        "ListForexPairs": grpc.unary_unary_rpc_method_handler(
-            servicer.ListForexPairs,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ListForexPairsRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ListForexPairsResponse.SerializeToString,
-        ),
-        "GetCryptoDaily": grpc.unary_unary_rpc_method_handler(
-            servicer.GetCryptoDaily,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetCryptoDailyRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.CryptoResponse.SerializeToString,
-        ),
-        "GetCryptoIntraday": grpc.unary_unary_rpc_method_handler(
-            servicer.GetCryptoIntraday,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetCryptoIntradayRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.CryptoResponse.SerializeToString,
-        ),
-        "GetCryptoWeekly": grpc.unary_unary_rpc_method_handler(
-            servicer.GetCryptoWeekly,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetCryptoWeeklyRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.CryptoResponse.SerializeToString,
-        ),
-        "GetCryptoMonthly": grpc.unary_unary_rpc_method_handler(
-            servicer.GetCryptoMonthly,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetCryptoMonthlyRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.CryptoResponse.SerializeToString,
-        ),
-        "ListCryptoSymbols": grpc.unary_unary_rpc_method_handler(
-            servicer.ListCryptoSymbols,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ListCryptoSymbolsRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.ListCryptoSymbolsResponse.SerializeToString,
-        ),
-        "BatchCryptoQuote": grpc.unary_unary_rpc_method_handler(
-            servicer.BatchCryptoQuote,
-            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchCryptoQuoteRequest.FromString,
-            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchCryptoQuoteResponse.SerializeToString,
         ),
         "GetCompanyOverview": grpc.unary_unary_rpc_method_handler(
             servicer.GetCompanyOverview,
@@ -1014,6 +692,16 @@ def add_MarketDataServiceServicer_to_server(servicer, server):
             request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetOptionContractRequest.FromString,
             response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.OptionContractResponse.SerializeToString,
         ),
+        "GetPrices": grpc.unary_unary_rpc_method_handler(
+            servicer.GetPrices,
+            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetPricesRequest.FromString,
+            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.PricesResponse.SerializeToString,
+        ),
+        "BatchGetPrices": grpc.unary_unary_rpc_method_handler(
+            servicer.BatchGetPrices,
+            request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetPricesRequest.FromString,
+            response_serializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetPricesResponse.SerializeToString,
+        ),
         "StreamStockQuotes": grpc.unary_stream_rpc_method_handler(
             servicer.StreamStockQuotes,
             request_deserializer=services_dot_market__data_dot_v1_dot_market__data__service__pb2.StreamQuotesRequest.FromString,
@@ -1126,606 +814,6 @@ class MarketDataService(object):
             "/market_data.MarketDataService/GetCacheStats",
             services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetCacheStatsRequest.SerializeToString,
             services_dot_market__data_dot_v1_dot_market__data__service__pb2.CacheStats.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def GetDailyOHLCV(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/GetDailyOHLCV",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetDailyOHLCVRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.OHLCVResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def GetIntradayOHLCV(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/GetIntradayOHLCV",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetIntradayOHLCVRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.OHLCVResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def GetWeeklyOHLCV(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/GetWeeklyOHLCV",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetWeeklyOHLCVRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.OHLCVResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def GetMonthlyOHLCV(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/GetMonthlyOHLCV",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetMonthlyOHLCVRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.OHLCVResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def GetQuote(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/GetQuote",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetQuoteRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.QuoteResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def SearchSymbols(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/SearchSymbols",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.SearchSymbolsRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.SearchSymbolsResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def BatchGetDailyOHLCV(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/BatchGetDailyOHLCV",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetDailyOHLCVRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetDailyOHLCVResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def BatchGetQuote(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/BatchGetQuote",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetQuoteRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetQuoteResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def GetForexDaily(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/GetForexDaily",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetForexDailyRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.ForexResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def GetForexIntraday(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/GetForexIntraday",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetForexIntradayRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.ForexResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def GetForexWeekly(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/GetForexWeekly",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetForexWeeklyRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.ForexResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def GetForexMonthly(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/GetForexMonthly",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetForexMonthlyRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.ForexResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def GetForexRate(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/GetForexRate",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetForexRateRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.ForexRateResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def ListForexPairs(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/ListForexPairs",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.ListForexPairsRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.ListForexPairsResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def GetCryptoDaily(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/GetCryptoDaily",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetCryptoDailyRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.CryptoResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def GetCryptoIntraday(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/GetCryptoIntraday",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetCryptoIntradayRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.CryptoResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def GetCryptoWeekly(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/GetCryptoWeekly",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetCryptoWeeklyRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.CryptoResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def GetCryptoMonthly(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/GetCryptoMonthly",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetCryptoMonthlyRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.CryptoResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def ListCryptoSymbols(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/ListCryptoSymbols",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.ListCryptoSymbolsRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.ListCryptoSymbolsResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def BatchCryptoQuote(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/market_data.MarketDataService/BatchCryptoQuote",
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchCryptoQuoteRequest.SerializeToString,
-            services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchCryptoQuoteResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -2626,6 +1714,66 @@ class MarketDataService(object):
             "/market_data.MarketDataService/GetOptionContract",
             services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetOptionContractRequest.SerializeToString,
             services_dot_market__data_dot_v1_dot_market__data__service__pb2.OptionContractResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def GetPrices(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/market_data.MarketDataService/GetPrices",
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.GetPricesRequest.SerializeToString,
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.PricesResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def BatchGetPrices(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/market_data.MarketDataService/BatchGetPrices",
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetPricesRequest.SerializeToString,
+            services_dot_market__data_dot_v1_dot_market__data__service__pb2.BatchGetPricesResponse.FromString,
             options,
             channel_credentials,
             insecure,

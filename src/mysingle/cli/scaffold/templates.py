@@ -338,19 +338,18 @@ def generate_copilot_instructions_md(
 
 ## Service Infrastructure
 
-| Service      | HTTP  | gRPC   | Kong Path     |
-| ------------ | ----- | ------ | ------------- |
-| IAM          | :8001 | :50051 | /iam          |
-| Subscription | :8002 | :50052 | /subscription |
-| Strategy     | :8003 | :50053 | /strategy     |
-| Backtest     | :8004 | :50054 | /backtest     |
-| Indicator    | :8005 | :50055 | /indicator    |
-| Portfolio    | :8006 | :50056 | /portfolio    |
-| Dashboard    | :8007 | :50057 | /dashboard    |
-| Notification | :8008 | :50058 | /notification |
-| Market Data  | :8009 | :50059 | /market-data  |
-| GenAI        | :8010 | :50060 | /genai        |
-| ML           | :8011 | :50061 | /ml           |
+| Service      | HTTP  | gRPC   | Kong Path     | status      |
+| ------------ | ----- | ------ | ------------- | ----------- |
+| IAM          | :8001 | :50051 | /iam          | running     |
+| Subscription | :8002 | :50052 | /subscription | running     |
+| Orchestrator | :8003 | :50053 | /orchestrator | in Progress |
+| Strategy     | :8004 | :50054 | /strategy     | running     |
+| Portfolio    | :8005 | :50055 | /portfolio    | running     |
+| Backtest     | :8006 | :50056 | /backtest     | running     |
+| Market Data  | :8007 | :50057 | /market-data  | running     |
+| GenAI        | :8008 | :50058 | /genai        | running     |
+| ML           | :8009 | :50059 | /ml           | running     |
+| Notification | :8010 | :50060 | /notification | running     |
 
 **MongoDB:** `db-mongo:27017`
 **Redis:** `db-redis:6379`

@@ -1656,6 +1656,104 @@ message CacheStats {
 }
 
 // ============================================================================
+// Unified Prices Domain Messages (Stock, Crypto, Forex)
+// ============================================================================
+
+// GetPricesRequest defines the request for unified price data across all asset types.
+message GetPricesRequest {
+  // Asset type (stock, crypto, forex)
+  string asset_type = 1;
+  // Frequency (daily, weekly, monthly, intraday)
+  string frequency = 2;
+  // Symbol (for stock/crypto) or base currency (for forex)
+  string symbol = 3;
+  // Interval for intraday data (1min, 5min, 15min, 30min, 60min)
+  string interval = 4;
+  // Market for crypto (e.g., USD, BTC)
+  string market = 5;
+  // From currency for forex
+  string from_symbol = 6;
+  // To currency for forex
+  string to_symbol = 7;
+  // Start date (ISO 8601 format)
+  string start_date = 8;
+  // End date (ISO 8601 format)
+  string end_date = 9;
+  // Page number for pagination
+  int32 page = 10;
+  // Page size for pagination
+  int32 page_size = 11;
+}
+
+// PricesResponse defines the unified response for price data.
+message PricesResponse {
+  // Asset type
+  string asset_type = 1;
+  // Symbol
+  string symbol = 2;
+  // Frequency
+  string frequency = 3;
+  // Interval (for intraday)
+  string interval = 4;
+  // OHLCV bars
+  repeated OHLCVBar bars = 5;
+  // Number of bars
+  int32 count = 6;
+  // Pagination metadata
+  Pagination pagination = 7;
+  // Data source
+  string source = 8;
+}
+
+// BatchGetPricesRequest defines the request for batch price data retrieval.
+message BatchGetPricesRequest {
+  // Asset type (stock, crypto, forex)
+  string asset_type = 1;
+  // Frequency (daily, weekly, monthly, intraday)
+  string frequency = 2;
+  // List of symbols to fetch
+  repeated string symbols = 3;
+  // Interval for intraday data
+  string interval = 4;
+  // Market for crypto
+  string market = 5;
+  // Start date (ISO 8601 format)
+  string start_date = 6;
+  // End date (ISO 8601 format)
+  string end_date = 7;
+}
+
+// SymbolPricesData defines price data for a single symbol in batch response.
+message SymbolPricesData {
+  // Symbol
+  string symbol = 1;
+  // OHLCV bars
+  repeated OHLCVBar bars = 2;
+  // Number of bars
+  int32 count = 3;
+  // Success flag
+  bool success = 4;
+  // Error message if failed
+  string error = 5;
+}
+
+// BatchGetPricesResponse defines the response for batch price data retrieval.
+message BatchGetPricesResponse {
+  // Asset type
+  string asset_type = 1;
+  // Frequency
+  string frequency = 2;
+  // Results for each symbol
+  repeated SymbolPricesData results = 3;
+  // Total number of symbols
+  int32 total = 4;
+  // Number of successful fetches
+  int32 success_count = 5;
+  // Number of failed fetches
+  int32 failure_count = 6;
+}
+
+// ============================================================================
 // Real-time Streaming Messages (Phase 2)
 // ============================================================================
 // StreamQuotesRequest defines the request payload for streaming quotes.
@@ -1743,53 +1841,6 @@ service MarketDataService {
   // GetCacheStats RPC.
   rpc GetCacheStats(GetCacheStatsRequest) returns (CacheStats);
 
-  // Stock Domain
-  // GetDailyOHLCV RPC.
-  rpc GetDailyOHLCV(GetDailyOHLCVRequest) returns (OHLCVResponse);
-  // GetIntradayOHLCV RPC.
-  rpc GetIntradayOHLCV(GetIntradayOHLCVRequest) returns (OHLCVResponse);
-  // GetWeeklyOHLCV RPC.
-  rpc GetWeeklyOHLCV(GetWeeklyOHLCVRequest) returns (OHLCVResponse);
-  // GetMonthlyOHLCV RPC.
-  rpc GetMonthlyOHLCV(GetMonthlyOHLCVRequest) returns (OHLCVResponse);
-  // GetQuote RPC.
-  rpc GetQuote(GetQuoteRequest) returns (QuoteResponse);
-  // SearchSymbols RPC.
-  rpc SearchSymbols(SearchSymbolsRequest) returns (SearchSymbolsResponse);
-  // Batch operations for multiple symbols (Strategy/Backtest services)
-  // BatchGetDailyOHLCV RPC.
-  rpc BatchGetDailyOHLCV(BatchGetDailyOHLCVRequest) returns (BatchGetDailyOHLCVResponse);
-  // BatchGetQuote RPC.
-  rpc BatchGetQuote(BatchGetQuoteRequest) returns (BatchGetQuoteResponse);
-
-  // Forex Domain
-  // GetForexDaily RPC.
-  rpc GetForexDaily(GetForexDailyRequest) returns (ForexResponse);
-  // GetForexIntraday RPC.
-  rpc GetForexIntraday(GetForexIntradayRequest) returns (ForexResponse);
-  // GetForexWeekly RPC.
-  rpc GetForexWeekly(GetForexWeeklyRequest) returns (ForexResponse);
-  // GetForexMonthly RPC.
-  rpc GetForexMonthly(GetForexMonthlyRequest) returns (ForexResponse);
-  // GetForexRate RPC.
-  rpc GetForexRate(GetForexRateRequest) returns (ForexRateResponse);
-  // ListForexPairs RPC.
-  rpc ListForexPairs(ListForexPairsRequest) returns (ListForexPairsResponse);
-
-  // Crypto Domain
-  // GetCryptoDaily RPC.
-  rpc GetCryptoDaily(GetCryptoDailyRequest) returns (CryptoResponse);
-  // GetCryptoIntraday RPC.
-  rpc GetCryptoIntraday(GetCryptoIntradayRequest) returns (CryptoResponse);
-  // GetCryptoWeekly RPC.
-  rpc GetCryptoWeekly(GetCryptoWeeklyRequest) returns (CryptoResponse);
-  // GetCryptoMonthly RPC.
-  rpc GetCryptoMonthly(GetCryptoMonthlyRequest) returns (CryptoResponse);
-  // ListCryptoSymbols RPC.
-  rpc ListCryptoSymbols(ListCryptoSymbolsRequest) returns (ListCryptoSymbolsResponse);
-  // BatchCryptoQuote RPC.
-  rpc BatchCryptoQuote(BatchCryptoQuoteRequest) returns (BatchCryptoQuoteResponse);
-
   // Fundamental Domain
   // GetCompanyOverview RPC.
   rpc GetCompanyOverview(GetCompanyOverviewRequest) returns (CompanyOverviewResponse);
@@ -1859,6 +1910,12 @@ service MarketDataService {
   rpc GetHistoricalOptions(GetHistoricalOptionsRequest) returns (HistoricalOptionsResponse);
   // GetOptionContract RPC.
   rpc GetOptionContract(GetOptionContractRequest) returns (OptionContractResponse);
+
+  // Unified Prices Domain (Stock, Crypto, Forex)
+  // GetPrices provides unified price data retrieval across all asset types.
+  rpc GetPrices(GetPricesRequest) returns (PricesResponse);
+  // BatchGetPrices provides batch price data retrieval for multiple symbols.
+  rpc BatchGetPrices(BatchGetPricesRequest) returns (BatchGetPricesResponse);
 
   // Real-time Streaming (Phase 2)
   // StreamStockQuotes provides server-side streaming for real-time stock quotes.

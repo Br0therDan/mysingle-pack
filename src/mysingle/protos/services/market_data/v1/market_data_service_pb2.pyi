@@ -2752,6 +2752,183 @@ class CacheStats(_message.Message):
         entries_by_domain: _Optional[_Mapping[str, int]] = ...,
     ) -> None: ...
 
+class GetPricesRequest(_message.Message):
+    __slots__ = (
+        "asset_type",
+        "frequency",
+        "symbol",
+        "interval",
+        "market",
+        "from_symbol",
+        "to_symbol",
+        "start_date",
+        "end_date",
+        "page",
+        "page_size",
+    )
+    ASSET_TYPE_FIELD_NUMBER: _ClassVar[int]
+    FREQUENCY_FIELD_NUMBER: _ClassVar[int]
+    SYMBOL_FIELD_NUMBER: _ClassVar[int]
+    INTERVAL_FIELD_NUMBER: _ClassVar[int]
+    MARKET_FIELD_NUMBER: _ClassVar[int]
+    FROM_SYMBOL_FIELD_NUMBER: _ClassVar[int]
+    TO_SYMBOL_FIELD_NUMBER: _ClassVar[int]
+    START_DATE_FIELD_NUMBER: _ClassVar[int]
+    END_DATE_FIELD_NUMBER: _ClassVar[int]
+    PAGE_FIELD_NUMBER: _ClassVar[int]
+    PAGE_SIZE_FIELD_NUMBER: _ClassVar[int]
+    asset_type: str
+    frequency: str
+    symbol: str
+    interval: str
+    market: str
+    from_symbol: str
+    to_symbol: str
+    start_date: str
+    end_date: str
+    page: int
+    page_size: int
+    def __init__(
+        self,
+        asset_type: _Optional[str] = ...,
+        frequency: _Optional[str] = ...,
+        symbol: _Optional[str] = ...,
+        interval: _Optional[str] = ...,
+        market: _Optional[str] = ...,
+        from_symbol: _Optional[str] = ...,
+        to_symbol: _Optional[str] = ...,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+        page: _Optional[int] = ...,
+        page_size: _Optional[int] = ...,
+    ) -> None: ...
+
+class PricesResponse(_message.Message):
+    __slots__ = (
+        "asset_type",
+        "symbol",
+        "frequency",
+        "interval",
+        "bars",
+        "count",
+        "pagination",
+        "source",
+    )
+    ASSET_TYPE_FIELD_NUMBER: _ClassVar[int]
+    SYMBOL_FIELD_NUMBER: _ClassVar[int]
+    FREQUENCY_FIELD_NUMBER: _ClassVar[int]
+    INTERVAL_FIELD_NUMBER: _ClassVar[int]
+    BARS_FIELD_NUMBER: _ClassVar[int]
+    COUNT_FIELD_NUMBER: _ClassVar[int]
+    PAGINATION_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    asset_type: str
+    symbol: str
+    frequency: str
+    interval: str
+    bars: _containers.RepeatedCompositeFieldContainer[OHLCVBar]
+    count: int
+    pagination: Pagination
+    source: str
+    def __init__(
+        self,
+        asset_type: _Optional[str] = ...,
+        symbol: _Optional[str] = ...,
+        frequency: _Optional[str] = ...,
+        interval: _Optional[str] = ...,
+        bars: _Optional[_Iterable[_Union[OHLCVBar, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+        pagination: _Optional[_Union[Pagination, _Mapping]] = ...,
+        source: _Optional[str] = ...,
+    ) -> None: ...
+
+class BatchGetPricesRequest(_message.Message):
+    __slots__ = (
+        "asset_type",
+        "frequency",
+        "symbols",
+        "interval",
+        "market",
+        "start_date",
+        "end_date",
+    )
+    ASSET_TYPE_FIELD_NUMBER: _ClassVar[int]
+    FREQUENCY_FIELD_NUMBER: _ClassVar[int]
+    SYMBOLS_FIELD_NUMBER: _ClassVar[int]
+    INTERVAL_FIELD_NUMBER: _ClassVar[int]
+    MARKET_FIELD_NUMBER: _ClassVar[int]
+    START_DATE_FIELD_NUMBER: _ClassVar[int]
+    END_DATE_FIELD_NUMBER: _ClassVar[int]
+    asset_type: str
+    frequency: str
+    symbols: _containers.RepeatedScalarFieldContainer[str]
+    interval: str
+    market: str
+    start_date: str
+    end_date: str
+    def __init__(
+        self,
+        asset_type: _Optional[str] = ...,
+        frequency: _Optional[str] = ...,
+        symbols: _Optional[_Iterable[str]] = ...,
+        interval: _Optional[str] = ...,
+        market: _Optional[str] = ...,
+        start_date: _Optional[str] = ...,
+        end_date: _Optional[str] = ...,
+    ) -> None: ...
+
+class SymbolPricesData(_message.Message):
+    __slots__ = ("symbol", "bars", "count", "success", "error")
+    SYMBOL_FIELD_NUMBER: _ClassVar[int]
+    BARS_FIELD_NUMBER: _ClassVar[int]
+    COUNT_FIELD_NUMBER: _ClassVar[int]
+    SUCCESS_FIELD_NUMBER: _ClassVar[int]
+    ERROR_FIELD_NUMBER: _ClassVar[int]
+    symbol: str
+    bars: _containers.RepeatedCompositeFieldContainer[OHLCVBar]
+    count: int
+    success: bool
+    error: str
+    def __init__(
+        self,
+        symbol: _Optional[str] = ...,
+        bars: _Optional[_Iterable[_Union[OHLCVBar, _Mapping]]] = ...,
+        count: _Optional[int] = ...,
+        success: bool = ...,
+        error: _Optional[str] = ...,
+    ) -> None: ...
+
+class BatchGetPricesResponse(_message.Message):
+    __slots__ = (
+        "asset_type",
+        "frequency",
+        "results",
+        "total",
+        "success_count",
+        "failure_count",
+    )
+    ASSET_TYPE_FIELD_NUMBER: _ClassVar[int]
+    FREQUENCY_FIELD_NUMBER: _ClassVar[int]
+    RESULTS_FIELD_NUMBER: _ClassVar[int]
+    TOTAL_FIELD_NUMBER: _ClassVar[int]
+    SUCCESS_COUNT_FIELD_NUMBER: _ClassVar[int]
+    FAILURE_COUNT_FIELD_NUMBER: _ClassVar[int]
+    asset_type: str
+    frequency: str
+    results: _containers.RepeatedCompositeFieldContainer[SymbolPricesData]
+    total: int
+    success_count: int
+    failure_count: int
+    def __init__(
+        self,
+        asset_type: _Optional[str] = ...,
+        frequency: _Optional[str] = ...,
+        results: _Optional[_Iterable[_Union[SymbolPricesData, _Mapping]]] = ...,
+        total: _Optional[int] = ...,
+        success_count: _Optional[int] = ...,
+        failure_count: _Optional[int] = ...,
+    ) -> None: ...
+
 class StreamQuotesRequest(_message.Message):
     __slots__ = ("symbols",)
     SYMBOLS_FIELD_NUMBER: _ClassVar[int]

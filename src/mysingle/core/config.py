@@ -60,7 +60,6 @@ class CommonSettings(BaseSettings):
     REDIS_DB_DSL: int = 4  # DSL bytecode cache (Strategy)
     REDIS_DB_MARKET_DATA: int = 5  # Market data cache (Market Data)
     REDIS_DB_BACKTEST: int = 6  # Backtest service cache (Backtest)
-    REDIS_DB_INDICATOR: int = 7  # Indicator cache (Indicator)
     REDIS_DB_STRATEGY_CACHE: int = 8  # Strategy cache (Strategy)
     REDIS_DB_NOTIFICATION: int = 9  # Notification queue (Notification)
     REDIS_DB_CELERY_BROKER: int = 10  # Celery broker (Backtest)
@@ -191,7 +190,6 @@ class CommonSettings(BaseSettings):
             "REDIS_DB_DSL": self.REDIS_DB_DSL,
             "REDIS_DB_MARKET_DATA": self.REDIS_DB_MARKET_DATA,
             "REDIS_DB_BACKTEST": self.REDIS_DB_BACKTEST,
-            "REDIS_DB_INDICATOR": self.REDIS_DB_INDICATOR,
             "REDIS_DB_STRATEGY_CACHE": self.REDIS_DB_STRATEGY_CACHE,
             "REDIS_DB_NOTIFICATION": self.REDIS_DB_NOTIFICATION,
             "REDIS_DB_CELERY_BROKER": self.REDIS_DB_CELERY_BROKER,
