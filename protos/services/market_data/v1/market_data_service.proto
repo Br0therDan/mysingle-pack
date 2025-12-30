@@ -1436,6 +1436,63 @@ message GetNonfarmPayrollRequest {
 // ============================================================================
 // Indicator Domain Messages & Service
 // ============================================================================
+
+// IndicatorSource indicates where an indicator comes from.
+// - OFFICIAL: built-in system catalog
+// - CUSTOM: user-defined (private/unlisted/public)
+// - MARKETPLACE: published custom indicator (public)
+enum IndicatorSource {
+  // Unknown/unspecified source.
+  INDICATOR_SOURCE_UNSPECIFIED = 0;
+  // Built-in official indicator provided by the system.
+  INDICATOR_SOURCE_OFFICIAL = 1;
+  // User-defined custom indicator (may be private/unlisted/public).
+  INDICATOR_SOURCE_CUSTOM = 2;
+  // Published custom indicator available via marketplace (public).
+  INDICATOR_SOURCE_MARKETPLACE = 3;
+}
+
+// IndicatorVisibility indicates who can access an indicator.
+// NOTE: For OFFICIAL indicators, visibility is typically treated as SYSTEM.
+enum IndicatorVisibility {
+  // Unknown/unspecified visibility.
+  INDICATOR_VISIBILITY_UNSPECIFIED = 0;
+  // Visible only to the owner.
+  INDICATOR_VISIBILITY_PRIVATE = 1;
+  // Visible to all users.
+  INDICATOR_VISIBILITY_PUBLIC = 2;
+  // Not listed publicly, but accessible by direct reference.
+  INDICATOR_VISIBILITY_UNLISTED = 3;
+  // System-owned visibility (used for official indicators).
+  INDICATOR_VISIBILITY_SYSTEM = 4;
+}
+
+// IndicatorSummary is a lightweight metadata payload used for catalog listing.
+message IndicatorSummary {
+  // Indicator unique id (e.g., Mongo ObjectId for custom/marketplace). Optional for official.
+  optional string indicator_id = 1;
+  // Indicator call/name (DSL identifier for official; user-given name for custom).
+  string name = 2;
+  // Display name
+  string display_name = 3;
+  // Category
+  string category = 4;
+  // Description
+  string description = 5;
+  // Tags
+  repeated string tags = 6;
+  // Source (official/custom/marketplace)
+  optional IndicatorSource source = 7;
+  // Visibility (private/public/unlisted/system)
+  optional IndicatorVisibility visibility = 8;
+  // Owner user id (for custom/marketplace)
+  optional string owner_user_id = 9;
+  // DSL call name override/alias (if differs from `name`)
+  optional string dsl_call_name = 10;
+  // Version string
+  optional string version = 11;
+}
+
 // ListIndicatorsRequest defines the request payload for ListIndicators.
 message ListIndicatorsRequest {
   // Optional category filter
@@ -1444,6 +1501,12 @@ message ListIndicatorsRequest {
   repeated string tags = 2;
   // User ID for filtering user-specific indicators
   optional string user_id = 3;
+
+  // Optional source filtering. If empty/unspecified, server may apply its default behavior.
+  repeated IndicatorSource sources = 4;
+
+  // Optional visibility filtering (applies to custom/marketplace).
+  repeated IndicatorVisibility visibilities = 5;
 }
 
 // ListIndicatorsResponse defines the response payload for ListIndicators.
@@ -1452,6 +1515,10 @@ message ListIndicatorsResponse {
   repeated string names = 1;
   // Total count
   int32 total_count = 2;
+
+  // Optional rich summaries for each indicator.
+  // Backwards-compatible: older clients should keep using `names`.
+  repeated IndicatorSummary indicators = 3;
 }
 
 // GetIndicatorMetadataRequest defines the request payload for GetIndicatorMetadata.
@@ -1460,6 +1527,9 @@ message GetIndicatorMetadataRequest {
   string name = 1;
   // User ID
   optional string user_id = 2;
+
+  // Optional indicator id (e.g., Mongo ObjectId). If provided, server may prefer this over name.
+  optional string indicator_id = 3;
 }
 
 // Parameter defines an indicator parameter.
@@ -1524,6 +1594,19 @@ message IndicatorMetadataResponse {
   string created_at = 12;
   // Updated at
   string updated_at = 13;
+
+  // Optional unique id (e.g., Mongo ObjectId for custom/marketplace)
+  optional string indicator_id = 14;
+  // Optional source (official/custom/marketplace)
+  optional IndicatorSource source = 15;
+  // Optional visibility (private/public/unlisted/system)
+  optional IndicatorVisibility visibility = 16;
+  // Optional owner user id (for custom/marketplace)
+  optional string owner_user_id = 17;
+  // Optional published flag (marketplace)
+  optional bool is_published = 18;
+  // Optional DSL call name override/alias
+  optional string dsl_call_name = 19;
 }
 
 // BatchGetIndicatorMetadataRequest defines the request payload for batch metadata retrieval.
@@ -1532,6 +1615,9 @@ message BatchGetIndicatorMetadataRequest {
   repeated string names = 1;
   // User ID
   optional string user_id = 2;
+
+  // Optional indicator ids (e.g., Mongo ObjectId for custom/marketplace)
+  repeated string indicator_ids = 3;
 }
 
 // BatchGetIndicatorMetadataResponse defines the response payload for batch metadata retrieval.

@@ -7,8 +7,34 @@ from typing import Union as _Union
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf.internal import containers as _containers
+from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 
 DESCRIPTOR: _descriptor.FileDescriptor
+
+class IndicatorSource(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    INDICATOR_SOURCE_UNSPECIFIED: _ClassVar[IndicatorSource]
+    INDICATOR_SOURCE_OFFICIAL: _ClassVar[IndicatorSource]
+    INDICATOR_SOURCE_CUSTOM: _ClassVar[IndicatorSource]
+    INDICATOR_SOURCE_MARKETPLACE: _ClassVar[IndicatorSource]
+
+class IndicatorVisibility(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    INDICATOR_VISIBILITY_UNSPECIFIED: _ClassVar[IndicatorVisibility]
+    INDICATOR_VISIBILITY_PRIVATE: _ClassVar[IndicatorVisibility]
+    INDICATOR_VISIBILITY_PUBLIC: _ClassVar[IndicatorVisibility]
+    INDICATOR_VISIBILITY_UNLISTED: _ClassVar[IndicatorVisibility]
+    INDICATOR_VISIBILITY_SYSTEM: _ClassVar[IndicatorVisibility]
+
+INDICATOR_SOURCE_UNSPECIFIED: IndicatorSource
+INDICATOR_SOURCE_OFFICIAL: IndicatorSource
+INDICATOR_SOURCE_CUSTOM: IndicatorSource
+INDICATOR_SOURCE_MARKETPLACE: IndicatorSource
+INDICATOR_VISIBILITY_UNSPECIFIED: IndicatorVisibility
+INDICATOR_VISIBILITY_PRIVATE: IndicatorVisibility
+INDICATOR_VISIBILITY_PUBLIC: IndicatorVisibility
+INDICATOR_VISIBILITY_UNLISTED: IndicatorVisibility
+INDICATOR_VISIBILITY_SYSTEM: IndicatorVisibility
 
 class OHLCVBar(_message.Message):
     __slots__ = (
@@ -2363,39 +2389,106 @@ class GetNonfarmPayrollRequest(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class IndicatorSummary(_message.Message):
+    __slots__ = (
+        "indicator_id",
+        "name",
+        "display_name",
+        "category",
+        "description",
+        "tags",
+        "source",
+        "visibility",
+        "owner_user_id",
+        "dsl_call_name",
+        "version",
+    )
+    INDICATOR_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
+    CATEGORY_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    TAGS_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    VISIBILITY_FIELD_NUMBER: _ClassVar[int]
+    OWNER_USER_ID_FIELD_NUMBER: _ClassVar[int]
+    DSL_CALL_NAME_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    indicator_id: str
+    name: str
+    display_name: str
+    category: str
+    description: str
+    tags: _containers.RepeatedScalarFieldContainer[str]
+    source: IndicatorSource
+    visibility: IndicatorVisibility
+    owner_user_id: str
+    dsl_call_name: str
+    version: str
+    def __init__(
+        self,
+        indicator_id: _Optional[str] = ...,
+        name: _Optional[str] = ...,
+        display_name: _Optional[str] = ...,
+        category: _Optional[str] = ...,
+        description: _Optional[str] = ...,
+        tags: _Optional[_Iterable[str]] = ...,
+        source: _Optional[_Union[IndicatorSource, str]] = ...,
+        visibility: _Optional[_Union[IndicatorVisibility, str]] = ...,
+        owner_user_id: _Optional[str] = ...,
+        dsl_call_name: _Optional[str] = ...,
+        version: _Optional[str] = ...,
+    ) -> None: ...
+
 class ListIndicatorsRequest(_message.Message):
-    __slots__ = ("category", "tags", "user_id")
+    __slots__ = ("category", "tags", "user_id", "sources", "visibilities")
     CATEGORY_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
+    SOURCES_FIELD_NUMBER: _ClassVar[int]
+    VISIBILITIES_FIELD_NUMBER: _ClassVar[int]
     category: str
     tags: _containers.RepeatedScalarFieldContainer[str]
     user_id: str
+    sources: _containers.RepeatedScalarFieldContainer[IndicatorSource]
+    visibilities: _containers.RepeatedScalarFieldContainer[IndicatorVisibility]
     def __init__(
         self,
         category: _Optional[str] = ...,
         tags: _Optional[_Iterable[str]] = ...,
         user_id: _Optional[str] = ...,
+        sources: _Optional[_Iterable[_Union[IndicatorSource, str]]] = ...,
+        visibilities: _Optional[_Iterable[_Union[IndicatorVisibility, str]]] = ...,
     ) -> None: ...
 
 class ListIndicatorsResponse(_message.Message):
-    __slots__ = ("names", "total_count")
+    __slots__ = ("names", "total_count", "indicators")
     NAMES_FIELD_NUMBER: _ClassVar[int]
     TOTAL_COUNT_FIELD_NUMBER: _ClassVar[int]
+    INDICATORS_FIELD_NUMBER: _ClassVar[int]
     names: _containers.RepeatedScalarFieldContainer[str]
     total_count: int
+    indicators: _containers.RepeatedCompositeFieldContainer[IndicatorSummary]
     def __init__(
-        self, names: _Optional[_Iterable[str]] = ..., total_count: _Optional[int] = ...
+        self,
+        names: _Optional[_Iterable[str]] = ...,
+        total_count: _Optional[int] = ...,
+        indicators: _Optional[_Iterable[_Union[IndicatorSummary, _Mapping]]] = ...,
     ) -> None: ...
 
 class GetIndicatorMetadataRequest(_message.Message):
-    __slots__ = ("name", "user_id")
+    __slots__ = ("name", "user_id", "indicator_id")
     NAME_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
+    INDICATOR_ID_FIELD_NUMBER: _ClassVar[int]
     name: str
     user_id: str
+    indicator_id: str
     def __init__(
-        self, name: _Optional[str] = ..., user_id: _Optional[str] = ...
+        self,
+        name: _Optional[str] = ...,
+        user_id: _Optional[str] = ...,
+        indicator_id: _Optional[str] = ...,
     ) -> None: ...
 
 class Parameter(_message.Message):
@@ -2469,6 +2562,12 @@ class IndicatorMetadataResponse(_message.Message):
         "version",
         "created_at",
         "updated_at",
+        "indicator_id",
+        "source",
+        "visibility",
+        "owner_user_id",
+        "is_published",
+        "dsl_call_name",
     )
     NAME_FIELD_NUMBER: _ClassVar[int]
     DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
@@ -2483,6 +2582,12 @@ class IndicatorMetadataResponse(_message.Message):
     VERSION_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
     UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    INDICATOR_ID_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    VISIBILITY_FIELD_NUMBER: _ClassVar[int]
+    OWNER_USER_ID_FIELD_NUMBER: _ClassVar[int]
+    IS_PUBLISHED_FIELD_NUMBER: _ClassVar[int]
+    DSL_CALL_NAME_FIELD_NUMBER: _ClassVar[int]
     name: str
     display_name: str
     description: str
@@ -2496,6 +2601,12 @@ class IndicatorMetadataResponse(_message.Message):
     version: str
     created_at: str
     updated_at: str
+    indicator_id: str
+    source: IndicatorSource
+    visibility: IndicatorVisibility
+    owner_user_id: str
+    is_published: bool
+    dsl_call_name: str
     def __init__(
         self,
         name: _Optional[str] = ...,
@@ -2511,16 +2622,27 @@ class IndicatorMetadataResponse(_message.Message):
         version: _Optional[str] = ...,
         created_at: _Optional[str] = ...,
         updated_at: _Optional[str] = ...,
+        indicator_id: _Optional[str] = ...,
+        source: _Optional[_Union[IndicatorSource, str]] = ...,
+        visibility: _Optional[_Union[IndicatorVisibility, str]] = ...,
+        owner_user_id: _Optional[str] = ...,
+        is_published: bool = ...,
+        dsl_call_name: _Optional[str] = ...,
     ) -> None: ...
 
 class BatchGetIndicatorMetadataRequest(_message.Message):
-    __slots__ = ("names", "user_id")
+    __slots__ = ("names", "user_id", "indicator_ids")
     NAMES_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
+    INDICATOR_IDS_FIELD_NUMBER: _ClassVar[int]
     names: _containers.RepeatedScalarFieldContainer[str]
     user_id: str
+    indicator_ids: _containers.RepeatedScalarFieldContainer[str]
     def __init__(
-        self, names: _Optional[_Iterable[str]] = ..., user_id: _Optional[str] = ...
+        self,
+        names: _Optional[_Iterable[str]] = ...,
+        user_id: _Optional[str] = ...,
+        indicator_ids: _Optional[_Iterable[str]] = ...,
     ) -> None: ...
 
 class BatchGetIndicatorMetadataResponse(_message.Message):
