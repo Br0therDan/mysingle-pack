@@ -279,18 +279,18 @@ wheels = [
 
 [[package]]
 name = "beanie"
-version = "2.0.0"
+version = "1.30.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "lazy-model" },
+    { name = "motor" },
     { name = "pydantic" },
-    { name = "pymongo" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ff/c3/21152df5974f6b690a74a990a1b706102ad694b56bd2a59f7903b6424696/beanie-2.0.0.tar.gz", hash = "sha256:07982e42618cea01722f62d2b4028514a508a2c2c2c71ff85f07f6009112ffb3", size = 169854 }
+sdist = { url = "https://files.pythonhosted.org/packages/46/1c/feee03924a8f255d76236a8f71fde310da52ab4e03abd1254cd9309d73e1/beanie-1.30.0.tar.gz", hash = "sha256:33ead17ff2742144c510b4b24e188f6b316dd1b614d86b57a3cfe20bc7b768c9", size = 176743 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/47/36/c40577bc8e3564639b89db32aff1e9e8af14c990e3a7ed85a79b74ec4b78/beanie-2.0.0-py3-none-any.whl", hash = "sha256:0d5c0e0de09f2a316c74d17bbba1ceb68ebcbfd3046ae5be69038b2023682372", size = 87051 },
+    { url = "https://files.pythonhosted.org/packages/cb/f2/adfea21c19d73ad2e90f5346c166523dadc33493a0b398d543eeb9b67e7a/beanie-1.30.0-py3-none-any.whl", hash = "sha256:385f1b850b36a19dd221aeb83e838c83ec6b47bbf6aeac4e5bf8b8d40bfcfe51", size = 87140 },
 ]
 
 [[package]]
@@ -967,14 +967,14 @@ wheels = [
 
 [[package]]
 name = "lazy-model"
-version = "0.3.0"
+version = "0.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/15/fa/158a07f8c25c76568534328bf3ab8d16dba92abcb27cc9cfd84bbc652815/lazy-model-0.3.0.tar.gz", hash = "sha256:e425a189897dc926cc79af196a7cb385d1fd3ac7a7bccb4436fc93661f63b811", size = 8172 }
+sdist = { url = "https://files.pythonhosted.org/packages/47/9e/c60681be72f03845c209a86d5ce0404540c8d1818fc29bc64fc95220de5c/lazy-model-0.2.0.tar.gz", hash = "sha256:57c0e91e171530c4fca7aebc3ac05a163a85cddd941bf7527cc46c0ddafca47c", size = 8152 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/74/a4/55bb305df9fe0d343ff8f0dd4da25b2cc33ba65f8596238aa7a4ecbe9777/lazy_model-0.3.0-py3-none-any.whl", hash = "sha256:67c112cad3fbc1816d32c070bf3b3ac1f48aefeb4e46e9eb70e12acc92c6859d", size = 13719 },
+    { url = "https://files.pythonhosted.org/packages/0a/13/e37962a20f7051b2d6d286c3feb85754f9ea8c4cac302927971e910cc9f6/lazy_model-0.2.0-py3-none-any.whl", hash = "sha256:5a3241775c253e36d9069d236be8378288a93d4fc53805211fd152e04cc9c342", size = 13719 },
 ]
 
 [[package]]
@@ -1331,7 +1331,7 @@ wheels = [
 
 [[package]]
 name = "mysingle"
-version = "2.8.32"
+version = "2.8.33"
 source = { editable = "." }
 dependencies = [
     { name = "beanie" },
@@ -1344,7 +1344,6 @@ dependencies = [
     { name = "httpx" },
     { name = "httpx-oauth" },
     { name = "jinja2" },
-    { name = "motor" },
     { name = "numpy" },
     { name = "pandas" },
     { name = "prometheus-client" },
@@ -1460,7 +1459,7 @@ dev = [
 requires-dist = [
     { name = "aiohttp", marker = "extra == 'clients'", specifier = ">=3.9.4" },
     { name = "argon2-cffi", marker = "extra == 'auth'", specifier = ">=23.1.0" },
-    { name = "beanie", specifier = ">=1.25.0" },
+    { name = "beanie", specifier = ">=1.29.0,<2.0.0" },
     { name = "colorlog", specifier = ">=6.9.0" },
     { name = "duckdb", specifier = ">=1.4.1" },
     { name = "duckdb", marker = "extra == 'database'", specifier = ">=1.1.0" },
@@ -1476,7 +1475,6 @@ requires-dist = [
     { name = "httpx-oauth", specifier = ">=0.16.1" },
     { name = "httpx-oauth", marker = "extra == 'auth'", specifier = ">=0.16.1" },
     { name = "jinja2", specifier = ">=3.1.6" },
-    { name = "motor", specifier = "<=3.3.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.8.0" },
     { name = "mysingle", extras = ["auth", "database", "web"], marker = "extra == 'common'" },
     { name = "mysingle", extras = ["auth", "database", "web", "grpc", "clients"], marker = "extra == 'common-grpc'" },
