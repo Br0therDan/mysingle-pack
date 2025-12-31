@@ -1179,14 +1179,14 @@ wheels = [
 
 [[package]]
 name = "motor"
-version = "3.7.1"
+version = "3.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pymongo" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/93/ae/96b88362d6a84cb372f7977750ac2a8aed7b2053eed260615df08d5c84f4/motor-3.7.1.tar.gz", hash = "sha256:27b4d46625c87928f331a6ca9d7c51c2f518ba0e270939d395bc1ddc89d64526", size = 280997 }
+sdist = { url = "https://files.pythonhosted.org/packages/44/99/58df51cf655f30d64009d838447ff695746865d5e9612b14d28866b30614/motor-3.3.0.tar.gz", hash = "sha256:f18b90089acf914e21485d002c116f27a2215c85174b3bd3e2221d633e8cf7ab", size = 270574 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/01/9a/35e053d4f442addf751ed20e0e922476508ee580786546d699b0567c4c67/motor-3.7.1-py3-none-any.whl", hash = "sha256:8a63b9049e38eeeb56b4fdd57c3312a6d1f25d01db717fe7d82222393c410298", size = 74996 },
+    { url = "https://files.pythonhosted.org/packages/99/04/f1b7d68d6f4a7ea7bc52e654609eb4bc488bf532019b334adeb020e36436/motor-3.3.0-py3-none-any.whl", hash = "sha256:32bb0680f5ac3e245dcc98d41d009f3be5d45c1e4a1b2d17951d9f63c8f41ea0", size = 70082 },
 ]
 
 [[package]]
@@ -1331,7 +1331,7 @@ wheels = [
 
 [[package]]
 name = "mysingle"
-version = "2.4.10"
+version = "2.8.32"
 source = { editable = "." }
 dependencies = [
     { name = "beanie" },
@@ -1460,7 +1460,7 @@ dev = [
 requires-dist = [
     { name = "aiohttp", marker = "extra == 'clients'", specifier = ">=3.9.4" },
     { name = "argon2-cffi", marker = "extra == 'auth'", specifier = ">=23.1.0" },
-    { name = "beanie", specifier = ">=1.23.6" },
+    { name = "beanie", specifier = ">=1.25.0" },
     { name = "colorlog", specifier = ">=6.9.0" },
     { name = "duckdb", specifier = ">=1.4.1" },
     { name = "duckdb", marker = "extra == 'database'", specifier = ">=1.1.0" },
@@ -1476,7 +1476,7 @@ requires-dist = [
     { name = "httpx-oauth", specifier = ">=0.16.1" },
     { name = "httpx-oauth", marker = "extra == 'auth'", specifier = ">=0.16.1" },
     { name = "jinja2", specifier = ">=3.1.6" },
-    { name = "motor", specifier = ">=3.3.2" },
+    { name = "motor", specifier = "<=3.3.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.8.0" },
     { name = "mysingle", extras = ["auth", "database", "web"], marker = "extra == 'common'" },
     { name = "mysingle", extras = ["auth", "database", "web", "grpc", "clients"], marker = "extra == 'common-grpc'" },
