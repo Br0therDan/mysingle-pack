@@ -214,7 +214,7 @@ class StrategyVersionResponse(_message.Message):
     __slots__ = (
         "id",
         "user_id",
-        "strategy_id",
+        "strategy",
         "seq",
         "state",
         "dsl_code",
@@ -230,7 +230,7 @@ class StrategyVersionResponse(_message.Message):
     )
     ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
-    STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
+    STRATEGY_FIELD_NUMBER: _ClassVar[int]
     SEQ_FIELD_NUMBER: _ClassVar[int]
     STATE_FIELD_NUMBER: _ClassVar[int]
     DSL_CODE_FIELD_NUMBER: _ClassVar[int]
@@ -245,7 +245,7 @@ class StrategyVersionResponse(_message.Message):
     IR_DOCUMENT_FIELD_NUMBER: _ClassVar[int]
     id: str
     user_id: str
-    strategy_id: str
+    strategy: StrategyResponse
     seq: int
     state: str
     dsl_code: str
@@ -262,7 +262,7 @@ class StrategyVersionResponse(_message.Message):
         self,
         id: _Optional[str] = ...,
         user_id: _Optional[str] = ...,
-        strategy_id: _Optional[str] = ...,
+        strategy: _Optional[_Union[StrategyResponse, _Mapping]] = ...,
         seq: _Optional[int] = ...,
         state: _Optional[str] = ...,
         dsl_code: _Optional[str] = ...,
