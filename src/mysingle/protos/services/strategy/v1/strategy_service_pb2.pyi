@@ -302,7 +302,7 @@ class ValidationResult(_message.Message):
 
 class StrategyVersionMinimalResponse(_message.Message):
     __slots__ = (
-        "strategy_id",
+        "strategy",
         "seq",
         "dsl_code",
         "dsl_code_hash",
@@ -310,14 +310,14 @@ class StrategyVersionMinimalResponse(_message.Message):
         "original_source",
         "ir_document",
     )
-    STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
+    STRATEGY_FIELD_NUMBER: _ClassVar[int]
     SEQ_FIELD_NUMBER: _ClassVar[int]
     DSL_CODE_FIELD_NUMBER: _ClassVar[int]
     DSL_CODE_HASH_FIELD_NUMBER: _ClassVar[int]
     STATE_FIELD_NUMBER: _ClassVar[int]
     ORIGINAL_SOURCE_FIELD_NUMBER: _ClassVar[int]
     IR_DOCUMENT_FIELD_NUMBER: _ClassVar[int]
-    strategy_id: str
+    strategy: StrategyResponse
     seq: int
     dsl_code: str
     dsl_code_hash: str
@@ -326,7 +326,7 @@ class StrategyVersionMinimalResponse(_message.Message):
     ir_document: str
     def __init__(
         self,
-        strategy_id: _Optional[str] = ...,
+        strategy: _Optional[_Union[StrategyResponse, _Mapping]] = ...,
         seq: _Optional[int] = ...,
         dsl_code: _Optional[str] = ...,
         dsl_code_hash: _Optional[str] = ...,
@@ -439,20 +439,17 @@ class StrategyResponse(_message.Message):
     ) -> None: ...
 
 class CreateStrategyVersionResponse(_message.Message):
-    __slots__ = ("strategy_version", "new_strategy_created", "strategy_id", "seq")
+    __slots__ = ("strategy_version", "new_strategy_created", "seq")
     STRATEGY_VERSION_FIELD_NUMBER: _ClassVar[int]
     NEW_STRATEGY_CREATED_FIELD_NUMBER: _ClassVar[int]
-    STRATEGY_ID_FIELD_NUMBER: _ClassVar[int]
     SEQ_FIELD_NUMBER: _ClassVar[int]
     strategy_version: StrategyVersionResponse
     new_strategy_created: bool
-    strategy_id: str
     seq: int
     def __init__(
         self,
         strategy_version: _Optional[_Union[StrategyVersionResponse, _Mapping]] = ...,
         new_strategy_created: bool = ...,
-        strategy_id: _Optional[str] = ...,
         seq: _Optional[int] = ...,
     ) -> None: ...
 
