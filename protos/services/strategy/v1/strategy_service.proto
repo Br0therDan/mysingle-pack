@@ -180,7 +180,6 @@ message StrategyVersionResponse {
   string id = 1;
   // User ID
   string user_id = 2;
-  // NOTE: strategy_id removed. Use `strategy.id` instead.
   reserved 3;
   reserved "strategy_id";
   // Optional Strategy metadata (denormalized for consumers)
@@ -230,7 +229,6 @@ message ValidationResult {
 
 // StrategyVersionMinimalResponse defines the minimal response payload for GetStrategyVersionMinimal.
 message StrategyVersionMinimalResponse {
-  // NOTE: strategy_id removed. Use `strategy.id` instead.
   reserved 1;
   reserved "strategy_id";
   // Optional Strategy metadata (denormalized for consumers)
@@ -310,7 +308,6 @@ message CreateStrategyVersionResponse {
   StrategyVersionResponse strategy_version = 1;
   // Whether a new strategy was created
   bool new_strategy_created = 2;
-  // NOTE: strategy_id removed. Use `strategy_version.strategy.id` instead.
   reserved 3;
   reserved "strategy_id";
   // Version sequence number
