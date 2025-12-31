@@ -55,3 +55,25 @@ class TestDSLStandardLibrary:
         # Should handle short data gracefully
         result = SMA(short_df["close"], window=3)
         assert result is not None
+
+    def test_ichimoku_calculation(self, sample_dataframe):
+        """Test Ichimoku Cloud calculation."""
+        from mysingle.dsl.stdlib import ichimoku
+
+        result = ichimoku(
+            sample_dataframe["high"],
+            sample_dataframe["low"],
+            sample_dataframe["close"],
+            tenkan_period=3,
+            kijun_period=5,
+            senkou_b_period=5,
+        )
+
+        assert result is not None
+        assert isinstance(result, pd.DataFrame)
+        assert "tenkan" in result.columns
+        assert "kijun" in result.columns
+        assert "senkou_a" in result.columns
+        assert "senkou_b" in result.columns
+        assert "chikou" in result.columns
+        assert len(result) == len(sample_dataframe)

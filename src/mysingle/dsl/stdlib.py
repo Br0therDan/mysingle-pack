@@ -376,6 +376,7 @@ def stochastic(
 def ichimoku(
     high: pd.Series,
     low: pd.Series,
+    close: pd.Series,
     tenkan_period: int = 9,
     kijun_period: int = 26,
     senkou_b_period: int = 52,
@@ -386,6 +387,7 @@ def ichimoku(
     Args:
         high: 고가 시리즈
         low: 저가 시리즈
+        close: 종가 시리즈
         tenkan_period: Tenkan-sen 기간 (기본 9)
         kijun_period: Kijun-sen 기간 (기본 26)
         senkou_b_period: Senkou Span B 기간 (기본 52)
@@ -408,7 +410,7 @@ def ichimoku(
     ).shift(kijun_period)
 
     # Chikou Span (Lagging Span)
-    chikou = high.shift(-kijun_period)
+    chikou = close.shift(-kijun_period)
 
     return pd.DataFrame(
         {
