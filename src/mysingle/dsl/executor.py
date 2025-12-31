@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 
 from mysingle.dsl.errors import DSLExecutionError, DSLMemoryError, DSLTimeoutError
+from mysingle.dsl.extensions import StrategyWrapper, plot_wrapper, var_wrapper
 from mysingle.dsl.parser import DSLParser
 
 
@@ -169,6 +170,18 @@ class DSLExecutor:
         from mysingle.dsl.stdlib import get_stdlib_functions
 
         namespace.update(get_stdlib_functions())
+
+        # Context for side effects (visualizations, trading commands)
+        context = params.get("_context")
+
+        # Extensions (Pine Script compatibility)
+        namespace.update(
+            {
+                "var": var_wrapper,
+                "plot": lambda *args, **kwargs: plot_wrapper(context, *args, **kwargs),
+                "strategy": StrategyWrapper(context),
+            }
+        )
 
         return namespace
 
