@@ -56,10 +56,23 @@ async def init_mongo(
             query_params=query_params,
         )
 
-    # Create Motor client
+    # Create Motor client with optimized configuration
     client: AsyncIOMotorClient = AsyncIOMotorClient(
         final_url,
         uuidRepresentation="standard",
+        # Additional options for better async cursor handling
+        maxPoolSize=50,
+        minPoolSize=10,
+        serverSelectionTimeoutMS=5000,
+        connectTimeoutMS=10000,
+        socketTimeoutMS=20000,
+        # Advanced cursor and aggregation settings
+        retryWrites=True,
+        retryReads=True,
+        # Disable cursor timeouts for aggregation pipelines
+        maxIdleTimeMS=30000,
+        # Use modern wire protocol
+        compressors="snappy,zlib,zstd",
     )
 
     # Initialize Beanie with the models
