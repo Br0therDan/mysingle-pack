@@ -517,6 +517,358 @@ def obv(close: pd.Series, volume: pd.Series) -> pd.Series:
 
 
 # ============================================================================
+# M2.4: Enhanced Technical Indicators (Extended)
+# ============================================================================
+
+
+def cci(
+    high: pd.Series, low: pd.Series, close: pd.Series, period: int = 20
+) -> pd.Series:
+    """
+    Commodity Channel Index
+
+    Args:
+        high: 고가
+        low: 저가
+        close: 종가
+        period: 기간 (기본 20)
+
+    Returns:
+        pd.Series: CCI 값
+    """
+    tp = (high + low + close) / 3
+    sma_tp = tp.rolling(window=period).mean()
+    mean_dev = tp.rolling(window=period).apply(lambda x: np.mean(np.abs(x - x.mean())))
+    return (tp - sma_tp) / (0.015 * mean_dev)
+
+
+def donchian_channels(
+    high: pd.Series, low: pd.Series, period: int = 20
+) -> pd.DataFrame:
+    """
+    Donchian Channels
+
+    Args:
+        high: 고가
+        low: 저가
+        period: 기간 (기본 20)
+
+    Returns:
+        pd.DataFrame: upper, middle, lower
+    """
+    upper = high.rolling(window=period).max()
+    lower = low.rolling(window=period).min()
+    middle = (upper + lower) / 2
+    return pd.DataFrame({"upper": upper, "middle": middle, "lower": lower})
+
+
+def keltner_channels(
+    high: pd.Series,
+    low: pd.Series,
+    close: pd.Series,
+    ema_period: int = 20,
+    atr_period: int = 10,
+    multiplier: float = 2.0,
+) -> pd.DataFrame:
+    """
+    Keltner Channels
+
+    Args:
+        high: 고가
+        low: 저가
+        close: 종가
+        ema_period: EMA 기간 (기본 20)
+        atr_period: ATR 기간 (기본 10)
+        multiplier: ATR 배수 (기본 2.0)
+
+    Returns:
+        pd.DataFrame: upper, middle, lower
+    """
+    middle = EMA(close, ema_period)
+    atr_val = atr(high, low, close, atr_period)
+    upper = middle + (atr_val * multiplier)
+    lower = middle - (atr_val * multiplier)
+    return pd.DataFrame({"upper": upper, "middle": middle, "lower": lower})
+
+
+def adx(
+    high: pd.Series, low: pd.Series, close: pd.Series, period: int = 14
+) -> pd.DataFrame:
+    """
+    Average Directional Index
+
+    Args:
+        high: 고가
+        low: 저가
+        close: 종가
+        period: 기간 (기본 14)
+
+    Returns:
+        pd.DataFrame: adx, plus_di, minus_di
+    """
+    # True Range
+    tr = pd.DataFrame(
+        {
+            "hl": high - low,
+            "hc": abs(high - close.shift(1)),
+            "lc": abs(low - close.shift(1)),
+        }
+    ).max(axis=1)
+
+    # Directional Movement
+    up_move = high - high.shift(1)
+    down_move = low.shift(1) - low
+
+    plus_dm = np.where((up_move > down_move) & (up_move > 0), up_move, 0.0)
+    minus_dm = np.where((down_move > up_move) & (down_move > 0), down_move, 0.0)
+
+    # Wilder's Smoothing (RMA)
+    def rma(series: pd.Series, window: int) -> pd.Series:
+        return series.ewm(alpha=1 / window, adjust=False).mean()
+
+    tr_smooth = rma(tr, period)
+    plus_dm_smooth = rma(pd.Series(plus_dm, index=high.index), period)
+    minus_dm_smooth = rma(pd.Series(minus_dm, index=high.index), period)
+
+    # Avoid division by zero
+    tr_smooth = tr_smooth.replace(0, np.nan)
+
+    plus_di = 100 * (plus_dm_smooth / tr_smooth)
+    minus_di = 100 * (minus_dm_smooth / tr_smooth)
+
+    dx = 100 * abs(plus_di - minus_di) / (plus_di + minus_di)
+    adx_val = rma(dx, period)
+
+    return pd.DataFrame({"adx": adx_val, "plus_di": plus_di, "minus_di": minus_di})
+
+
+def parabolic_sar(
+    high: pd.Series,
+    low: pd.Series,
+    acceleration: float = 0.02,
+    maximum: float = 0.2,
+) -> pd.Series:
+    """
+    Parabolic SAR
+
+    Args:
+        high: 고가
+        low: 저가
+        acceleration: 가속도 (기본 0.02)
+        maximum: 최대 가속도 (기본 0.2)
+
+    Returns:
+        pd.Series: PSAR 값
+    """
+    # 초기화
+    psar_vals = np.zeros(len(high))
+    bull = True
+    af = acceleration
+    ep = low.iloc[0]
+    psar_vals[0] = low.iloc[0]  # 초기값
+
+    high_arr = high.values
+    low_arr = low.values
+
+    for i in range(1, len(high)):
+        prev_psar = psar_vals[i - 1]
+
+        # PSAR 계산
+        if bull:
+            psar_vals[i] = prev_psar + af * (ep - prev_psar)
+            # PSAR는 이전 두 기간의 저가보다 높을 수 없음
+            if i > 1:
+                psar_vals[i] = min(psar_vals[i], low_arr[i - 1], low_arr[i - 2])
+            else:
+                psar_vals[i] = min(psar_vals[i], low_arr[i - 1])
+        else:
+            psar_vals[i] = prev_psar + af * (ep - prev_psar)
+            # PSAR는 이전 두 기간의 고가보다 낮을 수 없음
+            if i > 1:
+                psar_vals[i] = max(psar_vals[i], high_arr[i - 1], high_arr[i - 2])
+            else:
+                psar_vals[i] = max(psar_vals[i], high_arr[i - 1])
+
+        # 추세 반전 체크
+        reverse = False
+        if bull:
+            if low_arr[i] < psar_vals[i]:
+                bull = False
+                reverse = True
+                psar_vals[i] = ep
+                ep = low_arr[i]
+                af = acceleration
+        else:
+            if high_arr[i] > psar_vals[i]:
+                bull = True
+                reverse = True
+                psar_vals[i] = ep
+                ep = high_arr[i]
+                af = acceleration
+
+        if not reverse:
+            if bull:
+                if high_arr[i] > ep:
+                    ep = high_arr[i]
+                    af = min(af + acceleration, maximum)
+            else:
+                if low_arr[i] < ep:
+                    ep = low_arr[i]
+                    af = min(af + acceleration, maximum)
+
+    return pd.Series(psar_vals, index=high.index)
+
+
+def stochrsi(
+    close: pd.Series,
+    rsi_period: int = 14,
+    stoch_period: int = 14,
+    k_smooth: int = 3,
+    d_smooth: int = 3,
+) -> pd.DataFrame:
+    """
+    Stochastic RSI
+
+    Args:
+        close: 종가
+        rsi_period: RSI 기간
+        stoch_period: Stochastic 기간
+        k_smooth: %K 스무딩
+        d_smooth: %D 스무딩
+
+    Returns:
+        pd.DataFrame: k, d
+    """
+    rsi_val = RSI(close, rsi_period)
+    min_rsi = rsi_val.rolling(window=stoch_period).min()
+    max_rsi = rsi_val.rolling(window=stoch_period).max()
+
+    # 0으로 나누기 방지
+    denom = max_rsi - min_rsi
+    denom = denom.replace(0, np.nan)
+
+    stoch_rsi = (rsi_val - min_rsi) / denom
+    k = stoch_rsi.rolling(window=k_smooth).mean() * 100
+    d = k.rolling(window=d_smooth).mean()
+
+    return pd.DataFrame({"k": k, "d": d})
+
+
+def supertrend(
+    high: pd.Series,
+    low: pd.Series,
+    close: pd.Series,
+    atr_period: int = 10,
+    multiplier: float = 3.0,
+) -> pd.Series:
+    """
+    Supertrend
+
+    Args:
+        high: 고가
+        low: 저가
+        close: 종가
+        atr_period: ATR 기간
+        multiplier: ATR 배수
+
+    Returns:
+        pd.Series: Supertrend 라인
+    """
+    atr_val = atr(high, low, close, atr_period)
+    hl2 = (high + low) / 2
+    basic_upper = hl2 + (multiplier * atr_val)
+    basic_lower = hl2 - (multiplier * atr_val)
+
+    close_arr = close.values
+    bu_arr = basic_upper.values
+    bl_arr = basic_lower.values
+
+    final_upper = np.zeros(len(close))
+    final_lower = np.zeros(len(close))
+    supertrend_val = np.zeros(len(close))
+
+    # 초기화
+    final_upper[0] = bu_arr[0] if not np.isnan(bu_arr[0]) else 0
+    final_lower[0] = bl_arr[0] if not np.isnan(bl_arr[0]) else 0
+
+    # Trend: 1 = Up, -1 = Down
+    trend = np.ones(len(close))
+
+    for i in range(1, len(close)):
+        # Final Upper
+        if (bu_arr[i] < final_upper[i - 1]) or (close_arr[i - 1] > final_upper[i - 1]):
+            final_upper[i] = bu_arr[i]
+        else:
+            final_upper[i] = final_upper[i - 1]
+
+        # Final Lower
+        if (bl_arr[i] > final_lower[i - 1]) or (close_arr[i - 1] < final_lower[i - 1]):
+            final_lower[i] = bl_arr[i]
+        else:
+            final_lower[i] = final_lower[i - 1]
+
+        # Trend Update
+        if trend[i - 1] == 1:
+            if close_arr[i] < final_lower[i - 1]:
+                trend[i] = -1
+                supertrend_val[i] = final_upper[i]
+            else:
+                trend[i] = 1
+                supertrend_val[i] = final_lower[i]
+        else:
+            if close_arr[i] > final_upper[i - 1]:
+                trend[i] = 1
+                supertrend_val[i] = final_lower[i]
+            else:
+                trend[i] = -1
+                supertrend_val[i] = final_upper[i]
+
+    return pd.Series(supertrend_val, index=close.index)
+
+
+def tema(series: pd.Series, period: int = 20) -> pd.Series:
+    """
+    Triple Exponential Moving Average
+
+    Args:
+        series: 입력 시리즈
+        period: 기간
+
+    Returns:
+        pd.Series: TEMA 값
+    """
+    ema1 = EMA(series, period)
+    ema2 = EMA(ema1, period)
+    ema3 = EMA(ema2, period)
+    return 3 * ema1 - 3 * ema2 + ema3
+
+
+def williams_r(
+    high: pd.Series, low: pd.Series, close: pd.Series, period: int = 14
+) -> pd.Series:
+    """
+    Williams %R
+
+    Args:
+        high: 고가
+        low: 저가
+        close: 종가
+        period: 기간
+
+    Returns:
+        pd.Series: %R 값 (-100 ~ 0)
+    """
+    highest_high = high.rolling(window=period).max()
+    lowest_low = low.rolling(window=period).min()
+
+    # 0으로 나누기 방지
+    denom = highest_high - lowest_low
+    denom = denom.replace(0, np.nan)
+
+    return -100 * (highest_high - close) / denom
+
+
+# ============================================================================
 # M2.2: Strategy Primitives
 # ============================================================================
 
@@ -733,6 +1085,8 @@ def get_stdlib_functions() -> dict[str, Callable[..., Any]]:
         "ema": EMA,
         "WMA": WMA,
         "wma": WMA,
+        "TEMA": tema,
+        "tema": tema,
         # Technical Indicators (Basic) (대소문자 별칭 지원)
         "RSI": RSI,
         "rsi": RSI,
@@ -740,6 +1094,18 @@ def get_stdlib_functions() -> dict[str, Callable[..., Any]]:
         "macd": MACD,
         "stochastic": stochastic,
         "ichimoku": ichimoku,
+        "CCI": cci,
+        "cci": cci,
+        "ADX": adx,
+        "adx": adx,
+        "stochrsi": stochrsi,
+        "williams_r": williams_r,
+        # Channels
+        "bbands": bbands,
+        "donchian_channels": donchian_channels,
+        "keltner_channels": keltner_channels,
+        "supertrend": supertrend,
+        "parabolic_sar": parabolic_sar,
         # Crossover Signals
         "crossover": crossover,
         "crossunder": crossunder,
@@ -751,7 +1117,6 @@ def get_stdlib_functions() -> dict[str, Callable[..., Any]]:
         "pct_change": pct_change,
         # Volatility
         "stdev": stdev,
-        "bbands": bbands,
         "atr": atr,
         "ATR": atr,
         # Support/Resistance
