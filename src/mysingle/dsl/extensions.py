@@ -45,10 +45,12 @@ class ExecutionContext:
     Passed via params['_context'].
     """
 
-    def __init__(self):
+    def __init__(self, equity: float = 100000.0, position_size: float = 0.0):
         self.visualizations: List[Visualization] = []
         self.trading_commands: List[TradingCommand] = []
         self.state_variables: Dict[str, Any] = {}
+        self.equity = equity
+        self.position_size = position_size
 
     def add_visualization(self, viz: Visualization):
         self.visualizations.append(viz)
@@ -124,6 +126,20 @@ class StrategyWrapper:
     def cancel(self, id: str):
         if self._context:
             self._context.add_trading_command(TradingCommand(type="cancel", id=id))
+
+    @property
+    def equity(self) -> float:
+        """Current account equity."""
+        if self._context:
+            return self._context.equity
+        return 100000.0
+
+    @property
+    def position_size(self) -> float:
+        """Current position size."""
+        if self._context:
+            return self._context.position_size
+        return 0.0
 
     # Constants
     long = "long"
