@@ -183,6 +183,25 @@ class DSLExecutor:
             }
         )
 
+        # External Data Science Libraries (Phase 1: Whitelist)
+        # Import on demand to strict namespace
+        try:
+            import scipy
+            import sklearn
+            import statsmodels
+
+            namespace.update(
+                {
+                    "scipy": scipy,
+                    "sklearn": sklearn,
+                    "statsmodels": statsmodels,
+                }
+            )
+        except ImportError:
+            # If standard backtest service environment doesn't have them installed (e.g. minimal install)
+            # we just don't expose them.
+            pass
+
         return namespace
 
     @contextmanager

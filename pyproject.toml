@@ -56,7 +56,14 @@ web = []
 database = ["duckdb>=1.1.0", "redis>=6.4.0"]
 
 # DSL
-dsl = ["RestrictedPython>=7.0", "pandas>=2.2.0", "numpy>=1.26.0"]
+dsl = [
+    "RestrictedPython>=7.0",
+    "pandas>=2.2.0",
+    "numpy>=1.26.0",
+    "scikit-learn>=1.3.0",
+    "scipy>=1.11.0",
+    "statsmodels>=0.14.0",
+]
 
 # gRPC
 grpc = [
