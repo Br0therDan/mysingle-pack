@@ -31,8 +31,11 @@ if _version_not_supported:
 
 
 class MLServiceStub(object):
-    """ML Service - gRPC API used for ML prediction, walk-forward optimization, and
-    feature storage workflows.
+    """ML Service - Advisor & Analyst Architecture
+    Provides intelligence (parameter suggestions) and analysis (robustness checks).
+    ============================================================
+    Advisor Role (Optimization)
+    ============================================================
     """
 
     def __init__(self, channel):
@@ -41,34 +44,16 @@ class MLServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.OptimizeParameters = channel.unary_stream(
-            "/ml.MLService/OptimizeParameters",
-            request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.OptimizeRequest.SerializeToString,
-            response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.OptimizeProgress.FromString,
+        self.GetSuggestion = channel.unary_unary(
+            "/ml.MLService/GetSuggestion",
+            request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.SuggestionRequest.SerializeToString,
+            response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.SuggestionResponse.FromString,
             _registered_method=True,
         )
         self.AnalyzeWalkForward = channel.unary_unary(
             "/ml.MLService/AnalyzeWalkForward",
-            request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeRequest.SerializeToString,
-            response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeResponse.FromString,
-            _registered_method=True,
-        )
-        self.PredictSignal = channel.unary_unary(
-            "/ml.MLService/PredictSignal",
-            request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.MLPredictionRequest.SerializeToString,
-            response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.MLSignalInsight.FromString,
-            _registered_method=True,
-        )
-        self.PredictSignalsBatch = channel.unary_stream(
-            "/ml.MLService/PredictSignalsBatch",
-            request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.BatchMLPredictionRequest.SerializeToString,
-            response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.MLSignalInsight.FromString,
-            _registered_method=True,
-        )
-        self.StoreFeatures = channel.unary_unary(
-            "/ml.MLService/StoreFeatures",
-            request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.FeatureStoreRequest.SerializeToString,
-            response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.FeatureStoreResponse.FromString,
+            request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.WalkForwardAnalysisRequest.SerializeToString,
+            response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.WalkForwardAnalysisResponse.FromString,
             _registered_method=True,
         )
         self.HealthCheck = channel.unary_unary(
@@ -77,134 +62,40 @@ class MLServiceStub(object):
             response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.HealthCheckResponse.FromString,
             _registered_method=True,
         )
-        self.AnalyzeMLBacktestPerformance = channel.unary_unary(
-            "/ml.MLService/AnalyzeMLBacktestPerformance",
-            request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeMLBacktestPerformanceRequest.SerializeToString,
-            response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeMLBacktestPerformanceResponse.FromString,
-            _registered_method=True,
-        )
-        self.ListModels = channel.unary_unary(
-            "/ml.MLService/ListModels",
-            request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.ListModelsRequest.SerializeToString,
-            response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.ListModelsResponse.FromString,
-            _registered_method=True,
-        )
-        self.GetModelInfo = channel.unary_unary(
-            "/ml.MLService/GetModelInfo",
-            request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetModelInfoRequest.SerializeToString,
-            response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetModelInfoResponse.FromString,
-            _registered_method=True,
-        )
-        self.RecommendModel = channel.unary_unary(
-            "/ml.MLService/RecommendModel",
-            request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.RecommendModelRequest.SerializeToString,
-            response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.RecommendModelResponse.FromString,
-            _registered_method=True,
-        )
-        self.SuggestParameters = channel.unary_unary(
-            "/ml.MLService/SuggestParameters",
-            request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.SuggestParametersRequest.SerializeToString,
-            response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.SuggestParametersResponse.FromString,
-            _registered_method=True,
-        )
-        self.GetMLBacktestPerformance = channel.unary_unary(
-            "/ml.MLService/GetMLBacktestPerformance",
-            request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetMLBacktestPerformanceRequest.SerializeToString,
-            response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetMLBacktestPerformanceResponse.FromString,
-            _registered_method=True,
-        )
-        self.SendDriftNotification = channel.unary_unary(
-            "/ml.MLService/SendDriftNotification",
-            request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.DriftNotificationRequest.SerializeToString,
-            response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.DriftNotificationResponse.FromString,
-            _registered_method=True,
-        )
 
 
 class MLServiceServicer(object):
-    """ML Service - gRPC API used for ML prediction, walk-forward optimization, and
-    feature storage workflows.
+    """ML Service - Advisor & Analyst Architecture
+    Provides intelligence (parameter suggestions) and analysis (robustness checks).
+    ============================================================
+    Advisor Role (Optimization)
+    ============================================================
     """
 
-    def OptimizeParameters(self, request, context):
-        """Walk-forward parameter optimization streaming progress updates to callers."""
+    def GetSuggestion(self, request, context):
+        """Suggest optimal strategy parameters using Bayesian optimization (Optuna)."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
     def AnalyzeWalkForward(self, request, context):
-        """Run statistical analysis across walk-forward windows."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def PredictSignal(self, request, context):
-        """Generate a single ML signal prediction."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def PredictSignalsBatch(self, request, context):
-        """Stream batch ML predictions for multiple feature vectors."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def StoreFeatures(self, request, context):
-        """Store computed features inside the feature store."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def HealthCheck(self, request, context):
-        """Report service health state."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def AnalyzeMLBacktestPerformance(self, request, context):
-        """Analyze ML-driven backtest performance submitted by backtest service."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def ListModels(self, request, context):
         """============================================================
-        GenAI Service Integration RPCs
+        Analyst Role (Validation)
         ============================================================
 
-        List all ML models owned by the user.
+        Analyze Walk-Forward results to determine strategy robustness.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
-    def GetModelInfo(self, request, context):
-        """Get detailed information about a specific ML model."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
+    def HealthCheck(self, request, context):
+        """============================================================
+        Legacy / GenAI Integration (Kept for compatibility if needed)
+        ============================================================
 
-    def RecommendModel(self, request, context):
-        """Recommend ML models based on strategy type and market regime."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def SuggestParameters(self, request, context):
-        """Suggest optimal strategy parameters using Bayesian optimization."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def GetMLBacktestPerformance(self, request, context):
-        """Get stored ML backtest performance analysis results."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details("Method not implemented!")
-        raise NotImplementedError("Method not implemented!")
-
-    def SendDriftNotification(self, request, context):
-        """Send drift detection notification to GenAI service."""
+        Report service health state.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
@@ -212,70 +103,20 @@ class MLServiceServicer(object):
 
 def add_MLServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-        "OptimizeParameters": grpc.unary_stream_rpc_method_handler(
-            servicer.OptimizeParameters,
-            request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.OptimizeRequest.FromString,
-            response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.OptimizeProgress.SerializeToString,
+        "GetSuggestion": grpc.unary_unary_rpc_method_handler(
+            servicer.GetSuggestion,
+            request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.SuggestionRequest.FromString,
+            response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.SuggestionResponse.SerializeToString,
         ),
         "AnalyzeWalkForward": grpc.unary_unary_rpc_method_handler(
             servicer.AnalyzeWalkForward,
-            request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeRequest.FromString,
-            response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeResponse.SerializeToString,
-        ),
-        "PredictSignal": grpc.unary_unary_rpc_method_handler(
-            servicer.PredictSignal,
-            request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.MLPredictionRequest.FromString,
-            response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.MLSignalInsight.SerializeToString,
-        ),
-        "PredictSignalsBatch": grpc.unary_stream_rpc_method_handler(
-            servicer.PredictSignalsBatch,
-            request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.BatchMLPredictionRequest.FromString,
-            response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.MLSignalInsight.SerializeToString,
-        ),
-        "StoreFeatures": grpc.unary_unary_rpc_method_handler(
-            servicer.StoreFeatures,
-            request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.FeatureStoreRequest.FromString,
-            response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.FeatureStoreResponse.SerializeToString,
+            request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.WalkForwardAnalysisRequest.FromString,
+            response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.WalkForwardAnalysisResponse.SerializeToString,
         ),
         "HealthCheck": grpc.unary_unary_rpc_method_handler(
             servicer.HealthCheck,
             request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.HealthCheckRequest.FromString,
             response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.HealthCheckResponse.SerializeToString,
-        ),
-        "AnalyzeMLBacktestPerformance": grpc.unary_unary_rpc_method_handler(
-            servicer.AnalyzeMLBacktestPerformance,
-            request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeMLBacktestPerformanceRequest.FromString,
-            response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeMLBacktestPerformanceResponse.SerializeToString,
-        ),
-        "ListModels": grpc.unary_unary_rpc_method_handler(
-            servicer.ListModels,
-            request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.ListModelsRequest.FromString,
-            response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.ListModelsResponse.SerializeToString,
-        ),
-        "GetModelInfo": grpc.unary_unary_rpc_method_handler(
-            servicer.GetModelInfo,
-            request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetModelInfoRequest.FromString,
-            response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetModelInfoResponse.SerializeToString,
-        ),
-        "RecommendModel": grpc.unary_unary_rpc_method_handler(
-            servicer.RecommendModel,
-            request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.RecommendModelRequest.FromString,
-            response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.RecommendModelResponse.SerializeToString,
-        ),
-        "SuggestParameters": grpc.unary_unary_rpc_method_handler(
-            servicer.SuggestParameters,
-            request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.SuggestParametersRequest.FromString,
-            response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.SuggestParametersResponse.SerializeToString,
-        ),
-        "GetMLBacktestPerformance": grpc.unary_unary_rpc_method_handler(
-            servicer.GetMLBacktestPerformance,
-            request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetMLBacktestPerformanceRequest.FromString,
-            response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetMLBacktestPerformanceResponse.SerializeToString,
-        ),
-        "SendDriftNotification": grpc.unary_unary_rpc_method_handler(
-            servicer.SendDriftNotification,
-            request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.DriftNotificationRequest.FromString,
-            response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.DriftNotificationResponse.SerializeToString,
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -287,12 +128,15 @@ def add_MLServiceServicer_to_server(servicer, server):
 
 # This class is part of an EXPERIMENTAL API.
 class MLService(object):
-    """ML Service - gRPC API used for ML prediction, walk-forward optimization, and
-    feature storage workflows.
+    """ML Service - Advisor & Analyst Architecture
+    Provides intelligence (parameter suggestions) and analysis (robustness checks).
+    ============================================================
+    Advisor Role (Optimization)
+    ============================================================
     """
 
     @staticmethod
-    def OptimizeParameters(
+    def GetSuggestion(
         request,
         target,
         options=(),
@@ -304,12 +148,12 @@ class MLService(object):
         timeout=None,
         metadata=None,
     ):
-        return grpc.experimental.unary_stream(
+        return grpc.experimental.unary_unary(
             request,
             target,
-            "/ml.MLService/OptimizeParameters",
-            services_dot_ml_dot_v1_dot_ml__service__pb2.OptimizeRequest.SerializeToString,
-            services_dot_ml_dot_v1_dot_ml__service__pb2.OptimizeProgress.FromString,
+            "/ml.MLService/GetSuggestion",
+            services_dot_ml_dot_v1_dot_ml__service__pb2.SuggestionRequest.SerializeToString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.SuggestionResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -338,98 +182,8 @@ class MLService(object):
             request,
             target,
             "/ml.MLService/AnalyzeWalkForward",
-            services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeRequest.SerializeToString,
-            services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def PredictSignal(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/ml.MLService/PredictSignal",
-            services_dot_ml_dot_v1_dot_ml__service__pb2.MLPredictionRequest.SerializeToString,
-            services_dot_ml_dot_v1_dot_ml__service__pb2.MLSignalInsight.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def PredictSignalsBatch(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_stream(
-            request,
-            target,
-            "/ml.MLService/PredictSignalsBatch",
-            services_dot_ml_dot_v1_dot_ml__service__pb2.BatchMLPredictionRequest.SerializeToString,
-            services_dot_ml_dot_v1_dot_ml__service__pb2.MLSignalInsight.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def StoreFeatures(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/ml.MLService/StoreFeatures",
-            services_dot_ml_dot_v1_dot_ml__service__pb2.FeatureStoreRequest.SerializeToString,
-            services_dot_ml_dot_v1_dot_ml__service__pb2.FeatureStoreResponse.FromString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.WalkForwardAnalysisRequest.SerializeToString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.WalkForwardAnalysisResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -460,216 +214,6 @@ class MLService(object):
             "/ml.MLService/HealthCheck",
             services_dot_ml_dot_v1_dot_ml__service__pb2.HealthCheckRequest.SerializeToString,
             services_dot_ml_dot_v1_dot_ml__service__pb2.HealthCheckResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def AnalyzeMLBacktestPerformance(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/ml.MLService/AnalyzeMLBacktestPerformance",
-            services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeMLBacktestPerformanceRequest.SerializeToString,
-            services_dot_ml_dot_v1_dot_ml__service__pb2.AnalyzeMLBacktestPerformanceResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def ListModels(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/ml.MLService/ListModels",
-            services_dot_ml_dot_v1_dot_ml__service__pb2.ListModelsRequest.SerializeToString,
-            services_dot_ml_dot_v1_dot_ml__service__pb2.ListModelsResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def GetModelInfo(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/ml.MLService/GetModelInfo",
-            services_dot_ml_dot_v1_dot_ml__service__pb2.GetModelInfoRequest.SerializeToString,
-            services_dot_ml_dot_v1_dot_ml__service__pb2.GetModelInfoResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def RecommendModel(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/ml.MLService/RecommendModel",
-            services_dot_ml_dot_v1_dot_ml__service__pb2.RecommendModelRequest.SerializeToString,
-            services_dot_ml_dot_v1_dot_ml__service__pb2.RecommendModelResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def SuggestParameters(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/ml.MLService/SuggestParameters",
-            services_dot_ml_dot_v1_dot_ml__service__pb2.SuggestParametersRequest.SerializeToString,
-            services_dot_ml_dot_v1_dot_ml__service__pb2.SuggestParametersResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def GetMLBacktestPerformance(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/ml.MLService/GetMLBacktestPerformance",
-            services_dot_ml_dot_v1_dot_ml__service__pb2.GetMLBacktestPerformanceRequest.SerializeToString,
-            services_dot_ml_dot_v1_dot_ml__service__pb2.GetMLBacktestPerformanceResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True,
-        )
-
-    @staticmethod
-    def SendDriftNotification(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            "/ml.MLService/SendDriftNotification",
-            services_dot_ml_dot_v1_dot_ml__service__pb2.DriftNotificationRequest.SerializeToString,
-            services_dot_ml_dot_v1_dot_ml__service__pb2.DriftNotificationResponse.FromString,
             options,
             channel_credentials,
             insecure,

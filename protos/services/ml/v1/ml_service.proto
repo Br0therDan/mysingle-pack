@@ -2,707 +2,119 @@ syntax = "proto3";
 
 package ml;
 
-// ML Service - gRPC API used for ML prediction, walk-forward optimization, and
-// feature storage workflows.
+// ML Service - Advisor & Analyst Architecture
+// Provides intelligence (parameter suggestions) and analysis (robustness checks).
 service MLService {
-  // Walk-forward parameter optimization streaming progress updates to callers.
-  rpc OptimizeParameters(OptimizeRequest) returns (stream OptimizeProgress);
-  // Run statistical analysis across walk-forward windows.
-  rpc AnalyzeWalkForward(AnalyzeRequest) returns (AnalyzeResponse);
-  // Generate a single ML signal prediction.
-  rpc PredictSignal(MLPredictionRequest) returns (MLSignalInsight);
-  // Stream batch ML predictions for multiple feature vectors.
-  rpc PredictSignalsBatch(BatchMLPredictionRequest) returns (stream MLSignalInsight);
-  // Store computed features inside the feature store.
-  rpc StoreFeatures(FeatureStoreRequest) returns (FeatureStoreResponse);
+  // ============================================================
+  // Advisor Role (Optimization)
+  // ============================================================
+
+  // Suggest optimal strategy parameters using Bayesian optimization (Optuna).
+  rpc GetSuggestion(SuggestionRequest) returns (SuggestionResponse);
+
+  // ============================================================
+  // Analyst Role (Validation)
+  // ============================================================
+
+  // Analyze Walk-Forward results to determine strategy robustness.
+  rpc AnalyzeWalkForward(WalkForwardAnalysisRequest) returns (WalkForwardAnalysisResponse);
+
+  // ============================================================
+  // Legacy / GenAI Integration (Kept for compatibility if needed)
+  // ============================================================
+
   // Report service health state.
   rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
-  // Analyze ML-driven backtest performance submitted by backtest service.
-  rpc AnalyzeMLBacktestPerformance(AnalyzeMLBacktestPerformanceRequest) returns (AnalyzeMLBacktestPerformanceResponse);
-
-  // ============================================================
-  // GenAI Service Integration RPCs
-  // ============================================================
-
-  // List all ML models owned by the user.
-  rpc ListModels(ListModelsRequest) returns (ListModelsResponse);
-  // Get detailed information about a specific ML model.
-  rpc GetModelInfo(GetModelInfoRequest) returns (GetModelInfoResponse);
-  // Recommend ML models based on strategy type and market regime.
-  rpc RecommendModel(RecommendModelRequest) returns (RecommendModelResponse);
-  // Suggest optimal strategy parameters using Bayesian optimization.
-  rpc SuggestParameters(SuggestParametersRequest) returns (SuggestParametersResponse);
-  // Get stored ML backtest performance analysis results.
-  rpc GetMLBacktestPerformance(GetMLBacktestPerformanceRequest) returns (GetMLBacktestPerformanceResponse);
-  // Send drift detection notification to GenAI service.
-  rpc SendDriftNotification(DriftNotificationRequest) returns (DriftNotificationResponse);
 }
 
 // ============================================================
 // Common Messages
 // ============================================================
 
-// Empty payload for health checks.
 message HealthCheckRequest {}
 
-// Response payload describing service health.
 message HealthCheckResponse {
-  // Service health status string ("ok" or "error").
   string status = 1;
-  // Human-readable service identifier.
   string service = 2;
-  // Semantic version reported by the service.
   string version = 3;
 }
 
-// Time period boundaries used during optimization windows.
-message Period {
-  // Inclusive ISO 8601 start date for the period.
-  string start_date = 1;
-  // Inclusive ISO 8601 end date for the period.
-  string end_date = 2;
-}
-
-// Constraint definition used to limit optimization parameters.
-message Constraint {
-  // Comparison operator ("<=", "<", ">=", ">", "==").
-  string op = 1;
-  // Threshold value applied to the operator.
-  double value = 2;
-}
-
 // ============================================================
-// Walk-Forward Optimization
+// Advisor Domain Messages
 // ============================================================
 
-// Request payload for kicking off walk-forward optimization.
-message OptimizeRequest {
-  // Identifier of the walk-forward job managed by caller.
-  string walk_forward_job_id = 1;
-  // Index of the walk-forward window currently processing.
-  int32 window_index = 2;
-  // Strategy version identifier tied to this optimization.
-  string strategy_version_id = 3;
-  // Training period boundaries for the current window.
-  Period train_period = 4;
-  // Parameter grid describing candidate parameter sets (e.g., "sma_fast": [5, 10, 20]).
-  map<string, ParameterValues> parameter_grid = 5;
-  // Optimization metric to evaluate (e.g., "sharpe_ratio").
-  string optimization_metric = 6;
-  // Objective direction for the metric ("maximize" or "minimize").
-  string metric_objective = 7;
-  // Additional constraints applied to parameter selection.
-  map<string, Constraint> constraints = 8;
-  // Symbols participating in this optimization job.
-  repeated string symbols = 9;
-  // Data interval powering the optimization (e.g., "1d").
-  string interval = 10;
-  // User ID for authorization and auditing.
-  string user_id = 11;
+message SuggestionRequest {
+  // Unique request ID for tracing.
+  string request_id = 1;
+  // Correlation ID for tracing across services.
+  string correlation_id = 2;
+  // Strategy identifier (e.g., "RSI_Strategy").
+  string strategy_id = 3;
+  // Parameter search space definition.
+  map<string, ParameterRange> parameter_space = 4;
+  // Optimization objective.
+  Objective objective = 5;
+  // History of previous trials (Stateless mode).
+  repeated TrialResult history = 6;
+  // Optional: Session ID for stateful optimization.
+  string session_id = 7;
 }
 
-// Parameter values supported for a single hyper-parameter.
-message ParameterValues {
-  // Candidate numeric values for the parameter (supports ints or floats).
-  repeated double values = 1;
+message ParameterRange {
+  string type = 1; // "int", "float", "categorical"
+  double min = 2;
+  double max = 3;
+  double step = 4;
+  repeated string choices = 5;
 }
 
-// Streaming progress payload returned while optimizing parameters.
-message OptimizeProgress {
-  // Index of the trial currently being reported.
-  int32 trial_index = 1;
-  // Total number of trials in the current optimization job.
-  int32 total_trials = 2;
-  // Parameter values used in the current trial.
-  map<string, double> current_params = 3;
-  // Score achieved by the current parameter set.
-  double current_score = 4;
-  // Best parameter set discovered so far.
-  map<string, double> best_params = 5;
-  // Highest score achieved so far.
-  double best_score = 6;
-  // Current optimization status ("RUNNING", "COMPLETED", "FAILED").
-  string status = 7;
-  // Identifier of the completed optimization run.
-  string optimization_run_id = 8;
-  // Final in-sample metrics for the optimized parameters.
-  map<string, double> is_metrics = 9;
-  // Total execution time for the run in seconds.
-  double execution_time_seconds = 10;
-  // Collection of trial results emitted at completion time.
-  repeated TrialResult trials = 11;
+message Objective {
+  string metric_name = 1; // e.g., "sharpe_ratio"
+  string direction = 2;   // "maximize", "minimize"
 }
 
-// Detailed result for a single optimization trial.
 message TrialResult {
-  // Parameter values evaluated during the trial.
-  map<string, double> params = 1;
-  // All recorded metrics for the trial.
+  map<string, double> params = 1 [deprecated=true]; // Use typed_params instead if needed, but double is fine for now
+  map<string, string> mixed_params = 3; // For categorical support
   map<string, double> metrics = 2;
-  // Aggregate score calculated for the trial.
-  double score = 3;
+}
+
+message SuggestionResponse {
+  string suggestion_id = 1;
+  repeated CandidateParam candidates = 2;
+  bool should_stop = 3;
+  string stop_reason = 4;
+  map<string, string> model_info = 5;
+}
+
+message CandidateParam {
+  map<string, double> params = 1; // Numeric params
+  map<string, string> mixed_params = 3; // Categorical params
+  double expected_improvement = 2;
 }
 
 // ============================================================
-// Walk-Forward Analysis
+// Analyst Domain Messages
 // ============================================================
 
-// Request payload for walk-forward statistical analysis.
-message AnalyzeRequest {
-  // Identifier of the originating walk-forward job.
-  string walk_forward_job_id = 1;
-  // Summaries for each evaluated window.
-  repeated WindowResultSummary window_results = 2;
-  // User ID performing the analysis.
-  string user_id = 3;
+message WalkForwardAnalysisRequest {
+  string request_id = 1;
+  string correlation_id = 2;
+  repeated WindowResult window_results = 3;
+  double risk_free_rate = 4;
 }
 
-// Aggregated metrics for a single walk-forward window.
-message WindowResultSummary {
-  // Index of the window under review.
+message WindowResult {
   int32 window_index = 1;
-  // In-sample return value for the window.
-  double is_return = 2;
-  // Out-of-sample return value for the window.
-  double oos_return = 3;
-  // In-sample Sharpe ratio.
-  double is_sharpe = 4;
-  // Out-of-sample Sharpe ratio.
-  double oos_sharpe = 5;
+  map<string, double> is_metrics = 2;
+  map<string, double> oos_metrics = 3;
 }
 
-// Response summarizing walk-forward analysis insights.
-message AnalyzeResponse {
-  // Unique identifier for the analysis record.
+message WalkForwardAnalysisResponse {
   string analysis_id = 1;
-  // Efficiency ratio computed from walk-forward windows.
-  double efficiency_ratio = 2;
-  // Stability score describing variance in performance.
-  double stability_score = 3;
-  // Calculated p-values for hypothesis tests.
-  PValues p_values = 4;
-  // Human-readable interpretation of the metrics.
-  string interpretation = 5;
-  // Recommended action derived from the analysis.
-  string recommendation = 6;
-  // Unix timestamp (seconds) when the record was created.
-  double created_at = 7;
-}
-
-// Hypothesis testing p-values for walk-forward evaluation.
-message PValues {
-  // P-value comparing in-sample versus out-of-sample returns.
-  double is_vs_oos_return = 1;
-  // P-value comparing in-sample versus out-of-sample Sharpe.
-  double is_vs_oos_sharpe = 2;
-  // P-value evaluating out-of-sample performance versus zero.
-  double oos_vs_zero = 3;
-}
-
-// ============================================================
-// ML Prediction
-// ============================================================
-
-// Prediction request for a single feature vector.
-message MLPredictionRequest {
-  // Feature vector used as model input.
-  FeatureVector features = 1;
-  // Identifier for the target model (defaults to "default").
-  string model_id = 2;
-  // User ID invoking the prediction.
-  string user_id = 3;
-}
-
-// Batch prediction request supporting multiple feature vectors.
-message BatchMLPredictionRequest {
-  // Collection of feature vectors to evaluate.
-  repeated FeatureVector features_list = 1;
-  // Identifier for the target model (defaults to "default").
-  string model_id = 2;
-  // User ID invoking the predictions.
-  string user_id = 3;
-}
-
-// Rich feature vector powering ML predictions.
-message FeatureVector {
-  // 1-day return percentage.
-  optional double returns_1d = 1;
-  // 5-day return percentage.
-  optional double returns_5d = 2;
-  // 20-day return percentage.
-  optional double returns_20d = 3;
-  // 20-day realized volatility.
-  optional double volatility_20d = 4;
-  // Relative volume ratio versus average.
-  optional double volume_ratio = 5;
-
-  // 5-period simple moving average.
-  optional double sma_5 = 6;
-  // 20-period simple moving average.
-  optional double sma_20 = 7;
-  // 50-period simple moving average.
-  optional double sma_50 = 8;
-  // 200-period simple moving average.
-  optional double sma_200 = 9;
-  // 12-period exponential moving average.
-  optional double ema_12 = 10;
-  // 26-period exponential moving average.
-  optional double ema_26 = 11;
-  // Relative strength index using a 14-period window.
-  optional double rsi_14 = 12;
-  // Moving average convergence divergence value.
-  optional double macd = 13;
-  // MACD signal line value.
-  optional double macd_signal = 14;
-  // MACD histogram value.
-  optional double macd_histogram = 15;
-  // Upper Bollinger Band level.
-  optional double bb_upper = 16;
-  // Middle Bollinger Band level.
-  optional double bb_middle = 17;
-  // Lower Bollinger Band level.
-  optional double bb_lower = 18;
-
-  // Distribution skewness over the lookback horizon.
-  optional double skewness = 19;
-  // Distribution kurtosis over the lookback horizon.
-  optional double kurtosis = 20;
-  // Autocorrelation at the configured lag.
-  optional double autocorr = 21;
-
-  // Cash exposure ratio for the portfolio context.
-  optional double cash_ratio = 22;
-  // Position exposure ratio for the portfolio.
-  optional double position_ratio = 23;
-  // Profit and loss snapshot for the portfolio.
-  optional double pnl = 24;
-  // Drawdown magnitude for the portfolio.
-  optional double drawdown = 25;
-
-  // Detected regime classification label.
-  optional string regime_type = 26;
-  // Numeric regime trend strength indicator.
-  optional double trend_strength = 27;
-}
-
-// Prediction payload describing ML-generated insights.
-message MLSignalInsight {
-  // Symbol ticker referenced by the prediction.
-  string symbol = 1;
-  // ISO 8601 timestamp of the prediction.
-  string as_of = 2;
-  // Lookback window size in days.
-  int32 lookback_days = 3;
-  // Probability of the predicted outcome.
-  double probability = 4;
-  // Confidence score assigned to the prediction.
-  double confidence = 5;
-  // Recommended action ("BUY", "SELL", "HOLD").
-  string recommendation = 6;
-  // Feature contribution breakdown for interpretability.
-  repeated FeatureContribution feature_contributions = 7;
-  // Top contributing signals included in the explanation.
-  repeated string top_signals = 8;
-}
-
-// Single feature importance value contributing to an insight.
-message FeatureContribution {
-  // Name of the feature.
-  string feature = 1;
-  // Feature value used for inference.
-  double value = 2;
-  // Relative weight the model assigned to the feature.
-  double weight = 3;
-  // Directional impact of the feature on the output.
-  double impact = 4;
-  // Direction label such as "positive" or "negative".
-  string direction = 5;
-}
-
-// ============================================================
-// Feature Store
-// ============================================================
-
-// Request payload for persisting features in the store.
-message FeatureStoreRequest {
-  // Symbol all stored features belong to.
-  string symbol = 1;
-  // Data interval associated with the feature vector.
-  string interval = 2;
-  // ISO 8601 timestamp describing feature observation time.
-  string timestamp = 3;
-  // Feature vector to persist.
-  FeatureVector features = 4;
-  // Arbitrary metadata key/value pairs.
-  map<string, string> metadata = 5;
-  // User ID making the request.
-  string user_id = 6;
-}
-
-// Response payload returned after storing features.
-message FeatureStoreResponse {
-  // Generated identifier for the persisted feature set.
-  string feature_id = 1;
-  // ISO 8601 timestamp when the features were stored.
-  string stored_at = 2;
-  // Quality score assigned to the stored record.
-  double quality_score = 3;
-}
-
-// ============================================================
-// ML Backtest Performance Analysis
-// ============================================================
-
-// Request payload for analyzing ML-driven backtests.
-message AnalyzeMLBacktestPerformanceRequest {
-  // Backtest job identifier.
-  string job_id = 1;
-  // Name of the evaluated model.
-  string model_name = 2;
-  // Version of the evaluated model.
-  string model_version = 3;
-  // ML predictions generated during the backtest.
-  repeated MLPrediction predictions = 4;
-  // Actual observed outcomes used for comparison.
-  repeated ActualOutcome actual_outcomes = 5;
-  // Optional feature importance scores.
-  map<string, float> feature_importances = 6;
-  // User ID issuing the analysis.
-  string user_id = 7;
-}
-
-// Stored ML prediction record for analysis.
-message MLPrediction {
-  // ISO 8601 timestamp when the prediction was generated.
-  string timestamp = 1;
-  // Predicted action ("BUY", "SELL", "HOLD").
-  string prediction = 2;
-  // Confidence level between 0.0 and 1.0.
-  float confidence = 3;
-  // Detected regime label such as "bull", "bear", or "sideways".
-  string regime = 4;
-}
-
-// Ground-truth outcome paired with a prediction.
-message ActualOutcome {
-  // ISO 8601 timestamp of the measurement.
-  string timestamp = 1;
-  // Observed action label ("BUY", "SELL", "HOLD").
-  string actual = 2;
-}
-
-// Response returned after analyzing ML backtest performance.
-message AnalyzeMLBacktestPerformanceResponse {
-  // Identifier for the generated performance document.
-  string performance_id = 1;
-  // Flag indicating whether the analysis succeeded.
-  bool success = 2;
-  // Optional message or error details.
-  string message = 3;
-}
-
-// ============================================================
-// GenAI Service Integration Messages
-// ============================================================
-
-// Request to list all ML models for a user.
-message ListModelsRequest {
-  // User ID requesting the model list.
-  string user_id = 1;
-  // Optional filter by model type.
-  optional string model_type = 2;
-  // Optional filter by status (e.g., "active", "archived").
-  optional string status = 3;
-}
-
-// Response containing list of ML models.
-message ListModelsResponse {
-  // List of model summaries.
-  repeated ModelSummary models = 1;
-  // Total count of models.
-  int32 total_count = 2;
-}
-
-// Summary information about an ML model.
-message ModelSummary {
-  // Unique model identifier.
-  string id = 1;
-  // Human-readable model name.
-  string name = 2;
-  // Model type (e.g., "signal_prediction", "regime_detection").
-  string model_type = 3;
-  // Current model version.
-  string version = 4;
-  // Model status (e.g., "active", "training", "archived").
-  string status = 5;
-  // Overall accuracy metric.
-  float accuracy = 6;
-  // F1 score.
-  float f1_score = 7;
-  // Sharpe ratio achieved in backtests.
-  float sharpe_ratio = 8;
-  // ISO 8601 timestamp when the model was created.
-  string created_at = 9;
-  // ISO 8601 timestamp when the model was last updated.
-  string updated_at = 10;
-}
-
-// Request for detailed model information.
-message GetModelInfoRequest {
-  // Model identifier.
-  string model_id = 1;
-  // User ID making the request.
-  string user_id = 2;
-}
-
-// Detailed model information (used in GetModelInfoResponse).
-message ModelDetail {
-  // Model identifier.
-  string id = 1;
-  // Model name.
-  string name = 2;
-  // Model type.
-  string model_type = 3;
-  // Model version.
-  string version = 4;
-  // Model status.
-  string status = 5;
-  // Best strategy types for this model.
-  repeated string best_strategy_types = 6;
-  // Best market regimes for this model.
-  repeated string best_regimes = 7;
-  // ISO 8601 timestamp when the model was created.
-  string created_at = 8;
-  // ISO 8601 timestamp when the model was last updated.
-  string updated_at = 9;
-  // Model hyperparameters.
-  map<string, string> hyperparameters = 10;
-  // Feature names used by the model.
-  repeated string feature_names = 11;
-  // Number of training samples.
-  int32 training_samples = 12;
-  // ISO 8601 timestamp when training was completed.
-  string trained_at = 13;
-  // Additional metadata.
-  map<string, string> metadata = 14;
-}
-
-// Response with detailed model information.
-message GetModelInfoResponse {
-  // Detailed model information.
-  ModelDetail model = 1;
-  // Performance metrics.
-  ModelPerformanceMetrics performance_metrics = 2;
-}
-
-// Performance metrics for an ML model.
-message ModelPerformanceMetrics {
-  // Overall accuracy.
-  float accuracy = 1;
-  // Precision score.
-  float precision = 2;
-  // Recall score.
-  float recall = 3;
-  // F1 score.
-  float f1_score = 4;
-  // Sharpe ratio from backtests.
-  float sharpe_ratio = 5;
-  // Total return percentage.
-  float total_return = 6;
-  // Maximum drawdown percentage.
-  float max_drawdown = 7;
-  // Win rate percentage.
-  float win_rate = 8;
-}
-
-// Request to recommend models based on context.
-message RecommendModelRequest {
-  // User ID requesting recommendations.
-  string user_id = 1;
-  // Strategy type (e.g., "momentum", "mean_reversion").
-  string strategy_type = 2;
-  // Current market regime (e.g., "bull", "bear", "sideways").
-  optional string market_regime = 3;
-  // Number of recommendations to return.
-  int32 top_n = 4;
-}
-
-// Response with recommended models.
-message RecommendModelResponse {
-  // List of recommended models with scores.
-  repeated ModelRecommendation recommendations = 1;
-}
-
-// Single model recommendation with score.
-message ModelRecommendation {
-  // Model summary.
-  ModelSummary model = 1;
-  // Recommendation score (0.0 to 1.0).
-  float score = 2;
-  // Reasoning for the recommendation.
-  string reason = 3;
-  // Historical performance in similar contexts.
-  map<string, float> context_performance = 4;
-}
-
-// Request for parameter optimization suggestions.
-message SuggestParametersRequest {
-  // User ID requesting optimization.
-  string user_id = 1;
-  // Strategy type to optimize.
-  string strategy_type = 2;
-  // Parameter space definition.
-  map<string, ParameterSpec> parameter_space = 3;
-  // Optimization objective metric (e.g., "sharpe_ratio", "total_return").
-  string objective_metric = 4;
-  // Number of Optuna trials to run.
-  int32 n_trials = 5;
-  // Optional symbols to optimize for.
-  repeated string symbols = 6;
-  // Optional time period for optimization.
-  optional Period optimization_period = 7;
-}
-
-// Parameter specification for optimization.
-message ParameterSpec {
-  // Parameter type ("int", "float", "categorical").
-  string type = 1;
-  // Lower bound for numeric parameters.
-  optional double low = 2;
-  // Upper bound for numeric parameters.
-  optional double high = 3;
-  // Categorical choices.
-  repeated string choices = 4;
-  // Step size for discrete parameters.
-  optional double step = 5;
-}
-
-// Response with optimized parameters.
-message SuggestParametersResponse {
-  // Best parameters found.
-  map<string, double> best_params = 1;
-  // Best objective metric value achieved.
-  double best_value = 2;
-  // Total number of trials executed.
-  int32 total_trials = 3;
-  // Execution time in seconds.
-  double execution_time_seconds = 4;
-  // Trial history.
-  repeated ParameterTrialHistory trials = 5;
-  // Optimization run identifier.
-  string optimization_run_id = 6;
-}
-
-// Single trial in parameter optimization.
-message ParameterTrialHistory {
-  // Trial number.
-  int32 trial_number = 1;
-  // Parameters tested.
-  map<string, double> params = 2;
-  // Objective value achieved.
-  double value = 3;
-  // Trial state (e.g., "COMPLETE", "PRUNED", "FAIL").
-  string state = 4;
-}
-
-// Request to retrieve stored ML backtest performance.
-message GetMLBacktestPerformanceRequest {
-  // Backtest job identifier.
-  string job_id = 1;
-  // User ID for authorization.
-  string user_id = 2;
-}
-
-// Response containing ML backtest performance analysis.
-message GetMLBacktestPerformanceResponse {
-  // Whether performance data was found.
-  bool found = 1;
-  // Performance document ID.
-  string performance_id = 2;
-  // Classification metrics.
-  ClassificationMetrics classification_metrics = 3;
-  // Confidence distribution statistics.
-  ConfidenceDistributionStats confidence_distribution = 4;
-  // Regime-wise performance breakdown.
-  map<string, RegimePerformanceStats> regime_wise_performance = 5;
-  // Model metadata.
-  ModelMetadata model_metadata = 6;
-  // Error message if not found or error occurred.
-  optional string error = 7;
-}
-
-// Classification performance metrics.
-message ClassificationMetrics {
-  // Overall accuracy (0.0-1.0).
-  double accuracy = 1;
-  // Precision score (0.0-1.0).
-  double precision = 2;
-  // Recall score (0.0-1.0).
-  double recall = 3;
-  // F1 score (0.0-1.0).
-  double f1_score = 4;
-}
-
-// Confidence distribution statistics.
-message ConfidenceDistributionStats {
-  // Mean confidence across all predictions.
-  double mean_confidence = 1;
-  // Ratio of high-confidence predictions (>0.7).
-  double high_confidence_ratio = 2;
-  // Ratio of low-confidence predictions (<0.3).
-  double low_confidence_ratio = 3;
-}
-
-// Performance metrics for a specific market regime.
-message RegimePerformanceStats {
-  // Number of predictions in this regime.
-  int32 prediction_count = 1;
-  // Accuracy in this regime.
-  double accuracy = 2;
-  // Precision in this regime.
-  double precision = 3;
-  // Average confidence in this regime.
-  double avg_confidence = 4;
-}
-
-// ML model metadata.
-message ModelMetadata {
-  // Model type (e.g., "RandomForest", "XGBoost").
-  string model_type = 1;
-  // Model version.
-  string model_version = 2;
-  // Training date (ISO 8601).
-  string training_date = 3;
-  // Number of features used.
-  int32 feature_count = 4;
-}
-
-// Request to send drift notification.
-message DriftNotificationRequest {
-  // User ID to notify.
-  string user_id = 1;
-  // Model name experiencing drift.
-  string model_name = 2;
-  // Model version.
-  string version = 3;
-  // Drift type (e.g., "model_drift", "data_drift", "concept_drift").
-  string drift_type = 4;
-  // Drift severity (e.g., "low", "medium", "high").
-  string drift_severity = 5;
-  // Metric differences showing drift impact.
-  map<string, float> metrics_diff = 6;
-  // Retraining status (e.g., "not_started", "in_progress", "completed").
-  string retraining_status = 7;
-  // Additional context.
-  map<string, string> context = 8;
-}
-
-// Response confirming drift notification.
-message DriftNotificationResponse {
-  // Whether notification was successfully sent.
-  bool success = 1;
-  // Notification identifier.
-  string notification_id = 2;
-  // Error message if failed.
-  optional string error = 3;
+  double stability_score = 2;
+  double efficiency_ratio = 3;
+  double overfitting_probability = 4;
+  string recommendation = 5; // "PASS", "FAIL", "REVIEW"
+  string reason = 6;
 }

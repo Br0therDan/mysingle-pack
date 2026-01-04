@@ -20,7 +20,7 @@ _sym_db = _symbol_database.Default()
 
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n\x1fservices/ml/v1/ml_service.proto\x12\x02ml"\x14\n\x12HealthCheckRequest"G\n\x13HealthCheckResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07service\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\t".\n\x06Period\x12\x12\n\nstart_date\x18\x01 \x01(\t\x12\x10\n\x08\x65nd_date\x18\x02 \x01(\t"\'\n\nConstraint\x12\n\n\x02op\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01"\xf8\x03\n\x0fOptimizeRequest\x12\x1b\n\x13walk_forward_job_id\x18\x01 \x01(\t\x12\x14\n\x0cwindow_index\x18\x02 \x01(\x05\x12\x1b\n\x13strategy_version_id\x18\x03 \x01(\t\x12 \n\x0ctrain_period\x18\x04 \x01(\x0b\x32\n.ml.Period\x12>\n\x0eparameter_grid\x18\x05 \x03(\x0b\x32&.ml.OptimizeRequest.ParameterGridEntry\x12\x1b\n\x13optimization_metric\x18\x06 \x01(\t\x12\x18\n\x10metric_objective\x18\x07 \x01(\t\x12\x39\n\x0b\x63onstraints\x18\x08 \x03(\x0b\x32$.ml.OptimizeRequest.ConstraintsEntry\x12\x0f\n\x07symbols\x18\t \x03(\t\x12\x10\n\x08interval\x18\n \x01(\t\x12\x0f\n\x07user_id\x18\x0b \x01(\t\x1aI\n\x12ParameterGridEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12"\n\x05value\x18\x02 \x01(\x0b\x32\x13.ml.ParameterValues:\x02\x38\x01\x1a\x42\n\x10\x43onstraintsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1d\n\x05value\x18\x02 \x01(\x0b\x32\x0e.ml.Constraint:\x02\x38\x01"!\n\x0fParameterValues\x12\x0e\n\x06values\x18\x01 \x03(\x01"\xa6\x04\n\x10OptimizeProgress\x12\x13\n\x0btrial_index\x18\x01 \x01(\x05\x12\x14\n\x0ctotal_trials\x18\x02 \x01(\x05\x12?\n\x0e\x63urrent_params\x18\x03 \x03(\x0b\x32\'.ml.OptimizeProgress.CurrentParamsEntry\x12\x15\n\rcurrent_score\x18\x04 \x01(\x01\x12\x39\n\x0b\x62\x65st_params\x18\x05 \x03(\x0b\x32$.ml.OptimizeProgress.BestParamsEntry\x12\x12\n\nbest_score\x18\x06 \x01(\x01\x12\x0e\n\x06status\x18\x07 \x01(\t\x12\x1b\n\x13optimization_run_id\x18\x08 \x01(\t\x12\x37\n\nis_metrics\x18\t \x03(\x0b\x32#.ml.OptimizeProgress.IsMetricsEntry\x12\x1e\n\x16\x65xecution_time_seconds\x18\n \x01(\x01\x12\x1f\n\x06trials\x18\x0b \x03(\x0b\x32\x0f.ml.TrialResult\x1a\x34\n\x12\x43urrentParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01\x1a\x31\n\x0f\x42\x65stParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01\x1a\x30\n\x0eIsMetricsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01"\xd7\x01\n\x0bTrialResult\x12+\n\x06params\x18\x01 \x03(\x0b\x32\x1b.ml.TrialResult.ParamsEntry\x12-\n\x07metrics\x18\x02 \x03(\x0b\x32\x1c.ml.TrialResult.MetricsEntry\x12\r\n\x05score\x18\x03 \x01(\x01\x1a-\n\x0bParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01\x1a.\n\x0cMetricsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01"o\n\x0e\x41nalyzeRequest\x12\x1b\n\x13walk_forward_job_id\x18\x01 \x01(\t\x12/\n\x0ewindow_results\x18\x02 \x03(\x0b\x32\x17.ml.WindowResultSummary\x12\x0f\n\x07user_id\x18\x03 \x01(\t"y\n\x13WindowResultSummary\x12\x14\n\x0cwindow_index\x18\x01 \x01(\x05\x12\x11\n\tis_return\x18\x02 \x01(\x01\x12\x12\n\noos_return\x18\x03 \x01(\x01\x12\x11\n\tis_sharpe\x18\x04 \x01(\x01\x12\x12\n\noos_sharpe\x18\x05 \x01(\x01"\xbc\x01\n\x0f\x41nalyzeResponse\x12\x13\n\x0b\x61nalysis_id\x18\x01 \x01(\t\x12\x18\n\x10\x65\x66\x66iciency_ratio\x18\x02 \x01(\x01\x12\x17\n\x0fstability_score\x18\x03 \x01(\x01\x12\x1d\n\x08p_values\x18\x04 \x01(\x0b\x32\x0b.ml.PValues\x12\x16\n\x0einterpretation\x18\x05 \x01(\t\x12\x16\n\x0erecommendation\x18\x06 \x01(\t\x12\x12\n\ncreated_at\x18\x07 \x01(\x01"R\n\x07PValues\x12\x18\n\x10is_vs_oos_return\x18\x01 \x01(\x01\x12\x18\n\x10is_vs_oos_sharpe\x18\x02 \x01(\x01\x12\x13\n\x0boos_vs_zero\x18\x03 \x01(\x01"]\n\x13MLPredictionRequest\x12#\n\x08\x66\x65\x61tures\x18\x01 \x01(\x0b\x32\x11.ml.FeatureVector\x12\x10\n\x08model_id\x18\x02 \x01(\t\x12\x0f\n\x07user_id\x18\x03 \x01(\t"g\n\x18\x42\x61tchMLPredictionRequest\x12(\n\rfeatures_list\x18\x01 \x03(\x0b\x32\x11.ml.FeatureVector\x12\x10\n\x08model_id\x18\x02 \x01(\t\x12\x0f\n\x07user_id\x18\x03 \x01(\t"\x85\x08\n\rFeatureVector\x12\x17\n\nreturns_1d\x18\x01 \x01(\x01H\x00\x88\x01\x01\x12\x17\n\nreturns_5d\x18\x02 \x01(\x01H\x01\x88\x01\x01\x12\x18\n\x0breturns_20d\x18\x03 \x01(\x01H\x02\x88\x01\x01\x12\x1b\n\x0evolatility_20d\x18\x04 \x01(\x01H\x03\x88\x01\x01\x12\x19\n\x0cvolume_ratio\x18\x05 \x01(\x01H\x04\x88\x01\x01\x12\x12\n\x05sma_5\x18\x06 \x01(\x01H\x05\x88\x01\x01\x12\x13\n\x06sma_20\x18\x07 \x01(\x01H\x06\x88\x01\x01\x12\x13\n\x06sma_50\x18\x08 \x01(\x01H\x07\x88\x01\x01\x12\x14\n\x07sma_200\x18\t \x01(\x01H\x08\x88\x01\x01\x12\x13\n\x06\x65ma_12\x18\n \x01(\x01H\t\x88\x01\x01\x12\x13\n\x06\x65ma_26\x18\x0b \x01(\x01H\n\x88\x01\x01\x12\x13\n\x06rsi_14\x18\x0c \x01(\x01H\x0b\x88\x01\x01\x12\x11\n\x04macd\x18\r \x01(\x01H\x0c\x88\x01\x01\x12\x18\n\x0bmacd_signal\x18\x0e \x01(\x01H\r\x88\x01\x01\x12\x1b\n\x0emacd_histogram\x18\x0f \x01(\x01H\x0e\x88\x01\x01\x12\x15\n\x08\x62\x62_upper\x18\x10 \x01(\x01H\x0f\x88\x01\x01\x12\x16\n\tbb_middle\x18\x11 \x01(\x01H\x10\x88\x01\x01\x12\x15\n\x08\x62\x62_lower\x18\x12 \x01(\x01H\x11\x88\x01\x01\x12\x15\n\x08skewness\x18\x13 \x01(\x01H\x12\x88\x01\x01\x12\x15\n\x08kurtosis\x18\x14 \x01(\x01H\x13\x88\x01\x01\x12\x15\n\x08\x61utocorr\x18\x15 \x01(\x01H\x14\x88\x01\x01\x12\x17\n\ncash_ratio\x18\x16 \x01(\x01H\x15\x88\x01\x01\x12\x1b\n\x0eposition_ratio\x18\x17 \x01(\x01H\x16\x88\x01\x01\x12\x10\n\x03pnl\x18\x18 \x01(\x01H\x17\x88\x01\x01\x12\x15\n\x08\x64rawdown\x18\x19 \x01(\x01H\x18\x88\x01\x01\x12\x18\n\x0bregime_type\x18\x1a \x01(\tH\x19\x88\x01\x01\x12\x1b\n\x0etrend_strength\x18\x1b \x01(\x01H\x1a\x88\x01\x01\x42\r\n\x0b_returns_1dB\r\n\x0b_returns_5dB\x0e\n\x0c_returns_20dB\x11\n\x0f_volatility_20dB\x0f\n\r_volume_ratioB\x08\n\x06_sma_5B\t\n\x07_sma_20B\t\n\x07_sma_50B\n\n\x08_sma_200B\t\n\x07_ema_12B\t\n\x07_ema_26B\t\n\x07_rsi_14B\x07\n\x05_macdB\x0e\n\x0c_macd_signalB\x11\n\x0f_macd_histogramB\x0b\n\t_bb_upperB\x0c\n\n_bb_middleB\x0b\n\t_bb_lowerB\x0b\n\t_skewnessB\x0b\n\t_kurtosisB\x0b\n\t_autocorrB\r\n\x0b_cash_ratioB\x11\n\x0f_position_ratioB\x06\n\x04_pnlB\x0b\n\t_drawdownB\x0e\n\x0c_regime_typeB\x11\n\x0f_trend_strength"\xd5\x01\n\x0fMLSignalInsight\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\r\n\x05\x61s_of\x18\x02 \x01(\t\x12\x15\n\rlookback_days\x18\x03 \x01(\x05\x12\x13\n\x0bprobability\x18\x04 \x01(\x01\x12\x12\n\nconfidence\x18\x05 \x01(\x01\x12\x16\n\x0erecommendation\x18\x06 \x01(\t\x12\x36\n\x15\x66\x65\x61ture_contributions\x18\x07 \x03(\x0b\x32\x17.ml.FeatureContribution\x12\x13\n\x0btop_signals\x18\x08 \x03(\t"h\n\x13\x46\x65\x61tureContribution\x12\x0f\n\x07\x66\x65\x61ture\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01\x12\x0e\n\x06weight\x18\x03 \x01(\x01\x12\x0e\n\x06impact\x18\x04 \x01(\x01\x12\x11\n\tdirection\x18\x05 \x01(\t"\xea\x01\n\x13\x46\x65\x61tureStoreRequest\x12\x0e\n\x06symbol\x18\x01 \x01(\t\x12\x10\n\x08interval\x18\x02 \x01(\t\x12\x11\n\ttimestamp\x18\x03 \x01(\t\x12#\n\x08\x66\x65\x61tures\x18\x04 \x01(\x0b\x32\x11.ml.FeatureVector\x12\x37\n\x08metadata\x18\x05 \x03(\x0b\x32%.ml.FeatureStoreRequest.MetadataEntry\x12\x0f\n\x07user_id\x18\x06 \x01(\t\x1a/\n\rMetadataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"T\n\x14\x46\x65\x61tureStoreResponse\x12\x12\n\nfeature_id\x18\x01 \x01(\t\x12\x11\n\tstored_at\x18\x02 \x01(\t\x12\x15\n\rquality_score\x18\x03 \x01(\x01"\xdd\x02\n#AnalyzeMLBacktestPerformanceRequest\x12\x0e\n\x06job_id\x18\x01 \x01(\t\x12\x12\n\nmodel_name\x18\x02 \x01(\t\x12\x15\n\rmodel_version\x18\x03 \x01(\t\x12%\n\x0bpredictions\x18\x04 \x03(\x0b\x32\x10.ml.MLPrediction\x12*\n\x0f\x61\x63tual_outcomes\x18\x05 \x03(\x0b\x32\x11.ml.ActualOutcome\x12\\\n\x13\x66\x65\x61ture_importances\x18\x06 \x03(\x0b\x32?.ml.AnalyzeMLBacktestPerformanceRequest.FeatureImportancesEntry\x12\x0f\n\x07user_id\x18\x07 \x01(\t\x1a\x39\n\x17\x46\x65\x61tureImportancesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x02:\x02\x38\x01"Y\n\x0cMLPrediction\x12\x11\n\ttimestamp\x18\x01 \x01(\t\x12\x12\n\nprediction\x18\x02 \x01(\t\x12\x12\n\nconfidence\x18\x03 \x01(\x02\x12\x0e\n\x06regime\x18\x04 \x01(\t"2\n\rActualOutcome\x12\x11\n\ttimestamp\x18\x01 \x01(\t\x12\x0e\n\x06\x61\x63tual\x18\x02 \x01(\t"`\n$AnalyzeMLBacktestPerformanceResponse\x12\x16\n\x0eperformance_id\x18\x01 \x01(\t\x12\x0f\n\x07success\x18\x02 \x01(\x08\x12\x0f\n\x07message\x18\x03 \x01(\t"l\n\x11ListModelsRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x17\n\nmodel_type\x18\x02 \x01(\tH\x00\x88\x01\x01\x12\x13\n\x06status\x18\x03 \x01(\tH\x01\x88\x01\x01\x42\r\n\x0b_model_typeB\t\n\x07_status"K\n\x12ListModelsResponse\x12 \n\x06models\x18\x01 \x03(\x0b\x32\x10.ml.ModelSummary\x12\x13\n\x0btotal_count\x18\x02 \x01(\x05"\xbf\x01\n\x0cModelSummary\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x12\n\nmodel_type\x18\x03 \x01(\t\x12\x0f\n\x07version\x18\x04 \x01(\t\x12\x0e\n\x06status\x18\x05 \x01(\t\x12\x10\n\x08\x61\x63\x63uracy\x18\x06 \x01(\x02\x12\x10\n\x08\x66\x31_score\x18\x07 \x01(\x02\x12\x14\n\x0csharpe_ratio\x18\x08 \x01(\x02\x12\x12\n\ncreated_at\x18\t \x01(\t\x12\x12\n\nupdated_at\x18\n \x01(\t"8\n\x13GetModelInfoRequest\x12\x10\n\x08model_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t"\xd5\x03\n\x0bModelDetail\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x12\n\nmodel_type\x18\x03 \x01(\t\x12\x0f\n\x07version\x18\x04 \x01(\t\x12\x0e\n\x06status\x18\x05 \x01(\t\x12\x1b\n\x13\x62\x65st_strategy_types\x18\x06 \x03(\t\x12\x14\n\x0c\x62\x65st_regimes\x18\x07 \x03(\t\x12\x12\n\ncreated_at\x18\x08 \x01(\t\x12\x12\n\nupdated_at\x18\t \x01(\t\x12=\n\x0fhyperparameters\x18\n \x03(\x0b\x32$.ml.ModelDetail.HyperparametersEntry\x12\x15\n\rfeature_names\x18\x0b \x03(\t\x12\x18\n\x10training_samples\x18\x0c \x01(\x05\x12\x12\n\ntrained_at\x18\r \x01(\t\x12/\n\x08metadata\x18\x0e \x03(\x0b\x32\x1d.ml.ModelDetail.MetadataEntry\x1a\x36\n\x14HyperparametersEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x1a/\n\rMetadataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"p\n\x14GetModelInfoResponse\x12\x1e\n\x05model\x18\x01 \x01(\x0b\x32\x0f.ml.ModelDetail\x12\x38\n\x13performance_metrics\x18\x02 \x01(\x0b\x32\x1b.ml.ModelPerformanceMetrics"\xb4\x01\n\x17ModelPerformanceMetrics\x12\x10\n\x08\x61\x63\x63uracy\x18\x01 \x01(\x02\x12\x11\n\tprecision\x18\x02 \x01(\x02\x12\x0e\n\x06recall\x18\x03 \x01(\x02\x12\x10\n\x08\x66\x31_score\x18\x04 \x01(\x02\x12\x14\n\x0csharpe_ratio\x18\x05 \x01(\x02\x12\x14\n\x0ctotal_return\x18\x06 \x01(\x02\x12\x14\n\x0cmax_drawdown\x18\x07 \x01(\x02\x12\x10\n\x08win_rate\x18\x08 \x01(\x02"|\n\x15RecommendModelRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x15\n\rstrategy_type\x18\x02 \x01(\t\x12\x1a\n\rmarket_regime\x18\x03 \x01(\tH\x00\x88\x01\x01\x12\r\n\x05top_n\x18\x04 \x01(\x05\x42\x10\n\x0e_market_regime"J\n\x16RecommendModelResponse\x12\x30\n\x0frecommendations\x18\x01 \x03(\x0b\x32\x17.ml.ModelRecommendation"\xde\x01\n\x13ModelRecommendation\x12\x1f\n\x05model\x18\x01 \x01(\x0b\x32\x10.ml.ModelSummary\x12\r\n\x05score\x18\x02 \x01(\x02\x12\x0e\n\x06reason\x18\x03 \x01(\t\x12L\n\x13\x63ontext_performance\x18\x04 \x03(\x0b\x32/.ml.ModelRecommendation.ContextPerformanceEntry\x1a\x39\n\x17\x43ontextPerformanceEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x02:\x02\x38\x01"\xda\x02\n\x18SuggestParametersRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x15\n\rstrategy_type\x18\x02 \x01(\t\x12I\n\x0fparameter_space\x18\x03 \x03(\x0b\x32\x30.ml.SuggestParametersRequest.ParameterSpaceEntry\x12\x18\n\x10objective_metric\x18\x04 \x01(\t\x12\x10\n\x08n_trials\x18\x05 \x01(\x05\x12\x0f\n\x07symbols\x18\x06 \x03(\t\x12,\n\x13optimization_period\x18\x07 \x01(\x0b\x32\n.ml.PeriodH\x00\x88\x01\x01\x1aH\n\x13ParameterSpaceEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12 \n\x05value\x18\x02 \x01(\x0b\x32\x11.ml.ParameterSpec:\x02\x38\x01\x42\x16\n\x14_optimization_period"\x80\x01\n\rParameterSpec\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\x10\n\x03low\x18\x02 \x01(\x01H\x00\x88\x01\x01\x12\x11\n\x04high\x18\x03 \x01(\x01H\x01\x88\x01\x01\x12\x0f\n\x07\x63hoices\x18\x04 \x03(\t\x12\x11\n\x04step\x18\x05 \x01(\x01H\x02\x88\x01\x01\x42\x06\n\x04_lowB\x07\n\x05_highB\x07\n\x05_step"\xa4\x02\n\x19SuggestParametersResponse\x12\x42\n\x0b\x62\x65st_params\x18\x01 \x03(\x0b\x32-.ml.SuggestParametersResponse.BestParamsEntry\x12\x12\n\nbest_value\x18\x02 \x01(\x01\x12\x14\n\x0ctotal_trials\x18\x03 \x01(\x05\x12\x1e\n\x16\x65xecution_time_seconds\x18\x04 \x01(\x01\x12)\n\x06trials\x18\x05 \x03(\x0b\x32\x19.ml.ParameterTrialHistory\x12\x1b\n\x13optimization_run_id\x18\x06 \x01(\t\x1a\x31\n\x0f\x42\x65stParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01"\xb1\x01\n\x15ParameterTrialHistory\x12\x14\n\x0ctrial_number\x18\x01 \x01(\x05\x12\x35\n\x06params\x18\x02 \x03(\x0b\x32%.ml.ParameterTrialHistory.ParamsEntry\x12\r\n\x05value\x18\x03 \x01(\x01\x12\r\n\x05state\x18\x04 \x01(\t\x1a-\n\x0bParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01"B\n\x1fGetMLBacktestPerformanceRequest\x12\x0e\n\x06job_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t"\xcb\x03\n GetMLBacktestPerformanceResponse\x12\r\n\x05\x66ound\x18\x01 \x01(\x08\x12\x16\n\x0eperformance_id\x18\x02 \x01(\t\x12\x39\n\x16\x63lassification_metrics\x18\x03 \x01(\x0b\x32\x19.ml.ClassificationMetrics\x12@\n\x17\x63onfidence_distribution\x18\x04 \x01(\x0b\x32\x1f.ml.ConfidenceDistributionStats\x12`\n\x17regime_wise_performance\x18\x05 \x03(\x0b\x32?.ml.GetMLBacktestPerformanceResponse.RegimeWisePerformanceEntry\x12)\n\x0emodel_metadata\x18\x06 \x01(\x0b\x32\x11.ml.ModelMetadata\x12\x12\n\x05\x65rror\x18\x07 \x01(\tH\x00\x88\x01\x01\x1aX\n\x1aRegimeWisePerformanceEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12)\n\x05value\x18\x02 \x01(\x0b\x32\x1a.ml.RegimePerformanceStats:\x02\x38\x01\x42\x08\n\x06_error"^\n\x15\x43lassificationMetrics\x12\x10\n\x08\x61\x63\x63uracy\x18\x01 \x01(\x01\x12\x11\n\tprecision\x18\x02 \x01(\x01\x12\x0e\n\x06recall\x18\x03 \x01(\x01\x12\x10\n\x08\x66\x31_score\x18\x04 \x01(\x01"s\n\x1b\x43onfidenceDistributionStats\x12\x17\n\x0fmean_confidence\x18\x01 \x01(\x01\x12\x1d\n\x15high_confidence_ratio\x18\x02 \x01(\x01\x12\x1c\n\x14low_confidence_ratio\x18\x03 \x01(\x01"o\n\x16RegimePerformanceStats\x12\x18\n\x10prediction_count\x18\x01 \x01(\x05\x12\x10\n\x08\x61\x63\x63uracy\x18\x02 \x01(\x01\x12\x11\n\tprecision\x18\x03 \x01(\x01\x12\x16\n\x0e\x61vg_confidence\x18\x04 \x01(\x01"h\n\rModelMetadata\x12\x12\n\nmodel_type\x18\x01 \x01(\t\x12\x15\n\rmodel_version\x18\x02 \x01(\t\x12\x15\n\rtraining_date\x18\x03 \x01(\t\x12\x15\n\rfeature_count\x18\x04 \x01(\x05"\xfc\x02\n\x18\x44riftNotificationRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x12\n\nmodel_name\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\t\x12\x12\n\ndrift_type\x18\x04 \x01(\t\x12\x16\n\x0e\x64rift_severity\x18\x05 \x01(\t\x12\x43\n\x0cmetrics_diff\x18\x06 \x03(\x0b\x32-.ml.DriftNotificationRequest.MetricsDiffEntry\x12\x19\n\x11retraining_status\x18\x07 \x01(\t\x12:\n\x07\x63ontext\x18\x08 \x03(\x0b\x32).ml.DriftNotificationRequest.ContextEntry\x1a\x32\n\x10MetricsDiffEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x02:\x02\x38\x01\x1a.\n\x0c\x43ontextEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"c\n\x19\x44riftNotificationResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x17\n\x0fnotification_id\x18\x02 \x01(\t\x12\x12\n\x05\x65rror\x18\x03 \x01(\tH\x00\x88\x01\x01\x42\x08\n\x06_error2\xe7\x07\n\tMLService\x12\x41\n\x12OptimizeParameters\x12\x13.ml.OptimizeRequest\x1a\x14.ml.OptimizeProgress0\x01\x12=\n\x12\x41nalyzeWalkForward\x12\x12.ml.AnalyzeRequest\x1a\x13.ml.AnalyzeResponse\x12=\n\rPredictSignal\x12\x17.ml.MLPredictionRequest\x1a\x13.ml.MLSignalInsight\x12J\n\x13PredictSignalsBatch\x12\x1c.ml.BatchMLPredictionRequest\x1a\x13.ml.MLSignalInsight0\x01\x12\x42\n\rStoreFeatures\x12\x17.ml.FeatureStoreRequest\x1a\x18.ml.FeatureStoreResponse\x12>\n\x0bHealthCheck\x12\x16.ml.HealthCheckRequest\x1a\x17.ml.HealthCheckResponse\x12q\n\x1c\x41nalyzeMLBacktestPerformance\x12\'.ml.AnalyzeMLBacktestPerformanceRequest\x1a(.ml.AnalyzeMLBacktestPerformanceResponse\x12;\n\nListModels\x12\x15.ml.ListModelsRequest\x1a\x16.ml.ListModelsResponse\x12\x41\n\x0cGetModelInfo\x12\x17.ml.GetModelInfoRequest\x1a\x18.ml.GetModelInfoResponse\x12G\n\x0eRecommendModel\x12\x19.ml.RecommendModelRequest\x1a\x1a.ml.RecommendModelResponse\x12P\n\x11SuggestParameters\x12\x1c.ml.SuggestParametersRequest\x1a\x1d.ml.SuggestParametersResponse\x12\x65\n\x18GetMLBacktestPerformance\x12#.ml.GetMLBacktestPerformanceRequest\x1a$.ml.GetMLBacktestPerformanceResponse\x12T\n\x15SendDriftNotification\x12\x1c.ml.DriftNotificationRequest\x1a\x1d.ml.DriftNotificationResponseb\x06proto3'
+    b'\n\x1fservices/ml/v1/ml_service.proto\x12\x02ml"\x14\n\x12HealthCheckRequest"G\n\x13HealthCheckResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07service\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\t"\xbb\x02\n\x11SuggestionRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x16\n\x0e\x63orrelation_id\x18\x02 \x01(\t\x12\x13\n\x0bstrategy_id\x18\x03 \x01(\t\x12\x42\n\x0fparameter_space\x18\x04 \x03(\x0b\x32).ml.SuggestionRequest.ParameterSpaceEntry\x12 \n\tobjective\x18\x05 \x01(\x0b\x32\r.ml.Objective\x12 \n\x07history\x18\x06 \x03(\x0b\x32\x0f.ml.TrialResult\x12\x12\n\nsession_id\x18\x07 \x01(\t\x1aI\n\x13ParameterSpaceEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12!\n\x05value\x18\x02 \x01(\x0b\x32\x12.ml.ParameterRange:\x02\x38\x01"W\n\x0eParameterRange\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\x0b\n\x03min\x18\x02 \x01(\x01\x12\x0b\n\x03max\x18\x03 \x01(\x01\x12\x0c\n\x04step\x18\x04 \x01(\x01\x12\x0f\n\x07\x63hoices\x18\x05 \x03(\t"3\n\tObjective\x12\x13\n\x0bmetric_name\x18\x01 \x01(\t\x12\x11\n\tdirection\x18\x02 \x01(\t"\xb8\x02\n\x0bTrialResult\x12/\n\x06params\x18\x01 \x03(\x0b\x32\x1b.ml.TrialResult.ParamsEntryB\x02\x18\x01\x12\x36\n\x0cmixed_params\x18\x03 \x03(\x0b\x32 .ml.TrialResult.MixedParamsEntry\x12-\n\x07metrics\x18\x02 \x03(\x0b\x32\x1c.ml.TrialResult.MetricsEntry\x1a-\n\x0bParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01\x1a\x32\n\x10MixedParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x1a.\n\x0cMetricsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01"\xea\x01\n\x12SuggestionResponse\x12\x15\n\rsuggestion_id\x18\x01 \x01(\t\x12&\n\ncandidates\x18\x02 \x03(\x0b\x32\x12.ml.CandidateParam\x12\x13\n\x0bshould_stop\x18\x03 \x01(\x08\x12\x13\n\x0bstop_reason\x18\x04 \x01(\t\x12\x39\n\nmodel_info\x18\x05 \x03(\x0b\x32%.ml.SuggestionResponse.ModelInfoEntry\x1a\x30\n\x0eModelInfoEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"\xfc\x01\n\x0e\x43\x61ndidateParam\x12.\n\x06params\x18\x01 \x03(\x0b\x32\x1e.ml.CandidateParam.ParamsEntry\x12\x39\n\x0cmixed_params\x18\x03 \x03(\x0b\x32#.ml.CandidateParam.MixedParamsEntry\x12\x1c\n\x14\x65xpected_improvement\x18\x02 \x01(\x01\x1a-\n\x0bParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01\x1a\x32\n\x10MixedParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"\x8a\x01\n\x1aWalkForwardAnalysisRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x16\n\x0e\x63orrelation_id\x18\x02 \x01(\t\x12(\n\x0ewindow_results\x18\x03 \x03(\x0b\x32\x10.ml.WindowResult\x12\x16\n\x0erisk_free_rate\x18\x04 \x01(\x01"\xf5\x01\n\x0cWindowResult\x12\x14\n\x0cwindow_index\x18\x01 \x01(\x05\x12\x33\n\nis_metrics\x18\x02 \x03(\x0b\x32\x1f.ml.WindowResult.IsMetricsEntry\x12\x35\n\x0boos_metrics\x18\x03 \x03(\x0b\x32 .ml.WindowResult.OosMetricsEntry\x1a\x30\n\x0eIsMetricsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01\x1a\x31\n\x0fOosMetricsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01"\xae\x01\n\x1bWalkForwardAnalysisResponse\x12\x13\n\x0b\x61nalysis_id\x18\x01 \x01(\t\x12\x17\n\x0fstability_score\x18\x02 \x01(\x01\x12\x18\n\x10\x65\x66\x66iciency_ratio\x18\x03 \x01(\x01\x12\x1f\n\x17overfitting_probability\x18\x04 \x01(\x01\x12\x16\n\x0erecommendation\x18\x05 \x01(\t\x12\x0e\n\x06reason\x18\x06 \x01(\t2\xe2\x01\n\tMLService\x12>\n\rGetSuggestion\x12\x15.ml.SuggestionRequest\x1a\x16.ml.SuggestionResponse\x12U\n\x12\x41nalyzeWalkForward\x12\x1e.ml.WalkForwardAnalysisRequest\x1a\x1f.ml.WalkForwardAnalysisResponse\x12>\n\x0bHealthCheck\x12\x16.ml.HealthCheckRequest\x1a\x17.ml.HealthCheckResponseb\x06proto3'
 )
 
 _globals = globals()
@@ -30,192 +30,66 @@ _builder.BuildTopDescriptorsAndMessages(
 )
 if not _descriptor._USE_C_DESCRIPTORS:
     DESCRIPTOR._loaded_options = None
-    _globals["_OPTIMIZEREQUEST_PARAMETERGRIDENTRY"]._loaded_options = None
-    _globals["_OPTIMIZEREQUEST_PARAMETERGRIDENTRY"]._serialized_options = b"8\001"
-    _globals["_OPTIMIZEREQUEST_CONSTRAINTSENTRY"]._loaded_options = None
-    _globals["_OPTIMIZEREQUEST_CONSTRAINTSENTRY"]._serialized_options = b"8\001"
-    _globals["_OPTIMIZEPROGRESS_CURRENTPARAMSENTRY"]._loaded_options = None
-    _globals["_OPTIMIZEPROGRESS_CURRENTPARAMSENTRY"]._serialized_options = b"8\001"
-    _globals["_OPTIMIZEPROGRESS_BESTPARAMSENTRY"]._loaded_options = None
-    _globals["_OPTIMIZEPROGRESS_BESTPARAMSENTRY"]._serialized_options = b"8\001"
-    _globals["_OPTIMIZEPROGRESS_ISMETRICSENTRY"]._loaded_options = None
-    _globals["_OPTIMIZEPROGRESS_ISMETRICSENTRY"]._serialized_options = b"8\001"
+    _globals["_SUGGESTIONREQUEST_PARAMETERSPACEENTRY"]._loaded_options = None
+    _globals["_SUGGESTIONREQUEST_PARAMETERSPACEENTRY"]._serialized_options = b"8\001"
     _globals["_TRIALRESULT_PARAMSENTRY"]._loaded_options = None
     _globals["_TRIALRESULT_PARAMSENTRY"]._serialized_options = b"8\001"
+    _globals["_TRIALRESULT_MIXEDPARAMSENTRY"]._loaded_options = None
+    _globals["_TRIALRESULT_MIXEDPARAMSENTRY"]._serialized_options = b"8\001"
     _globals["_TRIALRESULT_METRICSENTRY"]._loaded_options = None
     _globals["_TRIALRESULT_METRICSENTRY"]._serialized_options = b"8\001"
-    _globals["_FEATURESTOREREQUEST_METADATAENTRY"]._loaded_options = None
-    _globals["_FEATURESTOREREQUEST_METADATAENTRY"]._serialized_options = b"8\001"
-    _globals[
-        "_ANALYZEMLBACKTESTPERFORMANCEREQUEST_FEATUREIMPORTANCESENTRY"
-    ]._loaded_options = None
-    _globals[
-        "_ANALYZEMLBACKTESTPERFORMANCEREQUEST_FEATUREIMPORTANCESENTRY"
-    ]._serialized_options = b"8\001"
-    _globals["_MODELDETAIL_HYPERPARAMETERSENTRY"]._loaded_options = None
-    _globals["_MODELDETAIL_HYPERPARAMETERSENTRY"]._serialized_options = b"8\001"
-    _globals["_MODELDETAIL_METADATAENTRY"]._loaded_options = None
-    _globals["_MODELDETAIL_METADATAENTRY"]._serialized_options = b"8\001"
-    _globals["_MODELRECOMMENDATION_CONTEXTPERFORMANCEENTRY"]._loaded_options = None
-    _globals[
-        "_MODELRECOMMENDATION_CONTEXTPERFORMANCEENTRY"
-    ]._serialized_options = b"8\001"
-    _globals["_SUGGESTPARAMETERSREQUEST_PARAMETERSPACEENTRY"]._loaded_options = None
-    _globals[
-        "_SUGGESTPARAMETERSREQUEST_PARAMETERSPACEENTRY"
-    ]._serialized_options = b"8\001"
-    _globals["_SUGGESTPARAMETERSRESPONSE_BESTPARAMSENTRY"]._loaded_options = None
-    _globals[
-        "_SUGGESTPARAMETERSRESPONSE_BESTPARAMSENTRY"
-    ]._serialized_options = b"8\001"
-    _globals["_PARAMETERTRIALHISTORY_PARAMSENTRY"]._loaded_options = None
-    _globals["_PARAMETERTRIALHISTORY_PARAMSENTRY"]._serialized_options = b"8\001"
-    _globals[
-        "_GETMLBACKTESTPERFORMANCERESPONSE_REGIMEWISEPERFORMANCEENTRY"
-    ]._loaded_options = None
-    _globals[
-        "_GETMLBACKTESTPERFORMANCERESPONSE_REGIMEWISEPERFORMANCEENTRY"
-    ]._serialized_options = b"8\001"
-    _globals["_DRIFTNOTIFICATIONREQUEST_METRICSDIFFENTRY"]._loaded_options = None
-    _globals[
-        "_DRIFTNOTIFICATIONREQUEST_METRICSDIFFENTRY"
-    ]._serialized_options = b"8\001"
-    _globals["_DRIFTNOTIFICATIONREQUEST_CONTEXTENTRY"]._loaded_options = None
-    _globals["_DRIFTNOTIFICATIONREQUEST_CONTEXTENTRY"]._serialized_options = b"8\001"
+    _globals["_TRIALRESULT"].fields_by_name["params"]._loaded_options = None
+    _globals["_TRIALRESULT"].fields_by_name["params"]._serialized_options = b"\030\001"
+    _globals["_SUGGESTIONRESPONSE_MODELINFOENTRY"]._loaded_options = None
+    _globals["_SUGGESTIONRESPONSE_MODELINFOENTRY"]._serialized_options = b"8\001"
+    _globals["_CANDIDATEPARAM_PARAMSENTRY"]._loaded_options = None
+    _globals["_CANDIDATEPARAM_PARAMSENTRY"]._serialized_options = b"8\001"
+    _globals["_CANDIDATEPARAM_MIXEDPARAMSENTRY"]._loaded_options = None
+    _globals["_CANDIDATEPARAM_MIXEDPARAMSENTRY"]._serialized_options = b"8\001"
+    _globals["_WINDOWRESULT_ISMETRICSENTRY"]._loaded_options = None
+    _globals["_WINDOWRESULT_ISMETRICSENTRY"]._serialized_options = b"8\001"
+    _globals["_WINDOWRESULT_OOSMETRICSENTRY"]._loaded_options = None
+    _globals["_WINDOWRESULT_OOSMETRICSENTRY"]._serialized_options = b"8\001"
     _globals["_HEALTHCHECKREQUEST"]._serialized_start = 39
     _globals["_HEALTHCHECKREQUEST"]._serialized_end = 59
     _globals["_HEALTHCHECKRESPONSE"]._serialized_start = 61
     _globals["_HEALTHCHECKRESPONSE"]._serialized_end = 132
-    _globals["_PERIOD"]._serialized_start = 134
-    _globals["_PERIOD"]._serialized_end = 180
-    _globals["_CONSTRAINT"]._serialized_start = 182
-    _globals["_CONSTRAINT"]._serialized_end = 221
-    _globals["_OPTIMIZEREQUEST"]._serialized_start = 224
-    _globals["_OPTIMIZEREQUEST"]._serialized_end = 728
-    _globals["_OPTIMIZEREQUEST_PARAMETERGRIDENTRY"]._serialized_start = 587
-    _globals["_OPTIMIZEREQUEST_PARAMETERGRIDENTRY"]._serialized_end = 660
-    _globals["_OPTIMIZEREQUEST_CONSTRAINTSENTRY"]._serialized_start = 662
-    _globals["_OPTIMIZEREQUEST_CONSTRAINTSENTRY"]._serialized_end = 728
-    _globals["_PARAMETERVALUES"]._serialized_start = 730
-    _globals["_PARAMETERVALUES"]._serialized_end = 763
-    _globals["_OPTIMIZEPROGRESS"]._serialized_start = 766
-    _globals["_OPTIMIZEPROGRESS"]._serialized_end = 1316
-    _globals["_OPTIMIZEPROGRESS_CURRENTPARAMSENTRY"]._serialized_start = 1163
-    _globals["_OPTIMIZEPROGRESS_CURRENTPARAMSENTRY"]._serialized_end = 1215
-    _globals["_OPTIMIZEPROGRESS_BESTPARAMSENTRY"]._serialized_start = 1217
-    _globals["_OPTIMIZEPROGRESS_BESTPARAMSENTRY"]._serialized_end = 1266
-    _globals["_OPTIMIZEPROGRESS_ISMETRICSENTRY"]._serialized_start = 1268
-    _globals["_OPTIMIZEPROGRESS_ISMETRICSENTRY"]._serialized_end = 1316
-    _globals["_TRIALRESULT"]._serialized_start = 1319
-    _globals["_TRIALRESULT"]._serialized_end = 1534
-    _globals["_TRIALRESULT_PARAMSENTRY"]._serialized_start = 1441
-    _globals["_TRIALRESULT_PARAMSENTRY"]._serialized_end = 1486
-    _globals["_TRIALRESULT_METRICSENTRY"]._serialized_start = 1488
-    _globals["_TRIALRESULT_METRICSENTRY"]._serialized_end = 1534
-    _globals["_ANALYZEREQUEST"]._serialized_start = 1536
-    _globals["_ANALYZEREQUEST"]._serialized_end = 1647
-    _globals["_WINDOWRESULTSUMMARY"]._serialized_start = 1649
-    _globals["_WINDOWRESULTSUMMARY"]._serialized_end = 1770
-    _globals["_ANALYZERESPONSE"]._serialized_start = 1773
-    _globals["_ANALYZERESPONSE"]._serialized_end = 1961
-    _globals["_PVALUES"]._serialized_start = 1963
-    _globals["_PVALUES"]._serialized_end = 2045
-    _globals["_MLPREDICTIONREQUEST"]._serialized_start = 2047
-    _globals["_MLPREDICTIONREQUEST"]._serialized_end = 2140
-    _globals["_BATCHMLPREDICTIONREQUEST"]._serialized_start = 2142
-    _globals["_BATCHMLPREDICTIONREQUEST"]._serialized_end = 2245
-    _globals["_FEATUREVECTOR"]._serialized_start = 2248
-    _globals["_FEATUREVECTOR"]._serialized_end = 3277
-    _globals["_MLSIGNALINSIGHT"]._serialized_start = 3280
-    _globals["_MLSIGNALINSIGHT"]._serialized_end = 3493
-    _globals["_FEATURECONTRIBUTION"]._serialized_start = 3495
-    _globals["_FEATURECONTRIBUTION"]._serialized_end = 3599
-    _globals["_FEATURESTOREREQUEST"]._serialized_start = 3602
-    _globals["_FEATURESTOREREQUEST"]._serialized_end = 3836
-    _globals["_FEATURESTOREREQUEST_METADATAENTRY"]._serialized_start = 3789
-    _globals["_FEATURESTOREREQUEST_METADATAENTRY"]._serialized_end = 3836
-    _globals["_FEATURESTORERESPONSE"]._serialized_start = 3838
-    _globals["_FEATURESTORERESPONSE"]._serialized_end = 3922
-    _globals["_ANALYZEMLBACKTESTPERFORMANCEREQUEST"]._serialized_start = 3925
-    _globals["_ANALYZEMLBACKTESTPERFORMANCEREQUEST"]._serialized_end = 4274
-    _globals[
-        "_ANALYZEMLBACKTESTPERFORMANCEREQUEST_FEATUREIMPORTANCESENTRY"
-    ]._serialized_start = 4217
-    _globals[
-        "_ANALYZEMLBACKTESTPERFORMANCEREQUEST_FEATUREIMPORTANCESENTRY"
-    ]._serialized_end = 4274
-    _globals["_MLPREDICTION"]._serialized_start = 4276
-    _globals["_MLPREDICTION"]._serialized_end = 4365
-    _globals["_ACTUALOUTCOME"]._serialized_start = 4367
-    _globals["_ACTUALOUTCOME"]._serialized_end = 4417
-    _globals["_ANALYZEMLBACKTESTPERFORMANCERESPONSE"]._serialized_start = 4419
-    _globals["_ANALYZEMLBACKTESTPERFORMANCERESPONSE"]._serialized_end = 4515
-    _globals["_LISTMODELSREQUEST"]._serialized_start = 4517
-    _globals["_LISTMODELSREQUEST"]._serialized_end = 4625
-    _globals["_LISTMODELSRESPONSE"]._serialized_start = 4627
-    _globals["_LISTMODELSRESPONSE"]._serialized_end = 4702
-    _globals["_MODELSUMMARY"]._serialized_start = 4705
-    _globals["_MODELSUMMARY"]._serialized_end = 4896
-    _globals["_GETMODELINFOREQUEST"]._serialized_start = 4898
-    _globals["_GETMODELINFOREQUEST"]._serialized_end = 4954
-    _globals["_MODELDETAIL"]._serialized_start = 4957
-    _globals["_MODELDETAIL"]._serialized_end = 5426
-    _globals["_MODELDETAIL_HYPERPARAMETERSENTRY"]._serialized_start = 5323
-    _globals["_MODELDETAIL_HYPERPARAMETERSENTRY"]._serialized_end = 5377
-    _globals["_MODELDETAIL_METADATAENTRY"]._serialized_start = 3789
-    _globals["_MODELDETAIL_METADATAENTRY"]._serialized_end = 3836
-    _globals["_GETMODELINFORESPONSE"]._serialized_start = 5428
-    _globals["_GETMODELINFORESPONSE"]._serialized_end = 5540
-    _globals["_MODELPERFORMANCEMETRICS"]._serialized_start = 5543
-    _globals["_MODELPERFORMANCEMETRICS"]._serialized_end = 5723
-    _globals["_RECOMMENDMODELREQUEST"]._serialized_start = 5725
-    _globals["_RECOMMENDMODELREQUEST"]._serialized_end = 5849
-    _globals["_RECOMMENDMODELRESPONSE"]._serialized_start = 5851
-    _globals["_RECOMMENDMODELRESPONSE"]._serialized_end = 5925
-    _globals["_MODELRECOMMENDATION"]._serialized_start = 5928
-    _globals["_MODELRECOMMENDATION"]._serialized_end = 6150
-    _globals["_MODELRECOMMENDATION_CONTEXTPERFORMANCEENTRY"]._serialized_start = 6093
-    _globals["_MODELRECOMMENDATION_CONTEXTPERFORMANCEENTRY"]._serialized_end = 6150
-    _globals["_SUGGESTPARAMETERSREQUEST"]._serialized_start = 6153
-    _globals["_SUGGESTPARAMETERSREQUEST"]._serialized_end = 6499
-    _globals["_SUGGESTPARAMETERSREQUEST_PARAMETERSPACEENTRY"]._serialized_start = 6403
-    _globals["_SUGGESTPARAMETERSREQUEST_PARAMETERSPACEENTRY"]._serialized_end = 6475
-    _globals["_PARAMETERSPEC"]._serialized_start = 6502
-    _globals["_PARAMETERSPEC"]._serialized_end = 6630
-    _globals["_SUGGESTPARAMETERSRESPONSE"]._serialized_start = 6633
-    _globals["_SUGGESTPARAMETERSRESPONSE"]._serialized_end = 6925
-    _globals["_SUGGESTPARAMETERSRESPONSE_BESTPARAMSENTRY"]._serialized_start = 1217
-    _globals["_SUGGESTPARAMETERSRESPONSE_BESTPARAMSENTRY"]._serialized_end = 1266
-    _globals["_PARAMETERTRIALHISTORY"]._serialized_start = 6928
-    _globals["_PARAMETERTRIALHISTORY"]._serialized_end = 7105
-    _globals["_PARAMETERTRIALHISTORY_PARAMSENTRY"]._serialized_start = 1441
-    _globals["_PARAMETERTRIALHISTORY_PARAMSENTRY"]._serialized_end = 1486
-    _globals["_GETMLBACKTESTPERFORMANCEREQUEST"]._serialized_start = 7107
-    _globals["_GETMLBACKTESTPERFORMANCEREQUEST"]._serialized_end = 7173
-    _globals["_GETMLBACKTESTPERFORMANCERESPONSE"]._serialized_start = 7176
-    _globals["_GETMLBACKTESTPERFORMANCERESPONSE"]._serialized_end = 7635
-    _globals[
-        "_GETMLBACKTESTPERFORMANCERESPONSE_REGIMEWISEPERFORMANCEENTRY"
-    ]._serialized_start = 7537
-    _globals[
-        "_GETMLBACKTESTPERFORMANCERESPONSE_REGIMEWISEPERFORMANCEENTRY"
-    ]._serialized_end = 7625
-    _globals["_CLASSIFICATIONMETRICS"]._serialized_start = 7637
-    _globals["_CLASSIFICATIONMETRICS"]._serialized_end = 7731
-    _globals["_CONFIDENCEDISTRIBUTIONSTATS"]._serialized_start = 7733
-    _globals["_CONFIDENCEDISTRIBUTIONSTATS"]._serialized_end = 7848
-    _globals["_REGIMEPERFORMANCESTATS"]._serialized_start = 7850
-    _globals["_REGIMEPERFORMANCESTATS"]._serialized_end = 7961
-    _globals["_MODELMETADATA"]._serialized_start = 7963
-    _globals["_MODELMETADATA"]._serialized_end = 8067
-    _globals["_DRIFTNOTIFICATIONREQUEST"]._serialized_start = 8070
-    _globals["_DRIFTNOTIFICATIONREQUEST"]._serialized_end = 8450
-    _globals["_DRIFTNOTIFICATIONREQUEST_METRICSDIFFENTRY"]._serialized_start = 8352
-    _globals["_DRIFTNOTIFICATIONREQUEST_METRICSDIFFENTRY"]._serialized_end = 8402
-    _globals["_DRIFTNOTIFICATIONREQUEST_CONTEXTENTRY"]._serialized_start = 8404
-    _globals["_DRIFTNOTIFICATIONREQUEST_CONTEXTENTRY"]._serialized_end = 8450
-    _globals["_DRIFTNOTIFICATIONRESPONSE"]._serialized_start = 8452
-    _globals["_DRIFTNOTIFICATIONRESPONSE"]._serialized_end = 8551
-    _globals["_MLSERVICE"]._serialized_start = 8554
-    _globals["_MLSERVICE"]._serialized_end = 9553
+    _globals["_SUGGESTIONREQUEST"]._serialized_start = 135
+    _globals["_SUGGESTIONREQUEST"]._serialized_end = 450
+    _globals["_SUGGESTIONREQUEST_PARAMETERSPACEENTRY"]._serialized_start = 377
+    _globals["_SUGGESTIONREQUEST_PARAMETERSPACEENTRY"]._serialized_end = 450
+    _globals["_PARAMETERRANGE"]._serialized_start = 452
+    _globals["_PARAMETERRANGE"]._serialized_end = 539
+    _globals["_OBJECTIVE"]._serialized_start = 541
+    _globals["_OBJECTIVE"]._serialized_end = 592
+    _globals["_TRIALRESULT"]._serialized_start = 595
+    _globals["_TRIALRESULT"]._serialized_end = 907
+    _globals["_TRIALRESULT_PARAMSENTRY"]._serialized_start = 762
+    _globals["_TRIALRESULT_PARAMSENTRY"]._serialized_end = 807
+    _globals["_TRIALRESULT_MIXEDPARAMSENTRY"]._serialized_start = 809
+    _globals["_TRIALRESULT_MIXEDPARAMSENTRY"]._serialized_end = 859
+    _globals["_TRIALRESULT_METRICSENTRY"]._serialized_start = 861
+    _globals["_TRIALRESULT_METRICSENTRY"]._serialized_end = 907
+    _globals["_SUGGESTIONRESPONSE"]._serialized_start = 910
+    _globals["_SUGGESTIONRESPONSE"]._serialized_end = 1144
+    _globals["_SUGGESTIONRESPONSE_MODELINFOENTRY"]._serialized_start = 1096
+    _globals["_SUGGESTIONRESPONSE_MODELINFOENTRY"]._serialized_end = 1144
+    _globals["_CANDIDATEPARAM"]._serialized_start = 1147
+    _globals["_CANDIDATEPARAM"]._serialized_end = 1399
+    _globals["_CANDIDATEPARAM_PARAMSENTRY"]._serialized_start = 762
+    _globals["_CANDIDATEPARAM_PARAMSENTRY"]._serialized_end = 807
+    _globals["_CANDIDATEPARAM_MIXEDPARAMSENTRY"]._serialized_start = 809
+    _globals["_CANDIDATEPARAM_MIXEDPARAMSENTRY"]._serialized_end = 859
+    _globals["_WALKFORWARDANALYSISREQUEST"]._serialized_start = 1402
+    _globals["_WALKFORWARDANALYSISREQUEST"]._serialized_end = 1540
+    _globals["_WINDOWRESULT"]._serialized_start = 1543
+    _globals["_WINDOWRESULT"]._serialized_end = 1788
+    _globals["_WINDOWRESULT_ISMETRICSENTRY"]._serialized_start = 1689
+    _globals["_WINDOWRESULT_ISMETRICSENTRY"]._serialized_end = 1737
+    _globals["_WINDOWRESULT_OOSMETRICSENTRY"]._serialized_start = 1739
+    _globals["_WINDOWRESULT_OOSMETRICSENTRY"]._serialized_end = 1788
+    _globals["_WALKFORWARDANALYSISRESPONSE"]._serialized_start = 1791
+    _globals["_WALKFORWARDANALYSISRESPONSE"]._serialized_end = 1965
+    _globals["_MLSERVICE"]._serialized_start = 1968
+    _globals["_MLSERVICE"]._serialized_end = 2194
 # @@protoc_insertion_point(module_scope)
