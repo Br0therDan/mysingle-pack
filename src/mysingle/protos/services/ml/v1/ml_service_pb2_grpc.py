@@ -56,6 +56,30 @@ class MLServiceStub(object):
             response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.WalkForwardAnalysisResponse.FromString,
             _registered_method=True,
         )
+        self.RegisterModelVersion = channel.unary_unary(
+            "/ml.MLService/RegisterModelVersion",
+            request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.RegisterModelVersionRequest.SerializeToString,
+            response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.RegisterModelVersionResponse.FromString,
+            _registered_method=True,
+        )
+        self.GetModelVersion = channel.unary_unary(
+            "/ml.MLService/GetModelVersion",
+            request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetModelVersionRequest.SerializeToString,
+            response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetModelVersionResponse.FromString,
+            _registered_method=True,
+        )
+        self.LogRun = channel.unary_unary(
+            "/ml.MLService/LogRun",
+            request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.LogRunRequest.SerializeToString,
+            response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.LogRunResponse.FromString,
+            _registered_method=True,
+        )
+        self.GetRun = channel.unary_unary(
+            "/ml.MLService/GetRun",
+            request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetRunRequest.SerializeToString,
+            response_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetRunResponse.FromString,
+            _registered_method=True,
+        )
         self.HealthCheck = channel.unary_unary(
             "/ml.MLService/HealthCheck",
             request_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.HealthCheckRequest.SerializeToString,
@@ -89,6 +113,40 @@ class MLServiceServicer(object):
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
+    def RegisterModelVersion(self, request, context):
+        """============================================================
+        Registry Role (Model Management)
+        ============================================================
+
+        Register a new model version.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def GetModelVersion(self, request, context):
+        """Get model version details."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def LogRun(self, request, context):
+        """============================================================
+        Training Role (Experiment Tracking)
+        ============================================================
+
+        Log a training run.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def GetRun(self, request, context):
+        """Get run details."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
     def HealthCheck(self, request, context):
         """============================================================
         Legacy / GenAI Integration (Kept for compatibility if needed)
@@ -112,6 +170,26 @@ def add_MLServiceServicer_to_server(servicer, server):
             servicer.AnalyzeWalkForward,
             request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.WalkForwardAnalysisRequest.FromString,
             response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.WalkForwardAnalysisResponse.SerializeToString,
+        ),
+        "RegisterModelVersion": grpc.unary_unary_rpc_method_handler(
+            servicer.RegisterModelVersion,
+            request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.RegisterModelVersionRequest.FromString,
+            response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.RegisterModelVersionResponse.SerializeToString,
+        ),
+        "GetModelVersion": grpc.unary_unary_rpc_method_handler(
+            servicer.GetModelVersion,
+            request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetModelVersionRequest.FromString,
+            response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetModelVersionResponse.SerializeToString,
+        ),
+        "LogRun": grpc.unary_unary_rpc_method_handler(
+            servicer.LogRun,
+            request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.LogRunRequest.FromString,
+            response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.LogRunResponse.SerializeToString,
+        ),
+        "GetRun": grpc.unary_unary_rpc_method_handler(
+            servicer.GetRun,
+            request_deserializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetRunRequest.FromString,
+            response_serializer=services_dot_ml_dot_v1_dot_ml__service__pb2.GetRunResponse.SerializeToString,
         ),
         "HealthCheck": grpc.unary_unary_rpc_method_handler(
             servicer.HealthCheck,
@@ -184,6 +262,126 @@ class MLService(object):
             "/ml.MLService/AnalyzeWalkForward",
             services_dot_ml_dot_v1_dot_ml__service__pb2.WalkForwardAnalysisRequest.SerializeToString,
             services_dot_ml_dot_v1_dot_ml__service__pb2.WalkForwardAnalysisResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def RegisterModelVersion(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/ml.MLService/RegisterModelVersion",
+            services_dot_ml_dot_v1_dot_ml__service__pb2.RegisterModelVersionRequest.SerializeToString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.RegisterModelVersionResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def GetModelVersion(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/ml.MLService/GetModelVersion",
+            services_dot_ml_dot_v1_dot_ml__service__pb2.GetModelVersionRequest.SerializeToString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.GetModelVersionResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def LogRun(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/ml.MLService/LogRun",
+            services_dot_ml_dot_v1_dot_ml__service__pb2.LogRunRequest.SerializeToString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.LogRunResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def GetRun(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/ml.MLService/GetRun",
+            services_dot_ml_dot_v1_dot_ml__service__pb2.GetRunRequest.SerializeToString,
+            services_dot_ml_dot_v1_dot_ml__service__pb2.GetRunResponse.FromString,
             options,
             channel_credentials,
             insecure,

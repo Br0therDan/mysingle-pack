@@ -662,25 +662,27 @@ class Settings(CommonSettings):
 {grpc_settings}
     # Common service endpoints (from main .env)
     IAM_HOST: str = "localhost"
+    SUBSCRIPTION_HOST: str = "localhost"
+    ORCHESTRATOR_HOST: str = "localhost"
     STRATEGY_HOST: str = "localhost"
-    BACKTEST_HOST: str = "localhost"
-    INDICATOR_HOST: str = "localhost"
     PORTFOLIO_HOST: str = "localhost"
-    NOTIFICATION_HOST: str = "localhost"
+    BACKTEST_HOST: str = "localhost"
     MARKET_DATA_HOST: str = "localhost"
+    NOTIFICATION_HOST: str = "localhost"
     GENAI_HOST: str = "localhost"
     ML_HOST: str = "localhost"
 
     # gRPC Ports (from main .env)
     IAM_GRPC_PORT: int = 50051
-    STRATEGY_GRPC_PORT: int = 50053
-    BACKTEST_GRPC_PORT: int = 50054
-    INDICATOR_GRPC_PORT: int = 50055
-    PORTFOLIO_GRPC_PORT: int = 50056
-    NOTIFICATION_GRPC_PORT: int = 50058
-    MARKET_DATA_GRPC_PORT: int = 50059
-    GENAI_GRPC_PORT: int = 50060
-    ML_GRPC_PORT: int = 50061
+    SUBSCRIPTION_GRPC_PORT: int = 50052
+    ORCHESTRATOR_GRPC_PORT: int = 50053
+    STRATEGY_GRPC_PORT: int = 50054
+    PORTFOLIO_GRPC_PORT: int = 50055
+    BACKTEST_GRPC_PORT: int = 50056
+    MARKET_DATA_GRPC_PORT: int = 50057
+    GENAI_GRPC_PORT: int = 50058
+    ML_GRPC_PORT: int = 50059
+    NOTIFICATION_GRPC_PORT: int = 50060
 
 
 settings = Settings()

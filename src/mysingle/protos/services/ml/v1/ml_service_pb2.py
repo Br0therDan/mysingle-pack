@@ -20,7 +20,7 @@ _sym_db = _symbol_database.Default()
 
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n\x1fservices/ml/v1/ml_service.proto\x12\x02ml"\x14\n\x12HealthCheckRequest"G\n\x13HealthCheckResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07service\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\t"\xbb\x02\n\x11SuggestionRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x16\n\x0e\x63orrelation_id\x18\x02 \x01(\t\x12\x13\n\x0bstrategy_id\x18\x03 \x01(\t\x12\x42\n\x0fparameter_space\x18\x04 \x03(\x0b\x32).ml.SuggestionRequest.ParameterSpaceEntry\x12 \n\tobjective\x18\x05 \x01(\x0b\x32\r.ml.Objective\x12 \n\x07history\x18\x06 \x03(\x0b\x32\x0f.ml.TrialResult\x12\x12\n\nsession_id\x18\x07 \x01(\t\x1aI\n\x13ParameterSpaceEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12!\n\x05value\x18\x02 \x01(\x0b\x32\x12.ml.ParameterRange:\x02\x38\x01"W\n\x0eParameterRange\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\x0b\n\x03min\x18\x02 \x01(\x01\x12\x0b\n\x03max\x18\x03 \x01(\x01\x12\x0c\n\x04step\x18\x04 \x01(\x01\x12\x0f\n\x07\x63hoices\x18\x05 \x03(\t"3\n\tObjective\x12\x13\n\x0bmetric_name\x18\x01 \x01(\t\x12\x11\n\tdirection\x18\x02 \x01(\t"\xb8\x02\n\x0bTrialResult\x12/\n\x06params\x18\x01 \x03(\x0b\x32\x1b.ml.TrialResult.ParamsEntryB\x02\x18\x01\x12\x36\n\x0cmixed_params\x18\x03 \x03(\x0b\x32 .ml.TrialResult.MixedParamsEntry\x12-\n\x07metrics\x18\x02 \x03(\x0b\x32\x1c.ml.TrialResult.MetricsEntry\x1a-\n\x0bParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01\x1a\x32\n\x10MixedParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x1a.\n\x0cMetricsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01"\xea\x01\n\x12SuggestionResponse\x12\x15\n\rsuggestion_id\x18\x01 \x01(\t\x12&\n\ncandidates\x18\x02 \x03(\x0b\x32\x12.ml.CandidateParam\x12\x13\n\x0bshould_stop\x18\x03 \x01(\x08\x12\x13\n\x0bstop_reason\x18\x04 \x01(\t\x12\x39\n\nmodel_info\x18\x05 \x03(\x0b\x32%.ml.SuggestionResponse.ModelInfoEntry\x1a\x30\n\x0eModelInfoEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"\xfc\x01\n\x0e\x43\x61ndidateParam\x12.\n\x06params\x18\x01 \x03(\x0b\x32\x1e.ml.CandidateParam.ParamsEntry\x12\x39\n\x0cmixed_params\x18\x03 \x03(\x0b\x32#.ml.CandidateParam.MixedParamsEntry\x12\x1c\n\x14\x65xpected_improvement\x18\x02 \x01(\x01\x1a-\n\x0bParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01\x1a\x32\n\x10MixedParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"\x8a\x01\n\x1aWalkForwardAnalysisRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x16\n\x0e\x63orrelation_id\x18\x02 \x01(\t\x12(\n\x0ewindow_results\x18\x03 \x03(\x0b\x32\x10.ml.WindowResult\x12\x16\n\x0erisk_free_rate\x18\x04 \x01(\x01"\xf5\x01\n\x0cWindowResult\x12\x14\n\x0cwindow_index\x18\x01 \x01(\x05\x12\x33\n\nis_metrics\x18\x02 \x03(\x0b\x32\x1f.ml.WindowResult.IsMetricsEntry\x12\x35\n\x0boos_metrics\x18\x03 \x03(\x0b\x32 .ml.WindowResult.OosMetricsEntry\x1a\x30\n\x0eIsMetricsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01\x1a\x31\n\x0fOosMetricsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01"\xae\x01\n\x1bWalkForwardAnalysisResponse\x12\x13\n\x0b\x61nalysis_id\x18\x01 \x01(\t\x12\x17\n\x0fstability_score\x18\x02 \x01(\x01\x12\x18\n\x10\x65\x66\x66iciency_ratio\x18\x03 \x01(\x01\x12\x1f\n\x17overfitting_probability\x18\x04 \x01(\x01\x12\x16\n\x0erecommendation\x18\x05 \x01(\t\x12\x0e\n\x06reason\x18\x06 \x01(\t2\xe2\x01\n\tMLService\x12>\n\rGetSuggestion\x12\x15.ml.SuggestionRequest\x1a\x16.ml.SuggestionResponse\x12U\n\x12\x41nalyzeWalkForward\x12\x1e.ml.WalkForwardAnalysisRequest\x1a\x1f.ml.WalkForwardAnalysisResponse\x12>\n\x0bHealthCheck\x12\x16.ml.HealthCheckRequest\x1a\x17.ml.HealthCheckResponseb\x06proto3'
+    b'\n\x1fservices/ml/v1/ml_service.proto\x12\x02ml"\x14\n\x12HealthCheckRequest"G\n\x13HealthCheckResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07service\x18\x02 \x01(\t\x12\x0f\n\x07version\x18\x03 \x01(\t"\xbb\x02\n\x11SuggestionRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x16\n\x0e\x63orrelation_id\x18\x02 \x01(\t\x12\x13\n\x0bstrategy_id\x18\x03 \x01(\t\x12\x42\n\x0fparameter_space\x18\x04 \x03(\x0b\x32).ml.SuggestionRequest.ParameterSpaceEntry\x12 \n\tobjective\x18\x05 \x01(\x0b\x32\r.ml.Objective\x12 \n\x07history\x18\x06 \x03(\x0b\x32\x0f.ml.TrialResult\x12\x12\n\nsession_id\x18\x07 \x01(\t\x1aI\n\x13ParameterSpaceEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12!\n\x05value\x18\x02 \x01(\x0b\x32\x12.ml.ParameterRange:\x02\x38\x01"W\n\x0eParameterRange\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\x0b\n\x03min\x18\x02 \x01(\x01\x12\x0b\n\x03max\x18\x03 \x01(\x01\x12\x0c\n\x04step\x18\x04 \x01(\x01\x12\x0f\n\x07\x63hoices\x18\x05 \x03(\t"3\n\tObjective\x12\x13\n\x0bmetric_name\x18\x01 \x01(\t\x12\x11\n\tdirection\x18\x02 \x01(\t"\xb8\x02\n\x0bTrialResult\x12/\n\x06params\x18\x01 \x03(\x0b\x32\x1b.ml.TrialResult.ParamsEntryB\x02\x18\x01\x12\x36\n\x0cmixed_params\x18\x03 \x03(\x0b\x32 .ml.TrialResult.MixedParamsEntry\x12-\n\x07metrics\x18\x02 \x03(\x0b\x32\x1c.ml.TrialResult.MetricsEntry\x1a-\n\x0bParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01\x1a\x32\n\x10MixedParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x1a.\n\x0cMetricsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01"\xea\x01\n\x12SuggestionResponse\x12\x15\n\rsuggestion_id\x18\x01 \x01(\t\x12&\n\ncandidates\x18\x02 \x03(\x0b\x32\x12.ml.CandidateParam\x12\x13\n\x0bshould_stop\x18\x03 \x01(\x08\x12\x13\n\x0bstop_reason\x18\x04 \x01(\t\x12\x39\n\nmodel_info\x18\x05 \x03(\x0b\x32%.ml.SuggestionResponse.ModelInfoEntry\x1a\x30\n\x0eModelInfoEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"\xfc\x01\n\x0e\x43\x61ndidateParam\x12.\n\x06params\x18\x01 \x03(\x0b\x32\x1e.ml.CandidateParam.ParamsEntry\x12\x39\n\x0cmixed_params\x18\x03 \x03(\x0b\x32#.ml.CandidateParam.MixedParamsEntry\x12\x1c\n\x14\x65xpected_improvement\x18\x02 \x01(\x01\x1a-\n\x0bParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01\x1a\x32\n\x10MixedParamsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"\x8a\x01\n\x1aWalkForwardAnalysisRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x16\n\x0e\x63orrelation_id\x18\x02 \x01(\t\x12(\n\x0ewindow_results\x18\x03 \x03(\x0b\x32\x10.ml.WindowResult\x12\x16\n\x0erisk_free_rate\x18\x04 \x01(\x01"\xf5\x01\n\x0cWindowResult\x12\x14\n\x0cwindow_index\x18\x01 \x01(\x05\x12\x33\n\nis_metrics\x18\x02 \x03(\x0b\x32\x1f.ml.WindowResult.IsMetricsEntry\x12\x35\n\x0boos_metrics\x18\x03 \x03(\x0b\x32 .ml.WindowResult.OosMetricsEntry\x1a\x30\n\x0eIsMetricsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01\x1a\x31\n\x0fOosMetricsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01"\xae\x01\n\x1bWalkForwardAnalysisResponse\x12\x13\n\x0b\x61nalysis_id\x18\x01 \x01(\t\x12\x17\n\x0fstability_score\x18\x02 \x01(\x01\x12\x18\n\x10\x65\x66\x66iciency_ratio\x18\x03 \x01(\x01\x12\x1f\n\x17overfitting_probability\x18\x04 \x01(\x01\x12\x16\n\x0erecommendation\x18\x05 \x01(\t\x12\x0e\n\x06reason\x18\x06 \x01(\t"\xd3\x01\n\x1bRegisterModelVersionRequest\x12\x12\n\nmodel_name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x0e\n\x06run_id\x18\x03 \x01(\t\x12\r\n\x05stage\x18\x04 \x01(\t\x12?\n\x08metadata\x18\x05 \x03(\x0b\x32-.ml.RegisterModelVersionRequest.MetadataEntry\x1a/\n\rMetadataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"S\n\x1cRegisterModelVersionResponse\x12\x12\n\nmodel_name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x0e\n\x06status\x18\x03 \x01(\t"=\n\x16GetModelVersionRequest\x12\x12\n\nmodel_name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t"\xc9\x03\n\x17GetModelVersionResponse\x12\x12\n\nmodel_name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x0e\n\x06run_id\x18\x03 \x01(\t\x12\r\n\x05stage\x18\x04 \x01(\t\x12;\n\x08metadata\x18\x05 \x03(\x0b\x32).ml.GetModelVersionResponse.MetadataEntry\x12\x44\n\rtraining_info\x18\x06 \x03(\x0b\x32-.ml.GetModelVersionResponse.TrainingInfoEntry\x12I\n\x0fhyperparameters\x18\x07 \x03(\x0b\x32\x30.ml.GetModelVersionResponse.HyperparametersEntry\x1a/\n\rMetadataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x1a\x33\n\x11TrainingInfoEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x1a\x36\n\x14HyperparametersEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"\xf7\x02\n\rLogRunRequest\x12\x17\n\x0f\x65xperiment_name\x18\x01 \x01(\t\x12\x0e\n\x06run_id\x18\x02 \x01(\t\x12\x35\n\nparameters\x18\x03 \x03(\x0b\x32!.ml.LogRunRequest.ParametersEntry\x12/\n\x07metrics\x18\x04 \x03(\x0b\x32\x1e.ml.LogRunRequest.MetricsEntry\x12\x31\n\x08metadata\x18\x05 \x03(\x0b\x32\x1f.ml.LogRunRequest.MetadataEntry\x12\x0e\n\x06status\x18\x06 \x01(\t\x1a\x31\n\x0fParametersEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01\x1a.\n\x0cMetricsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01\x1a/\n\rMetadataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"0\n\x0eLogRunResponse\x12\x0e\n\x06run_id\x18\x01 \x01(\t\x12\x0e\n\x06status\x18\x02 \x01(\t"\x1f\n\rGetRunRequest\x12\x0e\n\x06run_id\x18\x01 \x01(\t"\xc0\x02\n\x0eGetRunResponse\x12\x0e\n\x06run_id\x18\x01 \x01(\t\x12\x17\n\x0f\x65xperiment_name\x18\x02 \x01(\t\x12\x0e\n\x06status\x18\x03 \x01(\t\x12\x36\n\nparameters\x18\x04 \x03(\x0b\x32".ml.GetRunResponse.ParametersEntry\x12\x30\n\x07metrics\x18\x05 \x03(\x0b\x32\x1f.ml.GetRunResponse.MetricsEntry\x12\x12\n\nstarted_at\x18\x06 \x01(\t\x12\x14\n\x0c\x63ompleted_at\x18\x07 \x01(\t\x1a\x31\n\x0fParametersEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01\x1a.\n\x0cMetricsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x01:\x02\x38\x01\x32\xeb\x03\n\tMLService\x12>\n\rGetSuggestion\x12\x15.ml.SuggestionRequest\x1a\x16.ml.SuggestionResponse\x12U\n\x12\x41nalyzeWalkForward\x12\x1e.ml.WalkForwardAnalysisRequest\x1a\x1f.ml.WalkForwardAnalysisResponse\x12Y\n\x14RegisterModelVersion\x12\x1f.ml.RegisterModelVersionRequest\x1a .ml.RegisterModelVersionResponse\x12J\n\x0fGetModelVersion\x12\x1a.ml.GetModelVersionRequest\x1a\x1b.ml.GetModelVersionResponse\x12/\n\x06LogRun\x12\x11.ml.LogRunRequest\x1a\x12.ml.LogRunResponse\x12/\n\x06GetRun\x12\x11.ml.GetRunRequest\x1a\x12.ml.GetRunResponse\x12>\n\x0bHealthCheck\x12\x16.ml.HealthCheckRequest\x1a\x17.ml.HealthCheckResponseb\x06proto3'
 )
 
 _globals = globals()
@@ -50,6 +50,30 @@ if not _descriptor._USE_C_DESCRIPTORS:
     _globals["_WINDOWRESULT_ISMETRICSENTRY"]._serialized_options = b"8\001"
     _globals["_WINDOWRESULT_OOSMETRICSENTRY"]._loaded_options = None
     _globals["_WINDOWRESULT_OOSMETRICSENTRY"]._serialized_options = b"8\001"
+    _globals["_REGISTERMODELVERSIONREQUEST_METADATAENTRY"]._loaded_options = None
+    _globals[
+        "_REGISTERMODELVERSIONREQUEST_METADATAENTRY"
+    ]._serialized_options = b"8\001"
+    _globals["_GETMODELVERSIONRESPONSE_METADATAENTRY"]._loaded_options = None
+    _globals["_GETMODELVERSIONRESPONSE_METADATAENTRY"]._serialized_options = b"8\001"
+    _globals["_GETMODELVERSIONRESPONSE_TRAININGINFOENTRY"]._loaded_options = None
+    _globals[
+        "_GETMODELVERSIONRESPONSE_TRAININGINFOENTRY"
+    ]._serialized_options = b"8\001"
+    _globals["_GETMODELVERSIONRESPONSE_HYPERPARAMETERSENTRY"]._loaded_options = None
+    _globals[
+        "_GETMODELVERSIONRESPONSE_HYPERPARAMETERSENTRY"
+    ]._serialized_options = b"8\001"
+    _globals["_LOGRUNREQUEST_PARAMETERSENTRY"]._loaded_options = None
+    _globals["_LOGRUNREQUEST_PARAMETERSENTRY"]._serialized_options = b"8\001"
+    _globals["_LOGRUNREQUEST_METRICSENTRY"]._loaded_options = None
+    _globals["_LOGRUNREQUEST_METRICSENTRY"]._serialized_options = b"8\001"
+    _globals["_LOGRUNREQUEST_METADATAENTRY"]._loaded_options = None
+    _globals["_LOGRUNREQUEST_METADATAENTRY"]._serialized_options = b"8\001"
+    _globals["_GETRUNRESPONSE_PARAMETERSENTRY"]._loaded_options = None
+    _globals["_GETRUNRESPONSE_PARAMETERSENTRY"]._serialized_options = b"8\001"
+    _globals["_GETRUNRESPONSE_METRICSENTRY"]._loaded_options = None
+    _globals["_GETRUNRESPONSE_METRICSENTRY"]._serialized_options = b"8\001"
     _globals["_HEALTHCHECKREQUEST"]._serialized_start = 39
     _globals["_HEALTHCHECKREQUEST"]._serialized_end = 59
     _globals["_HEALTHCHECKRESPONSE"]._serialized_start = 61
@@ -90,6 +114,40 @@ if not _descriptor._USE_C_DESCRIPTORS:
     _globals["_WINDOWRESULT_OOSMETRICSENTRY"]._serialized_end = 1788
     _globals["_WALKFORWARDANALYSISRESPONSE"]._serialized_start = 1791
     _globals["_WALKFORWARDANALYSISRESPONSE"]._serialized_end = 1965
-    _globals["_MLSERVICE"]._serialized_start = 1968
-    _globals["_MLSERVICE"]._serialized_end = 2194
+    _globals["_REGISTERMODELVERSIONREQUEST"]._serialized_start = 1968
+    _globals["_REGISTERMODELVERSIONREQUEST"]._serialized_end = 2179
+    _globals["_REGISTERMODELVERSIONREQUEST_METADATAENTRY"]._serialized_start = 2132
+    _globals["_REGISTERMODELVERSIONREQUEST_METADATAENTRY"]._serialized_end = 2179
+    _globals["_REGISTERMODELVERSIONRESPONSE"]._serialized_start = 2181
+    _globals["_REGISTERMODELVERSIONRESPONSE"]._serialized_end = 2264
+    _globals["_GETMODELVERSIONREQUEST"]._serialized_start = 2266
+    _globals["_GETMODELVERSIONREQUEST"]._serialized_end = 2327
+    _globals["_GETMODELVERSIONRESPONSE"]._serialized_start = 2330
+    _globals["_GETMODELVERSIONRESPONSE"]._serialized_end = 2787
+    _globals["_GETMODELVERSIONRESPONSE_METADATAENTRY"]._serialized_start = 2132
+    _globals["_GETMODELVERSIONRESPONSE_METADATAENTRY"]._serialized_end = 2179
+    _globals["_GETMODELVERSIONRESPONSE_TRAININGINFOENTRY"]._serialized_start = 2680
+    _globals["_GETMODELVERSIONRESPONSE_TRAININGINFOENTRY"]._serialized_end = 2731
+    _globals["_GETMODELVERSIONRESPONSE_HYPERPARAMETERSENTRY"]._serialized_start = 2733
+    _globals["_GETMODELVERSIONRESPONSE_HYPERPARAMETERSENTRY"]._serialized_end = 2787
+    _globals["_LOGRUNREQUEST"]._serialized_start = 2790
+    _globals["_LOGRUNREQUEST"]._serialized_end = 3165
+    _globals["_LOGRUNREQUEST_PARAMETERSENTRY"]._serialized_start = 3019
+    _globals["_LOGRUNREQUEST_PARAMETERSENTRY"]._serialized_end = 3068
+    _globals["_LOGRUNREQUEST_METRICSENTRY"]._serialized_start = 861
+    _globals["_LOGRUNREQUEST_METRICSENTRY"]._serialized_end = 907
+    _globals["_LOGRUNREQUEST_METADATAENTRY"]._serialized_start = 2132
+    _globals["_LOGRUNREQUEST_METADATAENTRY"]._serialized_end = 2179
+    _globals["_LOGRUNRESPONSE"]._serialized_start = 3167
+    _globals["_LOGRUNRESPONSE"]._serialized_end = 3215
+    _globals["_GETRUNREQUEST"]._serialized_start = 3217
+    _globals["_GETRUNREQUEST"]._serialized_end = 3248
+    _globals["_GETRUNRESPONSE"]._serialized_start = 3251
+    _globals["_GETRUNRESPONSE"]._serialized_end = 3571
+    _globals["_GETRUNRESPONSE_PARAMETERSENTRY"]._serialized_start = 3019
+    _globals["_GETRUNRESPONSE_PARAMETERSENTRY"]._serialized_end = 3068
+    _globals["_GETRUNRESPONSE_METRICSENTRY"]._serialized_start = 861
+    _globals["_GETRUNRESPONSE_METRICSENTRY"]._serialized_end = 907
+    _globals["_MLSERVICE"]._serialized_start = 3574
+    _globals["_MLSERVICE"]._serialized_end = 4065
 # @@protoc_insertion_point(module_scope)

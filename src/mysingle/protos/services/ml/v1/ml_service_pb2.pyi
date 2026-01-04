@@ -307,3 +307,256 @@ class WalkForwardAnalysisResponse(_message.Message):
         recommendation: _Optional[str] = ...,
         reason: _Optional[str] = ...,
     ) -> None: ...
+
+class RegisterModelVersionRequest(_message.Message):
+    __slots__ = ("model_name", "version", "run_id", "stage", "metadata")
+    class MetadataEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[str] = ...
+        ) -> None: ...
+
+    MODEL_NAME_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    STAGE_FIELD_NUMBER: _ClassVar[int]
+    METADATA_FIELD_NUMBER: _ClassVar[int]
+    model_name: str
+    version: str
+    run_id: str
+    stage: str
+    metadata: _containers.ScalarMap[str, str]
+    def __init__(
+        self,
+        model_name: _Optional[str] = ...,
+        version: _Optional[str] = ...,
+        run_id: _Optional[str] = ...,
+        stage: _Optional[str] = ...,
+        metadata: _Optional[_Mapping[str, str]] = ...,
+    ) -> None: ...
+
+class RegisterModelVersionResponse(_message.Message):
+    __slots__ = ("model_name", "version", "status")
+    MODEL_NAME_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    model_name: str
+    version: str
+    status: str
+    def __init__(
+        self,
+        model_name: _Optional[str] = ...,
+        version: _Optional[str] = ...,
+        status: _Optional[str] = ...,
+    ) -> None: ...
+
+class GetModelVersionRequest(_message.Message):
+    __slots__ = ("model_name", "version")
+    MODEL_NAME_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    model_name: str
+    version: str
+    def __init__(
+        self, model_name: _Optional[str] = ..., version: _Optional[str] = ...
+    ) -> None: ...
+
+class GetModelVersionResponse(_message.Message):
+    __slots__ = (
+        "model_name",
+        "version",
+        "run_id",
+        "stage",
+        "metadata",
+        "training_info",
+        "hyperparameters",
+    )
+    class MetadataEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[str] = ...
+        ) -> None: ...
+
+    class TrainingInfoEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[str] = ...
+        ) -> None: ...
+
+    class HyperparametersEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[str] = ...
+        ) -> None: ...
+
+    MODEL_NAME_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    STAGE_FIELD_NUMBER: _ClassVar[int]
+    METADATA_FIELD_NUMBER: _ClassVar[int]
+    TRAINING_INFO_FIELD_NUMBER: _ClassVar[int]
+    HYPERPARAMETERS_FIELD_NUMBER: _ClassVar[int]
+    model_name: str
+    version: str
+    run_id: str
+    stage: str
+    metadata: _containers.ScalarMap[str, str]
+    training_info: _containers.ScalarMap[str, str]
+    hyperparameters: _containers.ScalarMap[str, str]
+    def __init__(
+        self,
+        model_name: _Optional[str] = ...,
+        version: _Optional[str] = ...,
+        run_id: _Optional[str] = ...,
+        stage: _Optional[str] = ...,
+        metadata: _Optional[_Mapping[str, str]] = ...,
+        training_info: _Optional[_Mapping[str, str]] = ...,
+        hyperparameters: _Optional[_Mapping[str, str]] = ...,
+    ) -> None: ...
+
+class LogRunRequest(_message.Message):
+    __slots__ = (
+        "experiment_name",
+        "run_id",
+        "parameters",
+        "metrics",
+        "metadata",
+        "status",
+    )
+    class ParametersEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: float
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[float] = ...
+        ) -> None: ...
+
+    class MetricsEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: float
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[float] = ...
+        ) -> None: ...
+
+    class MetadataEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[str] = ...
+        ) -> None: ...
+
+    EXPERIMENT_NAME_FIELD_NUMBER: _ClassVar[int]
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    PARAMETERS_FIELD_NUMBER: _ClassVar[int]
+    METRICS_FIELD_NUMBER: _ClassVar[int]
+    METADATA_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    experiment_name: str
+    run_id: str
+    parameters: _containers.ScalarMap[str, float]
+    metrics: _containers.ScalarMap[str, float]
+    metadata: _containers.ScalarMap[str, str]
+    status: str
+    def __init__(
+        self,
+        experiment_name: _Optional[str] = ...,
+        run_id: _Optional[str] = ...,
+        parameters: _Optional[_Mapping[str, float]] = ...,
+        metrics: _Optional[_Mapping[str, float]] = ...,
+        metadata: _Optional[_Mapping[str, str]] = ...,
+        status: _Optional[str] = ...,
+    ) -> None: ...
+
+class LogRunResponse(_message.Message):
+    __slots__ = ("run_id", "status")
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    status: str
+    def __init__(
+        self, run_id: _Optional[str] = ..., status: _Optional[str] = ...
+    ) -> None: ...
+
+class GetRunRequest(_message.Message):
+    __slots__ = ("run_id",)
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    def __init__(self, run_id: _Optional[str] = ...) -> None: ...
+
+class GetRunResponse(_message.Message):
+    __slots__ = (
+        "run_id",
+        "experiment_name",
+        "status",
+        "parameters",
+        "metrics",
+        "started_at",
+        "completed_at",
+    )
+    class ParametersEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: float
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[float] = ...
+        ) -> None: ...
+
+    class MetricsEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: float
+        def __init__(
+            self, key: _Optional[str] = ..., value: _Optional[float] = ...
+        ) -> None: ...
+
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    EXPERIMENT_NAME_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    PARAMETERS_FIELD_NUMBER: _ClassVar[int]
+    METRICS_FIELD_NUMBER: _ClassVar[int]
+    STARTED_AT_FIELD_NUMBER: _ClassVar[int]
+    COMPLETED_AT_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    experiment_name: str
+    status: str
+    parameters: _containers.ScalarMap[str, float]
+    metrics: _containers.ScalarMap[str, float]
+    started_at: str
+    completed_at: str
+    def __init__(
+        self,
+        run_id: _Optional[str] = ...,
+        experiment_name: _Optional[str] = ...,
+        status: _Optional[str] = ...,
+        parameters: _Optional[_Mapping[str, float]] = ...,
+        metrics: _Optional[_Mapping[str, float]] = ...,
+        started_at: _Optional[str] = ...,
+        completed_at: _Optional[str] = ...,
+    ) -> None: ...

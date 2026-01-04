@@ -20,6 +20,26 @@ service MLService {
   rpc AnalyzeWalkForward(WalkForwardAnalysisRequest) returns (WalkForwardAnalysisResponse);
 
   // ============================================================
+  // Registry Role (Model Management)
+  // ============================================================
+
+  // Register a new model version.
+  rpc RegisterModelVersion(RegisterModelVersionRequest) returns (RegisterModelVersionResponse);
+
+  // Get model version details.
+  rpc GetModelVersion(GetModelVersionRequest) returns (GetModelVersionResponse);
+
+  // ============================================================
+  // Training Role (Experiment Tracking)
+  // ============================================================
+
+  // Log a training run.
+  rpc LogRun(LogRunRequest) returns (LogRunResponse);
+
+  // Get run details.
+  rpc GetRun(GetRunRequest) returns (GetRunResponse);
+
+  // ============================================================
   // Legacy / GenAI Integration (Kept for compatibility if needed)
   // ============================================================
 
@@ -117,4 +137,70 @@ message WalkForwardAnalysisResponse {
   double overfitting_probability = 4;
   string recommendation = 5; // "PASS", "FAIL", "REVIEW"
   string reason = 6;
+}
+
+// ============================================================
+// Registry Messages
+// ============================================================
+
+message RegisterModelVersionRequest {
+  string model_name = 1;
+  string version = 2;
+  string run_id = 3;
+  string stage = 4; // "experimental", "staging", "production"
+  map<string, string> metadata = 5;
+}
+
+message RegisterModelVersionResponse {
+  string model_name = 1;
+  string version = 2;
+  string status = 3;
+}
+
+message GetModelVersionRequest {
+  string model_name = 1;
+  string version = 2;
+}
+
+message GetModelVersionResponse {
+  string model_name = 1;
+  string version = 2;
+  string run_id = 3;
+  string stage = 4;
+  map<string, string> metadata = 5;
+  // Enriched info
+  map<string, string> training_info = 6;
+  map<string, string> hyperparameters = 7;
+}
+
+// ============================================================
+// Training Messages
+// ============================================================
+
+message LogRunRequest {
+  string experiment_name = 1;
+  string run_id = 2; // Optional, generated if empty? Usually caller provides UUID.
+  map<string, double> parameters = 3;
+  map<string, double> metrics = 4;
+  map<string, string> metadata = 5;
+  string status = 6; // "running", "completed"
+}
+
+message LogRunResponse {
+  string run_id = 1;
+  string status = 2;
+}
+
+message GetRunRequest {
+  string run_id = 1;
+}
+
+message GetRunResponse {
+  string run_id = 1;
+  string experiment_name = 2;
+  string status = 3;
+  map<string, double> parameters = 4;
+  map<string, double> metrics = 5;
+  string started_at = 6;
+  string completed_at = 7;
 }
