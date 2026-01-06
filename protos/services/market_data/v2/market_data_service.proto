@@ -1,0 +1,414 @@
+// Market Data Service gRPC API Definition V2
+// Supporting all domains: Stock, Fundamental, Intelligence, Economic, Commodity, Options, Technical Indicators
+
+syntax = "proto3";
+
+// Package version v2
+package market_data.v2;
+
+import "google/protobuf/timestamp.proto";
+
+// ============================================================================
+// Common Messages
+// ============================================================================
+
+// Standard OHLCV bar structure
+message OHLCVBar {
+  // ISO 8601 format timestamp
+  string timestamp = 1;
+  // Open price
+  double open = 2;
+  // High price
+  double high = 3;
+  // Low price
+  double low = 4;
+  // Close price
+  double close = 5;
+  // Volume
+  int64 volume = 6;
+  // Adjusted close price
+  optional double adjusted_close = 7;
+}
+
+// Pagination metadata
+message Pagination {
+  // Current page number
+  int32 page = 1;
+  // Number of items per page
+  int32 page_size = 2;
+  // Total number of items
+  int32 total = 3;
+  // Total number of pages
+  int32 total_pages = 4;
+}
+
+// ============================================================================
+// Symbol Service
+// ============================================================================
+
+// Request to search for symbols
+message SearchSymbolsRequest {
+  // Keywords to search for (symbol or name)
+  string keywords = 1;
+}
+
+// Detailed information about a symbol
+message SymbolInfo {
+  // Ticker symbol (e.g. AAPL)
+  string symbol = 1;
+  // Full name of the entity
+  string name = 2;
+  // Type of asset
+  string type = 3;
+  // Geographic region
+  string region = 4;
+  // Market opening time
+  string market_open = 5;
+  // Market closing time
+  string market_close = 6;
+  // Timezone of the exchange
+  string timezone = 7;
+  // Trading currency
+  string currency = 8;
+  // Search result match score
+  double match_score = 9;
+}
+
+// Response containing multiple symbol search results
+message SearchSymbolsResponse {
+  // List of matching symbols
+  repeated SymbolInfo results = 1;
+}
+
+// Request for a specific symbol info
+message GetSymbolRequest {
+  // Ticker symbol
+  string symbol = 1;
+}
+
+// Service for managing symbol metadata
+service SymbolService {
+  // Search for symbols by keyword
+  rpc SearchSymbols(SearchSymbolsRequest) returns (SearchSymbolsResponse);
+  // Get detailed info for a single symbol
+  rpc GetSymbol(GetSymbolRequest) returns (SymbolInfo);
+}
+
+// ============================================================================
+// Price & Quote Service
+// ============================================================================
+
+// Request for historical price data
+message GetPriceRequest {
+  // Ticker symbol
+  string symbol = 1;
+  // Time frequency (daily, weekly, monthly, intraday)
+  string frequency = 2;
+  // Start date in YYYY-MM-DD
+  optional string start_date = 3;
+  // End date in YYYY-MM-DD
+  optional string end_date = 4;
+  // Bar interval for intraday data
+  optional string interval = 5;
+  // Maximum number of bars to return
+  optional int32 limit = 6;
+}
+
+// Response containing OHLCV bars
+message OHLCVResponse {
+  // Ticker symbol
+  string symbol = 1;
+  // Requested frequency
+  string frequency = 2;
+  // List of price bars
+  repeated OHLCVBar bars = 3;
+}
+
+// Request for the latest real-time quote
+message GetQuoteRequest {
+  // Ticker symbol
+  string symbol = 1;
+}
+
+// Real-time price and volume information
+message QuoteResponse {
+  // Ticker symbol
+  string symbol = 1;
+  // Current price
+  double price = 2;
+  // Opening price of the day
+  double open = 3;
+  // Daily high price
+  double high = 4;
+  // Daily low price
+  double low = 5;
+  // Current trading volume
+  int64 volume = 6;
+  // Date of the latest trading session
+  string latest_trading_day = 7;
+  // Previous trading day's close price
+  double previous_close = 8;
+  // Price change amount
+  double change = 9;
+  // Price change percentage
+  double change_percent = 10;
+}
+
+// Service for price and quote data
+service PriceService {
+  // Get historical OHLCV data
+  rpc GetPrice(GetPriceRequest) returns (OHLCVResponse);
+  // Get latest real-time quote
+  rpc GetQuote(GetQuoteRequest) returns (QuoteResponse);
+}
+
+// ============================================================================
+// Fundamental Service
+// ============================================================================
+
+// Request for company overview
+message GetCompanyOverviewRequest {
+  // Ticker symbol
+  string symbol = 1;
+}
+
+// Response for company overview
+message CompanyOverviewResponse {
+  // Ticker symbol
+  string symbol = 1;
+  // Entity name
+  string name = 2;
+  // Detailed description
+  string description = 3;
+  // Economic sector
+  string sector = 4;
+  // Industry classification
+  string industry = 5;
+  // Additional structured data
+  map<string, string> data = 6;
+}
+
+// Generic request for fundamental statements
+message GetFundamentalRequest {
+  // Ticker symbol
+  string symbol = 1;
+}
+
+// Response for fundamental statements
+message FundamentalResponse {
+  // Ticker symbol
+  string symbol = 1;
+  // Full statement data in JSON format
+  string data_json = 2;
+}
+
+// Service for fundamental financial data
+service FundamentalService {
+  // Get company metadata and profile
+  rpc GetCompanyOverview(GetCompanyOverviewRequest) returns (CompanyOverviewResponse);
+  // Get income statement
+  rpc GetIncomeStatement(GetFundamentalRequest) returns (FundamentalResponse);
+  // Get balance sheet
+  rpc GetBalanceSheet(GetFundamentalRequest) returns (FundamentalResponse);
+  // Get cash flow statement
+  rpc GetCashFlow(GetFundamentalRequest) returns (FundamentalResponse);
+}
+
+// ============================================================================
+// Economic & Commodity Service
+// ============================================================================
+
+// Request for economic indicator data
+message GetEconomicDataRequest {
+  // Indicator name (e.g. GDP, CPI)
+  string indicator = 1;
+  // Data interval frequency
+  optional string interval = 2;
+}
+
+// Single economic data point
+message EconomicDataPoint {
+  // Date of observation
+  string date = 1;
+  // Observed value
+  double value = 2;
+}
+
+// Time series of economic data
+message EconomicDataResponse {
+  // Indicator name
+  string indicator = 1;
+  // Data interval
+  string interval = 2;
+  // Unit of measurement
+  string unit = 3;
+  // List of data points
+  repeated EconomicDataPoint data = 4;
+}
+
+// Service for macroeconomic indicators
+service EconomicService {
+  // Get economic time series data
+  rpc GetEconomicData(GetEconomicDataRequest) returns (EconomicDataResponse);
+}
+
+// Request for commodity price data
+message GetCommodityPriceRequest {
+  // Commodity name (e.g. WTI, BRENT)
+  string commodity = 1;
+  // Data interval frequency
+  optional string interval = 2;
+}
+
+// Service for commodity prices
+service CommodityService {
+  // Get commodity price time series
+  rpc GetCommodityPrice(GetCommodityPriceRequest) returns (EconomicDataResponse);
+}
+
+// ============================================================================
+// Technical Indicators Service
+// ============================================================================
+
+// Request for technical indicator calculation
+message GetIndicatorRequest {
+  // Ticker symbol
+  string symbol = 1;
+  // Indicator name (e.g. SMA, RSI)
+  string indicator = 2;
+  // Calculation interval
+  string interval = 3;
+  // Algorithm specific parameters
+  map<string, string> params = 4;
+}
+
+// Result point of a technical indicator
+message IndicatorDataPoint {
+  // ISO 8601 timestamp
+  string timestamp = 1;
+  // Result values map
+  map<string, double> values = 2;
+}
+
+// Response for technical indicators
+message IndicatorResponse {
+  // Ticker symbol
+  string symbol = 1;
+  // Indicator name
+  string indicator = 2;
+  // Calculation results
+  repeated IndicatorDataPoint data = 3;
+}
+
+// Service for technical analysis calculations
+service TechnicalIndicatorService {
+  // Calculate specific technical indicator
+  rpc GetIndicator(GetIndicatorRequest) returns (IndicatorResponse);
+}
+
+// ============================================================================
+// Alpha Intelligence Service
+// ============================================================================
+
+// Request for news sentiment analysis
+message NewsSentimentRequest {
+  // Comma separated tickers
+  optional string tickers = 1;
+  // Comma separated topics
+  optional string topics = 2;
+  // Timestamp filter from
+  optional string time_from = 3;
+  // Timestamp filter to
+  optional string time_to = 4;
+  // Maximum number of articles
+  optional int32 limit = 5;
+}
+
+// Response for news sentiment
+message NewsSentimentResponse {
+  // JSON encoded response payload
+  string data_json = 1;
+}
+
+// Request for earnings call transcript
+message GetEarningsTranscriptRequest {
+  // Ticker symbol
+  string symbol = 1;
+  // Fiscal year
+  string year = 2;
+  // Fiscal quarter
+  string quarter = 3;
+}
+
+// Full earnings transcript and sentiment
+message EarningsTranscriptResponse {
+  // Ticker symbol
+  string symbol = 1;
+  // Fiscal quarter
+  string quarter = 2;
+  // Full transcript in JSON
+  string transcript_json = 3;
+}
+
+// Request for top gainers and losers
+message GetTopMoversRequest {
+  // No parameters needed
+}
+
+// Most active and high change tickers
+message TopMoversResponse {
+  // JSON encoded movers data
+  string data_json = 1;
+}
+
+// Request for insider transaction history
+message GetInsiderTransactionsRequest {
+  // Ticker symbol
+  string symbol = 1;
+}
+
+// Insider transaction history response
+message InsiderTransactionsResponse {
+  // JSON encoded transactions
+  string data_json = 1;
+}
+
+// Service for market intelligence and sentiment
+service IntelligenceService {
+  // Get aggregated news sentiment
+  rpc GetNewsSentiment(NewsSentimentRequest) returns (NewsSentimentResponse);
+  // Get earnings call transcripts
+  rpc GetEarningsTranscript(GetEarningsTranscriptRequest) returns (EarningsTranscriptResponse);
+  // Get top gainers/losers/active
+  rpc GetTopMovers(GetTopMoversRequest) returns (TopMoversResponse);
+  // Get history of insider trades
+  rpc GetInsiderTransactions(GetInsiderTransactionsRequest) returns (InsiderTransactionsResponse);
+}
+
+// ============================================================================
+// Options Service
+// ============================================================================
+
+// Request for options chain data
+message GetOptionsRequest {
+  // Ticker symbol
+  string symbol = 1;
+  // Snapshot date for historical data
+  optional string date = 2;
+  // Specific contract ID
+  optional string contract = 3;
+}
+
+// Options chain response
+message OptionsResponse {
+  // JSON encoded options list
+  string data_json = 1;
+}
+
+// Service for options market data
+service OptionsService {
+  // Get real-time options chain
+  rpc GetRealtimeOptions(GetOptionsRequest) returns (OptionsResponse);
+  // Get historical options chain
+  rpc GetHistoricalOptions(GetOptionsRequest) returns (OptionsResponse);
+}

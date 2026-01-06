@@ -90,11 +90,11 @@ message ParameterRange {
 
 message Objective {
   string metric_name = 1; // e.g., "sharpe_ratio"
-  string direction = 2;   // "maximize", "minimize"
+  string direction = 2; // "maximize", "minimize"
 }
 
 message TrialResult {
-  map<string, double> params = 1 [deprecated=true]; // Use typed_params instead if needed, but double is fine for now
+  map<string, double> params = 1 [deprecated = true]; // Use typed_params instead if needed, but double is fine for now
   map<string, string> mixed_params = 3; // For categorical support
   map<string, double> metrics = 2;
 }
