@@ -24,7 +24,7 @@ class DSLExecutor:
     # 리소스 제한 설정
     MAX_EXECUTION_TIME_SECONDS = 30  # 최대 실행 시간
     MAX_MEMORY_MB = 512  # 최대 메모리
-    MAX_RECURSION_DEPTH = 100  # 최대 재귀 깊이
+    MAX_RECURSION_DEPTH = 2000  # 최대 재귀 깊이 상향 (pandas deepcopy 등 대응)
 
     def __init__(self, parser: DSLParser | None = None):
         """
