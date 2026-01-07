@@ -1070,6 +1070,45 @@ def correlation_matrix(
     return data[columns].corr()
 
 
+def DOJI(df: pd.DataFrame, threshold: float = 0.1) -> pd.Series:
+    """Detects Doji pattern."""
+    body = (df["close"] - df["open"]).abs()
+    range_ = df["high"] - df["low"]
+    return body <= (range_ * threshold)
+
+
+def HAMMER(df: pd.DataFrame) -> pd.Series:
+    """Detects Hammer pattern."""
+    body = (df["close"] - df["open"]).abs()
+    lower_shadow = df[["open", "close"]].min(axis=1) - df["low"]
+    upper_shadow = df["high"] - df[["open", "close"]].max(axis=1)
+    return (lower_shadow > (body * 2)) & (upper_shadow < body)
+
+
+def BULLISH_ENGULFING(df: pd.DataFrame) -> pd.Series:
+    """Detects Bullish Engulfing pattern."""
+    prev_open, prev_close = df["open"].shift(1), df["close"].shift(1)
+    curr_open, curr_close = df["open"], df["close"]
+    return (
+        (prev_close < prev_open)
+        & (curr_close > curr_open)
+        & (curr_open < prev_close)
+        & (curr_close > prev_open)
+    )
+
+
+def BEARISH_ENGULFING(df: pd.DataFrame) -> pd.Series:
+    """Detects Bearish Engulfing pattern."""
+    prev_open, prev_close = df["open"].shift(1), df["close"].shift(1)
+    curr_open, curr_close = df["open"], df["close"]
+    return (
+        (prev_close > prev_open)
+        & (curr_close < curr_open)
+        & (curr_open > prev_close)
+        & (curr_close < prev_open)
+    )
+
+
 def get_stdlib_functions() -> dict[str, Callable[..., Any]]:
     """
     표준 라이브러리 함수 딕셔너리 반환
@@ -1144,4 +1183,9 @@ def get_stdlib_functions() -> dict[str, Callable[..., Any]]:
         "detect_outliers": detect_outliers,
         "normalize": normalize,
         "correlation_matrix": correlation_matrix,
+        # Patterns
+        "DOJI": DOJI,
+        "HAMMER": HAMMER,
+        "BULLISH_ENGULFING": BULLISH_ENGULFING,
+        "BEARISH_ENGULFING": BEARISH_ENGULFING,
     }

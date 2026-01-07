@@ -8,11 +8,9 @@ from contextlib import contextmanager
 from types import CodeType
 from typing import Any
 
-import numpy as np
 import pandas as pd
 
 from mysingle.dsl.errors import DSLExecutionError, DSLMemoryError, DSLTimeoutError
-from mysingle.dsl.extensions import StrategyWrapper, plot_wrapper, var_wrapper
 from mysingle.dsl.parser import DSLParser
 
 
@@ -79,7 +77,13 @@ class DSLExecutor:
                         "Variable 'result' not found. DSL code must assign result to 'result' variable"
                     )
 
-                result = namespace["result"]
+                result = namespace.get("result")
+
+                # Handle MSLSeries wrapper
+                from mysingle.dsl.series import MSLSeries
+
+                if isinstance(result, MSLSeries):
+                    result = result.series
 
                 # 결과 타입 검증
                 if not isinstance(result, (pd.Series, pd.DataFrame)):
@@ -146,42 +150,59 @@ class DSLExecutor:
         # 기본 안전 글로벌
         namespace = self.parser.get_safe_globals()
 
-        # NumPy, Pandas 추가
+        # Fluent API Proxies 주입
+        from mysingle.dsl.proxies import (
+            IndicatorProxy,
+            InputProxy,
+            MarketProxy,
+            PatternProxy,
+            PlotProxy,
+            PortfolioProxy,
+            StrategyWrapper,
+            UniverseProxy,
+            VarProxy,
+        )
+        from mysingle.dsl.series import MSLSeries
+
+        # Context for side effects (visualizations, trading commands)
+        context = params.get("_context")
+
+        # 주입할 객체들 초기화
+        input_proxy = InputProxy(data)
+        indicator_proxy = IndicatorProxy(data)
+        market_proxy = MarketProxy(data)
+        pattern_proxy = PatternProxy(data)
+        portfolio_proxy = PortfolioProxy(context)
+        universe_proxy = UniverseProxy(data)
+        strategy_proxy = StrategyWrapper(context)
+        var_proxy = VarProxy(context)
+        plot_proxy = PlotProxy(context)
+
         namespace.update(
             {
-                "np": np,
-                "pd": pd,
-                # 데이터
-                "data": data,
-                # 파라미터 딕셔너리 (전략에서 params['key'] 또는 params.get('key', default) 형식으로 접근)
-                "params": params,
+                "input": input_proxy,
+                "indicator": indicator_proxy,
+                "market": market_proxy,
+                "pattern": pattern_proxy,
+                "portfolio": portfolio_proxy,
+                "universe": universe_proxy,
+                "strategy": strategy_proxy,
+                "var": var_proxy,
+                "plot": plot_proxy,
             }
         )
 
-        # DataFrame 컬럼을 개별 변수로 주입 (DSL 편의성)
-        # 표준 OHLCV 컬럼: open, high, low, close, volume
+        # DataFrame 컬럼을 개별 변수로 주입 (MSLSeries로 래핑하여 연산자 지원)
         for col in data.columns:
-            namespace[col] = data[col]
+            namespace[col] = MSLSeries(data[col], name=col)
 
         # 파라미터를 개별 변수로도 주입 (하위 호환성)
-        namespace.update(params)
+        namespace.update({k: v for k, v in params.items() if k != "_context"})
 
         # StdLib 함수 추가
         from mysingle.dsl.stdlib import get_stdlib_functions
 
         namespace.update(get_stdlib_functions())
-
-        # Context for side effects (visualizations, trading commands)
-        context = params.get("_context")
-
-        # Extensions (Pine Script compatibility)
-        namespace.update(
-            {
-                "var": var_wrapper,
-                "plot": lambda *args, **kwargs: plot_wrapper(context, *args, **kwargs),
-                "strategy": StrategyWrapper(context),
-            }
-        )
 
         # External Data Science Libraries (Phase 1: Whitelist)
         # Import on demand to strict namespace

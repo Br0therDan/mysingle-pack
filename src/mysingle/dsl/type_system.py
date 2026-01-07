@@ -60,12 +60,17 @@ class TypeInferenceEngine:
         tree = ast.parse(code)
         self.type_env = {}
 
-        # Initialize data parameter type
+        # Initialize well-known objects
         self.type_env["data"] = TypeInfo(
-            type=DSLType.OHLCV,
-            nullable=False,
-            metadata={"columns": self.ohlcv_columns},
+            type=DSLType.OHLCV, metadata={"columns": self.ohlcv_columns}
         )
+        self.type_env["input"] = TypeInfo(type=DSLType.UNKNOWN)  # Proxy
+        self.type_env["market"] = TypeInfo(type=DSLType.UNKNOWN)  # Proxy
+        self.type_env["indicator"] = TypeInfo(type=DSLType.UNKNOWN)  # Proxy
+        self.type_env["pattern"] = TypeInfo(type=DSLType.UNKNOWN)  # Proxy
+        self.type_env["portfolio"] = TypeInfo(type=DSLType.UNKNOWN)  # Proxy
+        self.type_env["universe"] = TypeInfo(type=DSLType.UNKNOWN)  # Proxy
+        self.type_env["strategy"] = TypeInfo(type=DSLType.UNKNOWN)  # Proxy
 
         # Traverse AST and infer types
         for node in ast.walk(tree):
@@ -144,34 +149,12 @@ class TypeInferenceEngine:
         return TypeInfo(type=DSLType.SERIES, nullable=True)
 
     def _infer_call_type(self, node: ast.Call) -> TypeInfo:
-        """Infer type from function call"""
-
-        func_name = None
-        if isinstance(node.func, ast.Name):
-            func_name = node.func.id
-
-        # Known indicator functions → Series
-        if func_name in {
-            "SMA",
-            "EMA",
-            "RSI",
-            "ATR",
-            "highest",
-            "lowest",
-            "stdev",
-            "WMA",
-        }:
+        # 2. Method call: indicator.rsi.close(...) or series.sma(...)
+        if isinstance(node.func, ast.Attribute):
+            # If it's indicator.* or something ending in common indicator names
             return TypeInfo(type=DSLType.SERIES, element_type=DSLType.SCALAR)
 
-        # crossover/crossunder → BooleanSeries
-        elif func_name in {"crossover", "crossunder"}:
-            return TypeInfo(type=DSLType.BOOLEAN_SERIES)
-
-        # bbands → DataFrame (multi-output)
-        elif func_name == "bbands":
-            return TypeInfo(type=DSLType.DATAFRAME)
-
-        # Default: unknown
+        # 3. Default: unknown
         return TypeInfo(type=DSLType.UNKNOWN)
 
     def _infer_binop_type(self, node: ast.BinOp) -> TypeInfo:
